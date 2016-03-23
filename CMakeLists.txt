@@ -30,14 +30,15 @@ if (OPENMP_FOUND)
 #     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS} ")
 endif()
 
-#find_package(Qt5 PATHS "C:/Qt/5.5/msvc2013_64" COMPONENTS QTCORE QTGUI QTWIDGETS)
+set (CMAKE_PREFIX_PATH "/home/users/joppich/progs/Qt/5.5/gcc_64/" "C:/Qt/5.5/msvc2013_64")
 
-find_package(Qt5Core PATHS "C:/Qt/5.5/msvc2013_64" REQUIRED)
-find_package(Qt5Gui PATHS "C:/Qt/5.5/msvc2013_64" REQUIRED)
-find_package(Qt5Widgets PATHS "C:/Qt/5.5/msvc2013_64" REQUIRED)
+find_package(Qt5Core PATHS "C:/Qt/5.5/msvc2013_64" "/home/users/joppich/progs/Qt/5.5/gcc_64/" REQUIRED NO_DEFAULT_PATH NO_SYSTEM_ENVIRONMENT_PATH)
+find_package(Qt5Gui PATHS "C:/Qt/5.5/msvc2013_64" "/home/users/joppich/progs/Qt/5.5/gcc_64/" REQUIRED NO_DEFAULT_PATH NO_SYSTEM_ENVIRONMENT_PATH)
+find_package(Qt5Widgets PATHS "C:/Qt/5.5/msvc2013_64" "/home/users/joppich/progs/Qt/5.5/gcc_64/" REQUIRED NO_DEFAULT_PATH NO_SYSTEM_ENVIRONMENT_PATH)
+find_package(Qt5Network PATHS "C:/Qt/5.5/msvc2013_64" "/home/users/joppich/progs/Qt/5.5/gcc_64/" REQUIRED NO_DEFAULT_PATH NO_SYSTEM_ENVIRONMENT_PATH)
+find_package(Qt5XmlPatterns PATHS "C:/Qt/5.5/msvc2013_64" "/home/users/joppich/progs/Qt/5.5/gcc_64/" REQUIRED NO_DEFAULT_PATH NO_SYSTEM_ENVIRONMENT_PATH)
 
 set (CMAKE_AUTOMOC ON)
-set (CMAKE_PREFIX_PATH "C:/Qt/5.5/msvc2013_64")
 
 file(GLOB parsinglib_H
 "src/parsing/*.h"
@@ -50,7 +51,7 @@ add_library(parsing ${parsinglib_SRC} ${parsinglib_H} )
 target_include_directories (parsing PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 install(TARGETS parsing DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/lib)
 install(FILES ${parsinglib_H} DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/include/parsing)
-qt5_use_modules(parsing Core Widgets Gui)
+qt5_use_modules(parsing Core Widgets Gui XmlPatterns)
 
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../splitter/include)
@@ -65,7 +66,7 @@ file(GLOB bioGUI_H
         "src/*.h"
         )
 file(GLOB bioGUI_SRC
-        "src/main.cpp"
+        "src/*.cpp"
         )
 ADD_EXECUTABLE(bioGUI ${bioGUI_SRC} ${bioGUI_H})
 target_include_directories(bioGUI PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})

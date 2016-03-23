@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<executable id="program" location="exec"/>
+<window size="auto">
+
+<vgroup>
+
+<hgroup>
+<label>Some text</label>
+<input id="input1" hint="this is input1">Default</input>
+</hgroup>
+
+<action id="runprog" hint="click here to run program">run program</action>
+
+</vgroup>
+
+</window>
+<execution>
+  
+  <add sep=" " out="cl">
+    <text>-bla</text>
+    <value from="input1"/>
+  </add>
+  
+  <execute exec="program" param="cl" />
+  
+</execution>

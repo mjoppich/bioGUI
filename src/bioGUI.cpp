@@ -5,7 +5,7 @@
 ****************************************************************************/
 
 #include <QtWidgets>
-#include <qxmlquery.h>
+#include <QXmlQuery>
 
 #include "bioGUI.h"
 

@@ -30,13 +30,23 @@ if (OPENMP_FOUND)
 #     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS} ")
 endif()
 
-set (CMAKE_PREFIX_PATH "/home/users/joppich/progs/Qt/5.5/gcc_64/" "C:/Qt/5.5/msvc2013_64")
+SET(QT_ROOT_DIR "/home/users/joppich/progs/Qt/5.5/gcc_64/")
+set(QT_QMAKE_EXECUTABLE ${QT_ROOT_DIR}/bin/qmake)
 
-find_package(Qt5Core PATHS "C:/Qt/5.5/msvc2013_64" "/home/users/joppich/progs/Qt/5.5/gcc_64/" REQUIRED NO_DEFAULT_PATH NO_SYSTEM_ENVIRONMENT_PATH)
-find_package(Qt5Gui PATHS "C:/Qt/5.5/msvc2013_64" "/home/users/joppich/progs/Qt/5.5/gcc_64/" REQUIRED NO_DEFAULT_PATH NO_SYSTEM_ENVIRONMENT_PATH)
-find_package(Qt5Widgets PATHS "C:/Qt/5.5/msvc2013_64" "/home/users/joppich/progs/Qt/5.5/gcc_64/" REQUIRED NO_DEFAULT_PATH NO_SYSTEM_ENVIRONMENT_PATH)
-find_package(Qt5Network PATHS "C:/Qt/5.5/msvc2013_64" "/home/users/joppich/progs/Qt/5.5/gcc_64/" REQUIRED NO_DEFAULT_PATH NO_SYSTEM_ENVIRONMENT_PATH)
-find_package(Qt5XmlPatterns PATHS "C:/Qt/5.5/msvc2013_64" "/home/users/joppich/progs/Qt/5.5/gcc_64/" REQUIRED NO_DEFAULT_PATH NO_SYSTEM_ENVIRONMENT_PATH)
+set ( CMAKE_PREFIX_PATH ${QT_ROOT_DIR})
+
+MESSAGE("PREFIX PATH " ${CMAKE_PREFIX_PATH})
+
+find_package(Qt5 COMPONENTS Core Gui Widgets Network XmlPatterns PATHS "C:/Qt/5.5/msvc2013_64" "/home/users/joppich/progs/Qt/5.5/gcc_64/" REQUIRED NO_SYSTEM_ENVIRONMENT_PATH)
+
+#find_package(Qt5Core 5.5 PATHS "C:/Qt/5.5/msvc2013_64" "/home/users/joppich/progs/Qt/5.5/gcc_64/" REQUIRED NO_SYSTEM_ENVIRONMENT_PATH)
+#find_package(Qt5Gui 5.5 PATHS "C:/Qt/5.5/msvc2013_64" "/home/users/joppich/progs/Qt/5.5/gcc_64/" REQUIRED NO_SYSTEM_ENVIRONMENT_PATH)
+#find_package(Qt5Widgets 5.5 PATHS "C:/Qt/5.5/msvc2013_64" "/home/users/joppich/progs/Qt/5.5/gcc_64/" REQUIRED NO_SYSTEM_ENVIRONMENT_PATH)
+#find_package(Qt5Network 5.5 PATHS "C:/Qt/5.5/msvc2013_64" "/home/users/joppich/progs/Qt/5.5/gcc_64/" REQUIRED NO_SYSTEM_ENVIRONMENT_PATH)
+#find_package(Qt5XmlPatterns 5.5 PATHS "C:/Qt/5.5/msvc2013_64" "/home/users/joppich/progs/Qt/5.5/gcc_64/" REQUIRED NO_SYSTEM_ENVIRONMENT_PATH)
+
+MESSAGE("LIBRARY PATH " ${CMAKE_LIBRARY_PATH})
+MESSAGE("qt gui PATH " ${Qt5Gui_LIBRARIES})
 
 set (CMAKE_AUTOMOC ON)
 

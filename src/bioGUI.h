@@ -7,6 +7,8 @@
 #define BIOGUI_H
 
 #include <QMainWindow>
+#include <string>
+
 
 class QAction;
 class QMenu;

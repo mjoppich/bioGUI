@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<!--<?xml version="1.0" encoding="UTF-8"?>-->
+<root rootid="blubb" intatt="111">
 <executable id="program" location="exec"/>
 <window size="auto">
 
@@ -24,3 +25,4 @@
   <execute exec="program" param="cl" />
   
 </execution>
+</root>

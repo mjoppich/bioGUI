@@ -30,14 +30,23 @@ if (OPENMP_FOUND)
 #     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS} ")
 endif()
 
-SET(QT_ROOT_DIR "/home/users/joppich/progs/Qt/5.5/gcc_64/")
-set(QT_QMAKE_EXECUTABLE ${QT_ROOT_DIR}/bin/qmake)
+MESSAGE(WARNING ${CMAKE_SYSTEM_NAME})
+
+if ( CMAKE_SYSTEM_NAME STREQUAL "Windows" OR CYGWIN OR MINGW)
+    SET(Qt5_DIR "/")
+    set(QT_QMAKE_EXECUTABLE /usr/lib/qt5/bin/qmake.exe)
+
+else()
+    SET(Qt5_DIR "/home/users/joppich/progs/Qt/5.5/gcc_64/" )
+    set(QT_QMAKE_EXECUTABLE ${QT_ROOT_DIR}/bin/qmake)
+
+endif()
 
 set ( CMAKE_PREFIX_PATH ${QT_ROOT_DIR})
 
-MESSAGE("PREFIX PATH " ${CMAKE_PREFIX_PATH})
+MESSAGE(WARNING "Qt5_DIR " ${Qt5_DIR})
 
-find_package(Qt5 COMPONENTS Core Gui Widgets Network XmlPatterns PATHS "C:/Qt/5.5/msvc2013_64" "/home/users/joppich/progs/Qt/5.5/gcc_64/" REQUIRED NO_SYSTEM_ENVIRONMENT_PATH)
+find_package(Qt5 COMPONENTS Core Gui Widgets Network Xml XmlPatterns PATHS "/opt/windows_64/lib64/" "/home/users/joppich/progs/Qt/5.5/gcc_64/" REQUIRED NO_SYSTEM_ENVIRONMENT_PATH)
 
 #find_package(Qt5Core 5.5 PATHS "C:/Qt/5.5/msvc2013_64" "/home/users/joppich/progs/Qt/5.5/gcc_64/" REQUIRED NO_SYSTEM_ENVIRONMENT_PATH)
 #find_package(Qt5Gui 5.5 PATHS "C:/Qt/5.5/msvc2013_64" "/home/users/joppich/progs/Qt/5.5/gcc_64/" REQUIRED NO_SYSTEM_ENVIRONMENT_PATH)
@@ -46,7 +55,7 @@ find_package(Qt5 COMPONENTS Core Gui Widgets Network XmlPatterns PATHS "C:/Qt/5.
 #find_package(Qt5XmlPatterns 5.5 PATHS "C:/Qt/5.5/msvc2013_64" "/home/users/joppich/progs/Qt/5.5/gcc_64/" REQUIRED NO_SYSTEM_ENVIRONMENT_PATH)
 
 MESSAGE("LIBRARY PATH " ${CMAKE_LIBRARY_PATH})
-MESSAGE("qt gui PATH " ${Qt5Gui_LIBRARIES})
+MESSAGE(WARNING "qt gui PATH " ${Qt5Xml_LIBRARIES})
 
 set (CMAKE_AUTOMOC ON)
 
@@ -61,7 +70,7 @@ add_library(parsing ${parsinglib_SRC} ${parsinglib_H} )
 target_include_directories (parsing PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 install(TARGETS parsing DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/lib)
 install(FILES ${parsinglib_H} DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/include/parsing)
-qt5_use_modules(parsing Core Widgets Gui XmlPatterns)
+qt5_use_modules(parsing Core Widgets Gui Xml XmlPatterns)
 
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../splitter/include)

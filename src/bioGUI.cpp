@@ -6,22 +6,65 @@
 
 #include <QtWidgets>
 #include <QXmlQuery>
-
+#include <QDebug>
+#include <iostream>
 #include "bioGUI.h"
+#include <QFile>
+#include <QtXml/qdom.h>
 
 bioGUI::bioGUI( std::string sXMLfile)
 {
 
 
-    QString sFileName (sXMLfile.c_str());
-
-    QFile oXMLFile(sFileName);
-
-    QXmlQuery* pQuery = new QXmlQuery();
-    pQuery->setFocus(sFileName);
+    QXmlQuery query;
+    QXmlQuery entries;
+    QString res;
+    QDomDocument rhythmdb;
 
 
+    /*
+     * Try and open the Rhythmbox DB. An API call which tells us where
+     * the file is would be nice.
+     */
+    QFile db( "/cygdrive/c/libraries/bioGUI/example.gui");
+    if ( ! db.exists()) {
+        db.setFileName(QDir::homePath() + "/.local/share/rhythmbox/rhythmdb.xml");
+        if ( ! db.exists())
+            return;
+    }
 
+    if (!db.open(QIODevice::ReadOnly | QIODevice::Text))
+        return;
+
+    /*
+     * Use QXmlQuery to execute and XPath query. Check the version to
+     * make sure.
+     */
+    query.setFocus(&db);
+    query.setQuery("//label");
+    if ( ! query.isValid())
+        return;
+
+    query.evaluateTo(&res);
+    db.close();
+
+
+    /*
+     * Parse the result as an XML file. These shennanigans actually
+     * reduce the load time from a minute to a matter of seconds.
+     */
+    rhythmdb.setContent("" + res + "");
+    QDomNodeList m_entryNodes = rhythmdb.elementsByTagName("entry");
+
+
+    for (int i = 0; i < m_entryNodes.count(); i++) {
+        QDomNode n = m_entryNodes.at(i);
+        QString location = n.firstChildElement("location").text();
+
+    }
+
+    qDebug() << rhythmdb.doctype().name();
+    qDebug() << "RhythmboxTrackModel: m_entryNodes size is" << m_entryNodes.size();
 
 
 }

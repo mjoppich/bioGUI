@@ -37,7 +37,6 @@ QWidget* XMLParserWindow::createComponent(QDomElement* pElement, bool* pChildren
 
     QWidget* pWidget = NULL;
 
-
     if (sTag.compare("window", Qt::CaseInsensitive) == 0)
     {
         QWidget *pWindow = new QWidget();
@@ -71,12 +70,18 @@ QWidget* XMLParserWindow::createComponent(QDomElement* pElement, bool* pChildren
     if (sTag.compare("label", Qt::CaseInsensitive) == 0)
     {
         QLabel *pLabel = new QLabel( sValue );
+
+        this->addValueFetcher(pElement, [sValue] () {return sValue;});
+
         pWidget = pLabel;
     }
 
     if (sTag.compare("input", Qt::CaseInsensitive) == 0)
     {
         QLineEdit *pLineEdit = new QLineEdit( sValue );
+
+        this->addValueFetcher(pElement, [pLineEdit] () {return pLineEdit->text().toStdString();});
+
         pWidget = pLineEdit;
     }
 

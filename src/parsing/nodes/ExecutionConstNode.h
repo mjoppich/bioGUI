@@ -9,6 +9,23 @@
 #include "ExecutionNode.h"
 
 class ExecutionConstNode : public ExecutionNode {
+public:
+
+    ExecutionConstNode(QDomElement* pElement)
+    : ExecutionNode(pElement)
+    {
+
+        m_sValue = pElement->text().toStdString();
+
+    }
+
+    std::string evaluate( std::map<std::string, std::string>* pID2Value )
+    {
+        return m_sValue;
+    }
+
+protected:
+
 
 };
 

@@ -29,6 +29,7 @@
 #include <QButtonGroup>
 
 #include <functional>
+#include <map>
 #include "XMLParser.h"
 
 class bioGUIapp;
@@ -44,6 +45,19 @@ public:
     {
 
         m_pDocument = loadFromFile(sFileName);
+        m_pID2Value = new std::map<std::string, std::function< std::string()> >();
+
+        m_pKnownTags->push_back("hgroup");
+        m_pKnownTags->push_back("vgroup");
+        m_pKnownTags->push_back("label");
+        m_pKnownTags->push_back("input");
+        m_pKnownTags->push_back("image");
+        m_pKnownTags->push_back("filedialog");
+        m_pKnownTags->push_back("group");
+        m_pKnownTags->push_back("radiobutton");
+        m_pKnownTags->push_back("checkbox");
+        m_pKnownTags->push_back("action");
+        m_pKnownTags->push_back("window");
 
     }
 
@@ -86,6 +100,21 @@ protected:
         }
 
         return ELEMENT_TYPE::ELEMENT;
+
+    }
+
+    bool addValueFetcher(QDomElement* pElement, std::function<std::string()> oFunc)
+    {
+
+        QString sID = this->getAttribute(pElement, "ID", "");
+
+        if (sID.length() == 0)
+            return false;
+
+
+        m_pID2Value->insert( std::pair< std::string, std::function<std::string()> >( sID.toStdString(), oFunc ) );
+
+        return true;
 
     }
 
@@ -174,6 +203,8 @@ protected:
 
 
     bioGUIapp* m_pApp;
+
+    std::map<std::string, std::function< std::string()> >* m_pID2Value;
 
 };
 

@@ -6,11 +6,12 @@
 #define BIOGUI_XMLPARSEREXECUTION_H
 
 
+#include <src/parsing/nodes/ExecutionMathNode.h>
 #include "nodes/ExecutionValueNode.h"
 #include "nodes/ExecutionConstNode.h"
 #include "nodes/ExecutionAddNode.h"
 #include "nodes/ExecutionExecuteNode.h"
-#include "nodes/ExecutionNode.h"
+#include "nodes/ExecutionOutputNode.h"
 
 #include "nodes/ExecutionNode.h"
 #include "nodes/ExecutionNetwork.h"
@@ -28,12 +29,12 @@ public:
 
         m_pDocument = loadFromFile(sFileName);
 
-
-        m_pKnownTags->push_back("executable");
         m_pKnownTags->push_back("add");
         m_pKnownTags->push_back("value");
         m_pKnownTags->push_back("execute");
         m_pKnownTags->push_back("const");
+        m_pKnownTags->push_back("math");
+        m_pKnownTags->push_back("output");
 
     }
 
@@ -48,19 +49,10 @@ protected:
 
         QString sTagName = pElement->tagName();
 
-        if ( sTagName.compare("executable", Qt::CaseInsensitive)==0 )
-        {
-
-            ExecutionNode* pNode = new ExecutionNode();
-
-            pReturn = pNode;
-
-        }
-
         if ( sTagName.compare("execute", Qt::CaseInsensitive)==0 )
         {
 
-            ExecutionExecuteNode* pNode = new ExecutionExecuteNode();
+            ExecutionExecuteNode* pNode = new ExecutionExecuteNode( pElement );
 
             pReturn = pNode;
 
@@ -69,7 +61,7 @@ protected:
         if ( sTagName.compare("const", Qt::CaseInsensitive)==0 )
         {
 
-            ExecutionExecuteNode* pNode = new ExecutionExecuteNode();
+            ExecutionConstNode* pNode = new ExecutionConstNode( pElement );
 
             pReturn = pNode;
 
@@ -78,7 +70,7 @@ protected:
         if ( sTagName.compare("value", Qt::CaseInsensitive)==0 )
         {
 
-            ExecutionExecuteNode* pNode = new ExecutionExecuteNode();
+            ExecutionValueNode* pNode = new ExecutionValueNode( pElement );
 
             pReturn = pNode;
 
@@ -87,7 +79,25 @@ protected:
         if ( sTagName.compare("add", Qt::CaseInsensitive)==0 )
         {
 
-            ExecutionExecuteNode* pNode = new ExecutionExecuteNode();
+            ExecutionAddNode* pNode = new ExecutionAddNode( pElement );
+
+            pReturn = pNode;
+
+        }
+
+        if ( sTagName.compare("math", Qt::CaseInsensitive)==0 )
+        {
+
+            ExecutionMathNode* pNode = new ExecutionMathNode( pElement );
+
+            pReturn = pNode;
+
+        }
+
+        if ( sTagName.compare("output", Qt::CaseInsensitive)==0 )
+        {
+
+            ExecutionOutputNode* pNode = new ExecutionOutputNode( pElement );
 
             pReturn = pNode;
 

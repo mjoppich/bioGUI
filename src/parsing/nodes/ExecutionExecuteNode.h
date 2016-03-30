@@ -9,6 +9,14 @@
 
 class ExecutionExecuteNode : public ExecutionNode {
 
+public:
+
+    ExecutionExecuteNode(QDomElement* pElement)
+    : ExecutionNode(pElement)
+    {
+
+    }
+
 };
 
 

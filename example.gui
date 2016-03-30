@@ -1,21 +1,31 @@
 <!--<?xml version="1.0" encoding="UTF-8"?>-->
 <root rootid="blubb" intatt="111">
-<executable id="program" location="exec"/>
-<window size="auto">
 
-<vgroup>
+<window width="600" height="600" title="Example1">
 
-<hgroup>
-<label>Some text</label>
-<input id="input1" hint="this is input1">Default</input>
-</hgroup>
+  <vgroup>
+    <hgroup>
+      <label title="example 2">Some text</label>
+      <input id="input1" hint="this is input1">Default</input>
+    </hgroup>
 
-<action id="runprog" hint="click here to run program">run program</action>
+    <filedialog>Input File</filedialog>
 
-</vgroup>
+    <group title="Select strategy:" hint="do not mess up">
+      <radiobutton hint="this should be selected">rbutton1</radiobutton>
+      <radiobutton>rbutton2</radiobutton>
+      <radiobutton>rbutton3</radiobutton>
+      <checkbox hint="i am disturbing">check1</checkbox>
+    </group>
+    
+    <action id="runprog" hint="click here to run program">run program</action>
+  </vgroup>
 
 </window>
+
 <execution>
+
+  <executable id="program" location="exec"/>
   
   <add sep=" " out="cl">
     <text>-bla</text>

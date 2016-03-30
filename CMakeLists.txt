@@ -38,15 +38,17 @@ if ( CMAKE_SYSTEM_NAME STREQUAL "Windows" OR CYGWIN OR MINGW)
 
 else()
     SET(Qt5_DIR "/home/users/joppich/progs/Qt/5.5/gcc_64/" )
-    set(QT_QMAKE_EXECUTABLE ${QT_ROOT_DIR}/bin/qmake)
+    set(QT_QMAKE_EXECUTABLE ${Qt5_DIR}/bin/qmake)
+    set(QT_ROOT ${Qt5_DIR})
 
 endif()
 
-set ( CMAKE_PREFIX_PATH ${QT_ROOT_DIR})
+set ( CMAKE_PREFIX_PATH ${Qt5_DIR})
 
 MESSAGE(WARNING "Qt5_DIR " ${Qt5_DIR})
+MESSAGE(WARNING "QT_QMAKE_EXECUTABLE " ${QT_QMAKE_EXECUTABLE})
 
-find_package(Qt5 COMPONENTS Core Gui Widgets Network Xml XmlPatterns PATHS "/opt/windows_64/lib64/" "/home/users/joppich/progs/Qt/5.5/gcc_64/" REQUIRED NO_SYSTEM_ENVIRONMENT_PATH)
+find_package(Qt5 5.5 COMPONENTS Core Gui Widgets Network Xml XmlPatterns PATHS "/home/users/joppich/progs/Qt/5.5/gcc_64/" REQUIRED NO_SYSTEM_ENVIRONMENT_PATH)
 
 #find_package(Qt5Core 5.5 PATHS "C:/Qt/5.5/msvc2013_64" "/home/users/joppich/progs/Qt/5.5/gcc_64/" REQUIRED NO_SYSTEM_ENVIRONMENT_PATH)
 #find_package(Qt5Gui 5.5 PATHS "C:/Qt/5.5/msvc2013_64" "/home/users/joppich/progs/Qt/5.5/gcc_64/" REQUIRED NO_SYSTEM_ENVIRONMENT_PATH)
@@ -54,22 +56,28 @@ find_package(Qt5 COMPONENTS Core Gui Widgets Network Xml XmlPatterns PATHS "/opt
 #find_package(Qt5Network 5.5 PATHS "C:/Qt/5.5/msvc2013_64" "/home/users/joppich/progs/Qt/5.5/gcc_64/" REQUIRED NO_SYSTEM_ENVIRONMENT_PATH)
 #find_package(Qt5XmlPatterns 5.5 PATHS "C:/Qt/5.5/msvc2013_64" "/home/users/joppich/progs/Qt/5.5/gcc_64/" REQUIRED NO_SYSTEM_ENVIRONMENT_PATH)
 
-MESSAGE("LIBRARY PATH " ${CMAKE_LIBRARY_PATH})
-MESSAGE(WARNING "qt gui PATH " ${Qt5Xml_LIBRARIES})
+MESSAGE(WARNING "LIBRARY PATH " ${CMAKE_LIBRARY_PATH})
+MESSAGE(WARNING "QT5 DIR " ${Qt5_DIR})
 
 set (CMAKE_AUTOMOC ON)
 
 file(GLOB parsinglib_H
-"src/parsing/*.h"
+        "src/parsing/*.h"
 )
 
+file(GLOB parsinglib_nodes_H
+        "src/parsing/nodes/*.h"
+        )
+
 file(GLOB parsinglib_SRC
-"src/parsing/*.cpp"
+        "src/parsing/*.cpp"
+        "src/parsing/nodes/*.cpp"
 )
-add_library(parsing ${parsinglib_SRC} ${parsinglib_H} )
+add_library(parsing ${parsinglib_SRC} ${parsinglib_H} ${parsinglib_nodes_H} )
 target_include_directories (parsing PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 install(TARGETS parsing DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/lib)
 install(FILES ${parsinglib_H} DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/include/parsing)
+install(FILES ${parsinglib_nodes_H} DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/include/parsing/nodes)
 qt5_use_modules(parsing Core Widgets Gui Xml XmlPatterns)
 
 

@@ -9,7 +9,9 @@ ExecutionNode *XMLParserExecution::getExecutionNodes(QDomElement* pElement ) {
     if (!pElement->isElement())
         return NULL;
 
-    ExecutionNode* pNode = this->createExecutionNode( pElement);
+    std::cout << pElement->tagName().toStdString() << std::endl;
+
+    ExecutionNode* pNode = this->createExecutionNode( pElement );
 
     if (pNode == NULL)
     {
@@ -25,7 +27,8 @@ ExecutionNode *XMLParserExecution::getExecutionNodes(QDomElement* pElement ) {
 
         ExecutionNode* pChild = this->getExecutionNodes(&oChild);
 
-        pNode->addChild( pChild );
+        if (pChild != NULL)
+            pNode->addChild( pChild );
 
     }
 
@@ -37,17 +40,28 @@ ExecutionNode *XMLParserExecution::getExecutionNodes(QDomElement* pElement ) {
 ExecutionNetwork *XMLParserExecution::createNetwork(QDomElement* pElement) {
 
     ExecutionNetwork* pNetwork = new ExecutionNetwork();
-    pNetwork->setNodes( this->getExecutionNodes(pElement) );
 
+    QDomNodeList oExecutionNodes = pElement->childNodes();
+    for (size_t i = 0; i < oExecutionNodes.length(); ++i)
+    {
+        QDomElement oElement = oExecutionNodes.at(i).toElement();
+
+        ExecutionNode* pNode = this->getExecutionNodes(&oElement);
+
+        if (pNode != NULL)
+            pNetwork->setNodes( pNode );
+    }
+
+    return pNetwork;
 }
 
-QDomElement *XMLParserExecution::getRoot() {
-    return this->getDocumentElementByName("execution");
+QDomElement *XMLParserExecution::getRoot( QDomDocument* pDocument ) {
+    return this->getDocumentElementByName(pDocument, "execution");
 }
 
 ExecutionNetwork *XMLParserExecution::getExecutionNetwork() {
 
-    QDomElement* pExecutionRoot = this->getRoot();
+    QDomElement* pExecutionRoot = this->getRoot( m_pDocument );
 
     bool bUnimportant;
     ExecutionNetwork* pNetwork = createNetwork(pExecutionRoot);

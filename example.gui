@@ -27,13 +27,25 @@
 <execution>
   
   <add sep=" " id="cl">
-    <text>-bla</text>
+    <const>-bla</const>
     <value from="input1"/>
+    <const>-num</const>
+    <math id="intres" op="int">
+      <math op="+">
+	<const type="number">2</const>
+	<const type="number">3</const>
+      </math>
+    </math>
   </add>
   
   <execute exec="splitter" location="/home/users/joppich/cpp/splitter/bin/" param="cl">
     <output id="out1" type="stdcout" to="input1" />
     <output id="out2" type="file" src="" to="img1"/>
+  </execute>
+
+  <execute exec="splitter" location="/home/users/joppich/cpp/splitter/bin/" param="intres">
+    <output id="out3" type="stdcout" to="input1" />
+    <output id="out4" type="file" src="" to="img1"/>
   </execute>
   
 </execution>

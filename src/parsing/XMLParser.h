@@ -25,8 +25,6 @@ public:
     : QObject(0)
     {
 
-        m_pDocument = loadFromFile(sFileName);
-
         m_pKnownTags = new std::vector<std::string>();
 
     }
@@ -69,7 +67,12 @@ public:
         pFile->close();
         delete pFile;
 
-        this->checkValidTags( this->getRoot() );
+        bool bIsValid = this->checkValidTags( getRoot(pDocument) );
+
+        if (!bIsValid)
+        {
+            return NULL;
+        }
 
         return pDocument;
 
@@ -77,7 +80,7 @@ public:
 
 protected:
 
-    virtual QDomElement* getRoot() = 0;
+    virtual QDomElement* getRoot( QDomDocument* pDocument ) = 0;
 
     bool checkValidTags(QDomElement* pElement)
     {
@@ -140,10 +143,10 @@ protected:
 
     }
 
-    QDomElement* getDocumentElementByName( QString sTagName )
+    QDomElement* getDocumentElementByName( QDomDocument* pDocument, QString sTagName )
     {
 
-        QDomNodeList oChildren = m_pDocument->elementsByTagName( sTagName );
+        QDomNodeList oChildren = pDocument->elementsByTagName( sTagName );
 
         for (size_t i = 0; i < oChildren.length(); ++i)
         {

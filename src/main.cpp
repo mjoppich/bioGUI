@@ -45,6 +45,5 @@ int main(int argc, char *argv[])
 
     pApp->exec();
 
-    exit(0);
-
+    return 0;
 }

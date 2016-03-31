@@ -36,14 +36,14 @@ public:
     {
 
         QString qsID = this->getDomElementAttribute(pElement, "ID", "");
-        this->sID = qsID.toStdString();
+        this->m_sID = qsID.toStdString();
 
         QString qsType = this->getDomElementAttribute(pElement, "TYPE", "STRING");
         this->m_eType = ExecutionNode::cstring2nodetype( qsType.toUpper().toStdString() );
 
     }
 
-    virtual std::string evaluate( std::map<std::string, std::string>* pID2Value ) = 0;
+    virtual std::string evaluate( std::map< std::string, ExecutionNode*>* pID2Node, std::map<std::string, std::string>* pInputID2Value ) = 0;
 
 
     virtual NODE_TYPE getType()
@@ -57,6 +57,26 @@ public:
 
     void addChildren(std::vector<ExecutionNode*>::iterator oItStart, std::vector<ExecutionNode*>::iterator oItEnd );
 
+    void getNodeMap( std::map< std::string, ExecutionNode*>* pID2Node)
+    {
+
+        if (m_sID.size() != 0)
+        {
+            std::map< std::string, ExecutionNode*>::iterator oIt = pID2Node->find( m_sID );
+
+            if (oIt != pID2Node->end())
+                throw "duplicate node ids : " + m_sID;
+
+            pID2Node->insert( std::pair<std::string, ExecutionNode*>(m_sID, this) );
+        }
+
+        for (size_t i = 0; i < m_vChildren.size(); ++i)
+        {
+            m_vChildren.at(i)->getNodeMap(pID2Node);
+        }
+
+
+    }
 
 protected:
 
@@ -65,7 +85,7 @@ protected:
 
     std::vector<ExecutionNode*> m_vChildren;
 
-    std::string sID;
+    std::string m_sID;
     NODE_TYPE m_eType;
     std::string m_sValue;
 

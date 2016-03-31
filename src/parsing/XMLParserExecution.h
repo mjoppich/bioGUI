@@ -26,15 +26,16 @@ public:
     XMLParserExecution(std::string sFileName)
     : XMLParser(sFileName)
     {
-
-        m_pDocument = loadFromFile(sFileName);
-
         m_pKnownTags->push_back("add");
         m_pKnownTags->push_back("value");
         m_pKnownTags->push_back("execute");
         m_pKnownTags->push_back("const");
         m_pKnownTags->push_back("math");
         m_pKnownTags->push_back("output");
+        m_pKnownTags->push_back("execution");
+
+        m_pDocument = loadFromFile(sFileName);
+
 
     }
 
@@ -103,12 +104,20 @@ protected:
 
         }
 
+        if (pReturn == NULL)
+        {
+
+            std::cout << sTagName.toStdString() << std::endl;
+            std::cout << sTagName.toStdString() << std::endl;
+
+        }
+
 
         return pReturn;
     }
 
 
-    QDomElement * getRoot();
+    QDomElement * getRoot(QDomDocument* pDocument);
 
     ExecutionNetwork * createNetwork(QDomElement* pElement);
 

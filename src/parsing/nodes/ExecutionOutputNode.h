@@ -17,6 +17,11 @@ public:
 
     }
 
+    std::string evaluate( std::map< std::string, ExecutionNode*>* pID2Node, std::map<std::string, std::string>* pInputID2Value )
+    {
+
+    }
+
 };
 
 

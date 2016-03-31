@@ -30,6 +30,9 @@ public:
         m_pWindow->show();
 
         XMLParserExecution oParseExecution("/home/users/joppich/cpp/bioGUI/example.gui" );
+        ExecutionNetwork* pNetwork = oParseExecution.getExecutionNetwork();
+
+        pNetwork->execute( oParseWindow.getID2Value() );
 
     }
 

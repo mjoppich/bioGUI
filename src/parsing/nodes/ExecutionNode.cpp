@@ -5,7 +5,7 @@
 #include "ExecutionNode.h"
 
 bool ExecutionNode::hasID() {
-    return (this->sID.size() > 0);
+    return (this->m_sID.size() > 0);
 }
 
 void ExecutionNode::addChild(ExecutionNode* pNode) {

@@ -44,7 +44,6 @@ public:
     : XMLParser(sFileName)
     {
 
-        m_pDocument = loadFromFile(sFileName);
         m_pID2Value = new std::map<std::string, std::function< std::string()> >();
 
         m_pKnownTags->push_back("hgroup");
@@ -59,12 +58,15 @@ public:
         m_pKnownTags->push_back("action");
         m_pKnownTags->push_back("window");
 
+        m_pDocument = loadFromFile(sFileName);
+
+
     }
 
     QWidget* getWindow()
     {
 
-        QDomElement* pWindowRoot = this->getRoot();
+        QDomElement* pWindowRoot = this->getRoot( m_pDocument );
 
         bool bUnimportant;
         QWidget* pWindow = (QWidget*) createComponents(NULL, pWindowRoot, &bUnimportant);
@@ -73,11 +75,17 @@ public:
 
     }
 
+
+    std::map<std::string, std::function< std::string()> >* getID2Value()
+    {
+        return m_pID2Value;
+    }
+
 protected:
 
-    QDomElement* getRoot()
+    virtual QDomElement* getRoot(QDomDocument* pDocument)
     {
-        return this->getDocumentElementByName("window");
+        return this->getDocumentElementByName(pDocument, "window");
     }
 
 
@@ -205,6 +213,7 @@ protected:
     bioGUIapp* m_pApp;
 
     std::map<std::string, std::function< std::string()> >* m_pID2Value;
+    std::map<std::string, QWidget*> m_mID2Widget;
 
 };
 

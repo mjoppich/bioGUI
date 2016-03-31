@@ -71,7 +71,7 @@ QWidget* XMLParserWindow::createComponent(QDomElement* pElement, bool* pChildren
     {
         QLabel *pLabel = new QLabel( sValue );
 
-        this->addValueFetcher(pElement, [sValue] () {return sValue;});
+        this->addValueFetcher(pElement, [sValue] () {return sValue.toStdString();});
 
         pWidget = pLabel;
     }
@@ -229,7 +229,7 @@ QWidget* XMLParserWindow::createComponent(QDomElement* pElement, bool* pChildren
         if (sID.length() > 0)
         {
 
-            throw "not implemented";
+            m_mID2Widget.insert( std::pair<std::string, QWidget*>(sID.toStdString(), pWidget));
 
         }
 

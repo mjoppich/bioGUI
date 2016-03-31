@@ -6,23 +6,28 @@
   <vgroup>
     <hgroup>
       <label title="example 2">Some text</label>
-      <input id="input1" hint="this is input1">Default</input>
-      <image id="img1" src=""/>
+      <input id="input1" hint="this is input1">Default</input>      
     </hgroup>
+
+    <image id="img1" src="/home/users/joppich/ownCloud/markus/uni/publications/yeast/progress_Peptides/images/evidence_peptides_lengths.png"/>
 
     <filedialog>Input File</filedialog>
 
-    <group title="Select strategy:" hint="do not mess up">
-      <radiobutton hint="this should be selected">rbutton1</radiobutton>
-      <radiobutton>rbutton2</radiobutton>
-      <radiobutton>rbutton3</radiobutton>
-      <checkbox hint="i am disturbing">check1</checkbox>
-    </group>
+    <hgroup>
+      <group title="Select strategy:" hint="do not mess up">
+	<radiobutton hint="this should be selected">rbutton1</radiobutton>
+	<radiobutton>rbutton2</radiobutton>
+	<radiobutton>rbutton3</radiobutton>
+	<checkbox hint="i am disturbing">check1</checkbox>
+      </group>
 
-    <group title="Select strategy:" hint="do not mess up" checkable="true">
-      <radiobutton hint="this should be selected">rbutton1</radiobutton>
-      <checkbox hint="i am disturbing">check1</checkbox>
-    </group>
+      <group title="Select strategy:" hint="do not mess up" checkable="true">
+	<radiobutton hint="this should be selected">rbutton1</radiobutton>
+	<checkbox hint="i am disturbing">check1</checkbox>
+      </group>
+    </hgroup>
+
+    <stream id="output1" />
     
     <action id="runprog" hint="click here to run program">run program</action>
   </vgroup>
@@ -36,7 +41,7 @@
     <value from="input1"/>
     <const>-num</const>
     <math id="intres" op="int">
-      <math op="+">
+      <math id="floatres" op="+">
 	<const type="number">2</const>
 	<const type="number">3</const>
       </math>
@@ -44,13 +49,14 @@
   </add>
   
   <execute exec="splitter" location="/home/users/joppich/cpp/splitter/bin/" param="cl">
-    <output id="out1" type="stdcout" to="input1" />
-    <output id="out2" type="file" src="" to="img1"/>
+    <output id="outcout" type="cout" color="green" to="output1" />
+    <output id="outcerr" type="cerr" color="red"   to="output1" />
+    <!--<output id="out2" type="file" src="" to="img1"/>-->
   </execute>
 
-  <execute exec="splitter" location="/home/users/joppich/cpp/splitter/bin/" param="intres">
-    <output id="out3" type="stdcout" to="input1" />
-    <output id="out4" type="file" src="" to="img1"/>
+  <execute exec="splitter" location="/home/users/joppich/cpp/splitter/bin/" param="floatres">
+    <output id="out3" type="cout" to="output1" />
+    <!--<output id="out2" type="file" src="" to="img1"/>-->
   </execute>
   
 </execution>

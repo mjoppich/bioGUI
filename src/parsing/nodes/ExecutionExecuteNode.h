@@ -10,6 +10,7 @@
 #include <QProcess>
 #include <iostream>
 #include "ExecutionNode.h"
+#include "ExecutionOutputNode.h"
 
 class ExecutionExecuteNode : public ExecutionNode {
 
@@ -34,10 +35,42 @@ public:
 
     }
 
+    virtual std::string evaluateChildren( std::map< std::string, ExecutionNode*>* pID2Node,
+                                  std::map<std::string, std::string>* pInputID2Value,
+                                  std::map<std::string, QWidget*>* pInputID2Widget,
+                                  bool bDeferred = false)
+    {
+        std::string sReturn = "";
+
+        for (size_t i = 0; i < m_vChildren.size(); ++i)
+        {
+
+            if (bDeferred)
+            {
+                if (ExecutionOutputNode* pOutPutnode = dynamic_cast<ExecutionOutputNode*>( m_vChildren.at(i) ))
+                {
+                    sReturn = sReturn + pOutPutnode->evaluateDeferred(pID2Node, pInputID2Value, pInputID2Widget, bDeferred);
+                }
+            } else {
+
+                sReturn = sReturn + m_vChildren.at(i)->evaluate(pID2Node, pInputID2Value, pInputID2Widget);
+
+            }
+
+
+
+        }
+
+        return sReturn;
+    }
+
     std::string evaluate( std::map< std::string, ExecutionNode*>* pID2Node,
                           std::map<std::string, std::string>* pInputID2Value,
                           std::map<std::string, QWidget*>* pInputID2Widget)
     {
+
+
+        this->evaluateChildren(pID2Node, pInputID2Value, pInputID2Widget);
 
         std::string sCLArg = "";
 
@@ -67,7 +100,9 @@ public:
             return std::to_string(iReturnCode);
         }
 
-        return 0;
+        this->evaluateChildren(pID2Node, pInputID2Value, pInputID2Widget, true);
+
+        return "";
 
     }
 

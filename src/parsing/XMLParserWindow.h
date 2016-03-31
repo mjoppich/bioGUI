@@ -44,11 +44,14 @@ Q_OBJECT
 
 public:
 
-    XMLParserWindow(std::string sFileName)
+    XMLParserWindow(bioGUIapp* pApp, std::string sFileName)
     : XMLParser(sFileName)
     {
 
+        m_pApp = pApp;
+
         m_pID2Value = new std::map<std::string, std::function< std::string()> >();
+        m_pID2Widget = new std::map<std::string, QWidget* >();
 
         m_pKnownTags->push_back("hgroup");
         m_pKnownTags->push_back("vgroup");
@@ -61,6 +64,7 @@ public:
         m_pKnownTags->push_back("checkbox");
         m_pKnownTags->push_back("action");
         m_pKnownTags->push_back("window");
+        m_pKnownTags->push_back("stream");
 
         m_pDocument = loadFromFile(sFileName);
 

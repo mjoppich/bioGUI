@@ -24,6 +24,9 @@ public:
         m_sTo = this->getDomElementAttribute(pElement, "TO", "").toStdString();
         m_sLocation = this->getDomElementAttribute(pElement, "location", "").toStdString();
 
+        m_bDefferred = (this->getDomElementAttribute(pElement, "DEFERRED", "true").toUpper().compare("TRUE", Qt::CaseInsensitive) == 0);
+
+
         if (m_sTo.size() == 0)
         {
             throw "no attribute TO given for node " + m_sID;
@@ -35,6 +38,14 @@ public:
     std::string evaluate( std::map< std::string, ExecutionNode*>* pID2Node,
                           std::map<std::string, std::string>* pInputID2Value,
                           std::map<std::string, QWidget*>* pInputID2Widget)
+    {
+        return evaluateDeferred(pID2Node, pInputID2Value, pInputID2Widget, false);
+    }
+
+    std::string evaluateDeferred( std::map< std::string, ExecutionNode*>* pID2Node,
+                          std::map<std::string, std::string>* pInputID2Value,
+                          std::map<std::string, QWidget*>* pInputID2Widget,
+                                  bool bDeferred)
     {
 
         if (!(pInputID2Widget->find( m_sTo ) != pInputID2Widget->end()))
@@ -79,6 +90,7 @@ public:
 
         }
 
+        return "";
 
     }
 
@@ -88,6 +100,8 @@ protected:
     std::string m_sTo;
     std::string m_sColor;
     std::string m_sLocation;
+
+    bool m_bDefferred;
 
 
 };

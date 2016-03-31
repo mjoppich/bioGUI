@@ -273,14 +273,44 @@ QWidget* XMLParserWindow::createComponent(QDomElement* pElement, bool* pChildren
 
         (*pChildrenFinished) = true;
 
-        QString sFileName = this->getAttribute(pElement, "location", "");
+        QString sFileName = this->getAttribute(pElement, "src", "");
 
         QGraphicsScene* pScene = new QGraphicsScene();
         QGraphicsView* pView = new QGraphicsView(pScene);
         QGraphicsPixmapItem* pItem = new QGraphicsPixmapItem(QPixmap( sFileName ));
+
         pScene->addItem( pItem );
 
+        /*
+         * apply sizes here
+         *
+         */
+
+        QString sWidth =  this->getAttribute(pElement, "width" , "");
+        QString sHeight = this->getAttribute(pElement, "height", "");
+
+        if ((sWidth.length() > 0) && (sHeight.length() > 0))
+        {
+            int iWidth = sWidth.toInt();
+            int iHeight = sHeight.toInt();
+
+            pView->setFixedSize(iWidth, iHeight);
+
+        }
+
         pWidget = pView;
+
+    }
+
+    if (sTag.compare("stream", Qt::CaseInsensitive) == 0)
+    {
+
+        (*pChildrenFinished) = true;
+
+        StreamTextEdit* pStreamOut = new StreamTextEdit();
+        pStreamOut->setReadOnly(true);
+
+        pWidget = pStreamOut;
 
     }
 

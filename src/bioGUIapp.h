@@ -25,7 +25,7 @@ public:
     {
 
 
-        m_pWindowParser = new XMLParserWindow("/home/users/joppich/cpp/bioGUI/example.gui" );
+        m_pWindowParser = new XMLParserWindow( this, "/home/users/joppich/cpp/bioGUI/example.gui" );
 
         m_pWindow = m_pWindowParser->getWindow();
         m_pWindow->show();

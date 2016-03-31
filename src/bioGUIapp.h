@@ -12,8 +12,9 @@
 #include <QDebug>
 #include <QXmlResultItems>
 #include <iostream>
-#include <src/parsing/XMLParserExecution.h>
+#include "parsing/XMLParserExecution.h"
 #include "parsing/XMLParserWindow.h"
+#include "app/ExecutionRunThread.h"
 
 class bioGUIapp : public QApplication {
     Q_OBJECT
@@ -24,26 +25,58 @@ public:
     {
 
 
-        XMLParserWindow oParseWindow("/home/users/joppich/cpp/bioGUI/example.gui" );
+        m_pWindowParser = new XMLParserWindow("/home/users/joppich/cpp/bioGUI/example.gui" );
 
-        m_pWindow = oParseWindow.getWindow();
+        m_pWindow = m_pWindowParser->getWindow();
         m_pWindow->show();
+
+        // For testing purposes only
+        this->runProgram();
+
+    }
+
+    void enableActions()
+    {
+        m_pWindowParser->setActionsEnabled(true);
+    }
+
+    void disableActions()
+    {
+        m_pWindowParser->setActionsEnabled(false);
+    }
+
+
+
+
+    void runProgram()
+    {
+
+        this->disableActions();
+
 
         XMLParserExecution oParseExecution("/home/users/joppich/cpp/bioGUI/example.gui" );
         ExecutionNetwork* pNetwork = oParseExecution.getExecutionNetwork();
 
-        pNetwork->execute( oParseWindow.getID2Value() );
+        ExecutionRunThread* pThread = new ExecutionRunThread(m_pWindowParser, pNetwork);
+
+        this->connect(pThread, &QThread::finished, this, &bioGUIapp::programFinished);
+
+        pThread->start();
+
 
     }
 
-    void runProgram()
+    void programFinished()
     {
+
+        this->enableActions();
 
     }
 
 protected:
 
     QWidget* m_pWindow;
+    XMLParserWindow* m_pWindowParser;
 
 
 };

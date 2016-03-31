@@ -5,6 +5,9 @@
 #ifndef BIOGUI_EXECUTIONEXECUTENODE_H
 #define BIOGUI_EXECUTIONEXECUTENODE_H
 
+
+#include <QThread>
+#include <QProcess>
 #include <iostream>
 #include "ExecutionNode.h"
 
@@ -31,7 +34,9 @@ public:
 
     }
 
-    std::string evaluate( std::map< std::string, ExecutionNode*>* pID2Node, std::map<std::string, std::string>* pInputID2Value )
+    std::string evaluate( std::map< std::string, ExecutionNode*>* pID2Node,
+                          std::map<std::string, std::string>* pInputID2Value,
+                          std::map<std::string, QWidget*>* pInputID2Widget)
     {
 
         std::string sCLArg = "";
@@ -45,12 +50,24 @@ public:
 
             ExecutionNode* pParamNode = oCLNode->second;
 
-            sCLArg = pParamNode->evaluate(pID2Node, pInputID2Value);
+            sCLArg = pParamNode->evaluate(pID2Node, pInputID2Value, pInputID2Widget);
 
         }
 
         std::cout << "running " << m_sExecLocation << m_sExecutable << " " << sCLArg << std::endl;
 
+        bool bActuallyRun = false;
+
+        if (bActuallyRun)
+        {
+
+            std::string sProgram = m_sExecLocation + m_sExecutable;
+            int iReturnCode = QProcess::execute( QString(sProgram.c_str()), QStringList(sCLArg.c_str()) );
+
+            return std::to_string(iReturnCode);
+        }
+
+        return 0;
 
     }
 

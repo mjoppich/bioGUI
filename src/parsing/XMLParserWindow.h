@@ -28,6 +28,10 @@
 #include <QPushButton>
 #include <QButtonGroup>
 
+#include <QGraphicsScene>
+#include <QGraphicsView>
+#include <QGraphicsPixmapItem>
+
 #include <functional>
 #include <map>
 #include "XMLParser.h"
@@ -63,10 +67,26 @@ public:
 
     }
 
+
+    void setActionsEnabled(bool bEnabled)
+    {
+
+        for (size_t i = 0; i < m_vActions.size(); ++i)
+        {
+            m_vActions.at(i)->setEnabled( bEnabled );
+        }
+
+    }
+
     QWidget* getWindow()
     {
 
         QDomElement* pWindowRoot = this->getRoot( m_pDocument );
+
+        m_vWidgets.clear();
+        m_vActions.clear();
+        m_pID2Widget->clear();
+        m_pID2Value->clear();
 
         bool bUnimportant;
         QWidget* pWindow = (QWidget*) createComponents(NULL, pWindowRoot, &bUnimportant);
@@ -75,6 +95,10 @@ public:
 
     }
 
+    std::map<std::string, QWidget* >* getID2Widget()
+    {
+        return m_pID2Widget;
+    }
 
     std::map<std::string, std::function< std::string()> >* getID2Value()
     {
@@ -117,7 +141,12 @@ protected:
         QString sID = this->getAttribute(pElement, "ID", "");
 
         if (sID.length() == 0)
+        {
+            std::cerr << "expected element id for " << pElement->tagName().toStdString() << " but none was given";
+
             return false;
+        }
+
 
 
         m_pID2Value->insert( std::pair< std::string, std::function<std::string()> >( sID.toStdString(), oFunc ) );
@@ -125,6 +154,7 @@ protected:
         return true;
 
     }
+
 
 
     QLayout* createLayout(QDomElement* pElement);
@@ -213,7 +243,9 @@ protected:
     bioGUIapp* m_pApp;
 
     std::map<std::string, std::function< std::string()> >* m_pID2Value;
-    std::map<std::string, QWidget*> m_mID2Widget;
+    std::map<std::string, QWidget*>* m_pID2Widget;
+    std::vector<QWidget*> m_vWidgets;
+    std::vector<QPushButton*> m_vActions;
 
 };
 

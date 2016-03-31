@@ -6,6 +6,7 @@
 #define BIOGUI_EXECUTIONNODE_H
 
 #include <QDomElement>
+#include <QWidget>
 #include <vector>
 #include <map>
 
@@ -43,7 +44,9 @@ public:
 
     }
 
-    virtual std::string evaluate( std::map< std::string, ExecutionNode*>* pID2Node, std::map<std::string, std::string>* pInputID2Value ) = 0;
+    virtual std::string evaluate( std::map< std::string, ExecutionNode*>* pID2Node,
+                                  std::map<std::string, std::string>* pInputID2Value,
+                                  std::map<std::string, QWidget*>* pInputID2Widget) = 0;
 
 
     virtual NODE_TYPE getType()
@@ -79,6 +82,27 @@ public:
     }
 
 protected:
+
+    std::string evaluateChildren( std::map< std::string, ExecutionNode*>* pID2Node,
+                                  std::map<std::string, std::string>* pInputID2Value,
+                                  std::map<std::string, QWidget*>* pInputID2Widget)
+    {
+        std::string sReturn = "";
+
+        for (size_t i = 0; i < m_vChildren.size(); ++i)
+        {
+
+            if (i > 0)
+            {
+                sReturn = sReturn + "\n";
+            }
+
+            sReturn = sReturn + m_vChildren.at(i)->evaluate(pID2Node, pInputID2Value, pInputID2Widget);
+
+        }
+
+        return sReturn;
+    }
 
 
     QString getDomElementAttribute(QDomElement* pElement, QString sAttribName, QString sDefault);

@@ -27,7 +27,9 @@ public:
     }
 
 
-    std::string evaluate( std::map< std::string, ExecutionNode*>* pID2Node, std::map<std::string, std::string>* pInputID2Value )
+    std::string evaluate( std::map< std::string, ExecutionNode*>* pID2Node,
+                          std::map<std::string, std::string>* pInputID2Value,
+                          std::map<std::string, QWidget*>* pInputID2Widget)
     {
 
         std::map<std::string, std::string>::iterator oIt = pInputID2Value->find( m_sFrom );
@@ -44,7 +46,7 @@ public:
         // either the id is an input field
         if (oJt != pID2Node->end())
         {
-            return oJt->second->evaluate(pID2Node, pInputID2Value);
+            return oJt->second->evaluate(pID2Node, pInputID2Value, pInputID2Widget);
         }
 
         throw "id not found " + m_sFrom;

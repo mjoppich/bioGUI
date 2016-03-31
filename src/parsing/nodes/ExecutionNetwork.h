@@ -9,12 +9,14 @@
 #include "ExecutionNode.h"
 #include "ExecutionExecuteNode.h"
 
+class QWidget;
+
 class ExecutionNetwork {
 
 public:
 
 
-    int execute( std::map< std::string, std::function< std::string () > >* pID2Value )
+    int execute( std::map< std::string, std::function< std::string () > >* pID2Value, std::map< std::string, QWidget* >* pInputID2Widget )
     {
 
         std::map< std::string, std::string> mInputID2Value;
@@ -61,7 +63,7 @@ public:
 
             ExecutionExecuteNode* pExecNode = vExecNodes.at(i);
 
-            pExecNode->evaluate( &mID2Node, &mInputID2Value );
+            pExecNode->evaluate( &mID2Node, &mInputID2Value, pInputID2Widget );
 
         }
 

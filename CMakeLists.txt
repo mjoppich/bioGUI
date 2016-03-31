@@ -92,10 +92,16 @@ TARGET_LINK_LIBRARIES(parsing splitutils)
 file(GLOB bioGUI_H
         "src/*.h"
         )
+
+file(GLOB bioGUIapp_H
+        "src/app/*.h"
+        )
+
 file(GLOB bioGUI_SRC
         "src/*.cpp"
+        "src/app/*.cpp"
         )
-ADD_EXECUTABLE(bioGUI ${bioGUI_SRC} ${bioGUI_H})
+ADD_EXECUTABLE(bioGUI ${bioGUI_SRC} ${bioGUI_H} ${bioGUIapp_H})
 target_include_directories(bioGUI PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 TARGET_LINK_LIBRARIES(bioGUI parsing)
 install(TARGETS bioGUI DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/bin)

@@ -110,6 +110,8 @@ QWidget* XMLParserWindow::createComponent(QDomElement* pElement, bool* pChildren
         pLayout->addWidget( pFileButton );
         pLineButton->setLayout( pLayout );
 
+        this->addValueFetcher(pElement, [pLineEdit] () {return pLineEdit->text().toStdString();});
+
         pWidget = pLineButton;
     }
 
@@ -121,10 +123,11 @@ QWidget* XMLParserWindow::createComponent(QDomElement* pElement, bool* pChildren
 
         pAction->connect(pAction,&QAbstractButton::clicked,[pApp] (bool bChecked){
 
-
             pApp->runProgram();
 
         });
+
+        m_vActions.push_back(pAction);
 
         pWidget = pAction;
     }
@@ -136,6 +139,19 @@ QWidget* XMLParserWindow::createComponent(QDomElement* pElement, bool* pChildren
         (*pChildrenFinished) = true;
 
         QRadioButton* pRadioButton = new QRadioButton(sValue);
+        std::string sCheckedValue = this->getAttribute(pElement, "checked_value", "true").toStdString();
+        std::string sUncheckedValue = this->getAttribute(pElement, "unchecked_value", "false").toStdString();
+
+        this->addValueFetcher(pElement, [pRadioButton, sCheckedValue, sUncheckedValue] () {
+
+            if (pRadioButton->isChecked())
+            {
+                return sCheckedValue;
+            } else {
+                return sUncheckedValue;
+            }
+
+        });
 
         pWidget = pRadioButton;
 
@@ -147,6 +163,20 @@ QWidget* XMLParserWindow::createComponent(QDomElement* pElement, bool* pChildren
         (*pChildrenFinished) = true;
 
         QCheckBox *pCheckBox = new QCheckBox( sValue );
+
+        std::string sCheckedValue = this->getAttribute(pElement, "checked_value", "true").toStdString();
+        std::string sUncheckedValue = this->getAttribute(pElement, "unchecked_value", "false").toStdString();
+
+        this->addValueFetcher(pElement, [pCheckBox, sCheckedValue, sUncheckedValue] () {
+
+            if (pCheckBox->isChecked())
+            {
+                return sCheckedValue;
+            } else {
+                return sUncheckedValue;
+            }
+
+        });
 
         pWidget = pCheckBox;
 
@@ -166,6 +196,31 @@ QWidget* XMLParserWindow::createComponent(QDomElement* pElement, bool* pChildren
          */
         QString sTitle = this->getAttribute(pElement, "title", "bioGUI");
         pGroupBox->setTitle( sTitle );
+
+        /*
+         * checkable?
+         */
+
+        std::string sCheckable = this->getAttribute(pElement, "checkable", "false").toUpper().toStdString();
+        if (sCheckable.compare("TRUE") == 0)
+        {
+            pGroupBox->setCheckable(true);
+
+            std::string sCheckedValue = this->getAttribute(pElement, "checked_value", "true").toStdString();
+            std::string sUncheckedValue = this->getAttribute(pElement, "unchecked_value", "false").toStdString();
+
+            this->addValueFetcher(pElement, [pGroupBox, sCheckedValue, sUncheckedValue] () {
+
+                if (pGroupBox->isChecked())
+                {
+                    return sCheckedValue;
+                } else {
+                    return sUncheckedValue;
+                }
+
+            });
+
+        }
 
 
         // this could also be a hboxlayout or a grid layout
@@ -207,8 +262,25 @@ QWidget* XMLParserWindow::createComponent(QDomElement* pElement, bool* pChildren
 
         QLabel *pLabel = new QLabel("combobox");
 
+        throw "unimplemented";
 
         pWidget = pLabel;
+
+    }
+
+    if (sTag.compare("image", Qt::CaseInsensitive) == 0)
+    {
+
+        (*pChildrenFinished) = true;
+
+        QString sFileName = this->getAttribute(pElement, "location", "");
+
+        QGraphicsScene* pScene = new QGraphicsScene();
+        QGraphicsView* pView = new QGraphicsView(pScene);
+        QGraphicsPixmapItem* pItem = new QGraphicsPixmapItem(QPixmap( sFileName ));
+        pScene->addItem( pItem );
+
+        pWidget = pView;
 
     }
 
@@ -217,6 +289,8 @@ QWidget* XMLParserWindow::createComponent(QDomElement* pElement, bool* pChildren
 
     if (pWidget != NULL)
     {
+
+        m_vWidgets.push_back(pWidget);
 
         QString sToolTip = this->getAttribute(pElement, "hint", "");
         if (sToolTip.length() > 0)
@@ -229,7 +303,7 @@ QWidget* XMLParserWindow::createComponent(QDomElement* pElement, bool* pChildren
         if (sID.length() > 0)
         {
 
-            m_mID2Widget.insert( std::pair<std::string, QWidget*>(sID.toStdString(), pWidget));
+            m_pID2Widget->insert( std::pair<std::string, QWidget*>(sID.toStdString(), pWidget));
 
         }
 

@@ -18,6 +18,11 @@
       <radiobutton>rbutton3</radiobutton>
       <checkbox hint="i am disturbing">check1</checkbox>
     </group>
+
+    <group title="Select strategy:" hint="do not mess up" checkable="true">
+      <radiobutton hint="this should be selected">rbutton1</radiobutton>
+      <checkbox hint="i am disturbing">check1</checkbox>
+    </group>
     
     <action id="runprog" hint="click here to run program">run program</action>
   </vgroup>

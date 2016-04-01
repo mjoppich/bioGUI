@@ -5,8 +5,8 @@
 #ifndef BIOGUI_XMLPARSEREXECUTION_H
 #define BIOGUI_XMLPARSEREXECUTION_H
 
-
-#include <src/parsing/nodes/ExecutionMathNode.h>
+#include "nodes/ExecutionIfNode.h"
+#include "nodes/ExecutionMathNode.h"
 #include "nodes/ExecutionValueNode.h"
 #include "nodes/ExecutionConstNode.h"
 #include "nodes/ExecutionAddNode.h"
@@ -33,6 +33,7 @@ public:
         m_pKnownTags->push_back("math");
         m_pKnownTags->push_back("output");
         m_pKnownTags->push_back("execution");
+        m_pKnownTags->push_back("if");
 
         m_pDocument = loadFromFile(sFileName);
 
@@ -99,6 +100,15 @@ protected:
         {
 
             ExecutionOutputNode* pNode = new ExecutionOutputNode( pElement );
+
+            pReturn = pNode;
+
+        }
+
+        if ( sTagName.compare("if", Qt::CaseInsensitive)==0 )
+        {
+
+            ExecutionIfNode* pNode = new ExecutionIfNode( pElement );
 
             pReturn = pNode;
 

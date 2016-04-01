@@ -8,6 +8,7 @@
 #include <QGraphicsView>
 #include <QGraphicsScene>
 #include <QGraphicsPixmapItem>
+#include <QProcess>
 
 #include "ExecutionNode.h"
 #include "../../app/StreamTextEdit.h"
@@ -39,13 +40,13 @@ public:
                           std::map<std::string, std::string>* pInputID2Value,
                           std::map<std::string, QWidget*>* pInputID2Widget)
     {
-        return evaluateDeferred(pID2Node, pInputID2Value, pInputID2Widget, false);
+        return evaluateDeferred(pID2Node, pInputID2Value, pInputID2Widget, NULL, false);
     }
 
     std::string evaluateDeferred( std::map< std::string, ExecutionNode*>* pID2Node,
                           std::map<std::string, std::string>* pInputID2Value,
                           std::map<std::string, QWidget*>* pInputID2Widget,
-                                  bool bDeferred)
+                          QProcess* pProcess, bool bDeferred)
     {
 
         if (!(pInputID2Widget->find( m_sTo ) != pInputID2Widget->end()))
@@ -62,20 +63,19 @@ public:
 
             if (m_sType.compare("STD") == 0)
             {
-                pTextEdit->addBuffer( std::cout, oColor );
-                pTextEdit->addBuffer( std::cerr, oColor );
+                pTextEdit->addBuffer( pProcess, QProcess::StandardOutput, oColor );
+                pTextEdit->addBuffer( pProcess, QProcess::StandardError, oColor );
             }
 
             if (m_sType.compare("COUT") == 0)
             {
-                pTextEdit->addBuffer( std::cout, oColor );
+                pTextEdit->addBuffer( pProcess, QProcess::StandardOutput, oColor );
             }
 
             if (m_sType.compare("CERR") == 0)
             {
-                pTextEdit->addBuffer( std::cerr, oColor );
+                pTextEdit->addBuffer( pProcess, QProcess::StandardError, oColor );
             }
-
 
         }
 

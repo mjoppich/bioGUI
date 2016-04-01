@@ -8,6 +8,7 @@
 
 #include "ExecutionNode.h"
 #include "ExecutionExecuteNode.h"
+#include "ExecutionIfNode.h"
 
 class QWidget;
 
@@ -31,7 +32,7 @@ public:
 
         }
 
-        std::vector< ExecutionExecuteNode*> vExecNodes;
+        std::vector< ExecutionNode*> vExecNodes;
         std::map< std::string, ExecutionNode*> mID2Node;
 
         for (size_t i = 0; i < m_vNodes.size(); ++i)
@@ -41,6 +42,13 @@ public:
             pNode->getNodeMap( &mID2Node );
 
             if (ExecutionExecuteNode* pExecNode = dynamic_cast<ExecutionExecuteNode*>( pNode ))
+            {
+
+                vExecNodes.push_back(pExecNode);
+
+            }
+
+            if (ExecutionIfNode* pExecNode = dynamic_cast<ExecutionIfNode*>( pNode ))
             {
 
                 vExecNodes.push_back(pExecNode);
@@ -61,7 +69,7 @@ public:
         for (size_t i = 0; i < vExecNodes.size(); ++i)
         {
 
-            ExecutionExecuteNode* pExecNode = vExecNodes.at(i);
+            ExecutionNode* pExecNode = vExecNodes.at(i);
 
             pExecNode->evaluate( &mID2Node, &mInputID2Value, pInputID2Widget );
 

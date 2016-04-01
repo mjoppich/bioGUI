@@ -7,7 +7,9 @@
 
 
 #include <QTextEdit>
+#include <QProcess>
 #include <iostream>
+#include <QtCore/qprocess.h>
 #include "ExtendedBuffer.h"
 
 class StreamTextEdit : public QTextEdit {
@@ -30,6 +32,34 @@ public:
         pBuffer->setTextColor( oTextColor );
 
         oOut.rdbuf(pBuffer);
+
+        QObject::connect(pBuffer, SIGNAL(sendText(QString,QColor)), this , SLOT(receiveText(QString,QColor)), Qt::QueuedConnection );
+
+    }
+
+    void addBuffer(QProcess* pProcess, QProcess::ProcessChannel eChannel, QColor oTextColor)
+    {
+
+        ExtendedBuffer* pBuffer = new ExtendedBuffer(pProcess, eChannel);
+        pBuffer->setTextColor( oTextColor );
+
+        switch (eChannel)
+        {
+            default:
+
+            case QProcess::ProcessChannel::StandardOutput:
+
+                QObject::connect( pProcess, &QProcess::readyReadStandardOutput, pBuffer, &ExtendedBuffer::receiveProcData );
+
+
+                break;
+            case QProcess::ProcessChannel::StandardError :
+
+                QObject::connect( pProcess, &QProcess::readyReadStandardError, pBuffer, &ExtendedBuffer::receiveProcData );
+
+                break;
+
+        }
 
         QObject::connect(pBuffer, SIGNAL(sendText(QString,QColor)), this , SLOT(receiveText(QString,QColor)), Qt::QueuedConnection );
 

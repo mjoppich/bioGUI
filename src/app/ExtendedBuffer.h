@@ -5,6 +5,7 @@
 #ifndef BIOGUI_EXTENDEDBUFFER_H
 #define BIOGUI_EXTENDEDBUFFER_H
 
+#include <QProcess>
 #include <QObject>
 #include <QColor>
 
@@ -17,8 +18,23 @@ public:
     {
     }
 
+    ExtendedBuffer(QProcess* pProcess, QProcess::ProcessChannel eChannel)
+    {
+
+        this->m_pParentProcess = new sParentProcess();
+        this->m_pParentProcess->pProcess = pProcess;
+        this->m_pParentProcess->eChannel = eChannel;
+
+    }
+
     ~ExtendedBuffer()
     {
+
+        if (this->m_pParentProcess != NULL)
+        {
+            delete m_pParentProcess;
+        }
+
     }
 
     void setTextColor(QColor oColor)
@@ -27,6 +43,36 @@ public:
     }
 
 public slots:
+
+    void receiveProcData()
+    {
+
+        if (this->m_pParentProcess == NULL)
+            throw "no parent process given";
+
+        QByteArray oArray;
+
+        switch (this->m_pParentProcess->eChannel)
+        {
+            default:
+
+            case QProcess::StandardOutput:
+
+                oArray = this->m_pParentProcess->pProcess->readAllStandardOutput();
+                break;
+
+            case QProcess::StandardError:
+
+                oArray = this->m_pParentProcess->pProcess->readAllStandardError();
+                break;
+        }
+
+
+        QString sString = QString(oArray);
+
+        emit sendText(sString, m_oColor);
+    }
+
     void transferText(QString sString)
     {
         emit sendText(sString, m_oColor);
@@ -36,6 +82,14 @@ public slots:
     void sendText(QString sString, QColor oColor);
 
 protected:
+
+    struct sParentProcess
+    {
+        QProcess* pProcess;
+        QProcess::ProcessChannel eChannel;
+    };
+
+
     virtual int_type overflow(int_type v)
     {
         if (v == '\n')
@@ -63,6 +117,8 @@ protected:
 
 private:
     QColor m_oColor;
+
+    sParentProcess* m_pParentProcess = NULL;
 
 };
 

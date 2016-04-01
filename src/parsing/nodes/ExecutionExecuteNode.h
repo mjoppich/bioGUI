@@ -9,6 +9,7 @@
 #include <QThread>
 #include <QProcess>
 #include <iostream>
+#include <QtCore/qprocess.h>
 #include "ExecutionNode.h"
 #include "ExecutionOutputNode.h"
 
@@ -38,6 +39,7 @@ public:
     virtual std::string evaluateChildren( std::map< std::string, ExecutionNode*>* pID2Node,
                                   std::map<std::string, std::string>* pInputID2Value,
                                   std::map<std::string, QWidget*>* pInputID2Widget,
+                                  QProcess* pProcess,
                                   bool bDeferred = false)
     {
         std::string sReturn = "";
@@ -47,13 +49,31 @@ public:
 
             if (bDeferred)
             {
+                // only output nodes
                 if (ExecutionOutputNode* pOutPutnode = dynamic_cast<ExecutionOutputNode*>( m_vChildren.at(i) ))
                 {
-                    sReturn = sReturn + pOutPutnode->evaluateDeferred(pID2Node, pInputID2Value, pInputID2Widget, bDeferred);
+                    sReturn = sReturn + pOutPutnode->evaluateDeferred(pID2Node, pInputID2Value, pInputID2Widget, pProcess, bDeferred);
                 }
             } else {
 
-                sReturn = sReturn + m_vChildren.at(i)->evaluate(pID2Node, pInputID2Value, pInputID2Widget);
+                if (pProcess != NULL)
+                {
+
+                    if (ExecutionOutputNode* pOutPutnode = dynamic_cast<ExecutionOutputNode*>( m_vChildren.at(i) ))
+                    {
+                        sReturn = sReturn + pOutPutnode->evaluateDeferred(pID2Node, pInputID2Value, pInputID2Widget, pProcess, bDeferred);
+                    } else {
+                        sReturn = sReturn + m_vChildren.at(i)->evaluate(pID2Node, pInputID2Value, pInputID2Widget);
+
+                    }
+
+                } else {
+
+                    sReturn = sReturn + m_vChildren.at(i)->evaluate(pID2Node, pInputID2Value, pInputID2Widget);
+
+                }
+
+
 
             }
 
@@ -68,9 +88,6 @@ public:
                           std::map<std::string, std::string>* pInputID2Value,
                           std::map<std::string, QWidget*>* pInputID2Widget)
     {
-
-
-        this->evaluateChildren(pID2Node, pInputID2Value, pInputID2Widget);
 
         std::string sCLArg = "";
 
@@ -89,20 +106,31 @@ public:
 
         std::cout << "running " << m_sExecLocation << m_sExecutable << " " << sCLArg << std::endl;
 
-        bool bActuallyRun = false;
+        bool bActuallyRun = true;
+        int iReturnCode = 0;
+
+        std::string sProgram = m_sExecLocation + m_sExecutable;
+
+        sProgram = "/usr/bin/echo";
+        sCLArg = "\"hello world\"";
+        QProcess* pProcess = new QProcess();
+        //pProcess->setProcessChannelMode(QProcess::ForwardedChannels);
+
+        this->evaluateChildren(pID2Node, pInputID2Value, pInputID2Widget, pProcess, false);
 
         if (bActuallyRun)
         {
 
-            std::string sProgram = m_sExecLocation + m_sExecutable;
-            int iReturnCode = QProcess::execute( QString(sProgram.c_str()), QStringList(sCLArg.c_str()) );
+            pProcess->start( QString(sProgram.c_str()), QStringList(sCLArg.c_str()) );
+            pProcess->waitForFinished();
+            iReturnCode = pProcess->exitCode();
 
-            return std::to_string(iReturnCode);
         }
 
-        this->evaluateChildren(pID2Node, pInputID2Value, pInputID2Widget, true);
+        this->evaluateChildren(pID2Node, pInputID2Value, pInputID2Widget, pProcess, true);
+        delete pProcess;
 
-        return "";
+        return std::to_string(iReturnCode);
 
     }
 

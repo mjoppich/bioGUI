@@ -21,7 +21,7 @@
 	<checkbox hint="i am disturbing">check1</checkbox>
       </group>
 
-      <group title="Select strategy:" hint="do not mess up" checkable="true">
+      <group id="selgroup" title="Select strategy:" hint="do not mess up" checkable="true">
 	<radiobutton hint="this should be selected">rbutton1</radiobutton>
 	<checkbox hint="i am disturbing">check1</checkbox>
       </group>
@@ -54,10 +54,12 @@
     <!--<output id="out2" type="file" src="" to="img1"/>-->
   </execute>
 
+  <if comp="EQUALS" value1="selgroup" value2="true">
   <execute exec="splitter" location="/home/users/joppich/cpp/splitter/bin/" param="floatres">
     <output id="out3" type="cout" to="output1" />
     <!--<output id="out2" type="file" src="" to="img1"/>-->
   </execute>
+  </if>
   
 </execution>
 </root>

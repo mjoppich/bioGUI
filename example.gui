@@ -1,7 +1,7 @@
 <!--<?xml version="1.0" encoding="UTF-8"?>-->
 <root rootid="blubb" intatt="111">
 
-<window width="600" height="600" title="Example1">
+<window width="1000" height="1000" title="Example1">
 
   <vgroup>
     <hgroup>
@@ -9,7 +9,8 @@
       <input id="input1" hint="this is input1">Default</input>      
     </hgroup>
 
-    <image id="img1" src="/home/users/joppich/ownCloud/markus/uni/publications/yeast/progress_Peptides/images/evidence_peptides_lengths.png"/>
+    <!--<image id="img1" src="/home/users/joppich/ownCloud/markus/uni/publications/yeast/progress_Peptides/images/evidence_peptides_lengths.png"/>-->
+	<image id="img1" src="/cygdrive/c/ownCloud/markus/uni/publications/yeast/progress_Peptides/images/evidence_peptides_lengths.png"/>
 
     <filedialog>Input File</filedialog>
 

@@ -6,6 +6,7 @@
 #define BIOGUI_EXECUTIONNETWORK_H
 
 
+#include <functional>
 #include "ExecutionNode.h"
 #include "ExecutionExecuteNode.h"
 #include "ExecutionIfNode.h"

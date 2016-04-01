@@ -24,8 +24,11 @@ public:
     : QApplication(argc, argv)
     {
 
+        m_sGUIFile = "/cygdrive/c/libraries/bioGUI/example.gui";
 
-        m_pWindowParser = new XMLParserWindow( this, "/home/users/joppich/cpp/bioGUI/example.gui" );
+        //m_pWindowParser = new XMLParserWindow( this, "/home/users/joppich/cpp/bioGUI/example.gui" );
+
+        m_pWindowParser = new XMLParserWindow( this, m_sGUIFile);
 
         m_pWindow = m_pWindowParser->getWindow();
         m_pWindow->show();
@@ -54,7 +57,9 @@ public:
         this->disableActions();
 
 
-        XMLParserExecution oParseExecution("/home/users/joppich/cpp/bioGUI/example.gui" );
+        //XMLParserExecution oParseExecution("/home/users/joppich/cpp/bioGUI/example.gui" );
+        XMLParserExecution oParseExecution( m_sGUIFile );
+
         ExecutionNetwork* pNetwork = oParseExecution.getExecutionNetwork();
 
         ExecutionRunThread* pThread = new ExecutionRunThread(m_pWindowParser, pNetwork);
@@ -77,6 +82,8 @@ protected:
 
     QWidget* m_pWindow;
     XMLParserWindow* m_pWindowParser;
+
+    std::string m_sGUIFile;
 
 
 };

@@ -112,7 +112,6 @@ public:
         std::string sProgram = m_sExecLocation + m_sExecutable;
 
         sProgram = "/usr/bin/echo";
-        sCLArg = "\"hello world\"";
         QProcess* pProcess = new QProcess();
         //pProcess->setProcessChannelMode(QProcess::ForwardedChannels);
 

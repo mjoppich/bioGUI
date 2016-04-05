@@ -28,7 +28,16 @@
       </group>
     </hgroup>
 
-    <stream id="output1" />
+    <streambox id="output1">
+      <stream id="outputstream1">OS1</stream>
+      <stream id="outputstream2">OS2</stream>
+    </streambox>
+
+    <combobox>
+      <comboitem>Select 1</comboitem>
+      <comboitem>Select 2</comboitem>
+      <comboitem>Select 3</comboitem>
+    </combobox>
     
     <action id="runprog" hint="click here to run program">run program</action>
   </vgroup>
@@ -50,8 +59,8 @@
   </add>
   
   <execute exec="splitter" location="/home/users/joppich/cpp/splitter/bin/" param="cl">
-    <output id="outcout" type="cout" color="green" to="output1" />
-    <output id="outcerr" type="cerr" color="red"   to="output1" />
+    <output id="outcout" type="cout" color="green" to="outputstream1" />
+    <output id="outcerr" type="cerr" color="red"   to="outputstream2" />
     <!--<output id="out2" type="file" src="" to="img1"/>-->
   </execute>
 

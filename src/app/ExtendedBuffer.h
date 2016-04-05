@@ -42,6 +42,13 @@ public:
         m_oColor = oColor;
     }
 
+    void setStreamID(QString sID)
+    {
+        m_sID = sID;
+    }
+
+
+
 public slots:
 
     void receiveProcData()
@@ -70,16 +77,16 @@ public slots:
 
         QString sString = QString(oArray);
 
-        emit sendText(sString, m_oColor);
+        emit sendText(sString, m_oColor, m_sID);
     }
 
     void transferText(QString sString)
     {
-        emit sendText(sString, m_oColor);
+        emit sendText(sString, m_oColor, m_sID);
     }
 
     signals:
-    void sendText(QString sString, QColor oColor);
+    void sendText(QString sString, QColor oColor, QString sID);
 
 protected:
 
@@ -117,6 +124,7 @@ protected:
 
 private:
     QColor m_oColor;
+    QString m_sID;
 
     sParentProcess* m_pParentProcess = NULL;
 

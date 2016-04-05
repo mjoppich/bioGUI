@@ -2,6 +2,8 @@
 // Created by joppich on 3/29/16.
 //
 
+#include <src/app/QComboItem.h>
+#include <src/app/AdvancedStreamBox.h>
 #include "XMLParserWindow.h"
 
 #include "../bioGUIapp.h"
@@ -230,12 +232,12 @@ QWidget* XMLParserWindow::createComponent(QDomElement* pElement, bool* pChildren
         for (size_t i = 0; i < oChildren.size(); ++i)
         {
             QDomElement oChildNode = oChildren.at(i).toElement();
-            QWidget* pElement = createComponent(&oChildNode, &bBoolean);
+            QWidget* pChildElement = createComponent(&oChildNode, &bBoolean);
 
             if (pElement == NULL)
                 throw "error in creating groupbox components";
 
-            if (QAbstractButton* pButton = dynamic_cast<QAbstractButton *>(pElement))
+            if (QAbstractButton* pButton = dynamic_cast<QAbstractButton *>(pChildElement))
             {
 
                 if (i == 0)
@@ -246,12 +248,24 @@ QWidget* XMLParserWindow::createComponent(QDomElement* pElement, bool* pChildren
             }
 
 
-            pLayout->addWidget( pElement );
+            pLayout->addWidget( pChildElement );
         }
 
         pGroupBox->setLayout(pLayout);
 
         pWidget = pGroupBox;
+    }
+
+    if (sTag.compare("comboitem", Qt::CaseInsensitive) == 0) {
+
+
+        QComboItem* pItem =  new QComboItem("", "");
+
+        pItem->setValue( sValue );
+        QString sData = this->getAttribute(pElement, "value", sValue);
+        pItem->setData(sData);
+
+        pWidget = pItem;
     }
 
 
@@ -260,11 +274,35 @@ QWidget* XMLParserWindow::createComponent(QDomElement* pElement, bool* pChildren
 
         (*pChildrenFinished) = true;
 
-        QLabel *pLabel = new QLabel("combobox");
+        QComboBox *pComboBox = new QComboBox();
 
-        throw "unimplemented";
+        QDomNodeList oChildren = pElement->childNodes();
+        for (size_t i = 0; i < oChildren.size(); ++i)
+        {
+            QDomElement oChildNode = oChildren.at(i).toElement();
+            QWidget* pChildElement = createComponent(&oChildNode, &bBoolean);
 
-        pWidget = pLabel;
+            if (pChildElement == NULL)
+                throw "error in creating groupbox components";
+
+            if (QComboItem* pComboItem = dynamic_cast<QComboItem *>(pChildElement))
+            {
+
+                pComboBox->addItem( pComboItem->getValue(), pComboItem->getData() );
+
+                if (i == 0)
+                    pComboBox->setCurrentIndex(0);
+
+            }
+        }
+
+        this->addValueFetcher(pElement, [pComboBox] () {
+
+            return pComboBox->currentData().toString().toStdString();
+
+        });
+
+        pWidget = pComboBox;
 
     }
 
@@ -304,13 +342,58 @@ QWidget* XMLParserWindow::createComponent(QDomElement* pElement, bool* pChildren
 
     if (sTag.compare("stream", Qt::CaseInsensitive) == 0)
     {
+        QCheckBox* pCheckbox = new QCheckBox(sValue);
+
+        pWidget = pCheckbox;
+    }
+
+    if (sTag.compare("streambox", Qt::CaseInsensitive) == 0)
+    {
 
         (*pChildrenFinished) = true;
 
-        StreamTextEdit* pStreamOut = new StreamTextEdit();
-        pStreamOut->setReadOnly(true);
+        QGroupBox* pGroupBox = new QGroupBox();
 
-        pWidget = pStreamOut;
+        AdvancedStreamBox* pStreamOut = new AdvancedStreamBox();
+
+        // this could also be a hboxlayout or a grid layout
+        QLayout* pLayout = new QVBoxLayout();
+
+        pLayout->addWidget( pStreamOut );
+
+        QDomNodeList oChildren = pElement->childNodes();
+        for (size_t i = 0; i < oChildren.size(); ++i)
+        {
+            QDomElement oChildNode = oChildren.at(i).toElement();
+            QWidget* pChildElement = createComponent(&oChildNode, &bBoolean);
+
+            if (pChildElement == NULL)
+                throw "error in creating streambox components";
+
+            if (QCheckBox* pButton = dynamic_cast<QCheckBox*>(pChildElement))
+            {
+                pButton->setChecked(true);
+
+                QString sID = this->getAttribute(&oChildNode, "id", "");
+                if (sID.length() > 0)
+                {
+
+                    m_pID2Widget->find(sID.toStdString())->second = pStreamOut;
+                    pStreamOut->addStream( sID.toStdString(), pButton );
+                    pLayout->addWidget( pChildElement );
+
+                } else {
+                    delete pChildElement;
+                }
+
+            }
+
+        }
+
+        pGroupBox->setLayout(pLayout);
+
+        pWidget = pGroupBox;
+
 
     }
 

@@ -25,6 +25,7 @@ public:
     {
 
         m_sGUIFile = "/cygdrive/c/libraries/bioGUI/example.gui";
+        m_sGUIFile = "/home/users/joppich/cpp/bioGUI/example.gui";
 
         //m_pWindowParser = new XMLParserWindow( this, "/home/users/joppich/cpp/bioGUI/example.gui" );
 

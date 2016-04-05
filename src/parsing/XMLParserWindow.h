@@ -65,6 +65,9 @@ public:
         m_pKnownTags->push_back("action");
         m_pKnownTags->push_back("window");
         m_pKnownTags->push_back("stream");
+        m_pKnownTags->push_back("streambox");
+        m_pKnownTags->push_back("combobox");
+        m_pKnownTags->push_back("comboitem");
 
         m_pDocument = loadFromFile(sFileName);
 

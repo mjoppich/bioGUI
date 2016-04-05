@@ -10,6 +10,7 @@
 #include <QProcess>
 #include <iostream>
 #include <QtCore/qprocess.h>
+#include <QAbstractButton>
 #include "ExtendedBuffer.h"
 
 class StreamTextEdit : public QTextEdit {
@@ -65,6 +66,13 @@ public:
 
     }
 
+    void addStream(std::string sStreamID, QAbstractButton* pControl)
+    {
+
+        m_mStreamID2Button.insert( std::pair<std::string, QAbstractButton*>(sStreamID, pControl) );
+
+    }
+
 protected slots:
 
     void receiveText(QString sString, QColor oColor)
@@ -76,6 +84,8 @@ protected slots:
 
 protected:
     std::vector<ExtendedBuffer*> m_vBuffers;
+
+    std::map<std::string, QAbstractButton*> m_mStreamID2Button;
 
 };
 

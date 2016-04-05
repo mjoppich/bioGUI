@@ -9,6 +9,7 @@
 #include <QGraphicsScene>
 #include <QGraphicsPixmapItem>
 #include <QProcess>
+#include <src/app/AdvancedStreamBox.h>
 
 #include "ExecutionNode.h"
 #include "../../app/StreamTextEdit.h"
@@ -56,25 +57,25 @@ public:
 
         QWidget* pWidget = pInputID2Widget->find( m_sTo )->second;
 
-        if (StreamTextEdit* pTextEdit = dynamic_cast<StreamTextEdit*>( pWidget ))
+        if (AdvancedStreamBox* pTextEdit = dynamic_cast<AdvancedStreamBox*>( pWidget ))
         {
 
             QColor oColor = QColor(QString(m_sColor.c_str()));
 
             if (m_sType.compare("STD") == 0)
             {
-                pTextEdit->addBuffer( pProcess, QProcess::StandardOutput, oColor );
-                pTextEdit->addBuffer( pProcess, QProcess::StandardError, oColor );
+                pTextEdit->addBuffer( pProcess, QProcess::StandardOutput, QString(m_sTo.c_str()), oColor );
+                pTextEdit->addBuffer( pProcess, QProcess::StandardError, QString(m_sTo.c_str()), oColor );
             }
 
             if (m_sType.compare("COUT") == 0)
             {
-                pTextEdit->addBuffer( pProcess, QProcess::StandardOutput, oColor );
+                pTextEdit->addBuffer( pProcess, QProcess::StandardOutput, QString(m_sTo.c_str()), oColor );
             }
 
             if (m_sType.compare("CERR") == 0)
             {
-                pTextEdit->addBuffer( pProcess, QProcess::StandardError, oColor );
+                pTextEdit->addBuffer( pProcess, QProcess::StandardError, QString(m_sTo.c_str()), oColor );
             }
 
         }

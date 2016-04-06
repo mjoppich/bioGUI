@@ -48,7 +48,7 @@
   
   <add sep=" " id="cl">
     <const>-bla</const>
-    <value from="input1"/>
+    <value id="valuenode1" from="input1"/>
     <const>-num</const>
     <math id="intres" op="int">
       <math id="floatres" op="+">
@@ -60,13 +60,13 @@
   
   <execute exec="splitter" location="/home/users/joppich/cpp/splitter/bin/" param="cl">
     <output id="outcout" type="cout" color="green" to="outputstream1" />
-    <output id="outcerr" type="cerr" color="red"   to="outputstream2" />
+    <output id="outcerr" type="cerr" color="red"   to="output1" />
     <!--<output id="out2" type="file" src="" to="img1"/>-->
   </execute>
 
-  <if comp="EQUALS" value1="selgroup" value2="true">
-  <execute exec="splitter" location="/home/users/joppich/cpp/splitter/bin/" param="floatres">
-    <output id="out3" type="cout" to="output1" />
+  <if comp="is_set" value1="selgroup" value2="true">
+  <execute exec="splitter" location="/home/users/joppich/cpp/splitter/bin/" param="valuenode1">
+    <output id="out3" type="STD" to="outputstream2" />
     <!--<output id="out2" type="file" src="" to="img1"/>-->
   </execute>
   </if>

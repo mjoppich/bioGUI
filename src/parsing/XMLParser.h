@@ -22,7 +22,7 @@ Q_OBJECT
 public:
 
     XMLParser(std::string sFileName)
-    : QObject(0)
+    : QObject(0), m_sTemplateFile(sFileName)
     {
 
         m_pKnownTags = new std::vector<std::string>();
@@ -78,11 +78,18 @@ public:
 
     }
 
+
+    std::string getTemplateFile()
+    {
+        return m_sTemplateFile;
+    }
+
+
 protected:
 
     virtual QDomElement* getRoot( QDomDocument* pDocument ) = 0;
 
-    bool checkValidTags(QDomElement* pElement)
+    virtual bool checkValidTags(QDomElement* pElement)
     {
 
         if (!pElement->isElement())
@@ -153,7 +160,7 @@ protected:
 
             QDomElement oChild = oChildren.item(i).toElement();
 
-            printAllElements( &oChild );
+            //printAllElements( &oChild );
 
             if (oChild.toElement().tagName().compare( sTagName , Qt::CaseInsensitive) == 0)
             {
@@ -190,6 +197,7 @@ protected:
 
     QDomDocument* m_pDocument;
     std::vector<std::string>* m_pKnownTags;
+    std::string m_sTemplateFile;
 
 
 };

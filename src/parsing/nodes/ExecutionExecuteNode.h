@@ -111,6 +111,8 @@ public:
 
         std::string sProgram = m_sExecLocation + m_sExecutable;
 
+        //QProcess::execute("/usr/bin/sleep 3");
+
         sProgram = "/usr/bin/echo";
         QProcess* pProcess = new QProcess();
         //pProcess->setProcessChannelMode(QProcess::ForwardedChannels);
@@ -122,6 +124,7 @@ public:
 
             pProcess->start( QString(sProgram.c_str()), QStringList(sCLArg.c_str()) );
             pProcess->waitForFinished();
+
             iReturnCode = pProcess->exitCode();
 
         }

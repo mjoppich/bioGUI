@@ -8,6 +8,7 @@
 #include <QProcess>
 #include <QObject>
 #include <QColor>
+#include <iostream>
 
 class ExtendedBuffer : public QObject, public std::basic_streambuf<char> {
     Q_OBJECT

@@ -9,7 +9,7 @@ ExecutionNode *XMLParserExecution::getExecutionNodes(QDomElement* pElement ) {
     if (!pElement->isElement())
         return NULL;
 
-    std::cout << pElement->tagName().toStdString() << std::endl;
+    //std::cout << pElement->tagName().toStdString() << std::endl;
 
     ExecutionNode* pNode = this->createExecutionNode( pElement );
 

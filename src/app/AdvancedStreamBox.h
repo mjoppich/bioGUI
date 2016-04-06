@@ -9,6 +9,8 @@
 #include <QTextCursor>
 #include <QProcess>
 #include <QAbstractButton>
+#include <iostream>
+#include <QtWidgets/qcheckbox.h>
 #include "ExtendedBuffer.h"
 
 
@@ -16,10 +18,11 @@ class AdvancedListWidgetItem : public QListWidgetItem {
 
 public:
 
-    AdvancedListWidgetItem(QString sText, QColor oColor)
+    AdvancedListWidgetItem(QString sText, QString sStreamID)
             : QListWidgetItem(sText)
     {
-        this->setTextColor(oColor);
+        m_bFinished = false;
+        this->setStreamID(sStreamID);
     }
 
     QString getStreamID()
@@ -32,13 +35,17 @@ public:
         m_sStreamID = sStreamID;
     }
 
+    void setFinished(bool bValue)
+    {
+        m_bFinished = bValue;
+    }
+
     void appendText(QString sText)
     {
 
-        while (sText.at(sText.size()-1) == '\n')
+        if (sText.at(sText.size()-1) == '\n')
         {
             m_bFinished = true;
-            sText = sText.trimmed();
         }
 
         QString sMyText = this->text();
@@ -46,6 +53,11 @@ public:
         this->setText(sMyText);
 
 
+    }
+
+    void printStreamID()
+    {
+        std::cout << m_sStreamID.toStdString() << std::endl;
     }
 
     void setTextColor(QColor oColor)
@@ -76,6 +88,52 @@ public:
     {
         qRegisterMetaType<QTextCursor>("QTextCursor");
         qRegisterMetaType<QString>("QString");
+
+        this->clear();
+    }
+
+    void addProcBuffer(QProcess* pProcess, ExtendedBuffer* pBuffer)
+    {
+
+        std::map<QProcess*, std::vector<ExtendedBuffer*> >::iterator oIt = m_mProcToBuffer.find(pProcess);
+
+        if (oIt != m_mProcToBuffer.end())
+        {
+            oIt->second.push_back(pBuffer);
+        } else {
+            std::pair<QProcess*, std::vector<ExtendedBuffer*>> oPair(pProcess, std::vector<ExtendedBuffer*>());
+
+            oPair.second.push_back(pBuffer);
+            m_mProcToBuffer.insert( oPair );
+
+        }
+
+
+    }
+
+    void finishProcess(QProcess* pProcess)
+    {
+        std::map<QProcess*, std::vector<ExtendedBuffer*> >::iterator oIt = m_mProcToBuffer.find(pProcess);
+
+        if (oIt != m_mProcToBuffer.end())
+        {
+
+            for (size_t i = 0; i < oIt->second.size(); ++i)
+            {
+
+                ExtendedBuffer* pBuffer = oIt->second.at(i);
+                pBuffer->transferText("\n");
+
+                pBuffer->deleteLater();
+
+            }
+
+            m_mProcToBuffer.erase(oIt);
+
+
+        }
+
+
     }
 
     void addBuffer(QProcess* pProcess, QProcess::ProcessChannel eChannel, QString sStreamID, QColor oTextColor)
@@ -84,6 +142,8 @@ public:
         ExtendedBuffer* pBuffer = new ExtendedBuffer(pProcess, eChannel);
         pBuffer->setTextColor( oTextColor );
         pBuffer->setStreamID( sStreamID );
+
+        this->addProcBuffer(pProcess, pBuffer);
 
         switch (eChannel)
         {
@@ -107,17 +167,20 @@ public:
 
     }
 
-    void addStream(std::string sStreamID, QAbstractButton* pControl)
+    void addStream(std::string sStreamID, QCheckBox* pControl)
     {
 
         m_mStreamID2Button.insert( std::pair<std::string, QAbstractButton*>(sStreamID, pControl) );
+        QObject::connect(pControl, SIGNAL(toggled(bool)), this , SLOT(filterText(bool)), Qt::QueuedConnection );
+
+        // std::cout << "added stream " << sStreamID << std::endl;
 
     }
 
 
 protected slots:
 
-    void filterText()
+    void filterText(bool bState)
     {
 
         std::map<std::string, QAbstractButton*>::iterator oIt = m_mStreamID2Button.begin();
@@ -128,11 +191,11 @@ protected slots:
 
             mShowText.insert( std::pair<std::string, bool>( oIt->first, oIt->second->isChecked() ));
 
+            //std::cout << "set " << oIt->first << " " << oIt->second->isChecked() << std::endl;
+
             ++oIt;
 
         }
-
-
 
         size_t iCount = this->count();
 
@@ -146,11 +209,14 @@ protected slots:
             if (pItem == NULL)
                 continue;
 
+            //pItem->printStreamID();
+
             std::map<std::string, bool>::iterator oDecide = mShowText.find( pItem->getStreamID().toStdString() );
 
             if (oDecide != mShowText.end())
             {
 
+                //std::cout << pItem->text().toStdString() << " " << oDecide->second << std::endl;
                 pItem->setHidden(!oDecide->second);
 
             }
@@ -163,24 +229,52 @@ protected slots:
     void receiveText(QString sString, QColor oColor, QString sStreamID)
     {
 
+        sString = sString.trimmed();
+
+        //std::cout << "received: " << sString.toStdString() << std::endl;
+
         AdvancedListWidgetItem* pLastStream = this->getLastItemForStream(&sStreamID);
 
-        if ((pLastStream == NULL) || (pLastStream->isFinished()))
+        QStringList vList = sString.split("\n");
+
+        if ((vList.size() == 0) || (vList.at(0).length() == 0))
         {
-            pLastStream = new AdvancedListWidgetItem("", oColor);
-            this->addItem(pLastStream);
+
+            if (pLastStream != NULL)
+            {
+                pLastStream->setFinished(true);
+            }
+
+        } else {
+
+            if ((pLastStream == NULL) || (pLastStream->isFinished()))
+            {
+                pLastStream = new AdvancedListWidgetItem("", sStreamID);
+                pLastStream->setForeground(oColor);
+                this->addItem(pLastStream);
+            }
+
+            pLastStream->appendText( vList.at(0) );
         }
 
-        QStringList vList = sString.split("\n");
-        pLastStream->appendText( vList.at(0) );
 
         for (size_t i = 1; i < vList.size(); ++i)
         {
 
-            pLastStream = new AdvancedListWidgetItem( vList.at(i), oColor );
-            this->addItem(pLastStream);
+            //std::cout << "more: '" << vList.at(i).toStdString() << "'" << std::endl;
+
+            if (vList.at(i).length() > 0)
+            {
+                pLastStream = new AdvancedListWidgetItem( vList.at(i), sStreamID );
+                pLastStream->setForeground(oColor);
+
+                this->addItem(pLastStream);
+
+            }
 
         }
+
+        this->filterText(true);
 
     }
 
@@ -213,7 +307,7 @@ protected:
     }
 
 
-    std::vector<ExtendedBuffer*> m_vBuffers;
+    std::map<QProcess*, std::vector<ExtendedBuffer*>> m_mProcToBuffer;
     std::map<std::string, QAbstractButton*> m_mStreamID2Button;
 };
 

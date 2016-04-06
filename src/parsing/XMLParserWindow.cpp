@@ -35,7 +35,7 @@ QWidget* XMLParserWindow::createComponent(QDomElement* pElement, bool* pChildren
     QString sTag = pElement->tagName();
     QString sValue = pElement->text();
 
-    std::cout << "Tag " << sTag.toStdString() << " Value " << sValue.toStdString() << std::endl;
+    //std::cout << "Tag " << sTag.toStdString() << " Value " << sValue.toStdString() << std::endl;
 
     QWidget* pWidget = NULL;
 
@@ -55,7 +55,7 @@ QWidget* XMLParserWindow::createComponent(QDomElement* pElement, bool* pChildren
         int iWidth = sWidth.toInt();
         int iHeight = sHeight.toInt();
 
-        pWidget->setFixedSize(iWidth, iHeight);
+        pWidget->setMinimumSize(iWidth, iHeight);
 
         /*
          * Window Title
@@ -392,6 +392,13 @@ QWidget* XMLParserWindow::createComponent(QDomElement* pElement, bool* pChildren
 
         pGroupBox->setLayout(pLayout);
 
+        // must be done here because otherwise the groupbox is the id widget ...
+        QString sID = this->getAttribute(pElement, "id", "");
+        if (sID.length() > 0)
+        {
+            m_pID2Widget->insert( std::pair<std::string, QWidget*>(sID.toStdString(), pStreamOut));
+        }
+
         pWidget = pGroupBox;
 
 
@@ -415,9 +422,7 @@ QWidget* XMLParserWindow::createComponent(QDomElement* pElement, bool* pChildren
         QString sID = this->getAttribute(pElement, "id", "");
         if (sID.length() > 0)
         {
-
             m_pID2Widget->insert( std::pair<std::string, QWidget*>(sID.toStdString(), pWidget));
-
         }
 
     }

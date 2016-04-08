@@ -4,6 +4,9 @@
 
 #include <src/app/QComboItem.h>
 #include <src/app/AdvancedStreamBox.h>
+#include <src/app/QAbstractButtonItem.h>
+#include <src/app/QExtendedRadioButton.h>
+#include <src/app/QExtendedCheckBox.h>
 #include "XMLParserWindow.h"
 
 #include "../bioGUIapp.h"
@@ -96,16 +99,70 @@ QWidget* XMLParserWindow::createComponent(QDomElement* pElement, bool* pChildren
 
 
         QLineEdit* pLineEdit = new QLineEdit();
-        pLineEdit->setToolTip("this is a tooltip\nwith line break!");
+
+        QString sLineEditLocation = this->getAttribute(pElement, "location", "");
+        if (sLineEditLocation.length() > 0)
+        {
+            pLineEdit->setText(sLineEditLocation);
+        }
+
+
 
         QPushButton* pFileButton = new QPushButton(sValue);
 
+        bool bMultiples = (this->getAttribute(pElement, "multiples", "FALSE").compare("TRUE", Qt::CaseInsensitive) == 0);
+        bool bOutput = (this->getAttribute(pElement, "output", "FALSE").compare("TRUE", Qt::CaseInsensitive) == 0);
+        bool bFolder = (this->getAttribute(pElement, "folder", "FALSE").compare("TRUE", Qt::CaseInsensitive) == 0);
+        QString sFileDelim = this->getAttribute(pElement, "multiples_delim", ";");
+        QString sFileFilter = this->getAttribute(pElement, "multiples_filter", "");
 
-        pFileButton->connect(pFileButton,&QAbstractButton::clicked,[pLineEdit] (bool bChecked){
+        pFileButton->connect(pFileButton,&QAbstractButton::clicked,[pLineEdit, bMultiples, bOutput, bFolder, sFileDelim, sFileFilter] (bool bChecked){
 
-            QString sFileName = QFileDialog::getOpenFileName(0, "Open XML File 2", QDir::homePath(), "XML Files (*.xml)");
+            if (bFolder)
+            {
 
-            pLineEdit->setText(sFileName);
+                QString sFolder = QFileDialog::getExistingDirectory(0, ("Select Output Folder"), QDir::currentPath());
+                pLineEdit->setText(sFolder);
+
+            } else {
+
+
+                if (bOutput)
+                {
+
+                    if (bMultiples)
+                    {
+                        throw "unsupported option: output and mutliples";
+
+                    } else {
+
+                        QString sFileName = QFileDialog::getSaveFileName(0, "Select Input File", QDir::currentPath(), sFileFilter);
+                        pLineEdit->setText(sFileName);
+
+                    }
+
+                } else {
+
+
+                    if (bMultiples)
+                    {
+                        QStringList vSelectedFiles = QFileDialog::getOpenFileNames(0, "Select Input Files", QDir::currentPath(), sFileFilter);
+                        QString sFiles = vSelectedFiles.join(sFileDelim);
+                        pLineEdit->setText(sFiles);
+
+                    } else {
+
+                        QString sFileName = QFileDialog::getOpenFileName(0, "Select Input File", QDir::currentPath(), sFileFilter);
+                        pLineEdit->setText(sFileName);
+
+                    }
+
+                }
+
+            }
+
+
+
         });
 
         pLayout->addWidget( pLineEdit );
@@ -140,22 +197,10 @@ QWidget* XMLParserWindow::createComponent(QDomElement* pElement, bool* pChildren
 
         (*pChildrenFinished) = true;
 
-        QRadioButton* pRadioButton = new QRadioButton(sValue);
-        std::string sCheckedValue = this->getAttribute(pElement, "checked_value", "true").toStdString();
-        std::string sUncheckedValue = this->getAttribute(pElement, "unchecked_value", "false").toStdString();
+        QString sButtonValue = this->getAttribute(pElement, "value", sValue);
+        QExtendedRadioButton* pButtonItem = new QExtendedRadioButton(sValue, sButtonValue);
 
-        this->addValueFetcher(pElement, [pRadioButton, sCheckedValue, sUncheckedValue] () {
-
-            if (pRadioButton->isChecked())
-            {
-                return sCheckedValue;
-            } else {
-                return sUncheckedValue;
-            }
-
-        });
-
-        pWidget = pRadioButton;
+        pWidget = pButtonItem;
 
     }
 
@@ -164,27 +209,108 @@ QWidget* XMLParserWindow::createComponent(QDomElement* pElement, bool* pChildren
 
         (*pChildrenFinished) = true;
 
-        QCheckBox *pCheckBox = new QCheckBox( sValue );
+        QString sButtonValue = this->getAttribute(pElement, "value", sValue);
+        QExtendedCheckBox* pButtonItem = new QExtendedCheckBox(sValue, sButtonValue);
 
-        std::string sCheckedValue = this->getAttribute(pElement, "checked_value", "true").toStdString();
-        std::string sUncheckedValue = this->getAttribute(pElement, "unchecked_value", "false").toStdString();
-
-        this->addValueFetcher(pElement, [pCheckBox, sCheckedValue, sUncheckedValue] () {
-
-            if (pCheckBox->isChecked())
-            {
-                return sCheckedValue;
-            } else {
-                return sUncheckedValue;
-            }
-
-        });
-
-        pWidget = pCheckBox;
+        pWidget = pButtonItem;
 
     }
 
     bool bBoolean = true;
+
+    if (sTag.compare("groupbox", Qt::CaseInsensitive) == 0)
+    {
+
+        (*pChildrenFinished) = true;
+
+        QGroupBox* pGroupBox = new QGroupBox();
+        QButtonGroup* pButtonGroup = new QButtonGroup();
+
+        /*
+         * Window Title
+         */
+        QString sTitle = this->getAttribute(pElement, "title", "bioGUI");
+        pGroupBox->setTitle( sTitle );
+
+
+        /*
+         * state?
+         */
+        QString sSelected = this->getAttribute(pElement, "selected", "");
+        QStringList vSelected;
+        if (sSelected.length() > 0)
+        {
+            vSelected = sSelected.split(";");
+        }
+
+        // this could also be a hboxlayout or a grid layout
+        QLayout* pLayout = new QVBoxLayout();
+
+        QDomNodeList oChildren = pElement->childNodes();
+        for (size_t i = 0; i < oChildren.size(); ++i)
+        {
+            QDomElement oChildNode = oChildren.at(i).toElement();
+            QWidget* pChildElement = createComponent(&oChildNode, &bBoolean);
+
+            if (pElement == NULL)
+                throw "error in creating groupbox components";
+
+            if (QAbstractButtonItem* pButtonItem = dynamic_cast<QAbstractButtonItem *>(pChildElement))
+            {
+
+                pLayout->addWidget( pChildElement );
+
+                if ((i == 0) || ( vSelected.contains(pButtonItem->getValue()) ))
+                {
+
+                    QAbstractButton* pButton = dynamic_cast<QAbstractButton*>(pChildElement);
+
+                    pButton->setChecked(true);
+
+                }
+
+                pButtonGroup->addButton((QAbstractButton*) pChildElement, i);
+
+
+            } else {
+
+                throw "invalid element";
+
+            }
+
+
+        }
+
+        pGroupBox->setLayout(pLayout);
+
+        this->addValueFetcher(pElement, [pButtonGroup, pGroupBox] () {
+
+
+            bool bEvaluate = true;
+            if (pGroupBox->isCheckable())
+            {
+                bEvaluate = pGroupBox->isChecked();
+            }
+
+            if (bEvaluate)
+            {
+
+                QAbstractButton* pButton = pButtonGroup->checkedButton();
+                QAbstractButtonItem* pButtonItem = dynamic_cast<QAbstractButtonItem *>(pButton);
+
+                if (pButtonItem)
+                {
+                    return pButtonItem->getValue().toStdString();
+                }
+
+            }
+
+            return std::string("");
+
+        });
+
+        pWidget = pGroupBox;
+    }
 
     if (sTag.compare("group", Qt::CaseInsensitive) == 0)
     {
@@ -202,7 +328,6 @@ QWidget* XMLParserWindow::createComponent(QDomElement* pElement, bool* pChildren
         /*
          * checkable?
          */
-
         std::string sCheckable = this->getAttribute(pElement, "checkable", "false").toUpper().toStdString();
         if (sCheckable.compare("TRUE") == 0)
         {
@@ -224,6 +349,15 @@ QWidget* XMLParserWindow::createComponent(QDomElement* pElement, bool* pChildren
 
         }
 
+
+        /*
+         * state?
+         */
+        QString sSelected = this->getAttribute(pElement, "checked", "false");
+        if (sSelected.compare("TRUE", Qt::CaseInsensitive))
+        {
+            pGroupBox->setChecked(true);
+        }
 
         // this could also be a hboxlayout or a grid layout
         QLayout* pLayout = new QVBoxLayout();
@@ -274,6 +408,14 @@ QWidget* XMLParserWindow::createComponent(QDomElement* pElement, bool* pChildren
 
         (*pChildrenFinished) = true;
 
+        QString sSelected = this->getAttribute(pElement, "selected", "");
+        QStringList vSelected;
+
+        if (sSelected.length() > 0)
+        {
+            vSelected = sSelected.split(";");
+        }
+
         QComboBox *pComboBox = new QComboBox();
 
         QDomNodeList oChildren = pElement->childNodes();
@@ -292,6 +434,9 @@ QWidget* XMLParserWindow::createComponent(QDomElement* pElement, bool* pChildren
 
                 if (i == 0)
                     pComboBox->setCurrentIndex(0);
+
+                if ( vSelected.contains( pComboItem->getData().toString() ) )
+                    pComboBox->setCurrentIndex(i);
 
             }
         }
@@ -360,6 +505,17 @@ QWidget* XMLParserWindow::createComponent(QDomElement* pElement, bool* pChildren
         QLayout* pLayout = new QVBoxLayout();
 
         pLayout->addWidget( pStreamOut );
+
+        QPushButton* pClearButton = new QPushButton("Clear");
+
+        this->connect(pClearButton, &QAbstractButton::clicked, [pStreamOut] {
+
+            pStreamOut->clear();
+
+        });
+
+        pLayout->addWidget(pClearButton);
+
 
         QDomNodeList oChildren = pElement->childNodes();
         for (size_t i = 0; i < oChildren.size(); ++i)

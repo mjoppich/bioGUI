@@ -60,6 +60,7 @@ public:
         m_pKnownTags->push_back("image");
         m_pKnownTags->push_back("filedialog");
         m_pKnownTags->push_back("group");
+        m_pKnownTags->push_back("groupbox");
         m_pKnownTags->push_back("radiobutton");
         m_pKnownTags->push_back("checkbox");
         m_pKnownTags->push_back("action");
@@ -100,6 +101,165 @@ public:
         QWidget* pWindow = (QWidget*) createComponents(NULL, pWindowRoot, &bUnimportant);
 
         return pWindow;
+
+    }
+
+    void replaceElements(QDomElement* pElement)
+    {
+        qDebug() << pElement->tagName() << " child of " << pElement->parentNode().toElement().tagName() << " " << pElement->isElement();
+
+        QString sID = this->getAttribute(pElement, "ID", "");
+
+        if (sID.length() > 0)
+        {
+
+            std::map<std::string, std::function< std::string()> >::iterator oIt = m_pID2Value->find(sID.toStdString());
+
+            if (!(oIt == m_pID2Value->end()))
+            {
+
+                std::string sNewValue = oIt->second();
+                sNewValue = "Busted";
+
+                std::cout << "replacing " << pElement->text().toStdString() << " with " << sNewValue << std::endl;
+
+                pElement->setNodeValue( QString(sNewValue.c_str()) );
+
+
+            }
+        }
+
+        QDomNodeList oChildren = pElement->childNodes();
+
+        for (size_t i = 0; i < oChildren.length(); ++i)
+        {
+
+            QDomElement oChild = oChildren.item(i).toElement();
+
+            replaceElements( &oChild );
+
+        }
+    }
+
+    void saveTemplate(QString sFileName)
+    {
+
+
+
+        QDomDocument oSaveDocument = m_pDocument->toDocument();
+
+        std::map<std::string, std::function< std::string()> >::iterator oIt = m_pID2Value->begin();
+
+
+
+        for (size_t iTags = 0; iTags < m_pKnownTags->size(); ++iTags)
+        {
+
+            std::string sTag = m_pKnownTags->at(iTags);
+
+            // Get the "Root" element
+            QDomElement docElem = oSaveDocument.documentElement();
+
+            // Find elements with tag name "firstchild"
+            QDomNodeList nodes = docElem.elementsByTagName( QString(sTag.c_str()) );
+
+            // Iterate through all we found
+            for(int i=0; i<nodes.count(); i++)
+            {
+                QDomNode node = nodes.item(i);
+
+                // Check the node is a DOM element
+                if(node.nodeType() == QDomNode::ElementNode)
+                {
+                    // Access the DOM element
+                    QDomElement element = node.toElement();
+
+                    QString sElementID = this->getAttribute(&element, "ID", "");
+
+                    oIt = m_pID2Value->find( sElementID.toStdString() );
+
+                    if (oIt != m_pID2Value->end())
+                    {
+
+
+                        if ( element.tagName().compare("input", Qt::CaseInsensitive) == 0)
+                        {
+
+                            QDomText t = element.firstChild().toText();
+
+                            if (!t.isNull())
+                            { // inputs
+                                QString sReplace = QString(oIt->second().c_str());
+
+                                // Print out the original text
+                                qDebug() << "Old text in " << sElementID << " of type " << element.tagName() << " was " << t.data() << " now is " << sReplace;
+                                // Set the new text
+                                t.setData( sReplace );
+                            }
+
+
+                        } else if ( ( element.tagName().compare("groupbox", Qt::CaseInsensitive) == 0) ||
+                                    ( element.tagName().compare("combobox", Qt::CaseInsensitive) == 0) )
+                        {
+
+                            std::string sValue = oIt->second();
+                            QString sqValue(sValue.c_str());
+
+                            element.setAttribute("selected", sqValue );
+
+                            qDebug() << "Old text in " << sElementID << " of type " << element.tagName() << " was " << " now is " << sqValue;
+
+
+                        } else if ( element.tagName().compare("filedialog", Qt::CaseInsensitive) == 0)
+                        {
+
+                            std::string sValue = oIt->second();
+                            QString sqValue(sValue.c_str());
+
+                            element.setAttribute("location", sqValue );
+
+                            qDebug() << "Old text in " << sElementID << " of type " << element.tagName() << " was " << " now is " << sqValue;
+
+
+                        }
+
+                    }
+
+
+                    /*
+                    // Iterate through it's children
+                    for(QDomNode n = element.firstChild(); !n.isNull(); n = n.nextSibling())
+                    {
+                        // Find the child that is of DOM type text
+                        QDomText t = n.toText();
+                        if (!t.isNull())
+                        {
+                            // Print out the original text
+                            qDebug() << "Old text in " <<  << " of type " << element.tagName() << " was " << t.data();
+                            // Set the new text
+                            t.setData("Here is the new text");
+                        }
+                    }
+                    */
+                }
+            }
+
+
+
+        }
+
+        qDebug() << oSaveDocument.toString();
+
+
+        QFile file( sFileName );
+        if( !file.open( QIODevice::WriteOnly | QIODevice::Text ) )
+        {
+
+            throw "Failed to open file for writing." ;
+        }
+        QTextStream stream( &file );
+        stream << oSaveDocument.toString();
+        file.close();
 
     }
 

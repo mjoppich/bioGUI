@@ -1,0 +1,64 @@
+<!--<?xml version="1.0" encoding="UTF-8"?>-->
+<template rootid="blubb" intatt="111">
+ <window title="Example1" width="1000" height="1000">
+  <vgroup>
+   <hgroup>
+    <label title="example 2">Some text</label>
+    <input hint="this is input1" id="input1">Default</input>
+   </hgroup>
+   <!--<image id="img1" src="/home/users/joppich/ownCloud/markus/uni/publications/yeast/progress_Peptides/images/evidence_peptides_lengths.png"/>-->
+   <image src="/cygdrive/c/ownCloud/markus/uni/publications/yeast/progress_Peptides/images/evidence_peptides_lengths.png" id="img1"/>
+   <filedialog location="">Input File</filedialog>
+   <hgroup>
+    <groupbox title="Select strategy:" selected="rbutton1" hint="do not mess up" id="radiocheck">
+     <radiobutton hint="this should be selected">rbutton1</radiobutton>
+     <radiobutton>rbutton2</radiobutton>
+     <radiobutton>rbutton3</radiobutton>
+     <checkbox hint="i am disturbing">check1</checkbox>
+    </groupbox>
+    <group title="Select strategy:" checkable="true" hint="do not mess up" id="selgroup">
+     <groupbox>
+      <radiobutton hint="this should be selected">rbutton1</radiobutton>
+      <checkbox hint="i am disturbing">check1</checkbox>
+     </groupbox>
+    </group>
+   </hgroup>
+   <streambox id="output1">
+    <stream id="outputstream1">OS1</stream>
+    <stream id="outputstream2">OS2</stream>
+   </streambox>
+   <combobox selected="Select 1" id="combo1">
+    <comboitem>Select 1</comboitem>
+    <comboitem>Select 2</comboitem>
+    <comboitem>Select 3</comboitem>
+   </combobox>
+   <action hint="click here to run program" id="runprog">run program</action>
+  </vgroup>
+ </window>
+ <execution>
+  <add sep=" " id="cl">
+   <const>-bla</const>
+   <value from="input1" id="valuenode1"/>
+   <const>-num</const>
+   <math op="int" id="intres">
+    <math op="+" id="floatres">
+     <const type="number">2</const>
+     <const type="number">3</const>
+    </math>
+   </math>
+  </add>
+  <execute exec="splitter" location="/home/users/joppich/cpp/splitter/bin/" param="cl">
+   <output to="outputstream1" type="cout" color="green" id="outcout"/>
+   <output to="output1" type="cerr" color="red" id="outcerr"/>
+   <!--<output id="outfolder" type="folder" location="/home/users/joppich/cpp/splitter/bin/" />
+    <output id="outfolder2" type="folder" location="/home/users/joppich/cpp/splitter/README.md" />
+    <output id="outfile" type="file" location="/home/users/joppich/cpp/splitter/README.md" />-->
+  </execute>
+  <if value2="true" value1="selgroup" comp="is_set">
+   <execute exec="splitter" location="/home/users/joppich/cpp/splitter/bin/" param="valuenode1">
+    <output to="outputstream2" type="STD" id="out3"/>
+    <!--<output id="out2" type="file" src="" to="img1"/>-->
+   </execute>
+  </if>
+ </execution>
+</template>

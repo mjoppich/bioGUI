@@ -174,6 +174,36 @@ protected:
 
     }
 
+    QDomNode* getDocumentNodeByID( QDomNode* pNode, QString sID )
+    {
+
+
+        QDomElement oElement = pNode->toElement();
+
+        QString sThisID = this->getAttribute(&oElement, "ID", "");
+
+        if (sThisID.compare( sID , Qt::CaseInsensitive) == 0)
+        {
+            return pNode;
+        }
+
+        QDomNodeList oChildren = pNode->childNodes();
+
+        for (size_t i = 0; i < oChildren.length(); ++i)
+        {
+
+            QDomNode oNode = oChildren.at(i);
+            QDomNode* pReturn = getDocumentNodeByID( &oNode , sID);
+
+            if (pReturn != NULL)
+                return pReturn;
+
+        }
+
+        return NULL;
+
+    }
+
     void printAllElements(QDomElement* pElement)
     {
 

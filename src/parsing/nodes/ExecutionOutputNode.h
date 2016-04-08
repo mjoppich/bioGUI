@@ -10,6 +10,8 @@
 #include <QGraphicsPixmapItem>
 #include <QProcess>
 #include <src/app/AdvancedStreamBox.h>
+#include <QtGui/qdesktopservices.h>
+#include <QtCore/qdir.h>
 
 #include "ExecutionNode.h"
 #include "../../app/StreamTextEdit.h"
@@ -31,7 +33,7 @@ public:
 
         if (m_sTo.size() == 0)
         {
-            throw "no attribute TO given for node " + m_sID;
+            //throw "no attribute TO given for node " + m_sID;
         }
 
 
@@ -50,13 +52,101 @@ public:
                           QProcess* pProcess, bool bDeferred)
     {
 
-        if (!(pInputID2Widget->find( m_sTo ) != pInputID2Widget->end()))
+
+
+
+
+
+
+
+        /*
+         *
+         * TYPE FILE(open file/folder)
+         */
+        if (m_sTo.size() == 0)
         {
+
+
+            if (m_sType.compare("FILE") == 0)
+            {
+
+                if (bDeferred)
+                {
+                    QDir oLocation = QDir(QString(m_sLocation.c_str()));
+
+                    if (!oLocation.isAbsolute())
+                    {
+                        oLocation = QDir::currentPath() + oLocation.currentPath();
+                    }
+
+                    QDesktopServices::openUrl( oLocation.absolutePath() );
+                }
+                return "";
+            }
+
+
+            if (m_sType.compare("FOLDER") == 0)
+            {
+
+                if (bDeferred)
+                {
+
+
+                    QDir oLocation = QDir(QString(m_sLocation.c_str()));
+
+                    if (!oLocation.isAbsolute())
+                    {
+                        oLocation = QDir::currentPath() + oLocation.currentPath();
+                    }
+
+                    QFileInfo oDirInfo(oLocation.absolutePath());
+
+                    if ( oDirInfo.isFile() )
+                    {
+
+                        oLocation = oDirInfo.absoluteDir().absolutePath();
+
+                    }
+
+                    QDesktopServices::openUrl( oLocation.absolutePath() );
+
+                }
+
+                return "";
+            }
+
+        }
+
+
+
+
+
+
+
+
+
+
+        /*
+         * ANY TYPE WHERE 'TO' IS NEEDED
+         *
+         */
+
+        QWidget* pWidget = NULL;
+        std::map<std::string, QWidget*>::iterator oIt = pInputID2Widget->find( m_sTo );
+        if ( oIt != pInputID2Widget->end() )
+        {
+            pWidget = oIt->second;
+
+        } else {
             throw "invalid TO id given for node id " + m_sID;
         }
 
-        QWidget* pWidget = pInputID2Widget->find( m_sTo )->second;
-
+        /*
+         *
+         * TYPE cout/cerr/STD/file
+         *
+         *
+         */
         if (AdvancedStreamBox* pTextEdit = dynamic_cast<AdvancedStreamBox*>( pWidget ))
         {
 
@@ -87,18 +177,32 @@ public:
 
             }
 
+            return "";
+
         }
+
+
+        /*
+         * TYPE FILE(image)
+         *
+         */
 
         if (QGraphicsView* pImageView = dynamic_cast<QGraphicsView*>( pWidget ))
         {
 
-            pImageView->scene()->clear();
+            if (bDeferred)
+            {
+                pImageView->scene()->clear();
 
-            QGraphicsPixmapItem* pItem = new QGraphicsPixmapItem(QPixmap( QString(m_sLocation.c_str()) ));
+                QGraphicsPixmapItem* pItem = new QGraphicsPixmapItem(QPixmap( QString(m_sLocation.c_str()) ));
 
-            pImageView->scene()->addItem( pItem );
+                pImageView->scene()->addItem( pItem );
+            }
 
+
+            return "";
         }
+
 
         return "";
 

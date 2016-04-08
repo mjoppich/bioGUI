@@ -31,6 +31,8 @@ public:
 
         //m_pWindowParser = new XMLParserWindow( this, "/home/users/joppich/cpp/bioGUI/example.gui" );
 
+        QDir oTemplatePath = QDir::currentPath() + "/templates/";
+
         m_pMainWindow = new QWidget();
 
         QHBoxLayout* pMainLayout = new QHBoxLayout();
@@ -64,6 +66,13 @@ public:
 
         // opens save template dialogue
         m_pSaveTemplate = new QPushButton("Save Template");
+
+        connect(m_pSaveTemplate, &QAbstractButton::clicked, [oTemplatePath, this] () {
+
+            this->saveCurrentTemplate(oTemplatePath);
+
+        });
+
         pLeftLayout->addWidget(m_pSaveTemplate);
 
 
@@ -78,7 +87,7 @@ public:
         // For testing purposes only
         //this->runProgram();
 
-        this->addTemplates( QDir::currentPath() + "/templates/" );
+        this->addTemplates( oTemplatePath );
 
     }
 
@@ -168,6 +177,12 @@ public:
         std::cout << "spongebob " << m_pMainWindow->minimumWidth() << " " << m_pMainWindow->minimumHeight() << std::endl;
         std::cout << "spongebob " << m_pMainWindow->width() << " " << m_pMainWindow->height() << std::endl;
 
+
+        std::string sTest = sFileName;
+
+        QFileInfo oFileInfo(QString(sFileName.c_str()));
+        //m_pWindowParser->saveTemplate(oFileInfo.absoluteDir().absolutePath() + "/bla.gui");
+
     }
 
 
@@ -196,6 +211,21 @@ public:
     }
 
 protected:
+
+    void saveCurrentTemplate(QDir oTemplatePath)
+    {
+
+        QString sFileName = QFileDialog::getSaveFileName(0, "Save Template", oTemplatePath.absolutePath(), "Template Files (*.gui)" );
+
+        if ((sFileName.isNull()) || (sFileName.size() == 0))
+            return;
+
+        m_pWindowParser->saveTemplate(sFileName);
+
+    }
+
+
+
 
     QWidget* m_pMainWindow;
     QListWidget* m_pTemplates;

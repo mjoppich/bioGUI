@@ -42,7 +42,22 @@ public:
         QString qsType = this->getDomElementAttribute(pElement, "TYPE", "STRING");
         this->m_eType = ExecutionNode::cstring2nodetype( qsType.toUpper().toStdString() );
 
+        this->m_sTag = pElement->tagName().toStdString();
+
     }
+
+
+    std::string getTag()
+    {
+        return m_sTag;
+    }
+
+    QString getQTag()
+    {
+        return QString(m_sTag.c_str());
+    }
+
+
 
     virtual std::string evaluate( std::map< std::string, ExecutionNode*>* pID2Node,
                                   std::map<std::string, std::string>* pInputID2Value,
@@ -81,7 +96,6 @@ public:
 
     }
 
-protected:
 
     std::string evaluateChildren( std::map< std::string, ExecutionNode*>* pID2Node,
                                   std::map<std::string, std::string>* pInputID2Value,
@@ -104,6 +118,7 @@ protected:
         return sReturn;
     }
 
+protected:
 
     QString getDomElementAttribute(QDomElement* pElement, QString sAttribName, QString sDefault);
 
@@ -112,6 +127,7 @@ protected:
     std::string m_sID;
     NODE_TYPE m_eType;
     std::string m_sValue;
+    std::string m_sTag;
 
 
 };

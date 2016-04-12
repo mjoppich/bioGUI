@@ -5,6 +5,7 @@
 #ifndef BIOGUI_XMLPARSEREXECUTION_H
 #define BIOGUI_XMLPARSEREXECUTION_H
 
+#include "nodes/ExecutionPlaceholderNode.h"
 #include "nodes/ExecutionIfNode.h"
 #include "nodes/ExecutionMathNode.h"
 #include "nodes/ExecutionValueNode.h"
@@ -109,6 +110,15 @@ protected:
         {
 
             ExecutionIfNode* pNode = new ExecutionIfNode( pElement );
+
+            pReturn = pNode;
+
+        }
+
+        if ( sTagName.compare("else", Qt::CaseInsensitive)==0 )
+        {
+
+            ExecutionPlaceholderNode* pNode = new ExecutionPlaceholderNode( pElement );
 
             pReturn = pNode;
 

@@ -42,6 +42,21 @@ public:
         if (m_sValue1.compare(sNotSet) == 0)
             throw "value1 must be set";
 
+
+        // find else node, stop on first found node
+        for (size_t i = 0; i < m_vChildren.size(); ++i)
+        {
+
+            ExecutionNode* pOtherNode = m_vChildren.at(i);
+
+            if (pOtherNode->getQTag().compare("else", Qt::CaseInsensitive) == 0)
+            {
+                m_pElseNode = pOtherNode;
+                break;
+            }
+
+        }
+
     }
 
     std::string getValue(std::string sNodeID, std::map< std::string, ExecutionNode*>* pID2Node,
@@ -88,6 +103,8 @@ public:
 
             if (sValue1.size() > 0)
                 return this->evaluateChildren(pID2Node, pInputID2Value, pInputID2Widget);
+            else
+                return this->evaluateElseNode(pID2Node, pInputID2Value, pInputID2Widget);
 
         }
 
@@ -125,10 +142,17 @@ public:
 
 protected:
 
+
+    std::string evaluateElseNode(std::map< std::string, ExecutionNode*>* pID2Node,
+                                 std::map<std::string, std::string>* pInputID2Value,
+                                 std::map<std::string, QWidget*>* pInputID2Widget);
+
     std::string m_sCompareMode;
     std::string m_sValue1, m_sValue2;
 
     std::vector<std::string> m_vValidCompareModes;
+
+    ExecutionNode* m_pElseNode;
 
 };
 

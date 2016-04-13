@@ -35,6 +35,7 @@ public:
         m_pKnownTags->push_back("output");
         m_pKnownTags->push_back("execution");
         m_pKnownTags->push_back("if");
+        m_pKnownTags->push_back("else");
 
         m_pDocument = loadFromFile(sFileName);
 

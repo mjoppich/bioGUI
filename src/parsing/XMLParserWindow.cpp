@@ -247,6 +247,22 @@ QWidget* XMLParserWindow::createComponent(QDomElement* pElement, bool* pChildren
         QLayout* pLayout = new QVBoxLayout();
 
         QDomNodeList oChildren = pElement->childNodes();
+
+
+        if (oChildren.size() == 1)
+        {
+            QDomElement oChildNode = oChildren.at(0).toElement();
+
+            if (this->getElementType(&oChildNode) == ELEMENT_TYPE::LAYOUT)
+            {
+
+                delete pLayout;
+                pLayout = this->createLayout(&oChildNode);
+                oChildren = oChildren.at(0).childNodes();
+
+            }
+        }
+
         for (size_t i = 0; i < oChildren.size(); ++i)
         {
             QDomElement oChildNode = oChildren.at(i).toElement();
@@ -363,13 +379,33 @@ QWidget* XMLParserWindow::createComponent(QDomElement* pElement, bool* pChildren
         QLayout* pLayout = new QVBoxLayout();
 
         QDomNodeList oChildren = pElement->childNodes();
+
+        if (oChildren.size() == 1)
+        {
+            QDomElement oChildNode = oChildren.at(0).toElement();
+
+            if (this->getElementType(&oChildNode) == ELEMENT_TYPE::LAYOUT)
+            {
+
+                delete pLayout;
+                pLayout = this->createLayout(&oChildNode);
+                oChildren = oChildren.at(0).childNodes();
+
+            }
+        }
+
         for (size_t i = 0; i < oChildren.size(); ++i)
         {
             QDomElement oChildNode = oChildren.at(i).toElement();
             QWidget* pChildElement = createComponent(&oChildNode, &bBoolean);
 
-            if (pElement == NULL)
-                throw "error in creating groupbox components";
+            if (pChildElement == NULL)
+            {
+
+                std::cout << "error in creating groupbox components: " + oChildNode.text().toStdString() << std::endl;
+                throw "error in creating groupbox components: " + oChildNode.text().toStdString();
+            }
+
 
             if (QAbstractButton* pButton = dynamic_cast<QAbstractButton *>(pChildElement))
             {

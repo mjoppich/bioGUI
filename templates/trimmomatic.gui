@@ -4,48 +4,120 @@
 <window width="1000" height="1000" title="Example1">
 
   <vgroup>
-    <hgroup>
-      <label title="example 2">Some text</label>
-      <input id="input1" hint="this is input1">Default</input>      
-    </hgroup>
 
-    <!--<image id="img1" src="/home/users/joppich/ownCloud/markus/uni/publications/yeast/progress_Peptides/images/evidence_peptides_lengths.png"/>-->
-	<image id="img1" src="/cygdrive/c/ownCloud/markus/uni/publications/yeast/progress_Peptides/images/evidence_peptides_lengths.png"/>
+<group>
+<hgroup>
 
-    <filedialog location="">Input File</filedialog>
-    <filedialog location="" multiples="true">Input Files</filedialog>
-    <filedialog location="" folder="true">Output Folder</filedialog>
-    <filedialog location="" output="true">Output File</filedialog>
+<group title="Paired End" checkable="true">
 
-    <hgroup>
-      <groupbox id="radiocheck" title="Select strategy:" hint="do not mess up">
-	<radiobutton hint="this should be selected">rbutton1</radiobutton>
-	<radiobutton>rbutton2</radiobutton>
-	<radiobutton>rbutton3</radiobutton>
-	<checkbox hint="i am disturbing">check1</checkbox>
-      </groupbox>
+<filedialog location="">Input File 1</filedialog>
+<filedialog location="">Input File 2</filedialog>
 
-      <group id="selgroup" title="Select strategy:" hint="do not mess up" checkable="true">
-	 <groupbox>
+<group title="Options">
+<checkbox>Validate Pairs</checkbox>
+</group>
 
-	<radiobutton hint="this should be selected">rbutton1</radiobutton>
-	<checkbox hint="i am disturbing">check1</checkbox>
+<filedialog location="" output="true">1P</filedialog>
+<filedialog location="" output="true">1U</filedialog>
+<filedialog location="" output="true">2P</filedialog>
+<filedialog location="" output="true">2U</filedialog>
 
-	 </groupbox>
-      </group>
-    </hgroup>
+</group>
+
+<group title="Single End" checkable="true">
+
+<filedialog location="">Input File 1</filedialog>
+<filedialog location="" output="true">Output</filedialog>
+
+</group>
+
+</hgroup>
+</group>
+
+<group title="Step options">
+<hgroup>
+<group title="Custom Adapters" checkable="true">
+
+<filedialog location="">Input File 1</filedialog>
+<label>Seed mismatches</label><input></input>
+<label>Palindrome clip threshold</label><input></input>
+<label>Simple Clip Threshold</label><input></input>
+
+</group>
+
+<group title="Predefined Adapters" checkable="true">
+    <combobox id="phred">
+      <comboitem value="ILLUMINACLIP:./adapters/TruSeqU-SE.fa:2:30:10">TruSeqU SE</comboitem>
+      <comboitem value="ILLUMINACLIP:./adapters/TruSeqU-PE.fa:2:30:10">TruSeqU PE</comboitem>
+    </combobox>
+</group>
+
+<group title="Sliding Window" checkable="true">
+<label>Size</label><input></input>
+<label>Quality</label><input></input>
+</group>
+
+<group title="Leading Window" checkable="true">
+<hgroup>
+<label>Size</label><input></input>
+</hgroup>
+</group>
+
+<group title="Trailing Window" checkable="true">
+<hgroup>
+<label>Size</label><input></input>
+</hgroup>
+</group>
+
+<group title="Crop" checkable="true">
+<hgroup>
+<label>Size</label><input></input>
+</hgroup>
+</group>
+
+<group title="Headcrop" checkable="true">
+<hgroup>
+<label>Size</label><input></input>
+</hgroup>
+</group>
+
+<group title="Min Len" checkable="true">
+<hgroup>
+<label>Size</label><input></input>
+</hgroup>
+</group>
+
+<group title="PHRED base">
+
+    <combobox id="phred">
+      <comboitem>phred33</comboitem>
+      <comboitem>phred64</comboitem>
+    </combobox>
+
+</group>
+
+</hgroup>
+</group>
+
+
+
+    <group title="Options">
+<checkbox>Quiet Mode</checkbox>
+</group>
 
     <streambox id="output1">
       <stream id="outputstream1">OS1</stream>
       <stream id="outputstream2">OS2</stream>
     </streambox>
 
-    <combobox id="combo1">
-      <comboitem>Select 1</comboitem>
-      <comboitem>Select 2</comboitem>
-      <comboitem>Select 3</comboitem>
-    </combobox>
-    
+
+
+    <group title="System Settings">
+      <label title="example 2">Threads</label>
+      <input id="threads" hint="Amount of Threads">2</input>      
+    </group>
+
+   
     <action id="runprog" hint="click here to run program">run program</action>
   </vgroup>
 
@@ -53,7 +125,7 @@
 
 <execution>
   
-  <add sep=" " id="cl">
+  <add sep=" " id="cl1">
     <const>-bla</const>
     <value id="valuenode1" from="input1"/>
     <const>-num</const>
@@ -63,9 +135,22 @@
 	<const type="number">3</const>
       </math>
     </math>
+    <if comp="is_set" value1="selgroup" id="cl2">
+      <const>selected</const>
+      <else>
+	<const>not selected</const>
+      </else>
+    </if>
   </add>
+
+  <if id="selnum" comp="is_set" value1="selgroup">
+    <const>1</const>
+    <else>
+      <const>2</const>
+    </else>
+  </if>
   
-  <execute exec="splitter" location="/home/users/joppich/cpp/splitter/bin/" param="cl">
+  <execute exec="/usr/bin/echo" location="" param="${cl${selnum}}">
     <output id="outcout" type="cout" color="green" to="outputstream1" />
     <output id="outcerr" type="cerr" color="red"   to="output1" />
     <!--<output id="outfolder" type="folder" location="/home/users/joppich/cpp/splitter/bin/" />
@@ -74,7 +159,7 @@
   </execute>
 
   <if comp="is_set" value1="selgroup" value2="true">
-  <execute exec="splitter" location="/home/users/joppich/cpp/splitter/bin/" param="valuenode1">
+  <execute exec="/usr/bin/echo" location="" param="valuenode1">
     <output id="out3" type="STD" to="outputstream2" />
     <!--<output id="out2" type="file" src="" to="img1"/>-->
   </execute>

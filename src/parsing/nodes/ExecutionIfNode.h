@@ -43,6 +43,10 @@ public:
             throw "value1 must be set";
 
 
+    }
+
+    virtual void finishedCreation()
+    {
         // find else node, stop on first found node
         for (size_t i = 0; i < m_vChildren.size(); ++i)
         {
@@ -56,7 +60,6 @@ public:
             }
 
         }
-
     }
 
     std::string getValue(std::string sNodeID, std::map< std::string, ExecutionNode*>* pID2Node,
@@ -82,6 +85,30 @@ public:
         return sNodeID;
 
 
+    }
+
+    virtual std::string evaluateChildren( std::map< std::string, ExecutionNode*>* pID2Node,
+                                          std::map<std::string, std::string>* pInputID2Value,
+                                          std::map<std::string, QWidget*>* pInputID2Widget)
+    {
+        std::string sReturn = "";
+
+        for (size_t i = 0; i < m_vChildren.size(); ++i)
+        {
+
+            ExecutionNode* pChild = m_vChildren.at(i);
+
+            if ((i > 0) && (pChild != m_pElseNode))
+            {
+                sReturn = sReturn + "\n";
+            }
+
+            if (pChild != m_pElseNode)
+                sReturn = sReturn + pChild->evaluate(pID2Node, pInputID2Value, pInputID2Widget);
+
+        }
+
+        return sReturn;
     }
 
 
@@ -152,7 +179,7 @@ protected:
 
     std::vector<std::string> m_vValidCompareModes;
 
-    ExecutionNode* m_pElseNode;
+    ExecutionNode* m_pElseNode = NULL;
 
 };
 

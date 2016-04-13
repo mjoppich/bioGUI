@@ -1,5 +1,5 @@
 <!--<?xml version="1.0" encoding="UTF-8"?>-->
-<template title="example title" description="bla description" icon="">
+<template rootid="blubb" intatt="111">
 
 <window width="1000" height="1000" title="Example1">
 
@@ -12,19 +12,26 @@
     <!--<image id="img1" src="/home/users/joppich/ownCloud/markus/uni/publications/yeast/progress_Peptides/images/evidence_peptides_lengths.png"/>-->
 	<image id="img1" src="/cygdrive/c/ownCloud/markus/uni/publications/yeast/progress_Peptides/images/evidence_peptides_lengths.png"/>
 
-    <filedialog>Input File</filedialog>
+    <filedialog location="">Input File</filedialog>
+    <filedialog location="" multiples="true">Input Files</filedialog>
+    <filedialog location="" folder="true">Output Folder</filedialog>
+    <filedialog location="" output="true">Output File</filedialog>
 
     <hgroup>
-      <group title="Select strategy:" hint="do not mess up">
+      <groupbox id="radiocheck" title="Select strategy:" hint="do not mess up">
 	<radiobutton hint="this should be selected">rbutton1</radiobutton>
 	<radiobutton>rbutton2</radiobutton>
 	<radiobutton>rbutton3</radiobutton>
 	<checkbox hint="i am disturbing">check1</checkbox>
-      </group>
+      </groupbox>
 
-      <group id="selgroup" title="Select strategy:" hint="do not mess up" checkable="true">
+      <group id="selgroup" title="Select strategy:" hint="do not mess up" checkable="true" unchecked_value="">
+	 <groupbox>
+
 	<radiobutton hint="this should be selected">rbutton1</radiobutton>
 	<checkbox hint="i am disturbing">check1</checkbox>
+
+	 </groupbox>
       </group>
     </hgroup>
 
@@ -33,7 +40,7 @@
       <stream id="outputstream2">OS2</stream>
     </streambox>
 
-    <combobox>
+    <combobox id="combo1">
       <comboitem>Select 1</comboitem>
       <comboitem>Select 2</comboitem>
       <comboitem>Select 3</comboitem>
@@ -46,7 +53,7 @@
 
 <execution>
   
-  <add sep=" " id="cl">
+  <add sep=" " id="cl1">
     <const>-bla</const>
     <value id="valuenode1" from="input1"/>
     <const>-num</const>
@@ -56,16 +63,31 @@
 	<const type="number">3</const>
       </math>
     </math>
+    <if comp="is_set" value1="selgroup" id="cl2">
+      <const>selected</const>
+      <else>
+	<const>not selected</const>
+      </else>
+    </if>
   </add>
+
+  <if id="selnum" comp="is_set" value1="selgroup">
+    <const>1</const>
+    <else>
+      <const>2</const>
+    </else>
+  </if>
   
-  <execute exec="splitter" location="/home/users/joppich/cpp/splitter/bin/" param="cl">
+  <execute exec="/usr/bin/echo" location="" param="${cl${selnum}}">
     <output id="outcout" type="cout" color="green" to="outputstream1" />
     <output id="outcerr" type="cerr" color="red"   to="output1" />
-    <!--<output id="out2" type="file" src="" to="img1"/>-->
+    <!--<output id="outfolder" type="folder" location="/home/users/joppich/cpp/splitter/bin/" />
+    <output id="outfolder2" type="folder" location="/home/users/joppich/cpp/splitter/README.md" />
+    <output id="outfile" type="file" location="/home/users/joppich/cpp/splitter/README.md" />-->
   </execute>
 
   <if comp="is_set" value1="selgroup" value2="true">
-  <execute exec="splitter" location="/home/users/joppich/cpp/splitter/bin/" param="valuenode1">
+  <execute exec="/usr/bin/echo" location="" param="valuenode1">
     <output id="out3" type="STD" to="outputstream2" />
     <!--<output id="out2" type="file" src="" to="img1"/>-->
   </execute>

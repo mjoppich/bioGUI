@@ -84,6 +84,52 @@ public:
         return sReturn;
     }
 
+    size_t parseCommand(std::string* pCommand, size_t iPos, std::map< std::string, ExecutionNode*>* pID2Node,
+                             std::map<std::string, std::string>* pInputID2Value,
+                             std::map<std::string, QWidget*>* pInputID2Widget)
+    {
+
+        size_t iVarPos;
+        size_t iStartPos = iPos;
+
+        while ( (iVarPos = pCommand->find("${", iPos)) != std::string::npos )
+        {
+
+            iPos = this->parseCommand(pCommand, iVarPos+2, pID2Node, pInputID2Value, pInputID2Widget);
+
+        }
+
+        size_t iVarEnd = pCommand->find("}", iPos);
+
+        if (iVarEnd == std::string::npos)
+        {
+            iVarEnd = pCommand->size();
+            return iVarEnd;
+        }
+
+
+        std::string sPrefix = pCommand->substr(0, iStartPos-2);
+        std::string sSuffix = pCommand->substr(iVarEnd+1, pCommand->size());
+        std::string sID = pCommand->substr(iStartPos, iVarEnd-iStartPos);
+
+        pCommand->clear();
+        pCommand->append(sPrefix);
+
+        std::string sValue = this->evaluateID(sID, pID2Node, pInputID2Value, pInputID2Widget);
+
+
+        std::cout << "id " << sID << " value " << sValue << std::endl;
+        pCommand->append(sValue);
+        size_t iReturn = pCommand->size();
+
+        pCommand->append(sSuffix);
+
+
+        return iReturn;
+
+
+    }
+
     std::string evaluate( std::map< std::string, ExecutionNode*>* pID2Node,
                           std::map<std::string, std::string>* pInputID2Value,
                           std::map<std::string, QWidget*>* pInputID2Widget)
@@ -93,14 +139,25 @@ public:
 
         if (m_sCLArg.size() > 0)
         {
-            std::map< std::string, ExecutionNode*>::iterator oCLNode = pID2Node->find(m_sCLArg);
 
-            if (!(oCLNode != pID2Node->end()))
-                throw "param node not found";
+            if (m_sCLArg.find("${") == std::string::npos)
+            {
 
-            ExecutionNode* pParamNode = oCLNode->second;
+                std::map< std::string, ExecutionNode*>::iterator oCLNode = pID2Node->find(m_sCLArg);
 
-            sCLArg = pParamNode->evaluate(pID2Node, pInputID2Value, pInputID2Widget);
+                if (!(oCLNode != pID2Node->end()))
+                    throw "param node not found";
+
+                ExecutionNode* pParamNode = oCLNode->second;
+
+                sCLArg = pParamNode->evaluate(pID2Node, pInputID2Value, pInputID2Widget);
+
+            } else {
+
+                sCLArg = std::string(m_sCLArg);
+                this->parseCommand(&sCLArg, 0, pID2Node, pInputID2Value, pInputID2Widget);
+
+            }
 
         }
 
@@ -110,8 +167,7 @@ public:
         int iReturnCode = 0;
 
         std::string sProgram = m_sExecLocation + m_sExecutable;
-
-        //QProcess::execute("/usr/bin/sleep 3");
+        std::string sModified(sProgram);
 
         sProgram = "/usr/bin/echo";
         QProcess* pProcess = new QProcess();

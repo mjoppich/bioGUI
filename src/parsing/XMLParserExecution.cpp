@@ -32,6 +32,8 @@ ExecutionNode *XMLParserExecution::getExecutionNodes(QDomElement* pElement ) {
 
     }
 
+    pNode->finishedCreation();
+
 
     return pNode;
 

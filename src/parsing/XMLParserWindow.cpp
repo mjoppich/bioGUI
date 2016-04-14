@@ -7,7 +7,11 @@
 #include <src/app/QAbstractButtonItem.h>
 #include <src/app/QExtendedRadioButton.h>
 #include <src/app/QExtendedCheckBox.h>
+#include <src/app/QExclusiveGroupBox.h>
 #include "XMLParserWindow.h"
+
+#include <QGridLayout>
+#include <src/app/QExtGridLayout.h>
 
 #include "../bioGUIapp.h"
 
@@ -26,6 +30,20 @@ QLayout* XMLParserWindow::createLayout(QDomElement* pElement)
     if (sTag.compare("vgroup", Qt::CaseInsensitive) == 0)
     {
         QVBoxLayout *pLayout = new QVBoxLayout();
+        return (QLayout*) pLayout;
+    }
+
+
+    if (sTag.compare("grid", Qt::CaseInsensitive) == 0)
+    {
+
+        int iRows = this->getAttribute(pElement, "rows", 0).toInt();
+        int iCols = this->getAttribute(pElement, "cols", 0).toInt();
+
+        bool bOrdered = (this->getAttribute(pElement, "ordered", "false").compare("true", Qt::CaseInsensitive) == 0);
+
+        QExtGridLayout *pLayout = new QExtGridLayout(iRows, iCols, bOrdered);
+
         return (QLayout*) pLayout;
     }
 
@@ -84,6 +102,22 @@ QWidget* XMLParserWindow::createComponent(QDomElement* pElement, bool* pChildren
     if (sTag.compare("input", Qt::CaseInsensitive) == 0)
     {
         QLineEdit *pLineEdit = new QLineEdit( sValue );
+
+        QString sType = this->getAttribute(pElement, "type", "");
+
+        if (sType.size() != 0)
+        {
+            if (sType.compare("int", Qt::CaseInsensitive) == 0)
+            {
+                pLineEdit->setValidator( new QIntValidator() );
+            }
+
+            if (sType.compare("float", Qt::CaseInsensitive) == 0)
+            {
+                pLineEdit->setValidator( new QDoubleValidator() );
+            }
+
+        }
 
         this->addValueFetcher(pElement, [pLineEdit] () {return pLineEdit->text().toStdString();});
 
@@ -268,13 +302,13 @@ QWidget* XMLParserWindow::createComponent(QDomElement* pElement, bool* pChildren
             QDomElement oChildNode = oChildren.at(i).toElement();
             QWidget* pChildElement = createComponent(&oChildNode, &bBoolean);
 
-            if (pElement == NULL)
+            if (pChildElement == NULL)
                 throw "error in creating groupbox components";
 
             if (QAbstractButtonItem* pButtonItem = dynamic_cast<QAbstractButtonItem *>(pChildElement))
             {
 
-                pLayout->addWidget( pChildElement );
+                this->addToLayout(pLayout, pChildElement);
 
                 if ((i == 0) || ( vSelected.contains(pButtonItem->getValue()) ))
                 {
@@ -333,7 +367,7 @@ QWidget* XMLParserWindow::createComponent(QDomElement* pElement, bool* pChildren
 
         (*pChildrenFinished) = true;
 
-        QGroupBox* pGroupBox = new QGroupBox();
+        QExclusiveGroupBox* pGroupBox = new QExclusiveGroupBox("");
 
         /*
          * Window Title
@@ -365,12 +399,23 @@ QWidget* XMLParserWindow::createComponent(QDomElement* pElement, bool* pChildren
 
         }
 
+        /*
+         * exclusive?
+         */
+        QString sExclusive = this->getAttribute(pElement, "exclusive", "false");
+        if (sExclusive.compare("TRUE", Qt::CaseInsensitive) == 0)
+        {
+            pGroupBox->setExclusive(true);
+        } else {
+            pGroupBox->setExclusive(false);
+        }
+
 
         /*
          * state?
          */
         QString sSelected = this->getAttribute(pElement, "checked", "false");
-        if (sSelected.compare("TRUE", Qt::CaseInsensitive))
+        if (sSelected.compare("TRUE", Qt::CaseInsensitive) == 0)
         {
             pGroupBox->setChecked(true);
         }
@@ -418,7 +463,8 @@ QWidget* XMLParserWindow::createComponent(QDomElement* pElement, bool* pChildren
             }
 
 
-            pLayout->addWidget( pChildElement );
+            this->addToLayout(pLayout, pChildElement);
+            pGroupBox->addChild(pChildElement);
         }
 
         pGroupBox->setLayout(pLayout);
@@ -551,6 +597,18 @@ QWidget* XMLParserWindow::createComponent(QDomElement* pElement, bool* pChildren
         });
 
         pLayout->addWidget(pClearButton);
+
+        QPushButton* pSaveLogButton = new QPushButton("Save Log");
+
+        this->connect(pSaveLogButton, &QAbstractButton::clicked, [pStreamOut] {
+
+            QString sFileName = QFileDialog::getSaveFileName(0, "Select Output File", QDir::currentPath(), "");
+
+            pStreamOut->saveToFile(sFileName);
+
+        });
+
+        pLayout->addWidget(pSaveLogButton);
 
 
         QDomNodeList oChildren = pElement->childNodes();

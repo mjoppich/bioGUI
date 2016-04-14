@@ -34,6 +34,7 @@
 
 #include <functional>
 #include <map>
+#include <src/app/QExtGridLayout.h>
 #include "XMLParser.h"
 
 class bioGUIapp;
@@ -55,6 +56,8 @@ public:
 
         m_pKnownTags->push_back("hgroup");
         m_pKnownTags->push_back("vgroup");
+        m_pKnownTags->push_back("grid");
+
         m_pKnownTags->push_back("label");
         m_pKnownTags->push_back("input");
         m_pKnownTags->push_back("image");
@@ -286,20 +289,13 @@ protected:
 
     ELEMENT_TYPE getElementType(QDomElement* pElement)
     {
-        QString sTag = pElement->tagName();
+        QLayout* pLayout = this->createLayout(pElement);
 
+        if (pLayout == NULL)
+            return ELEMENT_TYPE::ELEMENT;
 
-        if (sTag.compare("hgroup", Qt::CaseInsensitive) == 0)
-        {
-            return ELEMENT_TYPE::LAYOUT;
-        }
-
-        if (sTag.compare("vgroup", Qt::CaseInsensitive) == 0)
-        {
-            return ELEMENT_TYPE::LAYOUT;
-        }
-
-        return ELEMENT_TYPE::ELEMENT;
+        delete pLayout;
+        return ELEMENT_TYPE::LAYOUT;
 
     }
 
@@ -396,7 +392,9 @@ protected:
                         ((QBoxLayout *) pParent)->addLayout( (QLayout*) pReturn);
 
                     } else {
-                        ((QBoxLayout *) pParent)->addWidget( (QWidget*) pReturn);
+
+                        this->addToLayout((QLayout*)pParent, pReturn);
+
                     }
 
                 }
@@ -405,6 +403,16 @@ protected:
 
         return (QWidget*)pParent;
 
+    }
+
+    void addToLayout(QLayout* pLayout, QWidget* pWidget)
+    {
+        if (QExtGridLayout* pGridLayout = dynamic_cast<QExtGridLayout*>( pLayout ))
+        {
+            pGridLayout->addNextWidget(pWidget);
+        } else {
+            pLayout->addWidget( pWidget );
+        }
     }
 
 

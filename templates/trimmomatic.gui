@@ -5,10 +5,10 @@
 
   <vgroup>
 
-<group>
+<group exclusive="true" title="Method">
 <hgroup>
 
-<group title="Paired End" checkable="true">
+<group title="Paired End" checkable="true" exclusive="true">
 
 <filedialog location="">Input File 1</filedialog>
 <filedialog location="">Input File 2</filedialog>
@@ -35,59 +35,64 @@
 </group>
 
 <group title="Step options">
-<hgroup>
-<group title="Custom Adapters" checkable="true">
+<grid rows="3" cols="3" ordered="true">
+
+<group title="Adapters" exclusive="true">
+
+<group title="Custom" checkable="true">
 
 <filedialog location="">Input File 1</filedialog>
-<label>Seed mismatches</label><input></input>
-<label>Palindrome clip threshold</label><input></input>
-<label>Simple Clip Threshold</label><input></input>
+<label>Seed mismatches</label><input type="int"></input>
+<label>Palindrome clip threshold</label><input type="int"></input>
+<label>Simple Clip Threshold</label><input type="int"></input>
 
 </group>
 
-<group title="Predefined Adapters" checkable="true">
+<group title="Predefined" checkable="true">
     <combobox id="phred">
       <comboitem value="ILLUMINACLIP:./adapters/TruSeqU-SE.fa:2:30:10">TruSeqU SE</comboitem>
       <comboitem value="ILLUMINACLIP:./adapters/TruSeqU-PE.fa:2:30:10">TruSeqU PE</comboitem>
     </combobox>
 </group>
 
+</group>
+
 <group title="Sliding Window" checkable="true">
-<label>Size</label><input></input>
-<label>Quality</label><input></input>
+<label>Size</label><input type="int"></input>
+<label>Quality</label><input type="int"></input>
 </group>
 
 <group title="Leading Window" checkable="true">
 <hgroup>
-<label>Size</label><input></input>
+<label>Size</label><input type="int"></input>
 </hgroup>
 </group>
 
 <group title="Trailing Window" checkable="true">
 <hgroup>
-<label>Size</label><input></input>
+<label>Size</label><input type="int"></input>
 </hgroup>
 </group>
 
 <group title="Crop" checkable="true">
 <hgroup>
-<label>Size</label><input></input>
+<label>Size</label><input type="int"></input>
 </hgroup>
 </group>
 
 <group title="Headcrop" checkable="true">
 <hgroup>
-<label>Size</label><input></input>
+<label>Size</label><input type="int"></input>
 </hgroup>
 </group>
 
 <group title="Min Len" checkable="true">
 <hgroup>
-<label>Size</label><input></input>
+<label>Size</label><input type="int"></input>
 </hgroup>
 </group>
 
-<group title="PHRED base">
+<group title="PHRED base" checkable="true">
 
     <combobox id="phred">
       <comboitem>phred33</comboitem>
@@ -95,8 +100,7 @@
     </combobox>
 
 </group>
-
-</hgroup>
+</grid>
 </group>
 
 

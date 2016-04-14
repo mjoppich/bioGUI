@@ -42,6 +42,7 @@ public:
 
         // this listwidget shows all available items
         m_pTemplates = new QListWidget();
+        m_pTemplates->setMaximumWidth(220);
 
         this->connect(m_pTemplates, &QListWidget::itemSelectionChanged, [this] () {
 
@@ -166,7 +167,10 @@ public:
         m_pWindow = m_pWindowParser->getWindow();
 
         m_pApplicationWindowArea->setMinimumSize( m_pWindow->minimumWidth()+10, m_pWindow->minimumHeight()+10);
-        m_pMainWindow->setMinimumSize( m_pApplicationWindowArea->minimumWidth() + m_pTemplates->width(), std::max(m_pApplicationWindowArea->minimumHeight(), m_pTemplates->height()) );
+        m_pMainWindow->setMinimumSize( m_pApplicationWindowArea->minimumWidth() + m_pTemplates->width(), std::max(m_pApplicationWindowArea->minimumHeight()+20, m_pTemplates->height()) );
+
+        m_pApplicationWindowArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+        m_pApplicationWindowArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
 
         // this also destroys the current window!
         m_pApplicationWindowArea->setWidget(m_pWindow);

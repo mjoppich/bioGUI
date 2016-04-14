@@ -9,6 +9,9 @@
 #include <QTextCursor>
 #include <QProcess>
 #include <QAbstractButton>
+#include <QFile>
+#include <QTextStream>
+
 #include <iostream>
 #include <QtWidgets/qcheckbox.h>
 #include "ExtendedBuffer.h"
@@ -174,6 +177,30 @@ public:
         QObject::connect(pControl, SIGNAL(toggled(bool)), this , SLOT(filterText(bool)), Qt::QueuedConnection );
 
         // std::cout << "added stream " << sStreamID << std::endl;
+
+    }
+
+    void saveToFile(QString sFileName)
+    {
+
+        QFile oFile( sFileName );
+        if ( oFile.open(QIODevice::ReadWrite) )
+        {
+            QTextStream stream( &oFile );
+
+            size_t iCount = this->count();
+            for (size_t i = 0; i < iCount; ++i) {
+
+                size_t iIndex = iCount - 1 - i;
+
+                AdvancedListWidgetItem *pItem = dynamic_cast<AdvancedListWidgetItem *>( this->item(iIndex));
+
+                stream << pItem->text() << endl;
+            }
+
+        }
+
+        oFile.close();
 
     }
 

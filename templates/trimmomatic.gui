@@ -34,10 +34,10 @@
 </hgroup>
 </group>
 
-<group title="Step options">
+<group id="orderedgroup" title="Step options">
 <grid rows="3" cols="3" ordered="true">
 
-<group title="Adapters" exclusive="true">
+<group id="adapters" title="Adapters" exclusive="true">
 
 <group title="Custom" checkable="true">
 
@@ -57,7 +57,7 @@
 
 </group>
 
-<group title="Sliding Window" checkable="true">
+<group id="slidingwindow" title="Sliding Window" checkable="true">
 <label>Size</label><input type="int"></input>
 <label>Quality</label><input type="int"></input>
 </group>
@@ -153,6 +153,11 @@
       <const>2</const>
     </else>
   </if>
+
+  <orderedadd id="cl" from="orderedgroup">
+    <value from="cl1" for="adapters"/>
+    <value from="cl2" for="slidingwindow"/>
+  </orderedadd>
   
   <execute exec="/usr/bin/echo" location="" param="${cl${selnum}}">
     <output id="outcout" type="cout" color="green" to="outputstream1" />

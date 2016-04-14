@@ -5,6 +5,7 @@
 #ifndef BIOGUI_XMLPARSEREXECUTION_H
 #define BIOGUI_XMLPARSEREXECUTION_H
 
+#include "nodes/ExecutionOrderedAddNode.h"
 #include "nodes/ExecutionPlaceholderNode.h"
 #include "nodes/ExecutionIfNode.h"
 #include "nodes/ExecutionMathNode.h"
@@ -28,6 +29,7 @@ public:
     : XMLParser(sFileName)
     {
         m_pKnownTags->push_back("add");
+        m_pKnownTags->push_back("orderedadd");
         m_pKnownTags->push_back("value");
         m_pKnownTags->push_back("execute");
         m_pKnownTags->push_back("const");
@@ -84,6 +86,15 @@ protected:
         {
 
             ExecutionAddNode* pNode = new ExecutionAddNode( pElement );
+
+            pReturn = pNode;
+
+        }
+
+        if ( sTagName.compare("orderedadd", Qt::CaseInsensitive)==0 )
+        {
+
+            ExecutionOrderedAddNode* pNode = new ExecutionOrderedAddNode( pElement );
 
             pReturn = pNode;
 

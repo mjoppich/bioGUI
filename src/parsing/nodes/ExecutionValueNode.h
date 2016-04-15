@@ -53,6 +53,16 @@ public:
 
     }
 
+    std::string getFrom()
+    {
+        return m_sFrom;
+    }
+
+    bool hasFrom()
+    {
+        return (m_sFrom.size() != 0);
+    }
+
 protected:
 
     std::string m_sFrom;

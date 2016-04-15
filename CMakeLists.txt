@@ -36,6 +36,10 @@ if ( CMAKE_SYSTEM_NAME STREQUAL "Windows" OR CYGWIN OR MINGW)
     SET(Qt5_DIR "/")
     set(QT_QMAKE_EXECUTABLE /usr/lib/qt5/bin/qmake.exe)
 
+    if (MINGW)
+        set(QT_QMAKE_EXECUTABLE C:\\Qt\\5.6\\mingw49_32\\bin\\qmake.exe)
+    endif()
+
 else()
     SET(Qt5_DIR "/home/users/joppich/progs/Qt/5.5/gcc_64/" )
     set(QT_QMAKE_EXECUTABLE ${Qt5_DIR}/bin/qmake)
@@ -48,7 +52,12 @@ set ( CMAKE_PREFIX_PATH ${Qt5_DIR})
 MESSAGE(WARNING "Qt5_DIR " ${Qt5_DIR})
 MESSAGE(WARNING "QT_QMAKE_EXECUTABLE " ${QT_QMAKE_EXECUTABLE})
 
-find_package(Qt5 5.5 COMPONENTS Core Gui Widgets Network Xml XmlPatterns PATHS "/home/users/joppich/progs/Qt/5.5/gcc_64/" REQUIRED NO_SYSTEM_ENVIRONMENT_PATH)
+if (MINGW)
+    find_package(Qt5 5.6 COMPONENTS Core Gui Widgets Network Xml XmlPatterns PATHS "/home/users/joppich/progs/Qt/5.5/gcc_64/" REQUIRED)
+else()
+    find_package(Qt5 5.5 COMPONENTS Core Gui Widgets Network Xml XmlPatterns PATHS "/home/users/joppich/progs/Qt/5.5/gcc_64/" REQUIRED NO_SYSTEM_ENVIRONMENT_PATH)
+endif()
+
 
 #find_package(Qt5Core 5.5 PATHS "C:/Qt/5.5/msvc2013_64" "/home/users/joppich/progs/Qt/5.5/gcc_64/" REQUIRED NO_SYSTEM_ENVIRONMENT_PATH)
 #find_package(Qt5Gui 5.5 PATHS "C:/Qt/5.5/msvc2013_64" "/home/users/joppich/progs/Qt/5.5/gcc_64/" REQUIRED NO_SYSTEM_ENVIRONMENT_PATH)

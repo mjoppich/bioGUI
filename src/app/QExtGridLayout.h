@@ -7,8 +7,11 @@
 
 #include <QGridLayout>
 #include <QLabel>
-#include <QtWidgets/qcombobox.h>
+#include <QComboBox>
+#include <QWidget>
 #include <iterator>
+#include <vector>
+#include <map>
 
 class QExtGridLayout : public QGridLayout {
 
@@ -72,6 +75,22 @@ public:
 
     }
 
+    std::vector<std::string> getOrderedIDs(std::map<QWidget*, std::string>* pMap)
+    {
+        std::vector<std::string> vReturn;
+
+        for (size_t i = 0; i < m_vWidgets.size(); ++i)
+        {
+            std::map<QWidget*, std::string>::iterator oIt = pMap->find( m_vWidgets.at(i) );
+
+            if (oIt != pMap->end())
+            {
+                vReturn.push_back( oIt->second );
+            }
+        }
+
+        return vReturn;
+    }
 
 protected:
 

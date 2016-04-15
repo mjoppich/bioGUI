@@ -18,6 +18,7 @@ public:
 
 
         m_sFrom = this->getDomElementAttribute(pElement, "FROM", "").toStdString();
+        m_sFor = this->getDomElementAttribute(pElement, "for", "").toStdString();
 
         if (m_sFrom.size() == 0)
         {
@@ -63,9 +64,20 @@ public:
         return (m_sFrom.size() != 0);
     }
 
+    std::string getFor()
+    {
+        return m_sFor;
+    }
+
+    bool hasFor()
+    {
+        return (m_sFor.size() != 0);
+    }
+
 protected:
 
     std::string m_sFrom;
+    std::string m_sFor;
 
 
 };

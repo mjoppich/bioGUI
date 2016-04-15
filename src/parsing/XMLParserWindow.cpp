@@ -22,14 +22,14 @@ QLayout* XMLParserWindow::createLayout(QDomElement* pElement)
 
     if (sTag.compare("hgroup", Qt::CaseInsensitive) == 0)
     {
-        QHBoxLayout *pLayout = new QHBoxLayout();
+        QHBoxLayout *pLayout = new QOrderedHBoxLayout();
 
         return (QLayout*) pLayout;
     }
 
     if (sTag.compare("vgroup", Qt::CaseInsensitive) == 0)
     {
-        QVBoxLayout *pLayout = new QVBoxLayout();
+        QVBoxLayout *pLayout = new QOrderedVBoxLayout();
         return (QLayout*) pLayout;
     }
 
@@ -39,8 +39,6 @@ QLayout* XMLParserWindow::createLayout(QDomElement* pElement)
 
         int iRows = this->getAttribute(pElement, "rows", 0).toInt();
         int iCols = this->getAttribute(pElement, "cols", 0).toInt();
-
-        bool bOrdered = (this->getAttribute(pElement, "ordered", "false").compare("true", Qt::CaseInsensitive) == 0);
 
         QExtGridLayout *pLayout = new QExtGridLayout(iRows, iCols);
 
@@ -382,6 +380,7 @@ QWidget* XMLParserWindow::createComponent(QDomElement* pElement, bool* pChildren
         if (sCheckable.compare("TRUE") == 0)
         {
             pGroupBox->setCheckable(true);
+            pGroupBox->setChecked(false);
 
             std::string sCheckedValue = this->getAttribute(pElement, "checked_value", "true").toStdString();
             std::string sUncheckedValue = this->getAttribute(pElement, "unchecked_value", "false").toStdString();
@@ -410,11 +409,22 @@ QWidget* XMLParserWindow::createComponent(QDomElement* pElement, bool* pChildren
             pGroupBox->setExclusive(false);
         }
 
+        /*
+         * ordered
+         *
+         */
+
+        bool bOrdered = (this->getAttribute(pElement, "ordered", "false").compare("true", Qt::CaseInsensitive) == 0);
+        pGroupBox->setOrdered(bOrdered);
 
         /*
          * state?
          */
-        QString sSelected = this->getAttribute(pElement, "checked", "false");
+        QString sSelected = this->getAttribute(pElement, "selected", "false");
+
+        qDebug() << sSelected << " " << this->getAttribute(pElement, "id", "unknown");
+
+
         if (sSelected.compare("TRUE", Qt::CaseInsensitive) == 0)
         {
             pGroupBox->setChecked(true);
@@ -451,22 +461,13 @@ QWidget* XMLParserWindow::createComponent(QDomElement* pElement, bool* pChildren
                 throw "error in creating groupbox components: " + oChildNode.text().toStdString();
             }
 
-
-            if (QAbstractButton* pButton = dynamic_cast<QAbstractButton *>(pChildElement))
-            {
-
-                if (i == 0)
-                    pButton->setChecked(true);
-                else
-                    pButton->setChecked(false);
-
-            }
-
-
+            pChildElement = pGroupBox->addNextWidget(pChildElement);
             this->addToLayout(pLayout, pChildElement);
-            pGroupBox->addChild(pChildElement);
+
+            this->setID(pChildElement, &oChildNode, true);
         }
 
+        pGroupBox->getConsistent();
         pGroupBox->setLayout(pLayout);
 
         pWidget = pGroupBox;
@@ -669,11 +670,7 @@ QWidget* XMLParserWindow::createComponent(QDomElement* pElement, bool* pChildren
         }
 
 
-        QString sID = this->getAttribute(pElement, "id", "");
-        if (sID.length() > 0)
-        {
-            m_pID2Widget->insert( std::pair<std::string, QWidget*>(sID.toStdString(), pWidget));
-        }
+        this->setID(pWidget, pElement, false);
 
     }
 

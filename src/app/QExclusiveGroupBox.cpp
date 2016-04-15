@@ -83,12 +83,14 @@ void QExclusiveGroupBox::addChild(QWidget* pChild)
 
             });
 
+            /*
             if (m_vChildren.size() == 0)
             {
                 pButton->setChecked(true);
             } else {
                 pButton->setChecked(false);
             }
+             */
 
         }
 
@@ -108,12 +110,14 @@ void QExclusiveGroupBox::addChild(QWidget* pChild)
 
             });
 
+            /*
             if (m_vChildren.size() == 0)
             {
                 pBox->setChecked(true);
             } else {
                 pBox->setChecked(false);
             }
+             */
         }
 
         m_vChildren.push_back(pChild);

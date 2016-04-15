@@ -8,6 +8,56 @@
 #include <vector>
 #include <stddef.h>
 #include <QWidget>
+#include <QHBoxLayout>
+#include <QVBoxLayout>
+
+class QOrderedHBoxLayout : public QHBoxLayout {
+public:
+    void addNextWidget(QWidget* pWidget)
+    {
+        QWidget* pAddWidget = pWidget;
+
+        this->addWidget(pWidget);
+
+    }
+
+    void removeWidget(QWidget* pWidget)
+    {
+        QHBoxLayout::removeWidget(pWidget);
+    }
+
+protected:
+
+    void addWidgetAtPosition(QWidget* pWidget, size_t iPosition)
+    {
+        pWidget->setParent(this->parentWidget());
+        this->insertWidget(iPosition, pWidget);
+    }
+};
+
+class QOrderedVBoxLayout : public QVBoxLayout {
+public:
+    void addNextWidget(QWidget* pWidget)
+    {
+        QWidget* pAddWidget = pWidget;
+
+        this->addWidget(pWidget);
+
+    }
+
+    void removeWidget(QWidget* pWidget)
+    {
+        QVBoxLayout::removeWidget(pWidget);
+    }
+
+protected:
+
+    void addWidgetAtPosition(QWidget* pWidget, size_t iPosition)
+    {
+        pWidget->setParent(this->parentWidget());
+        this->insertWidget(iPosition, pWidget);
+    }
+};
 
 class QOrderedLayout {
 

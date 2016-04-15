@@ -5,6 +5,7 @@
 #ifndef BIOGUI_EXECUTIONIFNODE_H
 #define BIOGUI_EXECUTIONIFNODE_H
 
+#include <iostream>
 #include "ExecutionNode.h"
 
 class ExecutionIfNode : public ExecutionNode {
@@ -125,6 +126,11 @@ public:
          *
          */
 
+        if (m_sID.compare("illuminaclip") == 0)
+        {
+            std::cout << m_sID << std::endl;
+        }
+
         if (m_sCompareMode.compare("is_set") == 0)
         {
 
@@ -158,6 +164,9 @@ public:
 
                 return this->evaluateChildren(pID2Node, pInputID2Value, pInputID2Widget);
 
+            } else {
+
+                return this->evaluateElseNode(pID2Node, pInputID2Value, pInputID2Widget);
             }
         }
 

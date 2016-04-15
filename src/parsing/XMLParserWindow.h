@@ -202,7 +202,8 @@ public:
 
 
                         } else if ( ( element.tagName().compare("groupbox", Qt::CaseInsensitive) == 0) ||
-                                    ( element.tagName().compare("combobox", Qt::CaseInsensitive) == 0) )
+                                    ( element.tagName().compare("combobox", Qt::CaseInsensitive) == 0) ||
+                                    ( element.tagName().compare("group", Qt::CaseInsensitive) == 0) )
                         {
 
                             std::string sValue = oIt->second();
@@ -407,12 +408,40 @@ protected:
 
     void addToLayout(QLayout* pLayout, QWidget* pWidget)
     {
-        if (QExtGridLayout* pGridLayout = dynamic_cast<QExtGridLayout*>( pLayout ))
+        if (QOrderedLayout* pOrderedLayout = dynamic_cast<QOrderedLayout*>( pLayout ))
         {
-            pGridLayout->addNextWidget(pWidget);
+            pOrderedLayout->addNextWidget(pWidget);
         } else {
             pLayout->addWidget( pWidget );
         }
+    }
+
+    void setID(QWidget* pWidget, QDomElement* pElement, bool bOverwrite=false)
+    {
+
+        QString sID = this->getAttribute(pElement, "id", "");
+        if (sID.length() > 0)
+        {
+
+            if (bOverwrite)
+            {
+
+                std::map<std::string, QWidget*>::iterator oIt = m_pID2Widget->find(sID.toStdString());
+
+                if (oIt != m_pID2Widget->end())
+                {
+                    // overwrite
+                    oIt->second = pWidget;
+                    return;
+                }
+
+            }
+
+            // insert new
+            m_pID2Widget->insert( std::pair<std::string, QWidget*>(sID.toStdString(), pWidget));
+
+        }
+
     }
 
 

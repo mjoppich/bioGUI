@@ -5,7 +5,7 @@
 #ifndef BIOGUI_EXECUTIONEXECUTENODE_H
 #define BIOGUI_EXECUTIONEXECUTENODE_H
 
-
+#include <QDebug>
 #include <QThread>
 #include <QProcess>
 #include <iostream>
@@ -26,6 +26,8 @@ public:
         m_sExecutable = this->getDomElementAttribute(pElement, "exec", QString(sNotSet.c_str())).toStdString();
         m_sExecLocation = this->getDomElementAttribute(pElement, "location", QString(sNotSet.c_str())).toStdString();
         m_sCLArg = this->getDomElementAttribute(pElement, "param", QString(sNotSet.c_str())).toStdString();
+
+        m_bTest = (this->getDomElementAttribute(pElement, "test", "false").compare("True", Qt::CaseInsensitive) == 0);
 
         if (m_sExecutable.compare(sNotSet) == 0)
             throw "executable not set";
@@ -145,12 +147,13 @@ public:
 
                 std::map< std::string, ExecutionNode*>::iterator oCLNode = pID2Node->find(m_sCLArg);
 
-                if (!(oCLNode != pID2Node->end()))
-                    throw "param node not found";
-
-                ExecutionNode* pParamNode = oCLNode->second;
-
-                sCLArg = pParamNode->evaluate(pID2Node, pInputID2Value, pInputID2Widget);
+                if (oCLNode != pID2Node->end())
+                {
+                    ExecutionNode* pParamNode = oCLNode->second;
+                    sCLArg = pParamNode->evaluate(pID2Node, pInputID2Value, pInputID2Widget);
+                } else {
+                    sCLArg = m_sCLArg;
+                }
 
             } else {
 
@@ -161,18 +164,20 @@ public:
 
         }
 
-        std::cout << "running " << m_sExecLocation << m_sExecutable << " " << sCLArg << std::endl;
-
         bool bActuallyRun = true;
         int iReturnCode = 0;
 
         std::string sProgram = m_sExecLocation + m_sExecutable;
         std::string sModified(sProgram);
 
-        sProgram = "/usr/bin/echo";
+        if (m_bTest)
+        {
+            sProgram = "/usr/bin/echo";
 
-        if (QSysInfo::windowsVersion() != QSysInfo::WV_None)
-            sProgram = "bash.exe -c ";
+            if (QSysInfo::windowsVersion() != QSysInfo::WV_None)
+                sProgram = "bash.exe -c ";
+        }
+
 
         QProcess* pProcess = new QProcess();
         //pProcess->setProcessChannelMode(QProcess::ForwardedChannels);
@@ -182,10 +187,17 @@ public:
         if (bActuallyRun)
         {
 
-            pProcess->start( QString(sProgram.c_str()), QStringList(sCLArg.c_str()) );
+            std::cout << "running " << sProgram << " " << sCLArg << std::endl;
+
+            pProcess->start( QString(sProgram.c_str()), QString(sCLArg.c_str()).split(" ") );
             pProcess->waitForFinished();
+            qDebug() << pProcess->error();
+            qDebug() << pProcess->program();
+            qDebug() << pProcess->arguments();
 
             iReturnCode = pProcess->exitCode();
+
+            std::cout << "finished: " << iReturnCode << std::endl;
 
         }
 
@@ -201,6 +213,8 @@ protected:
     std::string m_sExecutable;
     std::string m_sExecLocation;
     std::string m_sCLArg;
+
+    bool m_bTest = false;
 
 };
 

@@ -46,11 +46,10 @@ public:
     }
 
     void addChild(QWidget* pChild);
-
     void elementChangedBox(QExclusiveGroupBox* pElement);
     void elementChangedAButton(QAbstractButton* pElement);
 
-    void addNextWidget(QWidget* pWidget)
+    QWidget* addNextWidget(QWidget* pWidget)
     {
         QWidget* pAddWidget = pWidget;
 
@@ -80,8 +79,12 @@ public:
 
 
         // TODO add to layout
-
         m_vWidgets.push_back(pAddWidget);
+        this->addChild(pAddWidget);
+
+        m_mAddedToOriginalWidget.insert(std::pair<QWidget*, QWidget*>(pAddWidget, pWidget));
+
+        this->updateLayout();
 
         if (m_bOrdering)
         {
@@ -91,9 +94,11 @@ public:
             m_bSwitchOrdering = true;
         }
 
+        return pAddWidget;
+
     }
 
-    std::vector<std::string> getOrderedIDs(std::map<QWidget*, std::string>* pMap)
+    std::vector<std::string> getOrderedIDs(std::map<QWidget*, std::string>* pMap, bool bOnlySelected)
     {
         std::vector<std::string> vReturn;
 
@@ -103,6 +108,10 @@ public:
 
             if (oIt != pMap->end())
             {
+
+                if (bOnlySelected && !this->isSelected(oIt->first))
+                    continue;
+
                 vReturn.push_back( oIt->second );
             }
         }
@@ -110,7 +119,89 @@ public:
         return vReturn;
     }
 
+    void getConsistent()
+    {
+
+        if (!m_bExclusive)
+            return;
+
+        m_bExclusive = false;
+
+        int iSelected = 0;
+
+        for (size_t i = 0; i < m_vChildren.size(); ++i)
+        {
+
+            if ( QAbstractButton* pButton = dynamic_cast<QAbstractButton*> (m_vChildren.at(i)))
+            {
+
+                if (pButton->isChecked())
+                    ++iSelected;
+
+            }
+
+            if ( QExclusiveGroupBox* pGroup = dynamic_cast<QExclusiveGroupBox*> (m_vChildren.at(i)))
+            {
+
+                if (pGroup->isChecked())
+                    ++iSelected;
+
+            }
+        }
+
+        if (iSelected != 1)
+        {
+            for (size_t i = 0; i < m_vChildren.size(); ++i)
+            {
+
+                if ( QAbstractButton* pButton = dynamic_cast<QAbstractButton*> (m_vChildren.at(i)))
+                {
+
+                    pButton->setChecked( i==0 );
+
+                }
+
+                if ( QExclusiveGroupBox* pGroup = dynamic_cast<QExclusiveGroupBox*> (m_vChildren.at(i)))
+                {
+
+                    pGroup->setChecked( i==0 );
+
+                }
+            }
+        }
+
+        m_bExclusive = true;
+
+    }
+
 protected:
+
+    bool isSelected(QWidget* pShownWidget)
+    {
+
+        std::map<QWidget*, QWidget*>::iterator oIt = m_mAddedToOriginalWidget.find(pShownWidget);
+
+        QWidget* pWidget = NULL;
+
+        if (oIt != m_mAddedToOriginalWidget.end())
+            pWidget = oIt->second;
+
+        if ( QAbstractButton* pButton = dynamic_cast<QAbstractButton*> (pWidget))
+        {
+
+            return ((pButton->isCheckable() == false) || (pButton->isChecked()));
+
+        }
+
+        if ( QExclusiveGroupBox* pGroup = dynamic_cast<QExclusiveGroupBox*> (pWidget))
+        {
+
+            return ((pGroup->isCheckable() == false) || (pGroup->isChecked()));
+
+        }
+
+        return true;
+    }
 
     void switchOrdering(QWidget* pWidget, int iNewPos)
     {
@@ -207,11 +298,11 @@ protected:
         return m_vWidgets.size();
     }
 
+    std::map<QWidget*, QWidget*> m_mAddedToOriginalWidget;
     std::map<QWidget*, QComboBox*> m_mWidgetToSelBox;
     std::vector<QWidget*> m_vWidgets;
     bool m_bOrdering = false;
     bool m_bSwitchOrdering = true;
-
     bool m_bExclusive = false;
 
     std::vector<QWidget*> m_vChildren;

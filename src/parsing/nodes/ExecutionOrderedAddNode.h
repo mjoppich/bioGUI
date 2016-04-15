@@ -19,6 +19,8 @@ public:
 
         m_sFrom = this->getDomElementAttribute(pElement, "from", "").toStdString();
 
+        m_bSelected = (this->getDomElementAttribute(pElement, "selected", "false").compare("true", Qt::CaseInsensitive) == 0);
+
     }
 
     ExecutionValueNode* findNode(std::string sID, std::vector<ExecutionNode*>* pNodes)
@@ -32,10 +34,10 @@ public:
 
             if (pNode = dynamic_cast<ExecutionValueNode*>(pNodes->at(i)))
             {
-                if (!pNode->hasFrom())
+                if (!pNode->hasFor())
                     continue;
 
-                if (sqID.compare(pNode->getFrom().c_str(), Qt::CaseInsensitive) == 0)
+                if (sqID.compare(pNode->getFor().c_str(), Qt::CaseInsensitive) == 0)
                     return pNode;
             }
         }
@@ -70,7 +72,7 @@ public:
         }
 
         // ordered ids in gridlayout
-        std::vector<std::string> vOrderedIDs = pFromElem->getOrderedIDs( &mWidgetToString );
+        std::vector<std::string> vOrderedIDs = pFromElem->getOrderedIDs( &mWidgetToString, m_bSelected );
 
         for (size_t i = 0; i < vOrderedIDs.size(); ++i)
         {
@@ -90,7 +92,7 @@ public:
 
             if (pNode = dynamic_cast<ExecutionValueNode*>(pChild))
             {
-                if (pNode->hasFrom())
+                if (pNode->hasFor())
                     continue;
             }
 
@@ -109,7 +111,8 @@ public:
                 sReturn = sReturn + m_sSeperator;
             }
 
-            sReturn = sReturn + vSorted.at(i)->evaluate(pID2Node, pInputID2Value, pInputID2Widget);
+            std::string sReturned = vSorted.at(i)->evaluate(pID2Node, pInputID2Value, pInputID2Widget);
+            sReturn = sReturn + sReturned;
 
         }
 
@@ -120,6 +123,8 @@ public:
 protected:
 
     std::string m_sFrom = "";
+
+    bool m_bSelected = false;
 
 };
 

@@ -14,6 +14,7 @@
 #include <iostream>
 #include <src/app/TemplateListDelegate.h>
 #include <src/parsing/XMLParserInfo.h>
+#include <QtWidgets/qsplitter.h>
 #include "parsing/XMLParserExecution.h"
 #include "parsing/XMLParserWindow.h"
 #include "app/ExecutionRunThread.h"
@@ -35,14 +36,15 @@ public:
 
         m_pMainWindow = new QWidget();
 
-        QHBoxLayout* pMainLayout = new QHBoxLayout();
+        //QHBoxLayout* pMainLayout = new QHBoxLayout();
+        QSplitter* pSplitter = new QSplitter(Qt::Horizontal);
 
         QVBoxLayout* pLeftLayout = new QVBoxLayout();
 
 
         // this listwidget shows all available items
         m_pTemplates = new QListWidget();
-        m_pTemplates->setMaximumWidth(220);
+        //m_pTemplates->setMaximumWidth(220);
 
         this->connect(m_pTemplates, &QListWidget::itemSelectionChanged, [this] () {
 
@@ -64,8 +66,20 @@ public:
         pLeftLayout->addWidget(m_pTemplates);
 
 
+        QGroupBox* pOptionsGroup = new QGroupBox("Options");
+        QGridLayout* pOptionsLayout = new QGridLayout();
 
         // opens save template dialogue
+        m_pReloadTemplates = new QPushButton("Reload");
+
+        connect(m_pReloadTemplates, &QAbstractButton::clicked, [this] () {
+
+            this->reloadTemplates();
+
+        });
+
+        pOptionsLayout->addWidget(m_pReloadTemplates, 0, 0);
+
         m_pSaveTemplate = new QPushButton("Save Template");
 
         connect(m_pSaveTemplate, &QAbstractButton::clicked, [oTemplatePath, this] () {
@@ -74,19 +88,40 @@ public:
 
         });
 
-        pLeftLayout->addWidget(m_pSaveTemplate);
+        pOptionsLayout->addWidget(m_pSaveTemplate, 0, 1);
+        pOptionsGroup->setLayout(pOptionsLayout);
 
+        pLeftLayout->addWidget(pOptionsGroup);
 
-        pMainLayout->addLayout(pLeftLayout);
+        QWidget* pLeft = new QWidget;
+        pLeft->setLayout(pLeftLayout);
+
+        pSplitter->addWidget(pLeft);
+
+        //pMainLayout->addLayout(pLeftLayout);
 
         m_pApplicationWindowArea = new QScrollArea();
-        pMainLayout->addWidget(m_pApplicationWindowArea);
+        //pMainLayout->addWidget(m_pApplicationWindowArea);
+        pSplitter->addWidget(m_pApplicationWindowArea);
 
-        m_pMainWindow->setLayout(pMainLayout);
+        QGridLayout* pGridLayout = new QGridLayout();
+        pGridLayout->addWidget(pSplitter, 0,0);
+        m_pMainWindow->setLayout(pGridLayout);
+
+        //m_pMainWindow->setLayout(pMainLayout);
         m_pMainWindow->show();
 
         // For testing purposes only
         //this->runProgram();
+
+        this->reloadTemplates();
+
+    }
+
+    void reloadTemplates()
+    {
+
+        QDir oTemplatePath = QDir::currentPath() + "/templates/";
 
         this->addTemplates( oTemplatePath );
 
@@ -110,6 +145,8 @@ public:
 
     void addTemplates(QDir oDirectory)
     {
+
+        m_pTemplates->clear();
 
         m_pTemplates->setItemDelegate(new TemplateListDelegate(m_pTemplates));
 
@@ -226,6 +263,7 @@ protected:
             return;
 
         m_pWindowParser->saveTemplate(sFileName);
+        this->reloadTemplates();
 
     }
 
@@ -235,6 +273,7 @@ protected:
     QWidget* m_pMainWindow = NULL;
     QListWidget* m_pTemplates = NULL;
     QAbstractButton* m_pSaveTemplate = NULL;
+    QAbstractButton* m_pReloadTemplates = NULL;
     QScrollArea* m_pApplicationWindowArea = NULL;
 
 

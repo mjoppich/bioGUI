@@ -7,6 +7,10 @@
 
 #include <QGroupBox>
 #include <QAbstractButton>
+#include <QComboBox>
+#include <QLabel>
+#include <QGridLayout>
+#include "QOrderedLayout.h"
 
 class QExclusiveGroupBox : public QGroupBox {
 
@@ -21,6 +25,16 @@ public:
 
     }
 
+    void setOrdered(bool bValue)
+    {
+        m_bOrdering = bValue;
+    }
+
+    bool getOrdered()
+    {
+        return m_bOrdering;
+    }
+
     void setExclusive(bool bValue)
     {
         m_bExclusive = bValue;
@@ -31,125 +45,172 @@ public:
         return m_bExclusive;
     }
 
-    void addChild(QWidget* pChild)
+    void addChild(QWidget* pChild);
+
+    void elementChangedBox(QExclusiveGroupBox* pElement);
+    void elementChangedAButton(QAbstractButton* pElement);
+
+    void addNextWidget(QWidget* pWidget)
     {
+        QWidget* pAddWidget = pWidget;
 
-        // try to cast to (checkbox/radiobutton)qabstractbutton/exclusivegroupbox
-        if ( QAbstractButton* pButton = dynamic_cast<QAbstractButton*> (pChild))
+        if (m_bOrdering)
         {
 
-            if (pButton->isCheckable())
-            {
+            pAddWidget = new QWidget();
 
-                this->connect(pButton, &QAbstractButton::toggled, [pButton, this](){
+            QGridLayout* pLayout = new QGridLayout();
+            pLayout->addWidget(new QLabel("Position"), 0,0);
+            QComboBox* pOrdering = new QComboBox();
+            pLayout->addWidget(pOrdering, 0, 1);
+            pLayout->addWidget(pWidget, 1, 0, 1, 2);
 
-                    this->elementChangedAButton(pButton);
+            pAddWidget->setLayout(pLayout);
 
-                });
+            m_mWidgetToSelBox.insert(std::pair<QWidget*, QComboBox*>(pAddWidget, pOrdering));
 
-                if (m_vChildren.size() == 0)
-                {
-                    pButton->setChecked(true);
-                } else {
-                    pButton->setChecked(false);
-                }
+            //connect(pOrdering,static_cast< void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), [] (int) {});
 
-            }
+            QObject::connect(pOrdering,static_cast< void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), [pAddWidget, this] (int iNewPos) {
 
-            m_vChildren.push_back(pChild);
+                this->switchOrdering(pAddWidget, iNewPos);
+
+            });
         }
 
 
-        if ( QExclusiveGroupBox* pBox = dynamic_cast<QExclusiveGroupBox*> (pChild))
+        // TODO add to layout
+
+        m_vWidgets.push_back(pAddWidget);
+
+        if (m_bOrdering)
         {
 
-            if (pBox->isCheckable())
-            {
-
-                this->connect(pBox, &QExclusiveGroupBox::toggled, [pBox, this](){
-
-                    this->elementChangedBox(pBox);
-
-                });
-
-                if (m_vChildren.size() == 0)
-                {
-                    pBox->setChecked(true);
-                } else {
-                    pBox->setChecked(false);
-                }
-            }
-
-            m_vChildren.push_back(pChild);
+            m_bSwitchOrdering = false;
+            this->updateOrderBoxes();
+            m_bSwitchOrdering = true;
         }
-
-
 
     }
 
-    void elementChangedBox(QExclusiveGroupBox* pElement)
+    std::vector<std::string> getOrderedIDs(std::map<QWidget*, std::string>* pMap)
     {
+        std::vector<std::string> vReturn;
 
-        if (this->m_bExclusive == false)
-            return;
-
-        if (pElement->isChecked() == false)
-            return;
-
-        for (size_t i = 0; i < m_vChildren.size(); ++i)
+        for (size_t i = 0; i < m_vWidgets.size(); ++i)
         {
+            std::map<QWidget*, std::string>::iterator oIt = pMap->find( m_vWidgets.at(i) );
 
-            QWidget* pChild = m_vChildren.at(i);
-
-            if (pChild == pElement)
-                continue;
-
-            if ( QExclusiveGroupBox* pBox = dynamic_cast<QExclusiveGroupBox*>( pChild ))
+            if (oIt != pMap->end())
             {
-
-                if (pBox->isCheckable())
-                    pBox->setChecked(false);
-
+                vReturn.push_back( oIt->second );
             }
-
-
         }
 
-
-    }
-
-    void elementChangedAButton(QAbstractButton* pElement)
-    {
-
-        if (this->m_bExclusive == false)
-            return;
-
-        if (pElement->isChecked() == false)
-            return;
-
-        for (size_t i = 0; i < m_vChildren.size(); ++i)
-        {
-
-            QWidget* pChild = m_vChildren.at(i);
-
-            if (pChild == pElement)
-                continue;
-
-            if ( QAbstractButton* pButton = dynamic_cast<QAbstractButton*>( pChild ))
-            {
-
-                if (pButton->isCheckable())
-                    pButton->setChecked(false);
-
-            }
-
-
-        }
-
-
+        return vReturn;
     }
 
 protected:
+
+    void switchOrdering(QWidget* pWidget, int iNewPos)
+    {
+
+        if (!m_bSwitchOrdering)
+            return;
+
+        std::vector<QWidget*>::iterator oIt = std::find(m_vWidgets.begin(), m_vWidgets.end(), pWidget);
+
+        QWidget* pPutBefore = NULL;
+        pPutBefore = m_vWidgets.at(iNewPos);
+
+        if (oIt != m_vWidgets.end())
+        {
+
+            m_vWidgets.erase(oIt);
+
+            if (pPutBefore != NULL)
+            {
+
+                oIt = std::find(m_vWidgets.begin(), m_vWidgets.end(), pPutBefore);
+
+                int iDist = std::distance(m_vWidgets.begin(), oIt);
+
+                if (iDist < iNewPos)
+                    ++oIt;
+
+
+                m_vWidgets.insert(oIt, pWidget);
+
+            } else {
+
+                m_vWidgets.push_back(pWidget);
+
+            }
+
+
+
+        }
+
+        m_bSwitchOrdering = false;
+        this->updateOrderBoxes();
+        this->updateLayout();
+        m_bSwitchOrdering = true;
+    }
+
+    void updateLayout()
+    {
+        QLayout* pLayout = this->layout();
+
+        if (QOrderedLayout* pOrdered = dynamic_cast<QOrderedLayout*>(pLayout))
+        {
+            pOrdered->updateWidgets(&m_vWidgets);
+        }
+
+    }
+
+    void updateOrderBoxes()
+    {
+
+        std::map<QWidget*, QComboBox*>::iterator oIt = m_mWidgetToSelBox.begin();
+
+        while (oIt != m_mWidgetToSelBox.end())
+        {
+
+            QComboBox* pBox = oIt->second;
+
+            pBox->clear();
+
+            for (size_t i = 0; i < m_vWidgets.size(); ++i)
+            {
+
+                QString sItemNum = QString(std::to_string(i+1).c_str());
+
+                pBox->addItem( sItemNum, (int)i );
+
+                if (m_vWidgets.at(i) == oIt->first)
+                {
+                    pBox->setCurrentIndex(i);
+                }
+
+            }
+
+            ++oIt;
+
+        }
+
+
+
+    }
+
+    int currentElements()
+    {
+        return m_vWidgets.size();
+    }
+
+    std::map<QWidget*, QComboBox*> m_mWidgetToSelBox;
+    std::vector<QWidget*> m_vWidgets;
+    bool m_bOrdering = false;
+    bool m_bSwitchOrdering = true;
 
     bool m_bExclusive = false;
 

@@ -5,12 +5,12 @@
 
   <vgroup>
 
-<group exclusive="true" title="Method">
+<group id="method" exclusive="true" title="Method">
 <hgroup>
 
 <group title="Paired End" checkable="true" exclusive="true">
 
-<filedialog location="">Input File 1</filedialog>
+<filedialog id="single_if1" location="">Input File 1</filedialog>
 <filedialog location="">Input File 2</filedialog>
 
 <group title="Options">
@@ -35,7 +35,7 @@
 </group>
 
 <group id="orderedgroup" title="Step options">
-<grid rows="3" cols="3" ordered="true">
+<grid id="orderedgrid" rows="3" cols="3" ordered="true">
 
 <group id="adapters" title="Adapters" exclusive="true">
 
@@ -131,7 +131,7 @@
   
   <add sep=" " id="cl1">
     <const>-bla</const>
-    <value id="valuenode1" from="input1"/>
+    <value id="valuenode1" from="single_if1"/>
     <const>-num</const>
     <math id="intres" op="int">
       <math id="floatres" op="+">
@@ -139,7 +139,7 @@
 	<const type="number">3</const>
       </math>
     </math>
-    <if comp="is_set" value1="selgroup" id="cl2">
+    <if comp="is_set" value1="method" id="cl2">
       <const>selected</const>
       <else>
 	<const>not selected</const>
@@ -147,32 +147,25 @@
     </if>
   </add>
 
-  <if id="selnum" comp="is_set" value1="selgroup">
+  <if id="selnum" comp="is_set" value1="method">
     <const>1</const>
     <else>
       <const>2</const>
     </else>
   </if>
 
-  <orderedadd id="cl" from="orderedgroup">
+  <orderedadd id="cl" from="orderedgrid">
     <value from="cl1" for="adapters"/>
-    <value from="cl2" for="slidingwindow"/>
+    <value from="selnum" for="slidingwindow"/>
   </orderedadd>
   
-  <execute exec="/usr/bin/echo" location="" param="${cl${selnum}}">
+  <execute exec="/usr/bin/echo" location="" param="cl">
     <output id="outcout" type="cout" color="green" to="outputstream1" />
     <output id="outcerr" type="cerr" color="red"   to="output1" />
     <!--<output id="outfolder" type="folder" location="/home/users/joppich/cpp/splitter/bin/" />
     <output id="outfolder2" type="folder" location="/home/users/joppich/cpp/splitter/README.md" />
     <output id="outfile" type="file" location="/home/users/joppich/cpp/splitter/README.md" />-->
   </execute>
-
-  <if comp="is_set" value1="selgroup" value2="true">
-  <execute exec="/usr/bin/echo" location="" param="valuenode1">
-    <output id="out3" type="STD" to="outputstream2" />
-    <!--<output id="out2" type="file" src="" to="img1"/>-->
-  </execute>
-  </if>
   
 </execution>
 </template>

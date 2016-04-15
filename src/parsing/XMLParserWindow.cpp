@@ -42,7 +42,7 @@ QLayout* XMLParserWindow::createLayout(QDomElement* pElement)
 
         bool bOrdered = (this->getAttribute(pElement, "ordered", "false").compare("true", Qt::CaseInsensitive) == 0);
 
-        QExtGridLayout *pLayout = new QExtGridLayout(iRows, iCols, bOrdered);
+        QExtGridLayout *pLayout = new QExtGridLayout(iRows, iCols);
 
         return (QLayout*) pLayout;
     }

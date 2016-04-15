@@ -8,6 +8,7 @@
 #include "ExecutionAddNode.h"
 #include "ExecutionValueNode.h"
 #include <src/app/QExtGridLayout.h>
+#include <src/app/QExclusiveGroupBox.h>
 
 class ExecutionOrderedAddNode : public ExecutionAddNode {
 public:
@@ -50,15 +51,16 @@ public:
 
         std::vector<ExecutionNode*> vSorted;
 
-        QExtGridLayout* pFromElem = NULL;
+        QExclusiveGroupBox* pFromElem = NULL;
         std::map<std::string, QWidget*>::iterator oIt = pInputID2Widget->find(m_sFrom);
         if (oIt != pInputID2Widget->end())
         {
-            pFromElem = dynamic_cast<QExtGridLayout*>(oIt->second);
+            pFromElem = dynamic_cast<QExclusiveGroupBox*>(oIt->second);
 
-            if (pFromElem == NULL)
-                throw "invalid from";
         }
+
+        if (pFromElem == NULL)
+            throw "invalid from";
 
         std::map<QWidget*, std::string> mWidgetToString;
 

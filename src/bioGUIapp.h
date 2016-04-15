@@ -177,10 +177,11 @@ public:
 
         m_pMainWindow->setWindowTitle(m_pWindow->windowTitle());
 
+        /*
         std::cout << "spongebob " << m_pWindow->minimumWidth() << " " << m_pWindow->minimumHeight() << std::endl;
         std::cout << "spongebob " << m_pMainWindow->minimumWidth() << " " << m_pMainWindow->minimumHeight() << std::endl;
         std::cout << "spongebob " << m_pMainWindow->width() << " " << m_pMainWindow->height() << std::endl;
-
+        */
 
         std::string sTest = sFileName;
 
@@ -231,15 +232,15 @@ protected:
 
 
 
-    QWidget* m_pMainWindow;
-    QListWidget* m_pTemplates;
-    QAbstractButton* m_pSaveTemplate;
-    QScrollArea* m_pApplicationWindowArea;
+    QWidget* m_pMainWindow = NULL;
+    QListWidget* m_pTemplates = NULL;
+    QAbstractButton* m_pSaveTemplate = NULL;
+    QScrollArea* m_pApplicationWindowArea = NULL;
 
 
 
-    QWidget* m_pWindow;
-    XMLParserWindow* m_pWindowParser;
+    QWidget* m_pWindow = NULL;
+    XMLParserWindow* m_pWindowParser = NULL;
 
 
 };

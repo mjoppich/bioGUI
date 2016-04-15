@@ -170,6 +170,10 @@ public:
         std::string sModified(sProgram);
 
         sProgram = "/usr/bin/echo";
+
+        if (QSysInfo::windowsVersion() != QSysInfo::WV_None)
+            sProgram = "bash.exe -c ";
+
         QProcess* pProcess = new QProcess();
         //pProcess->setProcessChannelMode(QProcess::ForwardedChannels);
 

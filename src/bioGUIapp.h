@@ -109,7 +109,11 @@ public:
         m_pMainWindow->setLayout(pGridLayout);
 
         //m_pMainWindow->setLayout(pMainLayout);
-        m_pMainWindow->show();
+        //m_pMainWindow->show();
+
+        m_pMainMainWindow = new QMainWindow();
+        m_pMainMainWindow->setCentralWidget(pSplitter);
+        m_pMainMainWindow->show();
 
         // For testing purposes only
         //this->runProgram();
@@ -212,7 +216,10 @@ public:
         // this also destroys the current window!
         m_pApplicationWindowArea->setWidget(m_pWindow);
 
-        m_pMainWindow->setWindowTitle(m_pWindow->windowTitle());
+
+        QWidget* pWindow = m_pMainWindow;
+
+        m_pMainMainWindow->setWindowTitle("bioGUI - " + m_pWindow->windowTitle());
 
         /*
         std::cout << "spongebob " << m_pWindow->minimumWidth() << " " << m_pWindow->minimumHeight() << std::endl;
@@ -269,6 +276,7 @@ protected:
 
 
 
+    QMainWindow* m_pMainMainWindow = NULL;
 
     QWidget* m_pMainWindow = NULL;
     QListWidget* m_pTemplates = NULL;

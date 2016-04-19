@@ -17,6 +17,8 @@ public:
     : QRadioButton(sLabel), QAbstractButtonItem(sValue)
     {
 
+
+
     }
 
 

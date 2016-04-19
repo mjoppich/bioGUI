@@ -92,6 +92,9 @@ public:
         qRegisterMetaType<QTextCursor>("QTextCursor");
         qRegisterMetaType<QString>("QString");
 
+        this->setResizeMode(QListWidget::Adjust);
+        this->setSizeAdjustPolicy(QListWidget::AdjustToContents);
+
         this->clear();
     }
 

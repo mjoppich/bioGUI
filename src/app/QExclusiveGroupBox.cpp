@@ -12,7 +12,11 @@ void QExclusiveGroupBox::elementChangedAButton(QAbstractButton* pElement)
         return;
 
     if (pElement->isChecked() == false)
+    {
+        this->getConsistent();
         return;
+    }
+
 
     for (size_t i = 0; i < m_vChildren.size(); ++i)
     {
@@ -43,7 +47,10 @@ void QExclusiveGroupBox::elementChangedBox(QExclusiveGroupBox* pElement)
         return;
 
     if (pElement->isChecked() == false)
+    {
+        this->getConsistent();
         return;
+    }
 
     for (size_t i = 0; i < m_vChildren.size(); ++i)
     {
@@ -82,15 +89,6 @@ void QExclusiveGroupBox::addChild(QWidget* pChild)
                 this->elementChangedAButton(pButton);
 
             });
-
-            /*
-            if (m_vChildren.size() == 0)
-            {
-                pButton->setChecked(true);
-            } else {
-                pButton->setChecked(false);
-            }
-             */
 
         }
 

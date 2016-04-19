@@ -18,7 +18,7 @@ class ExecutionExecuteNode : public ExecutionNode {
 public:
 
     ExecutionExecuteNode(QDomElement* pElement)
-    : ExecutionNode(pElement)
+            : ExecutionNode(pElement)
     {
 
         std::string sNotSet = "#NOTSET#";
@@ -39,10 +39,10 @@ public:
     }
 
     virtual std::string evaluateChildren( std::map< std::string, ExecutionNode*>* pID2Node,
-                                  std::map<std::string, std::string>* pInputID2Value,
-                                  std::map<std::string, QWidget*>* pInputID2Widget,
-                                  QProcess* pProcess,
-                                  bool bDeferred = false)
+                                          std::map<std::string, std::string>* pInputID2Value,
+                                          std::map<std::string, QWidget*>* pInputID2Widget,
+                                          QProcess* pProcess,
+                                          bool bDeferred = false)
     {
         std::string sReturn = "";
 
@@ -87,8 +87,8 @@ public:
     }
 
     size_t parseCommand(std::string* pCommand, size_t iPos, std::map< std::string, ExecutionNode*>* pID2Node,
-                             std::map<std::string, std::string>* pInputID2Value,
-                             std::map<std::string, QWidget*>* pInputID2Widget)
+                        std::map<std::string, std::string>* pInputID2Value,
+                        std::map<std::string, QWidget*>* pInputID2Widget)
     {
 
         size_t iVarPos;
@@ -189,7 +189,7 @@ public:
 
             std::cout << "running " << sProgram << " " << sCLArg << std::endl;
 
-            pProcess->start( QString(sProgram.c_str()), QString(sCLArg.c_str()).split(" ") );
+            pProcess->start( QString(sProgram.c_str()), this->stringToArguments(QString(sCLArg.c_str())) );
             pProcess->waitForFinished();
             qDebug() << pProcess->error();
             qDebug() << pProcess->program();
@@ -209,6 +209,24 @@ public:
     }
 
 protected:
+
+    QStringList stringToArguments(QString sString)
+    {
+        bool bContainsQuotes = (sString.at(0) == '\"'); //true if the first character is "
+        QStringList vTmpList = sString.split(QRegExp("\""), QString::SkipEmptyParts); // Split by " and make sure you don't have an empty string at the beginning
+        QStringList vArgsList;
+
+                foreach (QString s, vTmpList) {
+                if (bContainsQuotes) { // If 's' is inside quotes ...
+                    vArgsList.append(s); // ... get the whole string
+                } else { // If 's' is outside quotes ...
+                    vArgsList.append(s.split(" ", QString::SkipEmptyParts)); // ... get the splitted string
+                }
+                bContainsQuotes = !bContainsQuotes;
+            }
+
+        return vArgsList;
+    }
 
     std::string m_sExecutable;
     std::string m_sExecLocation;

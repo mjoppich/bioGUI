@@ -99,27 +99,44 @@ QWidget* XMLParserWindow::createComponent(QDomElement* pElement, bool* pChildren
 
     if (sTag.compare("input", Qt::CaseInsensitive) == 0)
     {
-        QLineEdit *pLineEdit = new QLineEdit( sValue );
 
-        QString sType = this->getAttribute(pElement, "type", "");
+        bool bMultiLine = ( this->getAttribute(pElement, "multi", "false").compare("true", Qt::CaseInsensitive) == 0);
 
-        if (sType.size() != 0)
+        if (!bMultiLine)
         {
-            if (sType.compare("int", Qt::CaseInsensitive) == 0)
+            QLineEdit *pLineEdit = new QLineEdit( sValue );
+
+            QString sType = this->getAttribute(pElement, "type", "");
+
+            if (sType.size() != 0)
             {
-                pLineEdit->setValidator( new QIntValidator() );
+                if (sType.compare("int", Qt::CaseInsensitive) == 0)
+                {
+                    pLineEdit->setValidator( new QIntValidator() );
+                }
+
+                if (sType.compare("float", Qt::CaseInsensitive) == 0)
+                {
+                    pLineEdit->setValidator( new QDoubleValidator() );
+                }
+
             }
 
-            if (sType.compare("float", Qt::CaseInsensitive) == 0)
-            {
-                pLineEdit->setValidator( new QDoubleValidator() );
-            }
+            this->addValueFetcher(pElement, [pLineEdit] () {return pLineEdit->text().toStdString();});
+
+            pWidget = pLineEdit;
+        } else {
+
+            QTextEdit* pTextEdit = new QTextEdit(sValue);
+
+            this->addValueFetcher(pElement, [pTextEdit] () {return pTextEdit->toPlainText().toStdString();});
+
+            pWidget = pTextEdit;
 
         }
 
-        this->addValueFetcher(pElement, [pLineEdit] () {return pLineEdit->text().toStdString();});
 
-        pWidget = pLineEdit;
+
     }
 
 
@@ -131,11 +148,16 @@ QWidget* XMLParserWindow::createComponent(QDomElement* pElement, bool* pChildren
 
 
         QLineEdit* pLineEdit = new QLineEdit();
+        QString sPathHint = QDir::currentPath();
 
         QString sLineEditLocation = this->getAttribute(pElement, "location", "");
         if (sLineEditLocation.length() > 0)
         {
             pLineEdit->setText(sLineEditLocation);
+
+            QFileInfo oLineEditInfo( sLineEditLocation );
+
+            sPathHint = oLineEditInfo.absoluteDir().path();
         }
 
 
@@ -148,12 +170,12 @@ QWidget* XMLParserWindow::createComponent(QDomElement* pElement, bool* pChildren
         QString sFileDelim = this->getAttribute(pElement, "multiples_delim", ";");
         QString sFileFilter = this->getAttribute(pElement, "multiples_filter", "");
 
-        pFileButton->connect(pFileButton,&QAbstractButton::clicked,[pLineEdit, bMultiples, bOutput, bFolder, sFileDelim, sFileFilter] (bool bChecked){
+        pFileButton->connect(pFileButton,&QAbstractButton::clicked,[pLineEdit, bMultiples, bOutput, bFolder, sFileDelim, sFileFilter, sPathHint] (bool bChecked){
 
             if (bFolder)
             {
 
-                QString sFolder = QFileDialog::getExistingDirectory(0, ("Select Output Folder"), QDir::currentPath());
+                QString sFolder = QFileDialog::getExistingDirectory(0, ("Select Output Folder"), sPathHint);
                 pLineEdit->setText(sFolder);
 
             } else {
@@ -168,7 +190,7 @@ QWidget* XMLParserWindow::createComponent(QDomElement* pElement, bool* pChildren
 
                     } else {
 
-                        QString sFileName = QFileDialog::getSaveFileName(0, "Select Input File", QDir::currentPath(), sFileFilter);
+                        QString sFileName = QFileDialog::getSaveFileName(0, "Select Input File", sPathHint, sFileFilter);
                         pLineEdit->setText(sFileName);
 
                     }
@@ -178,13 +200,13 @@ QWidget* XMLParserWindow::createComponent(QDomElement* pElement, bool* pChildren
 
                     if (bMultiples)
                     {
-                        QStringList vSelectedFiles = QFileDialog::getOpenFileNames(0, "Select Input Files", QDir::currentPath(), sFileFilter);
+                        QStringList vSelectedFiles = QFileDialog::getOpenFileNames(0, "Select Input Files", sPathHint, sFileFilter);
                         QString sFiles = vSelectedFiles.join(sFileDelim);
                         pLineEdit->setText(sFiles);
 
                     } else {
 
-                        QString sFileName = QFileDialog::getOpenFileName(0, "Select Input File", QDir::currentPath(), sFileFilter);
+                        QString sFileName = QFileDialog::getOpenFileName(0, "Select Input File", sPathHint, sFileFilter);
                         pLineEdit->setText(sFileName);
 
                     }

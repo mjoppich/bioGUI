@@ -215,11 +215,13 @@ public:
 
         // this also destroys the current window!
         m_pApplicationWindowArea->setWidget(m_pWindow);
-
+        //m_pApplicationWindowArea->setWidgetResizable(true);
 
         QWidget* pWindow = m_pMainWindow;
 
         m_pMainMainWindow->setWindowTitle("bioGUI - " + m_pWindow->windowTitle());
+
+        //this->connect(m_pApplicationWindowArea, SIGNAL(resizeEvent(QResizeEvent*)), this, SLOT(resizeContent(QResizeEvent*)));
 
         /*
         std::cout << "spongebob " << m_pWindow->minimumWidth() << " " << m_pWindow->minimumHeight() << std::endl;
@@ -259,7 +261,17 @@ public:
 
     }
 
+
+public slots:
+    void resizeContent(QResizeEvent* pEvent)
+    {
+        m_pWindow->setMinimumSize(pEvent->size());
+    }
+
 protected:
+
+
+
 
     void saveCurrentTemplate(QDir oTemplatePath)
     {

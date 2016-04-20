@@ -32,6 +32,16 @@ public:
 
     }
 
+    int getRows()
+    {
+        return m_iRows;
+    }
+
+    int getCols()
+    {
+        return m_iCols;
+    }
+
     void addNextWidget(QWidget* pWidget)
     {
         QWidget* pAddWidget = pWidget;

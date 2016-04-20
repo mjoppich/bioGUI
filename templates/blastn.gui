@@ -1,13 +1,13 @@
 <!--<?xml version="1.0" encoding="UTF-8"?>-->
-<template icon="" description="BLASTN" title="Trimmomatic 0.35">
- <window title="Trimmomatic" height="1000" width="1000">
+<template icon="" description="BLASTN" title="nucleotide BLAST">
+ <window title="BLASTN" height="1000" width="1000">
   <vgroup>
    <group title="Input" exclusive="true">
     <hgroup>
       
       <!-- simple text field -->
      <group id="pairedend" selected="false" title="Sequence" checkable="true">
-      <input id="sequences" multiple="true"/>
+      <input id="sequences" multi="true"/>
      </group>
 
       <!-- file -->
@@ -24,78 +24,34 @@
     </groupbox>
   </group>
 
-   <group ordered="true" id="orderedgroup" title="Step options">
-    <grid rows="3" cols="3">
-     <group id="adapters_sel" title="Adapters" exclusive="true">
-      <group id="adapters_man" selected="false" title="Custom" checkable="true">
-       <filedialog id="illuminaclip_file" location="">Input File 1</filedialog>
-       <label>Seed mismatches</label>
-       <input id="illuminaclip_seed" type="int"/>
-       <label>Palindrome clip threshold</label>
-       <input id="illuminaclip_palin" type="int"/>
-       <label>Simple Clip Threshold</label>
-       <input id="illuminaclip_simple" type="int"/>
-      </group>
-      <group id="adapters_auto" selected="true" title="Predefined" checkable="true">
-       <combobox id="illuminaclip_auto_opt" selected="ILLUMINACLIP:./adapters/TruSeqU-SE.fa:2:30:10">
-        <comboitem value="ILLUMINACLIP:/home/users/joppich/progs/Trimmomatic-0.33/adapters/TruSeqU-SE.fa:2:30:10">TruSeqU SE</comboitem>
-        <comboitem value="ILLUMINACLIP:/home/users/joppich/progs/Trimmomatic-0.33/adapters/TruSeqU-PE.fa:2:30:10">TruSeqU PE</comboitem>
-       </combobox>
-      </group>
-     </group>
-     <group id="slidingwindow_opt" selected="false" title="Sliding Window" checkable="true">
-      <label>Size</label>
-      <input id="slidingwindow_size" type="int"/>
-      <label>Quality</label>
-      <input id="slidingwindow_quality" type="int"/>
-     </group>
-     <group id="leadingwindow_opt" selected="false" title="Leading Window" checkable="true">
-      <hgroup>
-       <label>Quality</label>
-       <input id="leadingwindow_quality" type="int"/>
-      </hgroup>
-     </group>
-     <group id="trailingwindow_opt" selected="false" title="Trailing Window" checkable="true">
-      <hgroup>
-       <label>Quality</label>
-       <input id="trailingwindow_quality" type="int"/>
-      </hgroup>
-     </group>
-     <group id="crop_opt" selected="false" title="Crop" checkable="true">
-      <hgroup>
-       <label>Length</label>
-       <input id="crop_length" type="int"/>
-      </hgroup>
-     </group>
-     <group id="headcrop_opt" selected="false" title="Headcrop" checkable="true">
-      <hgroup>
-       <label>Length</label>
-       <input id="headcrop_length" type="int"/>
-      </hgroup>
-     </group>
-     <group id="minlen_opt" selected="false" title="Min Len" checkable="true">
-      <hgroup>
-       <label>Length</label>
-       <input id="minlen_length" type="int"/>
-      </hgroup>
-     </group>
-     <group title="PHRED base">
-      <combobox id="phred" selected="phred64">
-       <comboitem>phred33</comboitem>
-       <comboitem>phred64</comboitem>
+  <group title="">
+  <grid rows="2" cols="2">
+
+       <group title="Database">
+      <combobox id="db">
+       <comboitem value="locationnr">nr</comboitem>
+       <comboitem value="locationnt">nt</comboitem>
       </combobox>
      </group>
-    </grid>
-   </group>
-   <group title="Options">
-    <checkbox>Quiet Mode</checkbox>
-   </group>
+
+  <group title="Algorithm">
+      <combobox id="db">
+       <comboitem value="megablast">Highly Similar Sequences</comboitem>
+       <comboitem value="discontiguousmegablast">More dissimilar sequences</comboitem>
+<comboitem value="blastn">Somewhat similar sequences</comboitem>
+      </combobox>
+     </group>
+</grid>
+</group>
+
+
+
    <streambox id="output1">
     <stream id="outputstream1">OS1</stream>
     <stream id="outputstream2">OS2</stream>
    </streambox>
    <group title="System Settings">
-    <label title="example 2">Threads</label>
+    <label>Threads</label>
     <input id="threads_opt" hint="Amount of Threads">2</input>
    </group>
    <action id="runprog" hint="click here to run program">run program</action>

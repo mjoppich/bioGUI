@@ -51,10 +51,14 @@ QLayout* XMLParserWindow::createLayout(QDomElement* pElement)
 QWidget* XMLParserWindow::createComponent(QDomElement* pElement, bool* pChildrenFinished)
 {
 
+    if (pElement->isElement() != true)
+    {
+        // this should not happen though ...
+        return NULL;
+    }
+
     QString sTag = pElement->tagName();
     QString sValue = pElement->text();
-
-    //std::cout << "Tag " << sTag.toStdString() << " Value " << sValue.toStdString() << std::endl;
 
     QWidget* pWidget = NULL;
 
@@ -275,224 +279,127 @@ QWidget* XMLParserWindow::createComponent(QDomElement* pElement, bool* pChildren
     if (sTag.compare("groupbox", Qt::CaseInsensitive) == 0)
     {
 
-        (*pChildrenFinished) = true;
-
-        QGroupBox* pGroupBox = new QGroupBox();
-        QButtonGroup* pButtonGroup = new QButtonGroup();
-
-        /*
-         * Window Title
-         */
-        QString sTitle = this->getAttribute(pElement, "title", "bioGUI");
-        pGroupBox->setTitle( sTitle );
-
-
-        /*
-         * state?
-         */
-        QString sSelected = this->getAttribute(pElement, "selected", "");
-        QStringList vSelected;
-        if (sSelected.length() > 0)
-        {
-            vSelected = sSelected.split(";");
-        }
-
-        // this could also be a hboxlayout or a grid layout
-        QLayout* pLayout = new QVBoxLayout();
-
-        QDomNodeList oChildren = pElement->childNodes();
-
-
-        if (oChildren.size() == 1)
-        {
-            QDomElement oChildNode = oChildren.at(0).toElement();
-
-            if (this->getElementType(&oChildNode) == ELEMENT_TYPE::LAYOUT)
-            {
-
-                delete pLayout;
-                pLayout = this->createLayout(&oChildNode);
-                oChildren = oChildren.at(0).childNodes();
-
-            }
-        }
-
-        for (size_t i = 0; i < oChildren.size(); ++i)
-        {
-            QDomElement oChildNode = oChildren.at(i).toElement();
-            QWidget* pChildElement = createComponent(&oChildNode, &bBoolean);
-
-            if (pChildElement == NULL)
-                throw "error in creating groupbox components";
-
-            if (QAbstractButtonItem* pButtonItem = dynamic_cast<QAbstractButtonItem *>(pChildElement))
-            {
-
-                this->addToLayout(pLayout, pChildElement);
-
-                if ((i == 0) || ( vSelected.contains(pButtonItem->getValue()) ))
-                {
-
-                    QAbstractButton* pButton = dynamic_cast<QAbstractButton*>(pChildElement);
-
-                    pButton->setChecked(true);
-
-                }
-
-                pButtonGroup->addButton((QAbstractButton*) pChildElement, i);
-
-
-            } else {
-
-                throw "invalid element";
-
-            }
-
-
-        }
-
-        pGroupBox->setLayout(pLayout);
-
-        this->addValueFetcher(pElement, [pButtonGroup, pGroupBox] () {
-
-
-            bool bEvaluate = true;
-            if (pGroupBox->isCheckable())
-            {
-                bEvaluate = pGroupBox->isChecked();
-            }
-
-            if (bEvaluate)
-            {
-
-                QAbstractButton* pButton = pButtonGroup->checkedButton();
-                QAbstractButtonItem* pButtonItem = dynamic_cast<QAbstractButtonItem *>(pButton);
-
-                if (pButtonItem)
-                {
-                    return pButtonItem->getValue().toStdString();
-                }
-
-            }
-
-            return std::string("");
-
-        });
-
-        pWidget = pGroupBox;
+        pWidget = this->createGroupBox(pElement, pChildrenFinished);
     }
 
     if (sTag.compare("group", Qt::CaseInsensitive) == 0)
     {
 
-        (*pChildrenFinished) = true;
 
-        QExclusiveGroupBox* pGroupBox = new QExclusiveGroupBox("");
+        pWidget = this->createGroup(pElement, pChildrenFinished);
 
-        /*
-         * Window Title
-         */
-        QString sTitle = this->getAttribute(pElement, "title", "bioGUI");
-        pGroupBox->setTitle( sTitle );
-
-        /*
-         * checkable?
-         */
-        std::string sCheckable = this->getAttribute(pElement, "checkable", "false").toUpper().toStdString();
-        if (sCheckable.compare("TRUE") == 0)
+        if (false)
         {
-            pGroupBox->setCheckable(true);
-            pGroupBox->setChecked(false);
+            (*pChildrenFinished) = true;
 
-            std::string sCheckedValue = this->getAttribute(pElement, "checked_value", "true").toStdString();
-            std::string sUncheckedValue = this->getAttribute(pElement, "unchecked_value", "false").toStdString();
+            QExclusiveGroupBox* pGroupBox = new QExclusiveGroupBox("");
 
-            this->addValueFetcher(pElement, [pGroupBox, sCheckedValue, sUncheckedValue] () {
+            /*
+             * Window Title
+             */
+            QString sTitle = this->getAttribute(pElement, "title", "bioGUI");
+            pGroupBox->setTitle( sTitle );
 
-                if (pGroupBox->isChecked())
+            /*
+             * checkable?
+             */
+            std::string sCheckable = this->getAttribute(pElement, "checkable", "false").toUpper().toStdString();
+            if (sCheckable.compare("TRUE") == 0)
+            {
+                pGroupBox->setCheckable(true);
+                pGroupBox->setChecked(false);
+
+                std::string sCheckedValue = this->getAttribute(pElement, "checked_value", "true").toStdString();
+                std::string sUncheckedValue = this->getAttribute(pElement, "unchecked_value", "false").toStdString();
+
+                this->addValueFetcher(pElement, [pGroupBox, sCheckedValue, sUncheckedValue] () {
+
+                    if (pGroupBox->isChecked())
+                    {
+                        return sCheckedValue;
+                    } else {
+                        return sUncheckedValue;
+                    }
+
+                });
+
+            }
+
+            /*
+             * exclusive?
+             */
+            QString sExclusive = this->getAttribute(pElement, "exclusive", "false");
+            if (sExclusive.compare("TRUE", Qt::CaseInsensitive) == 0)
+            {
+                pGroupBox->setExclusive(true);
+            } else {
+                pGroupBox->setExclusive(false);
+            }
+
+            /*
+             * ordered
+             *
+             */
+
+            bool bOrdered = (this->getAttribute(pElement, "ordered", "false").compare("true", Qt::CaseInsensitive) == 0);
+            pGroupBox->setOrdered(bOrdered);
+
+            /*
+             * state?
+             */
+            QString sSelected = this->getAttribute(pElement, "selected", "false");
+
+            qDebug() << sSelected << " " << this->getAttribute(pElement, "id", "unknown");
+
+
+            if (sSelected.compare("TRUE", Qt::CaseInsensitive) == 0)
+            {
+                pGroupBox->setChecked(true);
+            }
+
+            // this could also be a hboxlayout or a grid layout
+            QLayout* pLayout = new QVBoxLayout();
+
+            QDomNodeList oChildren = pElement->childNodes();
+
+            if (oChildren.size() == 1)
+            {
+                QDomElement oChildNode = oChildren.at(0).toElement();
+
+                if (this->getElementType(&oChildNode) == ELEMENT_TYPE::LAYOUT)
                 {
-                    return sCheckedValue;
-                } else {
-                    return sUncheckedValue;
+
+                    delete pLayout;
+                    pLayout = this->createLayout(&oChildNode);
+                    oChildren = oChildren.at(0).childNodes();
+
+                }
+            }
+
+            for (size_t i = 0; i < oChildren.size(); ++i)
+            {
+                QDomElement oChildNode = oChildren.at(i).toElement();
+                QWidget* pChildElement = createComponent(&oChildNode, &bBoolean);
+
+                if (pChildElement == NULL)
+                {
+
+                    std::cout << "error in creating groupbox components: " + oChildNode.text().toStdString() << std::endl;
+                    throw "error in creating groupbox components: " + oChildNode.text().toStdString();
                 }
 
-            });
+                pChildElement = pGroupBox->addNextWidget(pChildElement);
+                this->addToLayout(pLayout, pChildElement);
 
-        }
-
-        /*
-         * exclusive?
-         */
-        QString sExclusive = this->getAttribute(pElement, "exclusive", "false");
-        if (sExclusive.compare("TRUE", Qt::CaseInsensitive) == 0)
-        {
-            pGroupBox->setExclusive(true);
-        } else {
-            pGroupBox->setExclusive(false);
-        }
-
-        /*
-         * ordered
-         *
-         */
-
-        bool bOrdered = (this->getAttribute(pElement, "ordered", "false").compare("true", Qt::CaseInsensitive) == 0);
-        pGroupBox->setOrdered(bOrdered);
-
-        /*
-         * state?
-         */
-        QString sSelected = this->getAttribute(pElement, "selected", "false");
-
-        qDebug() << sSelected << " " << this->getAttribute(pElement, "id", "unknown");
-
-
-        if (sSelected.compare("TRUE", Qt::CaseInsensitive) == 0)
-        {
-            pGroupBox->setChecked(true);
-        }
-
-        // this could also be a hboxlayout or a grid layout
-        QLayout* pLayout = new QVBoxLayout();
-
-        QDomNodeList oChildren = pElement->childNodes();
-
-        if (oChildren.size() == 1)
-        {
-            QDomElement oChildNode = oChildren.at(0).toElement();
-
-            if (this->getElementType(&oChildNode) == ELEMENT_TYPE::LAYOUT)
-            {
-
-                delete pLayout;
-                pLayout = this->createLayout(&oChildNode);
-                oChildren = oChildren.at(0).childNodes();
-
-            }
-        }
-
-        for (size_t i = 0; i < oChildren.size(); ++i)
-        {
-            QDomElement oChildNode = oChildren.at(i).toElement();
-            QWidget* pChildElement = createComponent(&oChildNode, &bBoolean);
-
-            if (pChildElement == NULL)
-            {
-
-                std::cout << "error in creating groupbox components: " + oChildNode.text().toStdString() << std::endl;
-                throw "error in creating groupbox components: " + oChildNode.text().toStdString();
+                this->setID(pChildElement, &oChildNode, true);
             }
 
-            pChildElement = pGroupBox->addNextWidget(pChildElement);
-            this->addToLayout(pLayout, pChildElement);
+            pGroupBox->getConsistent();
+            pGroupBox->setLayout(pLayout);
 
-            this->setID(pChildElement, &oChildNode, true);
+            pWidget = pGroupBox;
         }
 
-        pGroupBox->getConsistent();
-        pGroupBox->setLayout(pLayout);
-
-        pWidget = pGroupBox;
     }
 
     if (sTag.compare("comboitem", Qt::CaseInsensitive) == 0) {

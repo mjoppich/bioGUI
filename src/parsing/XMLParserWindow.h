@@ -35,6 +35,8 @@
 #include <functional>
 #include <map>
 #include <src/app/QExtGridLayout.h>
+#include <src/app/QAbstractButtonItem.h>
+#include <src/app/QExclusiveGroupBox.h>
 #include "XMLParser.h"
 
 class bioGUIapp;
@@ -287,6 +289,7 @@ protected:
 
 
     enum ELEMENT_TYPE {ELEMENT, LAYOUT};
+    enum LAYOUT_TYPE {NONE, VERTICAL, HORIZONTAL, GRID, UNKNOWN};
 
     ELEMENT_TYPE getElementType(QDomElement* pElement)
     {
@@ -298,6 +301,31 @@ protected:
         delete pLayout;
         return ELEMENT_TYPE::LAYOUT;
 
+    }
+
+    LAYOUT_TYPE getLayoutType(QDomElement* pElement)
+    {
+        QLayout* pLayout = this->createLayout(pElement);
+
+        if (pLayout == NULL)
+            return LAYOUT_TYPE::NONE;
+
+        if (QOrderedHBoxLayout* pOrderedLayout = dynamic_cast<QOrderedHBoxLayout*>(pLayout))
+        {
+            return LAYOUT_TYPE::HORIZONTAL;
+        }
+
+        if (QOrderedVBoxLayout* pOrderedLayout = dynamic_cast<QOrderedVBoxLayout*>(pLayout))
+        {
+            return LAYOUT_TYPE::VERTICAL;
+        }
+
+        if (QExtGridLayout* pOrderedLayout = dynamic_cast<QExtGridLayout*>(pLayout))
+        {
+            return LAYOUT_TYPE::GRID;
+        }
+
+        return LAYOUT_TYPE::UNKNOWN;
     }
 
     bool addValueFetcher(QDomElement* pElement, std::function<std::string()> oFunc)
@@ -442,6 +470,366 @@ protected:
 
         }
 
+    }
+
+    QWidget* createGroup(QDomElement* pElement, bool* pChildrenFinished)
+    {
+
+        std::function<QLayout* (QDomElement*, QDomNodeList*)> oLayoutFunc = [this] (QDomElement* pDElement, QDomNodeList* pChildren) {
+
+            QLayout* pReturn = NULL;
+
+            if (pChildren->size() == 1)
+            {
+                QDomElement oChildNode = pChildren->at(0).toElement();
+
+                if (this->getElementType(&oChildNode) == ELEMENT_TYPE::LAYOUT)
+                {
+
+                    pReturn = this->createLayout(&oChildNode);
+
+                    // TODO does this do the trick?
+                    *pChildren = QDomNodeList(pChildren->at(0).childNodes());
+
+                    return pReturn;
+                }
+            }
+
+
+            return (QLayout*) new QVBoxLayout();
+        };
+
+        QWidget* pReturn = this->createGeneralGroup(pElement, pChildrenFinished, oLayoutFunc);
+
+        return pReturn;
+
+    }
+
+    QWidget* createGroupBox(QDomElement* pElement, bool* pChildrenFinished)
+    {
+
+        std::function<QLayout* (QDomElement*, QDomNodeList*)> oLayoutFunc = [this] (QDomElement* pDElement, QDomNodeList* pChildren) {
+
+            QLayout* pReturn = NULL;
+
+            if (pChildren->size() == 1)
+            {
+                QDomElement oChildNode = pChildren->at(0).toElement();
+                LAYOUT_TYPE eLayoutType = this->getLayoutType(&oChildNode);
+
+                std::cout << eLayoutType << std::endl;
+
+                if (LAYOUT_TYPE::NONE != eLayoutType)
+                {
+
+
+                    *pChildren = QDomNodeList(pChildren->at(0).childNodes());
+
+                    int iRows = 0;
+                    int iCols = 0;
+
+                    QExtGridLayout* pTestLayout = NULL;
+                    if (eLayoutType == LAYOUT_TYPE::GRID)
+                        pTestLayout = (QExtGridLayout*) this->createLayout(&oChildNode);
+
+
+                    switch ( eLayoutType )
+                    {
+                        case LAYOUT_TYPE::HORIZONTAL:
+
+                            iRows = 1;
+                            iCols = pChildren->size() * 2;
+
+                            break;
+
+                        case LAYOUT_TYPE::VERTICAL:
+
+                            iRows = pChildren->size() * 2;
+                            iCols = 2;
+
+                            break;
+
+                        case LAYOUT_TYPE::GRID:
+
+
+                            iRows = pTestLayout->getRows();
+                            iCols = pTestLayout->getCols() * 2;
+
+                            delete pTestLayout;
+
+                            break;
+
+                        default:
+
+                        std::cout << "default to vertical layout" << std::endl;
+
+                            eLayoutType = LAYOUT_TYPE::VERTICAL;
+                            iRows = pChildren->size() * 2;
+                            iCols = 2;
+
+                    }
+
+                    pReturn = new QExtGridLayout(iRows, iCols);
+
+                    return pReturn;
+                }
+            }
+
+
+            // defaults a vertical layout
+            int iRows = pChildren->size();
+            return (QLayout*) new QExtGridLayout(iRows, 2);
+        };
+
+        QButtonGroup* pButtonGroup = new QButtonGroup();
+
+        std::function<void (QExclusiveGroupBox*, QLayout*, QWidget*, QWidget*, QStringList*, int)> oPostProc = [pButtonGroup] (QExclusiveGroupBox* pBox,
+                                                                                                                               QLayout* pLayout,
+                                                                                                          QWidget* pChildWidget,
+                                                                                                          QWidget* pTransWidget,
+                                                                                                          QStringList* pSelected,
+                                                                                                          int iElement) {
+
+            if (QAbstractButtonItem* pButtonItem = dynamic_cast<QAbstractButtonItem *>(pChildWidget))
+            {
+                if ((iElement == 0) || ( pSelected->contains(pButtonItem->getValue()) ))
+                {
+
+                    QAbstractButton* pButton = dynamic_cast<QAbstractButton*>(pChildWidget);
+
+                    pButton->setChecked(true);
+
+                }
+
+                pButtonGroup->addButton((QAbstractButton*) pChildWidget, iElement);
+            }
+
+        };
+
+
+        std::function<QWidget* (QDomElement*, bool*, int)> oPreProc = [this,pButtonGroup] (QDomElement* pChildNode, bool* pBoolean, int iElement) {
+
+
+            QDomText oSimpleTextNode = pChildNode->childNodes().at(0).toText();
+
+            // default: only a simple radio/check
+            if (!oSimpleTextNode.isNull())
+            {
+                // TODO this must create a qlabel based widget for the simple case!
+
+
+                return createComponent(pChildNode, pBoolean);
+            }
+
+
+
+            QWidget* pTransporter = new QWidget();
+            QHBoxLayout* pTransporterLayout = new QHBoxLayout();
+
+            QAbstractButton* pBox = (QAbstractButton*) createComponent(pChildNode, pBoolean);
+            pBox->setText("");
+
+            pButtonGroup->addButton(pBox, iElement);
+
+            QWidget* pContentTransporter = new QWidget();
+            QHBoxLayout* pContentTransporterLayout = new QHBoxLayout();
+
+            QDomNodeList oChildren = pChildNode->childNodes();
+
+            for (size_t i = 0; i < oChildren.size(); ++i)
+            {
+
+                QDomElement oChildElement = pChildNode->childNodes().at(i).toElement();
+                QWidget* pContent = createComponent(&oChildElement, pBoolean);
+
+                pContentTransporterLayout->addWidget(pContent);
+
+            }
+
+            pContentTransporter->setLayout(pContentTransporterLayout);
+
+
+            pTransporterLayout->addWidget(pBox);
+            pTransporterLayout->addWidget(pContentTransporter);
+
+            pTransporter->setLayout(pTransporterLayout);
+
+            return pTransporter;
+
+        };
+
+
+        QExclusiveGroupBox* pGroupBox = (QExclusiveGroupBox*) this->createGeneralGroup(pElement, pChildrenFinished, oLayoutFunc, oPreProc, oPostProc);
+
+        this->addValueFetcher(pElement, [pButtonGroup, pGroupBox] () {
+
+
+            bool bEvaluate = true;
+            if (pGroupBox->isCheckable())
+            {
+                bEvaluate = pGroupBox->isChecked();
+            }
+
+            if (bEvaluate)
+            {
+
+                QAbstractButton* pButton = pButtonGroup->checkedButton();
+                QAbstractButtonItem* pButtonItem = dynamic_cast<QAbstractButtonItem *>(pButton);
+
+                if (pButtonItem)
+                {
+                    return pButtonItem->getValue().toStdString();
+                }
+
+            }
+
+            return std::string("");
+
+        });
+
+
+        return pGroupBox;
+
+    }
+
+    QWidget* createGeneralGroup(QDomElement* pElement,
+                                bool* pChildrenFinished,
+                                std::function<QLayout* (QDomElement*, QDomNodeList*)> oLayoutFunc,
+                                std::function<QWidget* (QDomElement*, bool*, int)> oPreProcFunc = [] (QDomElement* pChildNode, bool* pBoolean, int iElement) {return (QWidget*)NULL;},
+                                std::function<void (QExclusiveGroupBox*, QLayout*, QWidget*, QWidget*, QStringList*, int)> oPostProcFunc = [] (QExclusiveGroupBox* pBox, QLayout* pLay, QWidget* pWid1, QWidget* pWid2, QStringList* pList, int iElement) {})
+    {
+        (*pChildrenFinished) = true;
+
+        QExclusiveGroupBox* pGroupBox = new QExclusiveGroupBox("");
+
+        /*
+         * Window Title
+         */
+        QString sTitle = this->getAttribute(pElement, "title", "");
+        pGroupBox->setTitle( sTitle );
+
+        /*
+         * checkable?
+         */
+        std::string sCheckable = this->getAttribute(pElement, "checkable", "false").toUpper().toStdString();
+        if (sCheckable.compare("TRUE") == 0)
+        {
+            pGroupBox->setCheckable(true);
+            pGroupBox->setChecked(false);
+
+            std::string sCheckedValue = this->getAttribute(pElement, "checked_value", "true").toStdString();
+            std::string sUncheckedValue = this->getAttribute(pElement, "unchecked_value", "false").toStdString();
+
+            this->addValueFetcher(pElement, [pGroupBox, sCheckedValue, sUncheckedValue] () {
+
+                if (pGroupBox->isChecked())
+                {
+                    return sCheckedValue;
+                } else {
+                    return sUncheckedValue;
+                }
+
+            });
+
+        }
+
+        /*
+         * exclusive?
+         */
+        QString sExclusive = this->getAttribute(pElement, "exclusive", "false");
+        if (sExclusive.compare("TRUE", Qt::CaseInsensitive) == 0)
+        {
+            pGroupBox->setExclusive(true);
+        } else {
+            pGroupBox->setExclusive(false);
+        }
+
+        /*
+         * ordered
+         *
+         */
+
+        bool bOrdered = (this->getAttribute(pElement, "ordered", "false").compare("true", Qt::CaseInsensitive) == 0);
+        pGroupBox->setOrdered(bOrdered);
+
+        /*
+         * state?
+         *
+         * selected = true/false may indicate that group is selected.
+         *
+         * selected = [ids] may indicate that group is selected and children are selected
+         *
+         */
+        QString sSelected = this->getAttribute(pElement, "selected", "");
+        QStringList vSelected;
+
+        if (sSelected.compare("TRUE", Qt::CaseInsensitive) == 0)
+        {
+            pGroupBox->setChecked(true);
+        } else if (sSelected.compare("FALSE", Qt::CaseInsensitive) == 0)
+        {
+            pGroupBox->setChecked(false);
+        } else {
+
+            pGroupBox->setChecked(true);
+
+            if (sSelected.length() > 0)
+            {
+                vSelected = sSelected.split(";");
+            }
+
+        }
+
+        /*
+         * LAYOUT
+         */
+
+        QDomNodeList oChildren = pElement->childNodes();
+        QLayout* pLayout = oLayoutFunc(pElement, &oChildren);
+
+        /*
+         *
+         * CREATE AND ADD CHILDREN
+         *
+         */
+
+        bool bBoolean = false;
+        int iAdded = 0;
+
+        for (size_t i = 0; i < oChildren.size(); ++i)
+        {
+            bBoolean = false;
+
+            QDomElement oChildNode = oChildren.at(i).toElement();
+            QWidget* pChildElement = oPreProcFunc(&oChildNode, &bBoolean, iAdded);
+
+            if (pChildElement == NULL)
+                pChildElement = this->createComponent(&oChildNode, &bBoolean);
+
+            if (pChildElement == NULL)
+            {
+                std::cout << "error in creating groupbox components: " + pElement->text().toStdString() << std::endl;
+                std::cout << "error in creating groupbox components: " + oChildNode.text().toStdString() << std::endl;
+                //throw "error in creating groupbox components: " + oChildNode.text().toStdString();
+
+                continue;
+            }
+
+            QWidget* pTransformedChildElement = pGroupBox->addNextWidget(pChildElement);
+            this->addToLayout(pLayout, pTransformedChildElement);
+            this->setID(pTransformedChildElement, &oChildNode, true);
+
+            oPostProcFunc(pGroupBox, pLayout, pChildElement, pTransformedChildElement, &vSelected, iAdded);
+
+            ++iAdded;
+
+        }
+
+        // Finally set Layout
+        pGroupBox->getConsistent();
+        pGroupBox->setLayout(pLayout);
+
+        return pGroupBox;
     }
 
 

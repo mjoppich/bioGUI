@@ -49,7 +49,7 @@ public:
         int iCol = m_iAddedWidgets % m_iCols;
         int iRow = m_iAddedWidgets / m_iCols;
 
-        this->addWidget(pAddWidget, iRow, iCol);
+        this->addWidget(pAddWidget, iRow, iCol); // , Qt::AlignLeft
 
         ++m_iAddedWidgets;
     }

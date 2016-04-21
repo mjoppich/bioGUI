@@ -1,38 +1,53 @@
 <!--<?xml version="1.0" encoding="UTF-8"?>-->
 <template icon="" description="BLASTN" title="nucleotide BLAST">
- <window title="BLASTN" height="1000" width="1000">
+ <window title="BLASTN" height="1500" width="1000">
   <vgroup>
-   <group title="Input" exclusive="true">
+   <group title="Input Options (Query Sequence)" exclusive="true">
     <hgroup>
+
+
+<group id="singleend" selected="true" title="File" checkable="true">
+      <filedialog id="single_if1" location="">Input File 1</filedialog>
+     </group>
       
       <!-- simple text field -->
      <group id="pairedend" selected="false" title="Sequence" checkable="true">
       <input id="sequences" multi="true"/>
      </group>
 
-      <!-- file -->
-     <group id="singleend" selected="true" title="Single End" checkable="true">
-      <filedialog id="single_if1" location="">Input File 1</filedialog>
-     </group>
     </hgroup>
    </group>
 
-  <group title="Output options">
+  <group title="Output Options">
     <groupbox>
       <radiobutton> <label>Output File</label> <filedialog id="single_of1" location="" output="true">Output</filedialog> </radiobutton>
       <radiobutton>Output Stream</radiobutton>
     </groupbox>
   </group>
 
-  <group title="">
-  <grid rows="2" cols="2">
 
-       <group title="Database">
+   <group title="Query Options" exclusive="true">
+    <hgroup>
+      
+       <group title="Database"  selected="true" checkable="true" >
       <combobox id="db">
        <comboitem value="locationnr">nr</comboitem>
        <comboitem value="locationnt">nt</comboitem>
       </combobox>
      </group>
+
+
+     <group id="pairedend" selected="false" title="Sequence" checkable="true">
+      <input id="sequences" multi="true"/>
+     </group>
+
+    </hgroup>
+   </group>
+
+
+
+  <group title="">
+  <grid cols="2">
 
   <group title="Algorithm">
       <combobox id="db">
@@ -41,6 +56,79 @@
 <comboitem value="blastn">Somewhat similar sequences</comboitem>
       </combobox>
      </group>
+
+
+<group title="General Parameters">
+<grid cols="2">
+<label>Max target sequences</label>
+<input type="int">100</input>
+
+<label>Short queries</label>
+<checkbox selected="true">Adjust parameters for short input sequences</checkbox>
+
+<label>Expect threshold</label>
+<input type="int">10</input>
+
+<label>Word/Seed size</label>
+<input type="int"></input>
+
+<label>Max matches in a query range</label>
+<input type="int">0</input>
+
+</grid>
+</group>
+
+<group title="Scoring Parameters">
+<grid cols="2">
+<label>Match</label>
+<input type="int">1</input>
+
+<label>Mismatch</label>
+<input type="int">-2</input>
+
+<label>Gap Costs</label>
+  <group title="">
+    <groupbox>
+      <radiobutton>
+
+      <combobox id="db">
+       <comboitem value="megablast">Highly Similar Sequences</comboitem>
+       <comboitem value="discontiguousmegablast">More dissimilar sequences</comboitem>
+<comboitem value="blastn">Somewhat similar sequences</comboitem>
+      </combobox>
+</radiobutton>
+      <radiobutton><label>Gap Open:</label><input type="int">1</input> <label>Gap Extend:</label><input type="int">1</input> </radiobutton>
+    </groupbox>
+  </group>
+</grid>
+</group>
+
+  <group title="Output Format">
+    <groupbox>
+      <radiobutton>
+
+      <combobox id="db">
+<comboitem value="0">pairwise</comboitem>
+<comboitem value="1">query-anchored showing identities</comboitem>
+<comboitem value="2">query-anchored no identities</comboitem>
+<comboitem value="3">flat query-anchored, show identities</comboitem>
+<comboitem value="4">flat query-anchored, no identities</comboitem>
+<comboitem value="5">XML Blast output</comboitem>
+<comboitem value="6">tabular</comboitem>
+<comboitem value="7">tabular with comment lines</comboitem>
+<comboitem value="8">Text ASN.1</comboitem>
+<comboitem value="9">Binary ASN.1</comboitem>
+<comboitem value="10">Comma-separated values</comboitem>
+<comboitem value="11">BLAST archive format (ASN.1)</comboitem>
+<comboitem value="12">JSON Seqalign output</comboitem>
+<comboitem value="13">JSON Blast output</comboitem>
+<comboitem value="14">XML2 Blast output</comboitem>
+      </combobox>
+</radiobutton>
+      <radiobutton><label>Custom: </label><input>6 gaps pident</input></radiobutton>
+    </groupbox>
+  </group>
+
 </grid>
 </group>
 
@@ -50,13 +138,23 @@
     <stream id="outputstream1">OS1</stream>
     <stream id="outputstream2">OS2</stream>
    </streambox>
+
+
    <group title="System Settings">
     <label>Threads</label>
-    <input id="threads_opt" hint="Amount of Threads">2</input>
+    <input id="threads_opt" hint="Amount of Threads">1</input>
    </group>
+
    <action id="runprog" hint="click here to run program">run program</action>
+
   </vgroup>
+
  </window>
+
+
+
+
+
  <execution>
   <add sep=":" id="illuminaclip_man">
    <const>ILLUMINACLIP</const>
@@ -126,24 +224,50 @@
     <value from="files_se"/>
    </else>
   </if>
+
   <if id="threads" value1="threads_opt" comp="is_set">
    <value from="threads_opt"/>
    <else>
     <const>1</const>
    </else>
   </if>
+
   <add sep=" " id="cl">
-   <value from="files"/>
-   <add sep="">
-    <const>-threads </const>
-    <value from="threads"/>
-   </add>
-   <add sep="">
-    <const>-</const>
-    <value from="phred"/>
-   </add>
-   <value from="steps"/>
+<const>-num_threads</const><value from="threads"/>
+<const>-db</const><value from="threads"/>
+<const>-query</const><value from="threads"/>
+<const>-out</const><value from="threads"/>
+<const>-outfmt</const><value from="threads"/>
+<const>-num_threads</const><value from="threads"/>
+<const>-num_threads</const><value from="threads"/>
+
+<if value1="html" comp="EQUALS" value2="true"><const>-html</const></if>
+
   </add>
+
+<add sep=" " id="cldb">
+
+<const>-in</const> <!-- fasta -->
+
+<if value1="fasta_input" comp="EQUALS" value2="true">
+<value from="fasta_input"/>
+<else>
+<!-- save to file-->
+</else>
+</if>
+
+<const>-parse_seqids</const>
+
+</add>
+
+  <if value1="" comp="EQUALS" value2="true">
+
+<execute param="${cldb} -dbtype nucl" location="" exec="makeblastdb" test="true">
+   <output id="outcout" type="cout" color="green" to="outputstream1"/>
+   <output id="outcerr" type="cerr" color="red" to="outputstream2"/>
+  </execute>
+
+  </if>
 
   <execute param="-jar /home/users/joppich/progs/Trimmomatic-0.33/trimmomatic-0.35.jar ${cl}" location="" exec="/usr/lib64/biojava/bin/java" test="false">
    <output id="outcout" type="cout" color="green" to="outputstream1"/>

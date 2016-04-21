@@ -440,7 +440,9 @@ protected:
         {
             pOrderedLayout->addNextWidget(pWidget);
         } else {
+
             pLayout->addWidget( pWidget );
+
         }
     }
 
@@ -607,7 +609,7 @@ protected:
         };
 
 
-        std::function<QWidget* (QDomElement*, bool*, int)> oPreProc = [this,pButtonGroup] (QDomElement* pChildNode, bool* pBoolean, int iElement) {
+        std::function<QList<QWidget*> (QDomElement*, bool*, int)> oPreProc = [this,pButtonGroup] (QDomElement* pChildNode, bool* pBoolean, int iElement) {
 
 
             QDomText oSimpleTextNode = pChildNode->childNodes().at(0).toText();
@@ -616,19 +618,21 @@ protected:
             if (!oSimpleTextNode.isNull())
             {
                 // TODO this must create a qlabel based widget for the simple case!
+                QAbstractButton* pBox = (QAbstractButton*) createComponent(pChildNode, pBoolean);
+                QString sText = pBox->text();
+                pBox->setText("");
 
+                pButtonGroup->addButton(pBox, iElement);
 
-                return createComponent(pChildNode, pBoolean);
+                QList<QWidget*> vWidgets;
+                vWidgets.append(pBox);
+                vWidgets.append(new QLabel(sText));
+
+                return vWidgets;
             }
-
-
-
-            QWidget* pTransporter = new QWidget();
-            QHBoxLayout* pTransporterLayout = new QHBoxLayout();
 
             QAbstractButton* pBox = (QAbstractButton*) createComponent(pChildNode, pBoolean);
             pBox->setText("");
-
             pButtonGroup->addButton(pBox, iElement);
 
             QWidget* pContentTransporter = new QWidget();
@@ -648,13 +652,11 @@ protected:
 
             pContentTransporter->setLayout(pContentTransporterLayout);
 
+            QList<QWidget*> vWidgets;
+            vWidgets.append(pBox);
+            vWidgets.append(pContentTransporter);
 
-            pTransporterLayout->addWidget(pBox);
-            pTransporterLayout->addWidget(pContentTransporter);
-
-            pTransporter->setLayout(pTransporterLayout);
-
-            return pTransporter;
+            return vWidgets;
 
         };
 
@@ -695,7 +697,7 @@ protected:
     QWidget* createGeneralGroup(QDomElement* pElement,
                                 bool* pChildrenFinished,
                                 std::function<QLayout* (QDomElement*, QDomNodeList*)> oLayoutFunc,
-                                std::function<QWidget* (QDomElement*, bool*, int)> oPreProcFunc = [] (QDomElement* pChildNode, bool* pBoolean, int iElement) {return (QWidget*)NULL;},
+                                std::function<QList<QWidget*> (QDomElement*, bool*, int)> oPreProcFunc = [] (QDomElement* pChildNode, bool* pBoolean, int iElement) {return QList<QWidget*>();},
                                 std::function<void (QExclusiveGroupBox*, QLayout*, QWidget*, QWidget*, QStringList*, int)> oPostProcFunc = [] (QExclusiveGroupBox* pBox, QLayout* pLay, QWidget* pWid1, QWidget* pWid2, QStringList* pList, int iElement) {})
     {
         (*pChildrenFinished) = true;
@@ -801,12 +803,18 @@ protected:
             bBoolean = false;
 
             QDomElement oChildNode = oChildren.at(i).toElement();
-            QWidget* pChildElement = oPreProcFunc(&oChildNode, &bBoolean, iAdded);
+            QList<QWidget*> vChildren = oPreProcFunc(&oChildNode, &bBoolean, iAdded);
 
-            if (pChildElement == NULL)
-                pChildElement = this->createComponent(&oChildNode, &bBoolean);
+            if (vChildren.size() == 0)
+            {
+                QWidget* pChildElement = this->createComponent(&oChildNode, &bBoolean);
 
-            if (pChildElement == NULL)
+                if (pChildElement != NULL)
+                    vChildren.append(pChildElement);
+            }
+
+
+            if (vChildren.size() == 0)
             {
                 std::cout << "error in creating groupbox components: " + pElement->text().toStdString() << std::endl;
                 std::cout << "error in creating groupbox components: " + oChildNode.text().toStdString() << std::endl;
@@ -815,11 +823,19 @@ protected:
                 continue;
             }
 
-            QWidget* pTransformedChildElement = pGroupBox->addNextWidget(pChildElement);
-            this->addToLayout(pLayout, pTransformedChildElement);
-            this->setID(pTransformedChildElement, &oChildNode, true);
+            for (size_t i = 0; i < vChildren.size(); ++i)
+            {
 
-            oPostProcFunc(pGroupBox, pLayout, pChildElement, pTransformedChildElement, &vSelected, iAdded);
+                QWidget* pChildElement = vChildren.at(i);
+
+                // TODO this is not going to work with ordered radiobuttons ...
+                QWidget* pTransformedChildElement = pGroupBox->addNextWidget(pChildElement);
+                this->addToLayout(pLayout, pTransformedChildElement);
+                this->setID(pTransformedChildElement, &oChildNode, true);
+
+                oPostProcFunc(pGroupBox, pLayout, pChildElement, pTransformedChildElement, &vSelected, iAdded);
+            }
+
 
             ++iAdded;
 

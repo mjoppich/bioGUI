@@ -11,6 +11,7 @@
 #include <QFile>
 #include <QDebug>
 #include <QXmlResultItems>
+#include <QDesktopWidget>
 #include <iostream>
 #include <src/app/TemplateListDelegate.h>
 #include <src/parsing/XMLParserInfo.h>
@@ -207,7 +208,15 @@ public:
 
         m_pWindow = m_pWindowParser->getWindow();
 
-        m_pApplicationWindowArea->setMinimumSize( m_pWindow->minimumWidth()+10, m_pWindow->minimumHeight()+10);
+        QRect rec = QApplication::desktop()->availableGeometry(m_pWindow);
+
+        QSize oWinSize(rec.width(),rec.height());
+
+        oWinSize.setWidth( std::min(oWinSize.width(), m_pWindow->minimumWidth()+10) );
+        oWinSize.setHeight( std::min(oWinSize.height()-100, m_pWindow->minimumHeight()+10));
+
+
+        m_pApplicationWindowArea->setMinimumSize(oWinSize);
         m_pMainWindow->setMinimumSize( m_pApplicationWindowArea->minimumWidth() + m_pTemplates->width(), std::max(m_pApplicationWindowArea->minimumHeight()+20, m_pTemplates->height()) );
 
         m_pApplicationWindowArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
@@ -215,7 +224,7 @@ public:
 
         // this also destroys the current window!
         m_pApplicationWindowArea->setWidget(m_pWindow);
-        //m_pApplicationWindowArea->setWidgetResizable(true);
+        m_pApplicationWindowArea->setWidgetResizable(true);
 
         QWidget* pWindow = m_pMainWindow;
 

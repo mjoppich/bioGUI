@@ -24,12 +24,17 @@ QLayout* XMLParserWindow::createLayout(QDomElement* pElement)
     {
         QHBoxLayout *pLayout = new QOrderedHBoxLayout();
 
+        pLayout->setAlignment(Qt::AlignHorizontal_Mask);
+
         return (QLayout*) pLayout;
     }
 
     if (sTag.compare("vgroup", Qt::CaseInsensitive) == 0)
     {
         QVBoxLayout *pLayout = new QOrderedVBoxLayout();
+
+        pLayout->setAlignment(Qt::AlignVertical_Mask);
+
         return (QLayout*) pLayout;
     }
 
@@ -41,6 +46,9 @@ QLayout* XMLParserWindow::createLayout(QDomElement* pElement)
         int iCols = this->getAttribute(pElement, "cols", 0).toInt();
 
         QExtGridLayout *pLayout = new QExtGridLayout(iRows, iCols);
+
+        pLayout->setAlignment(Qt::AlignVertical_Mask);
+
 
         return (QLayout*) pLayout;
     }
@@ -223,8 +231,8 @@ QWidget* XMLParserWindow::createComponent(QDomElement* pElement, bool* pChildren
 
         });
 
-        pLayout->addWidget( pLineEdit );
-        pLayout->addWidget( pFileButton );
+        pLayout->addWidget( pLineEdit, 0, Qt::AlignLeft );
+        pLayout->addWidget( pFileButton, 0, Qt::AlignLeft );
         pLineButton->setLayout( pLayout );
 
         this->addValueFetcher(pElement, [pLineEdit] () {return pLineEdit->text().toStdString();});

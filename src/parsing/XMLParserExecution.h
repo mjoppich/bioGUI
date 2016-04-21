@@ -5,6 +5,7 @@
 #ifndef BIOGUI_XMLPARSEREXECUTION_H
 #define BIOGUI_XMLPARSEREXECUTION_H
 
+#include <src/parsing/nodes/ExecutionSaveFileNode.h>
 #include "nodes/ExecutionOrderedAddNode.h"
 #include "nodes/ExecutionPlaceholderNode.h"
 #include "nodes/ExecutionIfNode.h"
@@ -36,6 +37,7 @@ public:
         m_pKnownTags->push_back("math");
         m_pKnownTags->push_back("output");
         m_pKnownTags->push_back("execution");
+        m_pKnownTags->push_back("savefile");
         m_pKnownTags->push_back("if");
         m_pKnownTags->push_back("else");
 
@@ -59,6 +61,15 @@ protected:
         {
 
             ExecutionExecuteNode* pNode = new ExecutionExecuteNode( pElement );
+
+            pReturn = pNode;
+
+        }
+
+        if ( sTagName.compare("savefile", Qt::CaseInsensitive)==0 )
+        {
+
+            ExecutionSaveFileNode* pNode = new ExecutionSaveFileNode( pElement );
 
             pReturn = pNode;
 

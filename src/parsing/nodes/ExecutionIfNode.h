@@ -22,6 +22,8 @@ public:
         m_sValue1 = this->getDomElementAttribute(pElement, "value1", QString(sNotSet.c_str())).toStdString();
         m_sValue2 = this->getDomElementAttribute(pElement, "value2", QString(sNotSet.c_str())).toStdString();
 
+        m_sSeperator = this->getDomElementAttribute(pElement, "sep", "").toStdString();
+
         m_vValidCompareModes.push_back("is_set");
         m_vValidCompareModes.push_back("equals");
         m_vValidCompareModes.push_back("EQUALS");
@@ -92,7 +94,8 @@ public:
                                           std::map<std::string, std::string>* pInputID2Value,
                                           std::map<std::string, QWidget*>* pInputID2Widget)
     {
-        std::string sReturn = "";
+
+        std::vector<std::string> vReturn;
 
         for (size_t i = 0; i < m_vChildren.size(); ++i)
         {
@@ -101,12 +104,30 @@ public:
 
             if ((i > 0) && (pChild != m_pElseNode))
             {
-                sReturn = sReturn + "\n";
+                //sReturn = sReturn + "\n";
             }
 
             if (pChild != m_pElseNode)
-                sReturn = sReturn + pChild->evaluate(pID2Node, pInputID2Value, pInputID2Widget);
+            {
+                std::string sReturn = pChild->evaluate(pID2Node, pInputID2Value, pInputID2Widget);
+                if (sReturn.size() != 0)
+                    vReturn.push_back(sReturn);
+            }
 
+        }
+
+
+        std::string sReturn = "";
+
+        if ( vReturn.size() > 0 )
+        {
+            for(size_t i = 0; i < vReturn.size(); ++i)
+            {
+                if (i > 0)
+                    sReturn = sReturn + m_sSeperator;
+
+                sReturn = sReturn + vReturn.at(i);
+            }
         }
 
         return sReturn;
@@ -185,6 +206,7 @@ protected:
 
     std::string m_sCompareMode;
     std::string m_sValue1, m_sValue2;
+    std::string m_sSeperator = "";
 
     std::vector<std::string> m_vValidCompareModes;
 

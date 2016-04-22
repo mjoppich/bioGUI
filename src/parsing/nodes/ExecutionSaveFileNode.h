@@ -46,7 +46,7 @@ public:
                 stream << QString(sReturn.c_str()) << endl;
             }
 
-            return sReturn;
+            return m_sTo;
         }
 
         // or it also might be another node
@@ -64,7 +64,7 @@ public:
                 stream << QString(sReturn.c_str()) << endl;
             }
 
-            return sReturn;
+            return m_sTo;
         }
 
     }

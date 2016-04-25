@@ -6,6 +6,7 @@
 #define BIOGUI_XMLPARSEREXECUTION_H
 
 #include <src/parsing/nodes/ExecutionSaveFileNode.h>
+#include <src/parsing/nodes/ExecutionStringReplaceNode.h>
 #include "nodes/ExecutionOrderedAddNode.h"
 #include "nodes/ExecutionPlaceholderNode.h"
 #include "nodes/ExecutionIfNode.h"
@@ -100,6 +101,13 @@ protected:
 
             pReturn = pNode;
 
+        }
+
+        if (sTagName.compare("replace", Qt::CaseInsensitive) == 0)
+        {
+            ExecutionStringReplaceNode* pNode = new ExecutionStringReplaceNode(pElement);
+
+            pReturn = pNode;
         }
 
         if ( sTagName.compare("orderedadd", Qt::CaseInsensitive)==0 )

@@ -1,18 +1,42 @@
 #include "TCPExtendedBuffer.h"
 
 
-void QBufferTcpServer::incomingConnection(qintptr socketDescripter)
+QBufferTcpServer::QBufferTcpServer(QString sHost, int iPort, TCPExtendedBuffer* pParent)
+: QTcpServer()
 {
-    m_pCurrentSocket = new QTcpSocket();
-    m_pCurrentSocket->setSocketDescriptor(socketDescripter);
+    m_sHost = sHost;
+    m_iPort = iPort;
+    m_pParent = pParent;
 
-    QObject::connect(m_pCurrentSocket, &QTcpSocket::readyRead, this, &QBufferTcpServer::parentCallback, Qt::DirectConnection);
+    QTcpServer::connect(this, &QTcpServer::acceptError, [this] () {
+        std::cerr << "conn error: " << this->errorString().toStdString() << std::endl;
+    });
 
+    QHostAddress oHostAddr(sHost);
+    if ((sHost.size() == 0) || (oHostAddr.isNull()))
+        oHostAddr = QHostAddress::Any;
+
+    if (!this->listen(oHostAddr, iPort))
+    {
+        std::cerr << "Error listening on port " <<  std::to_string(iPort) << std::endl;
+
+        throw "no listen possible";
+    }
+
+    std::cerr << "listening on port " << iPort << " " << this->isListening() <<  std::endl;
+
+    QTcpServer::connect(this, &QBufferTcpServer::socketReady, m_pParent, &TCPExtendedBuffer::receiveProcData, Qt::DirectConnection);
 }
 
-void QBufferTcpServer::parentCallback()
+void QBufferTcpServer::incomingConnection(qintptr socketDescripter)
 {
 
-    m_pParent->receiveProcData(m_pCurrentSocket);
+    QTcpSocket* pSocket = new QTcpSocket();
+    m_pCurrentSocket = pSocket;
+    pSocket->setSocketDescriptor(socketDescripter);
+
+    QObject::connect(pSocket, &QTcpSocket::readyRead, [this,pSocket] () {
+        emit socketReady(pSocket);
+    });
 
 }

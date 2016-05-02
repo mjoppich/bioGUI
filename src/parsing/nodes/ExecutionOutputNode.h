@@ -176,7 +176,7 @@ public:
 
                 if (m_sType.compare("TCP") == 0)
                 {
-                pTextEdit->finishTCPConnection(m_sHost, m_iPort);
+                    pTextEdit->finishTCPConnection(m_sHost, m_iPort);
                 }
 
 

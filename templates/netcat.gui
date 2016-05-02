@@ -1,7 +1,7 @@
 <!--<?xml version="1.0" encoding="UTF-8"?>-->
 <template rootid="blubb" intatt="111">
 
-<window width="1000" height="1000" title="Example1">
+<window width="500" height="500" title="Example1">
 
   <vgroup>
 <action id="runprog" hint="click here to run program">run program</action>  
@@ -16,7 +16,7 @@
 
 </window>
 
-<execution>|
+<execution>
     
   <execute exec="C:\\Windows\\sysnative\\bash.exe" location="" param="-c &quot; sleep 10 &quot;">
     <output id="outcout" type="TCP" host="" port="55025" color="green" to="outputstream1" />

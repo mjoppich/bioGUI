@@ -259,7 +259,7 @@ public:
         XMLParserWindow* pWindowParser = m_pWindowParser;
 
         this->connect(pThread, &QThread::started, pThread, &ExecutionRunThread::startExecution);
-        this->connect(pThread, &QThread::finished, this, &bioGUIapp::programFinished);
+        this->connect(pThread, &ExecutionRunThread::executionFinished, this, &bioGUIapp::programFinished);
 
         pThread->start();
 

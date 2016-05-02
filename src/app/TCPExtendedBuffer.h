@@ -11,38 +11,18 @@ class QBufferTcpServer : public QTcpServer
     Q_OBJECT
 public:
 
-    QBufferTcpServer(QString sHost, int iPort, TCPExtendedBuffer* pParent)
-        : QTcpServer()
-    {
-        m_sHost = sHost;
-        m_iPort = iPort;
-        m_pParent = pParent;
-
-        QTcpServer::connect(this, &QTcpServer::acceptError, [this] () {
-            std::cerr << "conn error: " << this->errorString().toStdString() << std::endl;
-        });
-
-        QHostAddress oHostAddr(sHost);
-        if ((sHost.size() == 0) || (oHostAddr.isNull()))
-            oHostAddr = QHostAddress::Any;
-
-        if (!this->listen(oHostAddr, iPort))
-        {
-            std::cerr << "Error listening on port " <<  std::to_string(iPort) << std::endl;
-
-            throw "no listen possible";
-        }
-
-        std::cerr << "listening on port " << iPort << " " << this->isListening() <<  std::endl;
-    }
+    QBufferTcpServer(QString sHost, int iPort, TCPExtendedBuffer* pParent);
 
     virtual void incomingConnection(qintptr socketDescripter);
-    virtual void parentCallback();
 
     ~QBufferTcpServer()
     {
         std::cerr << "no more listening on port " << m_iPort << " " << this->hasPendingConnections() << std::endl;
     }
+
+signals:
+
+    void socketReady(QTcpSocket* pSocket);
 
 protected:
 
@@ -84,25 +64,35 @@ public:
         const uint64_t iBuffer = 256;
         char* cBuffer = (char*) calloc(iBuffer, sizeof(char));
 
-        int64_t iReadBytes = pSocket->read(cBuffer, iBuffer);
+        uint64_t iReadBytes;
 
-        if (iReadBytes == 0)
+        while ((iReadBytes = pSocket->read(cBuffer, iBuffer)) != 0)
         {
-            std::cerr << "error reading bytey: " << iReadBytes << std::endl;
+            if (iReadBytes == 0)
+            {
+                std::cerr << "error reading bytes: " << iReadBytes << std::endl;
 
-            return;
+                return;
+            }
+
+            if (iReadBytes == -1)
+            {
+                std::cerr << "reading from closed socket bytes: " << iReadBytes << std::endl;
+            }
+
+            std::cerr << "received bytes: " << iReadBytes << std::endl;
+
+
+            QString sString = QString(cBuffer);
+
+            memset(cBuffer, 0, std::min(iReadBytes, iBuffer));
+
+            emit sendText(sString, m_oColor, m_sID);
         }
 
-        if (iReadBytes == -1)
-        {
-            std::cerr << "reading from closed socket bytes: " << iReadBytes << std::endl;
-        }
-
-        QString sString = QString(cBuffer);
         free(cBuffer);
-        //sString = QString(sString.toStdString().substr(0, sString.size()-3).c_str());
 
-        emit sendText(sString, m_oColor, m_sID);
+
     }
 protected:
 

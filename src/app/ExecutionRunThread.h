@@ -22,6 +22,10 @@ public slots:
 
     void startExecution();
 
+signals:
+
+    void executionFinished();
+
 
 protected:
 

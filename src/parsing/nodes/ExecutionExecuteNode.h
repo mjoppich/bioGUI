@@ -13,7 +13,9 @@
 #include "ExecutionNode.h"
 #include "ExecutionOutputNode.h"
 
-#include <windows.h>
+#ifdef WINDOWS
+    #include <windows.h>
+#endif
 
 class ExecutionExecuteNode : public ExecutionNode {
 
@@ -176,16 +178,37 @@ public:
         {
             sProgram = "/usr/bin/echo";
 
-            if (QSysInfo::windowsVersion() != QSysInfo::WV_None)
-                sProgram = "bash.exe -c ";
         }
 
 
         QProcess* pProcess = new QProcess();
-        //pProcess->setProcessChannelMode(QProcess::ForwardedChannels);
 
         this->evaluateChildren(pID2Node, pInputID2Value, pInputID2Widget, pProcess, false);
 
+        pProcess->connect(pProcess, static_cast<void(QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished),
+                [=](int exitCode, QProcess::ExitStatus exitStatus){
+
+                    qDebug() << pProcess->error();
+                    qDebug() << pProcess->program();
+                    qDebug() << pProcess->arguments();
+
+                    std::cout << "finished: " << iReturnCode << std::endl;
+
+                    this->evaluateChildren(pID2Node, pInputID2Value, pInputID2Widget, pProcess, true);
+                    delete pProcess;
+
+                });
+
+
+        bool bWSL = false;
+        if (bWSL)
+        {
+            pProcess->setProcessChannelMode(QProcess::SeparateChannels);
+        }
+
+        /*
+         *
+         * this is totally WSL specific ... no idea how to integrate that
 
         if (true)
         {
@@ -213,35 +236,26 @@ public:
 
 
         }
+        */
 
-
-        bActuallyRun = false;
         if (bActuallyRun)
         {
 
             std::cout << "running " << sProgram << " " << sCLArg << std::endl;
 
-            QStringList oArgs = this->stringToArguments(QString(sCLArg.c_str()), '\"');
+            QStringList oArgs;
+            if (sCLArg.size() > 0)
+                oArgs = this->stringToArguments(QString(sCLArg.c_str()), '\"');
 
             for (int i = 0; i < oArgs.size(); ++i)
                 std::cerr << oArgs.at(i).toStdString() << std::endl;
 
             pProcess->start( QString(sProgram.c_str()), oArgs );
-            pProcess->waitForFinished();
-            qDebug() << pProcess->error();
-            qDebug() << pProcess->program();
-            qDebug() << pProcess->arguments();
 
-            iReturnCode = pProcess->exitCode();
-
-            std::cout << "finished: " << iReturnCode << std::endl;
 
         }
 
-        //this->evaluateChildren(pID2Node, pInputID2Value, pInputID2Widget, pProcess, true);
-        delete pProcess;
-
-        return std::to_string(iReturnCode);
+        return "";
 
     }
 

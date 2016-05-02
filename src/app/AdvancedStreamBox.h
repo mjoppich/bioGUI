@@ -176,7 +176,7 @@ public:
 
                 ExtendedBuffer* pBuffer = oJt->second.at(i);
                 pBuffer->transferText("\n");
-                //pBuffer->deleteLater();
+                pBuffer->deleteLater();
 
             }
 

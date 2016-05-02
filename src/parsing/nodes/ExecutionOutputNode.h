@@ -28,6 +28,9 @@ public:
         m_sTo = this->getDomElementAttribute(pElement, "TO", "").toStdString();
         m_sLocation = this->getDomElementAttribute(pElement, "location", "").toStdString();
 
+        m_sHost = this->getDomElementAttribute(pElement, "host", "").toStdString();
+        m_iPort = std::stoi(this->getDomElementAttribute(pElement, "port", "25").toStdString());
+
         m_bDefferred = (this->getDomElementAttribute(pElement, "DEFERRED", "true").toUpper().compare("TRUE", Qt::CaseInsensitive) == 0);
 
 
@@ -117,15 +120,6 @@ public:
 
         }
 
-
-
-
-
-
-
-
-
-
         /*
          * ANY TYPE WHERE 'TO' IS NEEDED
          *
@@ -171,9 +165,21 @@ public:
                     pTextEdit->addBuffer( pProcess, QProcess::StandardError, QString(m_sTo.c_str()), oColor );
                 }
 
+                if (m_sType.compare("TCP") == 0)
+                {
+                    pTextEdit->addTCPBuffer( m_sHost, m_iPort, QString(m_sTo.c_str()), oColor );
+                }
+
             } else {
 
                 pTextEdit->finishProcess(pProcess);
+
+                if (m_sType.compare("TCP") == 0)
+                {
+                pTextEdit->finishTCPConnection(m_sHost, m_iPort);
+                }
+
+
 
             }
 
@@ -214,6 +220,10 @@ protected:
     std::string m_sTo;
     std::string m_sColor;
     std::string m_sLocation;
+
+    // for TCP connections
+    std::string m_sHost;
+    int m_iPort;
 
     bool m_bDefferred;
 

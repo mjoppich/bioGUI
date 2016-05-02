@@ -52,7 +52,7 @@ public:
 
 public slots:
 
-    void receiveProcData()
+    virtual void receiveProcData()
     {
 
         if (this->m_pParentProcess == NULL)
@@ -123,7 +123,6 @@ protected:
         return n;
     }
 
-private:
     QColor m_oColor;
     QString m_sID;
 

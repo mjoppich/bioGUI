@@ -53,7 +53,7 @@ public:
 
         QChar cDrive = qsChildren.at(0);
         qsChildren.remove(0,2);
-        qsChildren.prepend("/mnt/" + cDrive.toLower() );
+        qsChildren.prepend(QString("/mnt/") + cDrive.toLower() );
         qsChildren.replace("\\", "/");
 
         return qsChildren.toStdString();

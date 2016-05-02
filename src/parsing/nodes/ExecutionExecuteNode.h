@@ -13,6 +13,8 @@
 #include "ExecutionNode.h"
 #include "ExecutionOutputNode.h"
 
+#include <windows.h>
+
 class ExecutionExecuteNode : public ExecutionNode {
 
 public:
@@ -184,12 +186,47 @@ public:
 
         this->evaluateChildren(pID2Node, pInputID2Value, pInputID2Widget, pProcess, false);
 
+
+        if (true)
+        {
+
+            std::string sCMD = sProgram + " " + sCLArg;
+
+            STARTUPINFO sinfo = {sizeof(sinfo), 0};
+            PROCESS_INFORMATION pinfo = {0};
+
+            if (CreateProcess(NULL, (LPSTR)sCMD.c_str(), NULL, NULL, FALSE, CREATE_NEW_CONSOLE, NULL, NULL, &sinfo, &pinfo)) {
+
+                std::cerr << "executed: " << sCMD << std::endl;
+
+                //WaitForSingleObject (pinfo.hProcess, INFINITE);
+
+                std::cerr << "finished" << std::endl;
+
+
+            } else {
+              // boo
+
+                return "";
+
+            }
+
+
+        }
+
+
+        bActuallyRun = false;
         if (bActuallyRun)
         {
 
             std::cout << "running " << sProgram << " " << sCLArg << std::endl;
 
-            pProcess->start( QString(sProgram.c_str()), this->stringToArguments(QString(sCLArg.c_str())) );
+            QStringList oArgs = this->stringToArguments(QString(sCLArg.c_str()), '\"');
+
+            for (int i = 0; i < oArgs.size(); ++i)
+                std::cerr << oArgs.at(i).toStdString() << std::endl;
+
+            pProcess->start( QString(sProgram.c_str()), oArgs );
             pProcess->waitForFinished();
             qDebug() << pProcess->error();
             qDebug() << pProcess->program();
@@ -201,7 +238,7 @@ public:
 
         }
 
-        this->evaluateChildren(pID2Node, pInputID2Value, pInputID2Widget, pProcess, true);
+        //this->evaluateChildren(pID2Node, pInputID2Value, pInputID2Widget, pProcess, true);
         delete pProcess;
 
         return std::to_string(iReturnCode);
@@ -210,10 +247,14 @@ public:
 
 protected:
 
-    QStringList stringToArguments(QString sString)
+    QStringList stringToArguments(QString sString, char cQuoteChar)
     {
-        bool bContainsQuotes = (sString.at(0) == '\"'); //true if the first character is "
-        QStringList vTmpList = sString.split(QRegExp("\""), QString::SkipEmptyParts); // Split by " and make sure you don't have an empty string at the beginning
+        bool bContainsQuotes = (sString.at(0).toLatin1() == cQuoteChar); //true if the first character is "
+
+        QString sTest("a");
+        sTest[0] = cQuoteChar;
+
+        QStringList vTmpList = sString.split(QRegExp(sTest), QString::SkipEmptyParts); // Split by " and make sure you don't have an empty string at the beginning
         QStringList vArgsList;
 
                 foreach (QString s, vTmpList) {

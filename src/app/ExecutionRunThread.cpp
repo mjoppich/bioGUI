@@ -12,8 +12,8 @@ ExecutionRunThread::ExecutionRunThread(XMLParserWindow* pWindowParser, Execution
     m_pWindowParser = pWindowParser;
 }
 
-void ExecutionRunThread::run() {
 
+void ExecutionRunThread::startExecution()
+{
     m_pNetwork->execute( m_pWindowParser->getID2Value(), m_pWindowParser->getID2Widget() );
-
 }

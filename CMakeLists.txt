@@ -38,6 +38,7 @@ if ( CMAKE_SYSTEM_NAME STREQUAL "Windows" OR CYGWIN OR MINGW)
 
     if (MINGW)
         set(QT_QMAKE_EXECUTABLE C:\\Qt\\5.6\\mingw49_32\\bin\\qmake.exe)
+        set(QT_QMAKE_EXECUTABLE G:\\Qt\\5.6\\mingw49_32\\bin\\qmake.exe)
     endif()
 
 else()
@@ -94,7 +95,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../splitter/include)
 
 ADD_LIBRARY(splitutils STATIC IMPORTED)
 SET_TARGET_PROPERTIES(splitutils PROPERTIES IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/../splitter/lib/libsplitutils.a)
-TARGET_LINK_LIBRARIES(parsing splitutils)
+#TARGET_LINK_LIBRARIES(parsing splitutils)
 
 
 # aortack

@@ -10,6 +10,8 @@
 #include <vector>
 #include <map>
 
+class QBufferTcpServer;
+
 class ExecutionNode {
 
 public:
@@ -19,6 +21,10 @@ public:
         STRING = 0,
         NUMBER = 1
 
+    };
+
+    struct sMainThreadInfo {
+        QBufferTcpServer* pTCPserver;
     };
 
     static NODE_TYPE cstring2nodetype(std::string sType)

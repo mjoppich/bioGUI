@@ -256,6 +256,9 @@ public:
 
         ExecutionRunThread* pThread = new ExecutionRunThread(m_pWindowParser, pNetwork);
 
+        XMLParserWindow* pWindowParser = m_pWindowParser;
+
+        this->connect(pThread, &QThread::started, pThread, &ExecutionRunThread::startExecution);
         this->connect(pThread, &QThread::finished, this, &bioGUIapp::programFinished);
 
         pThread->start();

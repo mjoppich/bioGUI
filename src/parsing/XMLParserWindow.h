@@ -61,6 +61,7 @@ public:
         m_pKnownTags->push_back("grid");
 
         m_pKnownTags->push_back("label");
+        m_pKnownTags->push_back("link");
         m_pKnownTags->push_back("input");
         m_pKnownTags->push_back("image");
         m_pKnownTags->push_back("filedialog");

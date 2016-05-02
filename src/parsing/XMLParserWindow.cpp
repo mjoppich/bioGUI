@@ -12,6 +12,7 @@
 
 #include <QGridLayout>
 #include <src/app/QExtGridLayout.h>
+#include <src/app/QClickableLabel.h>
 
 #include "../bioGUIapp.h"
 
@@ -105,6 +106,23 @@ QWidget* XMLParserWindow::createComponent(QDomElement* pElement, bool* pChildren
         QLabel *pLabel = new QLabel( sValue );
 
         this->addValueFetcher(pElement, [sValue] () {return sValue.toStdString();});
+
+        pWidget = pLabel;
+    }
+
+    if (sTag.compare("link", Qt::CaseInsensitive) == 0)
+    {
+        QClickableLabel *pLabel = new QClickableLabel( sValue );
+
+        this->addValueFetcher(pElement, [sValue] () {return sValue.toStdString();});
+
+        QObject::connect(pLabel,&QClickableLabel::clicked,[pLabel] (){
+
+            QDesktopServices::openUrl(QUrl(pLabel->text()));
+
+        });
+
+
 
         pWidget = pLabel;
     }

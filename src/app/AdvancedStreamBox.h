@@ -15,6 +15,7 @@
 #include <iostream>
 #include <QtWidgets/qcheckbox.h>
 #include "ExtendedBuffer.h"
+#include "TCPExtendedBuffer.h"
 
 
 class AdvancedListWidgetItem : public QListWidgetItem {
@@ -117,6 +118,26 @@ public:
 
     }
 
+    void addTCPConnBuffer(std::string sHost, int iPort, ExtendedBuffer* pBuffer)
+    {
+        std::pair<std::string, int> oConn(sHost, iPort);
+
+        std::map<std::pair<std::string, int>, std::vector<ExtendedBuffer*> >::iterator oIt = m_mTCPConnToBuffer.find(oConn);
+
+        if (oIt != m_mTCPConnToBuffer.end())
+        {
+            oIt->second.push_back(pBuffer);
+        } else {
+            std::pair<std::pair<std::string, int>, std::vector<ExtendedBuffer*>> oPair(oConn, std::vector<ExtendedBuffer*>());
+
+            oPair.second.push_back(pBuffer);
+            m_mTCPConnToBuffer.insert( oPair );
+
+        }
+
+
+    }
+
     void finishProcess(QProcess* pProcess)
     {
         std::map<QProcess*, std::vector<ExtendedBuffer*> >::iterator oIt = m_mProcToBuffer.find(pProcess);
@@ -138,7 +159,44 @@ public:
 
 
         }
+    }
 
+    void finishTCPConnection(std::string sHost, int iPort)
+    {
+
+        std::pair<std::string, int> oConn(sHost, iPort);
+
+        std::map<std::pair<std::string, int>, std::vector<ExtendedBuffer*> >::iterator oJt = m_mTCPConnToBuffer.find(oConn);
+
+        if (oJt != m_mTCPConnToBuffer.end())
+        {
+
+            for (size_t i = 0; i < oJt->second.size(); ++i)
+            {
+
+                ExtendedBuffer* pBuffer = oJt->second.at(i);
+                pBuffer->transferText("\n");
+                //pBuffer->deleteLater();
+
+            }
+
+            m_mTCPConnToBuffer.erase(oJt);
+
+
+        }
+
+    }
+
+    void addTCPBuffer(std::string sHost, int iPort, QString sStreamID, QColor oTextColor)
+    {
+
+        TCPExtendedBuffer* pBuffer = new TCPExtendedBuffer(QString(sHost.c_str()), iPort);
+        pBuffer->setTextColor( oTextColor );
+        pBuffer->setStreamID( sStreamID );
+
+        this->addTCPConnBuffer(sHost, iPort, pBuffer);
+
+        this->connect(pBuffer, &TCPExtendedBuffer::sendText, this , &AdvancedStreamBox::receiveText, Qt::QueuedConnection );
 
     }
 
@@ -172,6 +230,7 @@ public:
         QObject::connect(pBuffer, SIGNAL(sendText(QString,QColor, QString)), this , SLOT(receiveText(QString,QColor, QString)), Qt::QueuedConnection );
 
     }
+
 
     void addStream(std::string sStreamID, QCheckBox* pControl)
     {
@@ -261,7 +320,7 @@ protected slots:
 
         sString = sString.trimmed();
 
-        //std::cout << "received: " << sString.toStdString() << std::endl;
+        std::cout << "received: " << sString.toStdString() << " for stream " << sStreamID.toStdString()  << std::endl;
 
         AdvancedListWidgetItem* pLastStream = this->getLastItemForStream(&sStreamID);
 
@@ -337,6 +396,7 @@ protected:
     }
 
 
+    std::map<std::pair<std::string, int>, std::vector<ExtendedBuffer*>> m_mTCPConnToBuffer;
     std::map<QProcess*, std::vector<ExtendedBuffer*>> m_mProcToBuffer;
     std::map<std::string, QAbstractButton*> m_mStreamID2Button;
 };

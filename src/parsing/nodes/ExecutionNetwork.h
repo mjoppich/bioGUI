@@ -18,7 +18,8 @@ class ExecutionNetwork {
 public:
 
 
-    int execute( std::map< std::string, std::function< std::string () > >* pID2Value, std::map< std::string, QWidget* >* pInputID2Widget )
+    int execute( std::map< std::string, std::function< std::string () > >* pID2Value,
+                 std::map< std::string, QWidget* >* pInputID2Widget)
     {
 
         std::map< std::string, std::string> mInputID2Value;
@@ -62,10 +63,6 @@ public:
         {
             throw "No exec nodes found!";
         }
-
-
-
-
 
         for (size_t i = 0; i < vExecNodes.size(); ++i)
         {

@@ -18,10 +18,12 @@ public:
 
     ExecutionRunThread(XMLParserWindow* pWindowParser, ExecutionNetwork* pNetwork);
 
+public slots:
+
+    void startExecution();
+
 
 protected:
-
-    virtual void run();
 
     ExecutionNetwork* m_pNetwork;
     XMLParserWindow* m_pWindowParser;

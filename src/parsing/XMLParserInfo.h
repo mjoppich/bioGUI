@@ -54,7 +54,7 @@ public:
     {
         this->setRoot();
 
-        return this->getAttribute(m_pTemplateElement, "icon", "");
+        return this->getAttribute(m_pTemplateElement, "icon", "biogui_logo.png");
 
     }
 

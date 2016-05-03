@@ -7,7 +7,7 @@
 #include <iostream>
 #include <QDebug>
 
-#ifndef LINUX
+#ifndef __linux
 #include <windows.h>
 #endif
 
@@ -34,7 +34,7 @@ protected:
     void run()
     {
 
-#ifndef LINUX
+#ifndef __linux
 
         STARTUPINFO sinfo = {sizeof(sinfo), 0};
         PROCESS_INFORMATION pinfo = {0};

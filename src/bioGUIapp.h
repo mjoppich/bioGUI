@@ -31,7 +31,13 @@ public:
 
         qDebug() << QStyleFactory::keys();
 
-        this->setStyle(QStyleFactory::create("WindowsVista"));
+#ifdef __linux
+
+#else
+        QStyle* pStyle = NULL;
+        pStyle = QStyleFactory::create("WindowsVista");
+        this->setStyle(pStyle);
+#endif
 
         //m_sGUIFile = "/cygdrive/c/libraries/bioGUI/example.gui";
         //m_sGUIFile = "/home/users/joppich/cpp/bioGUI/example.gui";

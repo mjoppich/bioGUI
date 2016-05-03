@@ -67,7 +67,7 @@ void TemplateListDelegate::paint (QPainter * painter, const QStyleOptionViewItem
         //ICON
         r = option.rect.adjusted(5, 10, -10, -10);
         ic.paint(painter, r, Qt::AlignVCenter|Qt::AlignLeft);
-        imageSpace = 55;
+        imageSpace = 75;
     }
 
     //TITLE

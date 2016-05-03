@@ -31,7 +31,9 @@ public:
 
         qDebug() << QStyleFactory::keys();
 
-        this->setStyle(QStyleFactory::create("WindowsVista"));
+        QStyle* pStyle = QStyleFactory::create("Fusion");
+
+        QApplication::setStyle(pStyle);
 
         //m_sGUIFile = "/cygdrive/c/libraries/bioGUI/example.gui";
         //m_sGUIFile = "/home/users/joppich/cpp/bioGUI/example.gui";
@@ -180,11 +182,12 @@ public:
             XMLParserInfo oInfoParser(oFile.absoluteFilePath().toStdString());
 
             QString sIconPath = oInfoParser.getIcon();
-            if ((sIconPath.length() > 0) || (true))
+
+            if ((sIconPath.length() > 0))
             {
 
                 //QIcon oIcon(sIconPath);
-                QIcon oIcon = QIcon::fromTheme("edit-undo");
+                QIcon oIcon = QIcon(sIconPath);
 
                 item->setData(Qt::DecorationRole, oIcon.pixmap(QSize(200,200)));
 

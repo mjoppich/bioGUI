@@ -1,5 +1,5 @@
 <!--<?xml version="1.0" encoding="UTF-8"?>-->
-<template icon="" description="BLASTN" title="nucleotide BLAST">
+<template description="BLASTN" title="nucleotide BLAST">
  <window title="BLASTN" height="1500" width="1000">
   <vgroup>
    <group title="Query/Input Options" exclusive="true">

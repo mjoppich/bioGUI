@@ -10,6 +10,7 @@
 #include <QProcess>
 #include <QAbstractButton>
 #include <QFile>
+#include <QFontDatabase>
 #include <QTextStream>
 
 #include <iostream>
@@ -27,6 +28,9 @@ public:
     {
         m_bFinished = false;
         this->setStreamID(sStreamID);
+
+        const QFont oFixedFont = QFontDatabase::systemFont(QFontDatabase::FixedFont);
+        this->setFont(oFixedFont);
     }
 
     QString getStreamID()

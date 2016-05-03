@@ -6,6 +6,7 @@
 #define BIOGUI_BIOGUIAPP_H
 
 #include <QApplication>
+#include <QStyleFactory>
 #include <QXmlQuery>
 #include <QDomDocument>
 #include <QFile>
@@ -27,6 +28,10 @@ public:
     bioGUIapp(int argc, char* argv[])
     : QApplication(argc, argv)
     {
+
+        qDebug() << QStyleFactory::keys();
+
+        this->setStyle(QStyleFactory::create("WindowsVista"));
 
         //m_sGUIFile = "/cygdrive/c/libraries/bioGUI/example.gui";
         //m_sGUIFile = "/home/users/joppich/cpp/bioGUI/example.gui";

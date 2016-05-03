@@ -1,24 +1,24 @@
 <!--<?xml version="1.0" encoding="UTF-8"?>-->
-<template rootid="blubb" intatt="111">
+<template description="WSL call to echo, pipe to netcat" title="netcat demo">
 
-<window width="500" height="500" title="Example1">
+<window width="500" height="500" title="netcat demo">
 
   <vgroup>
+  <label>What do you want to say?</label>
+  <input id="input">Hello World</input>
 <action id="runprog" hint="click here to run program">run program</action>  
   
     <streambox id="output1">
       <stream id="outputstream1">OS1</stream>
-      <stream id="outputstream2">OS2</stream>
     </streambox>
 
-  
   </vgroup>
 
 </window>
 
 <execution>
     
-  <execute exec="C:\\Windows\\sysnative\\bash.exe" location="" param="-c &quot; sleep 10 &quot;">
+  <execute exec="C:\\Windows\\sysnative\\bash.exe" location="" wsl="true" param="-c &quot; /usr/games/cowsay '${input}' | netcat 127.0.0.1 55025 &quot;">
     <output id="outcout" type="TCP" host="" port="55025" color="green" to="outputstream1" />
   </execute>
   

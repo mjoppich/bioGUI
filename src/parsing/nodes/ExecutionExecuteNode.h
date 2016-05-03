@@ -10,6 +10,7 @@
 #include <QProcess>
 #include <iostream>
 #include <QtCore/qprocess.h>
+#include <src/app/ProcessLauncher.h>
 #include "ExecutionNode.h"
 #include "ExecutionOutputNode.h"
 
@@ -32,6 +33,7 @@ public:
         m_sCLArg = this->getDomElementAttribute(pElement, "param", QString(sNotSet.c_str())).toStdString();
 
         m_bTest = (this->getDomElementAttribute(pElement, "test", "false").compare("True", Qt::CaseInsensitive) == 0);
+        m_bWSL = (this->getDomElementAttribute(pElement, "wsl", "false").compare("True", Qt::CaseInsensitive) == 0);
 
         if (m_sExecutable.compare(sNotSet) == 0)
             throw "executable not set";
@@ -181,77 +183,23 @@ public:
         }
 
 
-        QProcess* pProcess = new QProcess();
+        ProcessLauncher* pLauncher = new ProcessLauncher(QString(sProgram.c_str()), QString(sCLArg.c_str()), m_bWSL);
 
-        this->evaluateChildren(pID2Node, pInputID2Value, pInputID2Widget, pProcess, false);
+        this->evaluateChildren(pID2Node, pInputID2Value, pInputID2Widget, pLauncher->getProcess(), false);
 
-        pProcess->connect(pProcess, static_cast<void(QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished),
-                [=](int exitCode, QProcess::ExitStatus exitStatus){
+        pLauncher->connect(pLauncher, &ProcessLauncher::finished,
+                [pLauncher, pID2Node, pInputID2Value, pInputID2Widget, this](){
 
-                    qDebug() << pProcess->error();
-                    qDebug() << pProcess->program();
-                    qDebug() << pProcess->arguments();
-
-                    std::cout << "finished: " << iReturnCode << std::endl;
-
-                    this->evaluateChildren(pID2Node, pInputID2Value, pInputID2Widget, pProcess, true);
-                    delete pProcess;
+                    this->evaluateChildren(pID2Node, pInputID2Value, pInputID2Widget, pLauncher->getProcess(), true);
+                    pLauncher->deleteLater();
 
                 });
 
 
-        bool bWSL = false;
-        if (bWSL)
-        {
-            pProcess->setProcessChannelMode(QProcess::SeparateChannels);
-        }
-
-        /*
-         *
-         * this is totally WSL specific ... no idea how to integrate that
-
-        if (true)
-        {
-
-            std::string sCMD = sProgram + " " + sCLArg;
-
-            STARTUPINFO sinfo = {sizeof(sinfo), 0};
-            PROCESS_INFORMATION pinfo = {0};
-
-            if (CreateProcess(NULL, (LPSTR)sCMD.c_str(), NULL, NULL, FALSE, CREATE_NEW_CONSOLE, NULL, NULL, &sinfo, &pinfo)) {
-
-                std::cerr << "executed: " << sCMD << std::endl;
-
-                //WaitForSingleObject (pinfo.hProcess, INFINITE);
-
-                std::cerr << "finished" << std::endl;
-
-
-            } else {
-              // boo
-
-                return "";
-
-            }
-
-
-        }
-        */
-
         if (bActuallyRun)
         {
 
-            std::cout << "running " << sProgram << " " << sCLArg << std::endl;
-
-            QStringList oArgs;
-            if (sCLArg.size() > 0)
-                oArgs = this->stringToArguments(QString(sCLArg.c_str()), '\"');
-
-            for (int i = 0; i < oArgs.size(); ++i)
-                std::cerr << oArgs.at(i).toStdString() << std::endl;
-
-            pProcess->start( QString(sProgram.c_str()), oArgs );
-
+            pLauncher->start( );
 
         }
 
@@ -261,33 +209,14 @@ public:
 
 protected:
 
-    QStringList stringToArguments(QString sString, char cQuoteChar)
-    {
-        bool bContainsQuotes = (sString.at(0).toLatin1() == cQuoteChar); //true if the first character is "
 
-        QString sTest("a");
-        sTest[0] = cQuoteChar;
-
-        QStringList vTmpList = sString.split(QRegExp(sTest), QString::SkipEmptyParts); // Split by " and make sure you don't have an empty string at the beginning
-        QStringList vArgsList;
-
-                foreach (QString s, vTmpList) {
-                if (bContainsQuotes) { // If 's' is inside quotes ...
-                    vArgsList.append(s); // ... get the whole string
-                } else { // If 's' is outside quotes ...
-                    vArgsList.append(s.split(" ", QString::SkipEmptyParts)); // ... get the splitted string
-                }
-                bContainsQuotes = !bContainsQuotes;
-            }
-
-        return vArgsList;
-    }
 
     std::string m_sExecutable;
     std::string m_sExecLocation;
     std::string m_sCLArg;
 
     bool m_bTest = false;
+    bool m_bWSL = true;
 
 };
 

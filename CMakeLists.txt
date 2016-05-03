@@ -33,12 +33,12 @@ endif()
 MESSAGE(WARNING ${CMAKE_SYSTEM_NAME})
 
 if ( CMAKE_SYSTEM_NAME STREQUAL "Windows" OR CYGWIN OR MINGW)
-    SET(Qt5_DIR "/")
+    SET(Qt5_DIR "/usr/lib/qt5/x86_64-w64-mingw32/")
     set(QT_QMAKE_EXECUTABLE /usr/lib/qt5/bin/qmake.exe)
 
     if (MINGW)
         set(QT_QMAKE_EXECUTABLE C:\\Qt\\5.6\\mingw49_32\\bin\\qmake.exe)
-        set(QT_QMAKE_EXECUTABLE G:\\Qt\\5.6\\mingw49_32\\bin\\qmake.exe)
+        #set(QT_QMAKE_EXECUTABLE G:\\Qt\\5.6\\mingw49_32\\bin\\qmake.exe)
     endif()
 
 else()
@@ -56,7 +56,7 @@ MESSAGE(WARNING "QT_QMAKE_EXECUTABLE " ${QT_QMAKE_EXECUTABLE})
 if (MINGW)
     find_package(Qt5 5.6 COMPONENTS Core Gui Widgets Network Xml XmlPatterns PATHS "/home/users/joppich/progs/Qt/5.5/gcc_64/" REQUIRED)
 else()
-    find_package(Qt5 5.5 COMPONENTS Core Gui Widgets Network Xml XmlPatterns PATHS "/home/users/joppich/progs/Qt/5.5/gcc_64/" REQUIRED NO_SYSTEM_ENVIRONMENT_PATH)
+    find_package(Qt5 5.5 COMPONENTS Core Gui Widgets Network Xml XmlPatterns PATHS "/home/users/joppich/progs/Qt/5.5/gcc_64/" "/usr/lib/qt5/x86_64-w64-mingw32/" REQUIRED )
 endif()
 
 

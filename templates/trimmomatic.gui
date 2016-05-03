@@ -1,6 +1,6 @@
 <!--<?xml version="1.0" encoding="UTF-8"?>-->
 <template icon="" description="Trimming short RNA-Seq Reads" title="Trimmomatic 0.35">
- <window title="Trimmomatic" height="1000" width="1000">
+ <window title="Trimmomatic" height="2000" width="1000">
   <vgroup>
    <group title="Method" exclusive="true">
     <hgroup>

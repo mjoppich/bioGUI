@@ -138,11 +138,10 @@ public:
 
     }
 
-    std::string evaluate( std::map< std::string, ExecutionNode*>* pID2Node,
-                          std::map<std::string, std::string>* pInputID2Value,
-                          std::map<std::string, QWidget*>* pInputID2Widget)
+    std::string getCLArgs( std::map< std::string, ExecutionNode*>* pID2Node,
+                           std::map<std::string, std::string>* pInputID2Value,
+                           std::map<std::string, QWidget*>* pInputID2Widget )
     {
-
         std::string sCLArg = "";
 
         if (m_sCLArg.size() > 0)
@@ -170,16 +169,20 @@ public:
 
         }
 
-        bool bActuallyRun = true;
-        int iReturnCode = 0;
+        return sCLArg;
+    }
 
+    virtual std::string evaluate( std::map< std::string, ExecutionNode*>* pID2Node,
+                          std::map<std::string, std::string>* pInputID2Value,
+                          std::map<std::string, QWidget*>* pInputID2Widget)
+    {
+
+        std::string sCLArg = this->getCLArgs(pID2Node, pInputID2Value, pInputID2Widget);
         std::string sProgram = m_sExecLocation + m_sExecutable;
-        std::string sModified(sProgram);
 
         if (m_bTest)
         {
-            sProgram = "/usr/bin/echo";
-
+            sProgram = "/usr/bin/echo " + sProgram;
         }
 
 

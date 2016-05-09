@@ -6,6 +6,7 @@
 #include <QProcess>
 #include <iostream>
 #include <QDebug>
+#include "ExecuteThread.h"
 
 #ifndef __linux
 #include <windows.h>
@@ -24,6 +25,16 @@ public:
     {
         m_sCMD = sCMD;
 
+    }
+
+    QByteArray readAllStandardOutput()
+    {
+        return QByteArray();
+    }
+
+    QByteArray readAllStandardError()
+    {
+        return QByteArray();
     }
 
 protected:
@@ -52,6 +63,8 @@ protected:
 
         emit executionFinished();
     }
+
+
 
     QString m_sCMD;
 

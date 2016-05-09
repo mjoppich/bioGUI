@@ -13,6 +13,7 @@
 #include <QGridLayout>
 #include <src/app/QExtGridLayout.h>
 #include <src/app/QClickableLabel.h>
+#include <QTextEdit>
 
 #include "../bioGUIapp.h"
 

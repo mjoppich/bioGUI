@@ -3,6 +3,7 @@
 
 #include <QNetworkAccessManager>
 #include <QNetworkRequest>
+#include <QNetworkReply>
 #include <QUrlQuery>
 #include <QThread>
 #include <src/app/ExecuteThread.h>
@@ -20,18 +21,49 @@ public:
         m_pParams = pParams;
 
 
-        m_pNetworkAccessManager->connect(m_pNetworkAccessManager, &QNetworkAccessManager::finished(QNetworkReply*), [this](QNetworkReply* pReply){
+        m_pNetworkAccessManager->connect(m_pNetworkAccessManager, &QNetworkAccessManager::finished, [this](QNetworkReply* pReply){
             this->getExecutionResponse(pReply);
         });
 
-        this->connect(this, &QThread::started, this, &ExecuteThread::startExecution);
 
     }
 
     void getExecutionResponse(QNetworkReply* pReply)
     {
 
+        m_vReplies.push_back(pReply);
+
+        emit readyReadStandardOutput();
         emit executionFinished();
+    }
+
+    QByteArray readAllStandardOutput()
+    {
+
+        QByteArray oReturn;
+
+        std::vector<QNetworkReply*>::iterator oIt = m_vReplies.begin();
+
+        while( oIt != m_vReplies.end() )
+        {
+
+            QNetworkReply* pReply = *oIt;
+
+            QByteArray oReplyData = pReply->readAll();
+
+            oReturn.append(oReplyData);
+
+            oIt = m_vReplies.erase(oIt);
+
+        }
+
+        return oReturn;
+
+    }
+
+    QByteArray readAllStandardError()
+    {
+        return QByteArray();
     }
 
     void execute()
@@ -45,6 +77,8 @@ protected:
     QNetworkAccessManager* m_pNetworkAccessManager;
     QNetworkRequest* m_pRequest;
     QUrlQuery* m_pParams;
+
+    std::vector<QNetworkReply*> m_vReplies;
 
 };
 
@@ -95,7 +129,7 @@ public:
 
         pThread->start();
 
-        QObject::connect(pThread, &ExecuteThread::executionFinished, [pThread, pID2Node, pInputID2Value, pInputID2Widget, this](){
+        QObject::connect(pThread, &ExecuteThread::executionFinished, [pThread, pNetworkManager, pID2Node, pInputID2Value, pInputID2Widget, this](){
 
             this->evaluateChildren(pID2Node, pInputID2Value, pInputID2Widget, NULL, pThread, true);
             pNetworkManager->deleteLater();

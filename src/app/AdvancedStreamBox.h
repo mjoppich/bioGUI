@@ -15,9 +15,14 @@
 
 #include <iostream>
 #include <QtWidgets/qcheckbox.h>
-#include "ExtendedBuffer.h"
+
 #include "TCPExtendedBuffer.h"
-#include "ExecuteThread.h"
+#include "ExtendedThreadBuffer.h"
+#include "ExtendedProcessBuffer.h"
+#include "ExtendedStdBuffer.h"
+
+
+
 
 
 class AdvancedListWidgetItem : public QListWidgetItem {
@@ -104,16 +109,16 @@ public:
         this->clear();
     }
 
-    void addProcBuffer(QProcess* pProcess, ExtendedBuffer* pBuffer)
+    void addProcBuffer(QProcess* pProcess, ExtendedProcessBuffer* pBuffer)
     {
 
-        std::map<QProcess*, std::vector<ExtendedBuffer*> >::iterator oIt = m_mProcToBuffer.find(pProcess);
+        std::map<QProcess*, std::vector<ExtendedProcessBuffer*> >::iterator oIt = m_mProcToBuffer.find(pProcess);
 
         if (oIt != m_mProcToBuffer.end())
         {
             oIt->second.push_back(pBuffer);
         } else {
-            std::pair<QProcess*, std::vector<ExtendedBuffer*>> oPair(pProcess, std::vector<ExtendedBuffer*>());
+            std::pair<QProcess*, std::vector<ExtendedProcessBuffer*>> oPair(pProcess, std::vector<ExtendedProcessBuffer*>());
 
             oPair.second.push_back(pBuffer);
             m_mProcToBuffer.insert( oPair );
@@ -123,16 +128,16 @@ public:
 
     }
 
-    void addThreadBuffer(ExecuteThread* pThread, ExtendedBuffer* pBuffer)
+    void addThreadBuffer(ExecuteThread* pThread, ExtendedThreadBuffer* pBuffer)
     {
 
-        std::map<ExecuteThread*, std::vector<ExtendedBuffer*> >::iterator oIt = m_mThreadToBuffer.find(pThread);
+        std::map<ExecuteThread*, std::vector<ExtendedThreadBuffer*> >::iterator oIt = m_mThreadToBuffer.find(pThread);
 
         if (oIt != m_mThreadToBuffer.end())
         {
             oIt->second.push_back(pBuffer);
         } else {
-            std::pair<ExecuteThread*, std::vector<ExtendedBuffer*>> oPair(pThread, std::vector<ExtendedBuffer*>());
+            std::pair<ExecuteThread*, std::vector<ExtendedThreadBuffer*>> oPair(pThread, std::vector<ExtendedThreadBuffer*>());
 
             oPair.second.push_back(pBuffer);
             m_mThreadToBuffer.insert( oPair );
@@ -144,7 +149,7 @@ public:
 
     void finishProcess(QProcess* pProcess)
     {
-        std::map<QProcess*, std::vector<ExtendedBuffer*> >::iterator oIt = m_mProcToBuffer.find(pProcess);
+        std::map<QProcess*, std::vector<ExtendedProcessBuffer*> >::iterator oIt = m_mProcToBuffer.find(pProcess);
 
         if (oIt != m_mProcToBuffer.end())
         {
@@ -152,7 +157,7 @@ public:
             for (size_t i = 0; i < oIt->second.size(); ++i)
             {
 
-                ExtendedBuffer* pBuffer = oIt->second.at(i);
+                ExtendedProcessBuffer* pBuffer = oIt->second.at(i);
                 pBuffer->transferText("\n");
 
                 pBuffer->deleteLater();
@@ -169,7 +174,7 @@ public:
     {
 
 
-        std::map<ExecuteThread*, std::vector<ExtendedBuffer*> >::iterator oJt = m_mThreadToBuffer.find(pThread);
+        std::map<ExecuteThread*, std::vector<ExtendedThreadBuffer*> >::iterator oJt = m_mThreadToBuffer.find(pThread);
 
         if (oJt != m_mThreadToBuffer.end())
         {
@@ -177,7 +182,7 @@ public:
             for (size_t i = 0; i < oJt->second.size(); ++i)
             {
 
-                ExtendedBuffer* pBuffer = oJt->second.at(i);
+                ExtendedThreadBuffer* pBuffer = oJt->second.at(i);
                 pBuffer->transferText("\n");
                 pBuffer->deleteLater();
 
@@ -192,7 +197,7 @@ public:
     void addTCPBuffer(ExecuteThread* pThread, std::string sHost, int iPort, QString sStreamID, QColor oTextColor)
     {
 
-        TCPExtendedBuffer* pBuffer = new TCPExtendedBuffer(QString(sHost.c_str()), iPort);
+        TCPExtendedBuffer* pBuffer = new TCPExtendedBuffer(pThread, QString(sHost.c_str()), iPort);
         pBuffer->setTextColor( oTextColor );
         pBuffer->setStreamID( sStreamID );
 
@@ -202,10 +207,10 @@ public:
 
     }
 
-    void addThreadedBuffer(ExecuteThread* pThread, QProcess::ProcessChannel eChannel, QString sStreamID, QColor oTextColor)
+    void addThreadBuffer(ExecuteThread* pThread, QProcess::ProcessChannel eChannel, QString sStreamID, QColor oTextColor)
     {
 
-        ExtendedBuffer* pBuffer = new ExtendedBuffer(pThread, eChannel);
+        ExtendedThreadBuffer* pBuffer = new ExtendedThreadBuffer(pThread, eChannel);
         pBuffer->setTextColor( oTextColor );
         pBuffer->setStreamID( sStreamID );
 
@@ -217,13 +222,13 @@ public:
 
             case QProcess::ProcessChannel::StandardOutput:
 
-                QObject::connect( pThread, &ExecuteThread::readyReadStandardOutput, pBuffer, &ExtendedBuffer::receiveProcData );
+                QObject::connect( pThread, &ExecuteThread::readyReadStandardOutput, pBuffer, &ExtendedThreadBuffer::receiveThreadData );
 
 
                 break;
             case QProcess::ProcessChannel::StandardError :
 
-                QObject::connect( pThread, &ExecuteThread::readyReadStandardError, pBuffer, &ExtendedBuffer::receiveProcData );
+                QObject::connect( pThread, &ExecuteThread::readyReadStandardError, pBuffer, &ExtendedThreadBuffer::receiveThreadData );
 
                 break;
 
@@ -233,11 +238,10 @@ public:
 
     }
 
-
-    void addBuffer(QProcess* pProcess, QProcess::ProcessChannel eChannel, QString sStreamID, QColor oTextColor)
+    void addProcessBuffer(QProcess* pProcess, QProcess::ProcessChannel eChannel, QString sStreamID, QColor oTextColor)
     {
 
-        ExtendedBuffer* pBuffer = new ExtendedBuffer(pProcess, eChannel);
+        ExtendedProcessBuffer* pBuffer = new ExtendedProcessBuffer(pProcess, eChannel);
         pBuffer->setTextColor( oTextColor );
         pBuffer->setStreamID( sStreamID );
 
@@ -249,13 +253,13 @@ public:
 
             case QProcess::ProcessChannel::StandardOutput:
 
-                QObject::connect( pProcess, &QProcess::readyReadStandardOutput, pBuffer, &ExtendedBuffer::receiveProcData );
+                QObject::connect( pProcess, &QProcess::readyReadStandardOutput, pBuffer, &ExtendedProcessBuffer::receiveProcData );
 
 
                 break;
             case QProcess::ProcessChannel::StandardError :
 
-                QObject::connect( pProcess, &QProcess::readyReadStandardError, pBuffer, &ExtendedBuffer::receiveProcData );
+                QObject::connect( pProcess, &QProcess::readyReadStandardError, pBuffer, &ExtendedProcessBuffer::receiveProcData );
 
                 break;
 
@@ -430,9 +434,8 @@ protected:
     }
 
 
-    std::map<std::pair<std::string, int>, std::vector<ExtendedBuffer*>> m_mTCPConnToBuffer;
-    std::map<QProcess*, std::vector<ExtendedBuffer*>> m_mProcToBuffer;
-    std::map<ExecuteThread*, std::vector<ExtendedBuffer*>> m_mThreadToBuffer;
+    std::map<QProcess*, std::vector<ExtendedProcessBuffer*>> m_mProcToBuffer;
+    std::map<ExecuteThread*, std::vector<ExtendedThreadBuffer*>> m_mThreadToBuffer;
 
     std::map<std::string, QAbstractButton*> m_mStreamID2Button;
 };

@@ -3,7 +3,7 @@
 
 #include <QTcpServer>
 #include <QTcpSocket>
-#include "ExtendedBuffer.h"
+#include "ExtendedThreadBuffer.h"
 
 class TCPExtendedBuffer;
 class QBufferTcpServer : public QTcpServer
@@ -35,12 +35,12 @@ protected:
 
 
 
-class TCPExtendedBuffer : public ExtendedBuffer
+class TCPExtendedBuffer : public ExtendedThreadBuffer
 {
     Q_OBJECT
 public:
-    TCPExtendedBuffer(QString sHost, int iPort)
-        : ExtendedBuffer()
+    TCPExtendedBuffer(ExecuteThread* pThread, QString sHost, int iPort)
+        : ExtendedThreadBuffer(pThread, QProcess::StandardOutput)
     {
         m_sHost = sHost;
         m_iPort = iPort;

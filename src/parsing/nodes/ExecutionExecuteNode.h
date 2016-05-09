@@ -190,7 +190,7 @@ public:
 
         ProcessLauncher* pLauncher = new ProcessLauncher(QString(sProgram.c_str()), QString(sCLArg.c_str()), m_bWSL);
 
-        this->evaluateChildren(pID2Node, pInputID2Value, pInputID2Widget, pLauncher->getProcess(), false);
+        this->evaluateChildren(pID2Node, pInputID2Value, pInputID2Widget, pLauncher->getProcess(), pLauncher->getThread(), false);
 
         pLauncher->connect(pLauncher, &ProcessLauncher::finished,
                 [pLauncher, pID2Node, pInputID2Value, pInputID2Widget, this](){

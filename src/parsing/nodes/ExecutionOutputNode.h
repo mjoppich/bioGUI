@@ -5,6 +5,7 @@
 #ifndef BIOGUI_EXECUTIONOUTPUTNODE_H
 #define BIOGUI_EXECUTIONOUTPUTNODE_H
 
+#include <QUrl>
 #include <QGraphicsView>
 #include <QGraphicsScene>
 #include <QGraphicsPixmapItem>
@@ -15,7 +16,6 @@
 #include <src/app/ExecuteThread.h>
 
 #include "ExecutionNode.h"
-#include "../../app/StreamTextEdit.h"
 
 class ExecutionOutputNode : public ExecutionNode {
 
@@ -78,7 +78,9 @@ public:
                         oLocation = QDir::currentPath() + oLocation.currentPath();
                     }
 
-                    QDesktopServices::openUrl( oLocation.absolutePath() );
+
+
+                    QDesktopServices::openUrl( QUrl(oLocation.absolutePath()) );
                 }
                 return "";
             }
@@ -107,7 +109,7 @@ public:
 
                     }
 
-                    QDesktopServices::openUrl( oLocation.absolutePath() );
+                    QDesktopServices::openUrl( QUrl(oLocation.absolutePath()) );
 
                 }
 
@@ -150,18 +152,18 @@ public:
                 {
                     if (m_sType.compare("STD") == 0)
                     {
-                        pTextEdit->addBuffer( pProcess, QProcess::StandardOutput, QString(m_sTo.c_str()), oColor );
-                        pTextEdit->addBuffer( pProcess, QProcess::StandardError, QString(m_sTo.c_str()), oColor );
+                        pTextEdit->addProcessBuffer( pProcess, QProcess::StandardOutput, QString(m_sTo.c_str()), oColor );
+                        pTextEdit->addProcessBuffer( pProcess, QProcess::StandardError, QString(m_sTo.c_str()), oColor );
                     }
 
                     if (m_sType.compare("COUT") == 0)
                     {
-                        pTextEdit->addBuffer( pProcess, QProcess::StandardOutput, QString(m_sTo.c_str()), oColor );
+                        pTextEdit->addProcessBuffer( pProcess, QProcess::StandardOutput, QString(m_sTo.c_str()), oColor );
                     }
 
                     if (m_sType.compare("CERR") == 0)
                     {
-                        pTextEdit->addBuffer( pProcess, QProcess::StandardError, QString(m_sTo.c_str()), oColor );
+                        pTextEdit->addProcessBuffer( pProcess, QProcess::StandardError, QString(m_sTo.c_str()), oColor );
                     }
                 }
 
@@ -170,18 +172,18 @@ public:
 
                     if (m_sType.compare("STD") == 0)
                     {
-                        pTextEdit->addThreadedBuffer( pThread, QProcess::StandardOutput, QString(m_sTo.c_str()), oColor );
-                        pTextEdit->addThreadedBuffer( pThread, QProcess::StandardError, QString(m_sTo.c_str()), oColor );
+                        pTextEdit->addThreadBuffer( pThread, QProcess::StandardOutput, QString(m_sTo.c_str()), oColor );
+                        pTextEdit->addThreadBuffer( pThread, QProcess::StandardError, QString(m_sTo.c_str()), oColor );
                     }
 
                     if (m_sType.compare("COUT") == 0)
                     {
-                        pTextEdit->addThreadedBuffer( pThread, QProcess::StandardOutput, QString(m_sTo.c_str()), oColor );
+                        pTextEdit->addThreadBuffer( pThread, QProcess::StandardOutput, QString(m_sTo.c_str()), oColor );
                     }
 
                     if (m_sType.compare("CERR") == 0)
                     {
-                        pTextEdit->addThreadedBuffer( pThread, QProcess::StandardError, QString(m_sTo.c_str()), oColor );
+                        pTextEdit->addThreadBuffer( pThread, QProcess::StandardError, QString(m_sTo.c_str()), oColor );
                     }
 
                 }

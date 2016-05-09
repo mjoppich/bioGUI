@@ -7,6 +7,9 @@
 
 #include <QThread>
 
+#include <iostream>
+
+
 class ExecuteThread : public QThread
 {
     Q_OBJECT
@@ -15,6 +18,7 @@ public:
 
     ExecuteThread() : QThread()
     {
+        this->connect(this, &QThread::started, this, &ExecuteThread::startExecution);
 
     }
 
@@ -24,8 +28,12 @@ public:
 
 public slots:
 
-    virtual void startExecution(QPrivateSignal* pSignal)
+    virtual void startExecution() //QPrivateSignal* pSignal
     {
+
+        std::cout.rdbuf();
+        std::cerr.rdbuf();
+
         this->execute();
     }
 
@@ -40,6 +48,10 @@ public slots:
 protected:
 
     virtual void execute() = 0;
+
+    //ExtendedThreadBuffer* m_pSTDBuffer;
+    //ExtendedThreadBuffer* m_pERRBuffer;
+
 
 };
 

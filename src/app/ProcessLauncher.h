@@ -9,29 +9,26 @@
 
 #ifndef __linux
 #include <windows.h>
+#include <src/parsing/nodes/ExecutionHTTPExecuteNode.h>
+
 #endif
 
-class QProcessThread : public QThread
+class ProcessThread : public ExecuteThread
 {
 Q_OBJECT
 
 public:
 
-    QProcessThread(QString sCMD)
-    : QThread()
+    ProcessThread(QString sCMD)
+    : ExecuteThread()
     {
         m_sCMD = sCMD;
 
     }
 
-signals:
-
-    void executionFinished();
-
-
 protected:
 
-    void run()
+    void execute()
     {
 
 #ifndef __linux
@@ -99,16 +96,23 @@ public:
         return m_pProcess;
     }
 
+    ExecuteThread* getThread()
+    {
+        if (m_bWindowsProcNoHandle)
+            return m_pThread;
+
+        return NULL;
+    }
+
     bool start()
     {
 
         if (m_bWindowsProcNoHandle)
         {
 
-            m_pThread = new QProcessThread(m_sProgram + " " + m_sParam);
+            m_pThread = new ProcessThread(m_sProgram + " " + m_sParam);
 
-            //this->connect(m_pThread, &QThread::started, m_pThread, &QProcessThread::startExecution);
-            this->connect(m_pThread, &QProcessThread::executionFinished, this, &ProcessLauncher::executionFinished);
+            this->connect(m_pThread, &ExecuteThread::executionFinished, this, &ProcessLauncher::executionFinished);
 
             m_pThread->start();
 
@@ -189,7 +193,7 @@ public slots:
 
 
     QProcess* m_pProcess = NULL;
-    QProcessThread* m_pThread = NULL;
+    ProcessThread* m_pThread = NULL;
     bool m_bWindowsProcNoHandle = false;
     QString m_sProgram;
     QString m_sParam;

@@ -18,6 +18,8 @@
     #include <windows.h>
 #endif
 
+class HTTPExecuteThread;
+
 class ExecutionExecuteNode : public ExecutionNode {
 
 public:
@@ -47,7 +49,7 @@ public:
     virtual std::string evaluateChildren( std::map< std::string, ExecutionNode*>* pID2Node,
                                           std::map<std::string, std::string>* pInputID2Value,
                                           std::map<std::string, QWidget*>* pInputID2Widget,
-                                          QProcess* pProcess,
+                                          QProcess* pProcess, ExecuteThread* pThread,
                                           bool bDeferred = false)
     {
         std::string sReturn = "";
@@ -60,7 +62,7 @@ public:
                 // only output nodes
                 if (ExecutionOutputNode* pOutPutnode = dynamic_cast<ExecutionOutputNode*>( m_vChildren.at(i) ))
                 {
-                    sReturn = sReturn + pOutPutnode->evaluateDeferred(pID2Node, pInputID2Value, pInputID2Widget, pProcess, bDeferred);
+                    sReturn = sReturn + pOutPutnode->evaluateDeferred(pID2Node, pInputID2Value, pInputID2Widget, pProcess, pThread, bDeferred);
                 }
             } else {
 
@@ -69,7 +71,7 @@ public:
 
                     if (ExecutionOutputNode* pOutPutnode = dynamic_cast<ExecutionOutputNode*>( m_vChildren.at(i) ))
                     {
-                        sReturn = sReturn + pOutPutnode->evaluateDeferred(pID2Node, pInputID2Value, pInputID2Widget, pProcess, bDeferred);
+                        sReturn = sReturn + pOutPutnode->evaluateDeferred(pID2Node, pInputID2Value, pInputID2Widget, pProcess, pThread, bDeferred);
                     } else {
                         sReturn = sReturn + m_vChildren.at(i)->evaluate(pID2Node, pInputID2Value, pInputID2Widget);
 
@@ -193,18 +195,13 @@ public:
         pLauncher->connect(pLauncher, &ProcessLauncher::finished,
                 [pLauncher, pID2Node, pInputID2Value, pInputID2Widget, this](){
 
-                    this->evaluateChildren(pID2Node, pInputID2Value, pInputID2Widget, pLauncher->getProcess(), true);
+                    this->evaluateChildren(pID2Node, pInputID2Value, pInputID2Widget, pLauncher->getProcess(), pLauncher->getThread(), true);
                     pLauncher->deleteLater();
 
                 });
 
 
-        if (bActuallyRun)
-        {
-
-            pLauncher->start( );
-
-        }
+        pLauncher->start( );
 
         return "";
 

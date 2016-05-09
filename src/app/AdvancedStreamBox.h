@@ -17,6 +17,7 @@
 #include <QtWidgets/qcheckbox.h>
 #include "ExtendedBuffer.h"
 #include "TCPExtendedBuffer.h"
+#include "ExecuteThread.h"
 
 
 class AdvancedListWidgetItem : public QListWidgetItem {
@@ -122,20 +123,19 @@ public:
 
     }
 
-    void addTCPConnBuffer(std::string sHost, int iPort, ExtendedBuffer* pBuffer)
+    void addThreadBuffer(ExecuteThread* pThread, ExtendedBuffer* pBuffer)
     {
-        std::pair<std::string, int> oConn(sHost, iPort);
 
-        std::map<std::pair<std::string, int>, std::vector<ExtendedBuffer*> >::iterator oIt = m_mTCPConnToBuffer.find(oConn);
+        std::map<ExecuteThread*, std::vector<ExtendedBuffer*> >::iterator oIt = m_mThreadToBuffer.find(pThread);
 
-        if (oIt != m_mTCPConnToBuffer.end())
+        if (oIt != m_mThreadToBuffer.end())
         {
             oIt->second.push_back(pBuffer);
         } else {
-            std::pair<std::pair<std::string, int>, std::vector<ExtendedBuffer*>> oPair(oConn, std::vector<ExtendedBuffer*>());
+            std::pair<ExecuteThread*, std::vector<ExtendedBuffer*>> oPair(pThread, std::vector<ExtendedBuffer*>());
 
             oPair.second.push_back(pBuffer);
-            m_mTCPConnToBuffer.insert( oPair );
+            m_mThreadToBuffer.insert( oPair );
 
         }
 
@@ -165,14 +165,13 @@ public:
         }
     }
 
-    void finishTCPConnection(std::string sHost, int iPort)
+    void finishThread( ExecuteThread* pThread )
     {
 
-        std::pair<std::string, int> oConn(sHost, iPort);
 
-        std::map<std::pair<std::string, int>, std::vector<ExtendedBuffer*> >::iterator oJt = m_mTCPConnToBuffer.find(oConn);
+        std::map<ExecuteThread*, std::vector<ExtendedBuffer*> >::iterator oJt = m_mThreadToBuffer.find(pThread);
 
-        if (oJt != m_mTCPConnToBuffer.end())
+        if (oJt != m_mThreadToBuffer.end())
         {
 
             for (size_t i = 0; i < oJt->second.size(); ++i)
@@ -184,25 +183,56 @@ public:
 
             }
 
-            m_mTCPConnToBuffer.erase(oJt);
-
+            m_mThreadToBuffer.erase(oJt);
 
         }
 
     }
 
-    void addTCPBuffer(std::string sHost, int iPort, QString sStreamID, QColor oTextColor)
+    void addTCPBuffer(ExecuteThread* pThread, std::string sHost, int iPort, QString sStreamID, QColor oTextColor)
     {
 
         TCPExtendedBuffer* pBuffer = new TCPExtendedBuffer(QString(sHost.c_str()), iPort);
         pBuffer->setTextColor( oTextColor );
         pBuffer->setStreamID( sStreamID );
 
-        this->addTCPConnBuffer(sHost, iPort, pBuffer);
+        this->addThreadBuffer(pThread, pBuffer);
 
         this->connect(pBuffer, &TCPExtendedBuffer::sendText, this , &AdvancedStreamBox::receiveText, Qt::QueuedConnection );
 
     }
+
+    void addThreadedBuffer(ExecuteThread* pThread, QProcess::ProcessChannel eChannel, QString sStreamID, QColor oTextColor)
+    {
+
+        ExtendedBuffer* pBuffer = new ExtendedBuffer(pThread, eChannel);
+        pBuffer->setTextColor( oTextColor );
+        pBuffer->setStreamID( sStreamID );
+
+        this->addThreadBuffer(pThread, pBuffer);
+
+        switch (eChannel)
+        {
+            default:
+
+            case QProcess::ProcessChannel::StandardOutput:
+
+                QObject::connect( pThread, &ExecuteThread::readyReadStandardOutput, pBuffer, &ExtendedBuffer::receiveProcData );
+
+
+                break;
+            case QProcess::ProcessChannel::StandardError :
+
+                QObject::connect( pThread, &ExecuteThread::readyReadStandardError, pBuffer, &ExtendedBuffer::receiveProcData );
+
+                break;
+
+        }
+
+        QObject::connect(pBuffer, SIGNAL(sendText(QString,QColor, QString)), this , SLOT(receiveText(QString,QColor, QString)), Qt::QueuedConnection );
+
+    }
+
 
     void addBuffer(QProcess* pProcess, QProcess::ProcessChannel eChannel, QString sStreamID, QColor oTextColor)
     {
@@ -402,6 +432,8 @@ protected:
 
     std::map<std::pair<std::string, int>, std::vector<ExtendedBuffer*>> m_mTCPConnToBuffer;
     std::map<QProcess*, std::vector<ExtendedBuffer*>> m_mProcToBuffer;
+    std::map<ExecuteThread*, std::vector<ExtendedBuffer*>> m_mThreadToBuffer;
+
     std::map<std::string, QAbstractButton*> m_mStreamID2Button;
 };
 

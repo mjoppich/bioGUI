@@ -53,7 +53,6 @@ public:
 
         QVBoxLayout* pLeftLayout = new QVBoxLayout();
 
-
         // this listwidget shows all available items
         m_pTemplates = new QListWidget();
         //m_pTemplates->setMaximumWidth(220);

@@ -12,6 +12,7 @@
 #include <src/app/AdvancedStreamBox.h>
 #include <QtGui/qdesktopservices.h>
 #include <QtCore/qdir.h>
+#include <src/app/ExecuteThread.h>
 
 #include "ExecutionNode.h"
 #include "../../app/StreamTextEdit.h"
@@ -46,19 +47,14 @@ public:
                           std::map<std::string, std::string>* pInputID2Value,
                           std::map<std::string, QWidget*>* pInputID2Widget)
     {
-        return evaluateDeferred(pID2Node, pInputID2Value, pInputID2Widget, NULL, false);
+        return evaluateDeferred(pID2Node, pInputID2Value, pInputID2Widget, NULL, NULL, false);
     }
 
     std::string evaluateDeferred( std::map< std::string, ExecutionNode*>* pID2Node,
                           std::map<std::string, std::string>* pInputID2Value,
                           std::map<std::string, QWidget*>* pInputID2Widget,
-                          QProcess* pProcess, bool bDeferred)
+                          QProcess* pProcess, ExecuteThread* pThread, bool bDeferred)
     {
-
-
-
-
-
 
 
 
@@ -149,38 +145,57 @@ public:
 
                 QColor oColor = QColor(QString(m_sColor.c_str()));
 
-                if (m_sType.compare("STD") == 0)
+
+                if (pProcess != NULL)
                 {
-                    pTextEdit->addBuffer( pProcess, QProcess::StandardOutput, QString(m_sTo.c_str()), oColor );
-                    pTextEdit->addBuffer( pProcess, QProcess::StandardError, QString(m_sTo.c_str()), oColor );
+                    if (m_sType.compare("STD") == 0)
+                    {
+                        pTextEdit->addBuffer( pProcess, QProcess::StandardOutput, QString(m_sTo.c_str()), oColor );
+                        pTextEdit->addBuffer( pProcess, QProcess::StandardError, QString(m_sTo.c_str()), oColor );
+                    }
+
+                    if (m_sType.compare("COUT") == 0)
+                    {
+                        pTextEdit->addBuffer( pProcess, QProcess::StandardOutput, QString(m_sTo.c_str()), oColor );
+                    }
+
+                    if (m_sType.compare("CERR") == 0)
+                    {
+                        pTextEdit->addBuffer( pProcess, QProcess::StandardError, QString(m_sTo.c_str()), oColor );
+                    }
                 }
 
-                if (m_sType.compare("COUT") == 0)
+                if (pThread != NULL)
                 {
-                    pTextEdit->addBuffer( pProcess, QProcess::StandardOutput, QString(m_sTo.c_str()), oColor );
+
+                    if (m_sType.compare("STD") == 0)
+                    {
+                        pTextEdit->addThreadedBuffer( pThread, QProcess::StandardOutput, QString(m_sTo.c_str()), oColor );
+                        pTextEdit->addThreadedBuffer( pThread, QProcess::StandardError, QString(m_sTo.c_str()), oColor );
+                    }
+
+                    if (m_sType.compare("COUT") == 0)
+                    {
+                        pTextEdit->addThreadedBuffer( pThread, QProcess::StandardOutput, QString(m_sTo.c_str()), oColor );
+                    }
+
+                    if (m_sType.compare("CERR") == 0)
+                    {
+                        pTextEdit->addThreadedBuffer( pThread, QProcess::StandardError, QString(m_sTo.c_str()), oColor );
+                    }
+
                 }
 
-                if (m_sType.compare("CERR") == 0)
-                {
-                    pTextEdit->addBuffer( pProcess, QProcess::StandardError, QString(m_sTo.c_str()), oColor );
-                }
 
                 if (m_sType.compare("TCP") == 0)
                 {
-                    pTextEdit->addTCPBuffer( m_sHost, m_iPort, QString(m_sTo.c_str()), oColor );
+                    pTextEdit->addTCPBuffer( pThread, m_sHost, m_iPort, QString(m_sTo.c_str()), oColor );
                 }
 
             } else {
 
                 pTextEdit->finishProcess(pProcess);
-
-                if (m_sType.compare("TCP") == 0)
-                {
-                    pTextEdit->finishTCPConnection(m_sHost, m_iPort);
-                }
-
-
-
+                pTextEdit->finishThread(pThread);
             }
 
             return "";

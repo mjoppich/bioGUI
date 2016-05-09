@@ -12,15 +12,20 @@
 #include "ExecutionNode.h"
 #include "ExecutionValueNode.h"
 
-class ExecutionWSLtransformNode : public ExecutionNode {
+class ExecutionPathRelocateNode : public ExecutionNode {
 
 public:
 
-    ExecutionWSLtransformNode(QDomElement* pElement)
+    ExecutionPathRelocateNode(QDomElement* pElement)
             : ExecutionNode(pElement)
     {
 
         m_sFrom = this->getDomElementAttribute(pElement, "from", "").toStdString();
+        m_sTo = this->getDomElementAttribute(pElement, "to", "").toStdString();
+        m_bMakeUnix = (this->getDomElementAttribute(pElement, "unix", "false").compare("TRUE", Qt::CaseInsensitive) == 0);
+        m_bToWSL = (this->getDomElementAttribute(pElement, "wsl", "false").compare("TRUE", Qt::CaseInsensitive) == 0);
+
+
 
     }
 
@@ -44,6 +49,8 @@ public:
 
         QString qsChildren(sChildren.c_str());
 
+        // replace from with to
+
         // absolute path
         if (qsChildren.at(1) != ':')
         {
@@ -51,10 +58,18 @@ public:
             qsChildren = oPath.absolutePath();
         }
 
-        QChar cDrive = qsChildren.at(0);
-        qsChildren.remove(0,2);
-        qsChildren.prepend(QString("/mnt/") + cDrive.toLower() );
-        qsChildren.replace("\\", "/");
+        if (m_bToWSL)
+        {
+            QChar cDrive = qsChildren.at(0);
+            qsChildren.remove(0,2);
+            qsChildren.prepend(QString("/mnt/") + cDrive.toLower() );
+        }
+
+        if (m_bMakeUnix)
+        {
+            qsChildren.replace("\\", "/");
+        }
+
 
         return qsChildren.toStdString();
 
@@ -63,6 +78,11 @@ public:
 protected:
 
     std::string m_sFrom;
+    std::string m_sTo;
+
+    bool m_bMakeUnix = true;
+    bool m_bToWSL = true;
+
 
 };
 

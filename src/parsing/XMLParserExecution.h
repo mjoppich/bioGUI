@@ -7,6 +7,7 @@
 
 #include <src/parsing/nodes/ExecutionSaveFileNode.h>
 #include <src/parsing/nodes/ExecutionStringReplaceNode.h>
+#include <src/parsing/nodes/ExecutionPathRelocateNode.h>
 #include "nodes/ExecutionOrderedAddNode.h"
 #include "nodes/ExecutionPlaceholderNode.h"
 #include "nodes/ExecutionIfNode.h"
@@ -41,6 +42,7 @@ public:
         m_pKnownTags->push_back("savefile");
         m_pKnownTags->push_back("if");
         m_pKnownTags->push_back("else");
+        m_pKnownTags->push_back("relocate");
 
         m_pDocument = loadFromFile(sFileName);
 
@@ -150,6 +152,15 @@ protected:
         {
 
             ExecutionPlaceholderNode* pNode = new ExecutionPlaceholderNode( pElement );
+
+            pReturn = pNode;
+
+        }
+
+        if ( sTagName.compare("relocate", Qt::CaseInsensitive)==0 )
+        {
+
+            ExecutionPathRelocateNode* pNode = new ExecutionPathRelocateNode( pElement );
 
             pReturn = pNode;
 

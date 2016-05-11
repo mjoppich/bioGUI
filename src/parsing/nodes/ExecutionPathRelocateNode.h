@@ -25,6 +25,9 @@ public:
         m_bMakeUnix = (this->getDomElementAttribute(pElement, "unix", "false").compare("TRUE", Qt::CaseInsensitive) == 0);
         m_bToWSL = (this->getDomElementAttribute(pElement, "wsl", "false").compare("TRUE", Qt::CaseInsensitive) == 0);
 
+        if (m_bToWSL)
+            m_bMakeUnix = true;
+
 
 
     }
@@ -50,6 +53,13 @@ public:
         QString qsChildren(sChildren.c_str());
 
         // replace from with to
+        if (qsChildren.startsWith(QString(m_sFrom.c_str()), Qt::CaseInsensitive))
+        {
+
+            qsChildren.remove(0, m_sFrom.size());
+            qsChildren.prepend(QString(m_sTo.c_str()));
+
+        }
 
         // absolute path
         if (qsChildren.at(1) != ':')
@@ -58,16 +68,19 @@ public:
             qsChildren = oPath.absolutePath();
         }
 
-        if (m_bToWSL)
-        {
-            QChar cDrive = qsChildren.at(0);
-            qsChildren.remove(0,2);
-            qsChildren.prepend(QString("/mnt/") + cDrive.toLower() );
-        }
-
         if (m_bMakeUnix)
         {
+            // assumes that we have a windows string
+            QChar cDrive = qsChildren.at(0);
+            qsChildren.remove(0,2);
+            qsChildren.prepend(QString("/") + cDrive.toLower());
+
             qsChildren.replace("\\", "/");
+        }
+
+        if (m_bToWSL)
+        {
+            qsChildren.prepend("/mnt/");
         }
 
 

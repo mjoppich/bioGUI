@@ -165,11 +165,14 @@ public:
 
                 if (sArg.startsWith("--"))
                 {
+                    sArg.remove(0, 2);
+
                     pPostData->addQueryItem(sArg , "");
                 } else if (sArg.startsWith("-"))
                 {
                     if (i+1 < oArgs.size())
                     {
+                        sArg.remove(0, 1);
                         pPostData->addQueryItem(sArg , oArgs.at(i+1));
                         ++i;
                     }

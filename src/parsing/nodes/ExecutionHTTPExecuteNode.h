@@ -10,6 +10,7 @@
 
 #include "ExecutionExecuteNode.h"
 
+
 class HTTPExecuteThread : public ExecuteThread
 {
 public:
@@ -115,10 +116,31 @@ public:
         QString qsURL( sURL.c_str() );
 
         QUrlQuery postData;
+        std::string sCLArg = this->getCLArgs(pID2Node, pInputID2Value, pInputID2Widget);
+        QString qsCLArg(sCLArg.c_str());
 
-        // TODO split arguments by " -" first, (append - to each element) and then again by " " to get param and string.
-        postData.addQueryItem("param1", "string");
-        postData.addQueryItem("param2", "string");
+        QStringList oArgs = ProcessLauncher::stringToArguments(qsCLArg, '\"');
+
+        for (int i = 0; i < oArgs.size(); ++i)
+        {
+
+            QString sArg = oArgs.at(i);
+
+            if (sArg.startsWith("--"))
+            {
+                postData.addQueryItem(sArg , "");
+            } else if (sArg.startsWith("-"))
+            {
+                if (i+1 < oArgs.size())
+                {
+                    postData.addQueryItem(sArg , oArgs.at(i+1));
+                    ++i;
+                }
+            } else {
+                throw "error parsing post data";
+            }
+
+        }
 
         QNetworkRequest oNetRequest( qsURL );
         oNetRequest.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");

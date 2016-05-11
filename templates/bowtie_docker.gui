@@ -1,0 +1,31 @@
+<!--<?xml version="1.0" encoding="UTF-8"?>-->
+<template description="AlgoRun Docker Call" title="AlgoRun Bowtie">
+
+<window width="500" height="500" title="netcat demo">
+
+  <vgroup>
+  <label>What do you want to say?</label>
+  <input id="input">ATCGATCG</input>
+<action id="runprog" hint="click here to run program">run program</action>  
+  
+    <streambox id="output1">
+      <stream id="outputstream1">OS1</stream>
+    </streambox>
+
+  </vgroup>
+
+</window>
+
+<execution>
+    
+  <add id="cl" sep=" ">
+  <const>-input </const>
+  <value from="input"/>
+  </add>
+	
+  <httpexecute exec="http://192.168.92.128" port="31331" param="${cl}">
+    <output id="outcout" type="STD" color="green" to="outputstream1" />
+  </httpexecute>
+  
+</execution>
+</template>

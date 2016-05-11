@@ -8,6 +8,7 @@
 #include <src/parsing/nodes/ExecutionSaveFileNode.h>
 #include <src/parsing/nodes/ExecutionStringReplaceNode.h>
 #include <src/parsing/nodes/ExecutionPathRelocateNode.h>
+#include <src/parsing/nodes/ExecutionHTTPExecuteNode.h>
 #include "nodes/ExecutionOrderedAddNode.h"
 #include "nodes/ExecutionPlaceholderNode.h"
 #include "nodes/ExecutionIfNode.h"
@@ -35,6 +36,7 @@ public:
         m_pKnownTags->push_back("orderedadd");
         m_pKnownTags->push_back("value");
         m_pKnownTags->push_back("execute");
+        m_pKnownTags->push_back("httpexecute");
         m_pKnownTags->push_back("const");
         m_pKnownTags->push_back("math");
         m_pKnownTags->push_back("output");
@@ -64,6 +66,15 @@ protected:
         {
 
             ExecutionExecuteNode* pNode = new ExecutionExecuteNode( pElement );
+
+            pReturn = pNode;
+
+        }
+
+        if ( sTagName.compare("httpexecute", Qt::CaseInsensitive)==0 )
+        {
+
+            ExecutionHTTPExecuteNode* pNode = new ExecutionHTTPExecuteNode( pElement );
 
             pReturn = pNode;
 

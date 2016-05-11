@@ -10,7 +10,6 @@
 
 #ifndef __linux
 #include <windows.h>
-#include <src/parsing/nodes/ExecutionHTTPExecuteNode.h>
 
 #endif
 
@@ -136,7 +135,7 @@ public:
 
             QStringList oArgs;
             if (m_sParam.size() > 0)
-                oArgs = this->stringToArguments(m_sParam, '\"');
+                oArgs = ProcessLauncher::stringToArguments(m_sParam, '\"');
 
             for (int i = 0; i < oArgs.size(); ++i)
                 std::cerr << oArgs.at(i).toStdString() << std::endl;
@@ -179,10 +178,7 @@ public slots:
         emit finished();
     }
 
-
-    protected:
-
-    QStringList stringToArguments(QString sString, char cQuoteChar)
+    static QStringList stringToArguments(QString sString, char cQuoteChar)
     {
         bool bContainsQuotes = (sString.at(0).toLatin1() == cQuoteChar); //true if the first character is "
 
@@ -203,6 +199,8 @@ public slots:
 
         return vArgsList;
     }
+
+protected:
 
 
     QProcess* m_pProcess = NULL;

@@ -23,7 +23,7 @@
   <value from="input"/>
   </add>
 	
-  <httpexecute exec="http://192.168.92.128" port="31331" param="${cl}">
+  <httpexecute exec="/v1/run/" location="http://192.168.92.128" port="31331" param="${cl}">
     <output id="outcout" type="STD" color="green" to="outputstream1" />
   </httpexecute>
   

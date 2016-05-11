@@ -18,9 +18,11 @@
 
 <execution>
     
-  <add id="cl" sep=" ">
-  <const>-input </const>
-  <value from="input"/>
+  <add id="cl" sep="&amp;">
+    <add sep="=">
+      <const>input</const>
+      <value from="input"/>
+    </add>
   </add>
 	
   <httpexecute exec="/v1/run/" location="http://192.168.92.128" port="31331" param="${cl}">

@@ -69,6 +69,12 @@ public:
 
     void execute()
     {
+
+        QString sRequestAddress = m_pRequest->url().toString();
+        std::string sParams = m_pParams->toString(QUrl::FullyEncoded).toUtf8().toStdString();
+
+        std::cerr << "sending " << sParams << " to " << sRequestAddress.toStdString() << std::endl;
+
         m_pNetworkAccessManager->post(*m_pRequest, m_pParams->toString(QUrl::FullyEncoded).toUtf8());
     }
 
@@ -93,7 +99,7 @@ public:
 
 
         m_iPort = this->getDomElementAttribute(pElement, "port", "-1").toInt();
-        m_sDelim = this->getDomElementAttribute(pElement, "delim", "&").toInt();
+        m_sDelim = this->getDomElementAttribute(pElement, "delim", "&").toStdString();
         m_bPortCLtoPOST = (this->getDomElementAttribute(pElement, "cl_to_post", "FALSE").compare("TRUE", Qt::CaseInsensitive) == 0);
 
     }
@@ -117,7 +123,7 @@ public:
 
         QString qsURL( sURL.c_str() );
 
-        QUrlQuery postData;
+        QUrlQuery* pPostData = new QUrlQuery();
         std::string sCLArg = this->getCLArgs(pID2Node, pInputID2Value, pInputID2Widget);
         QString qsCLArg(sCLArg.c_str());
 
@@ -129,6 +135,8 @@ public:
             for (int i = 0; i < vArgs.size(); ++i)
             {
 
+                std::cout << "argument " << vArgs.at(i).toStdString() << std::endl;
+
                 QString sParamPair = vArgs.at(i);
                 QStringList vParamPair = sParamPair.split( "=" );
 
@@ -139,7 +147,9 @@ public:
                     sParam += vParamPair.at(j);
                 }
 
-                postData.addQueryItem( vParamPair.at(0),  sParam);
+                std::cout << vParamPair.at(0).toStdString() << " " << sParam.toStdString() << std::endl;
+
+                pPostData->addQueryItem( vParamPair.at(0),  sParam);
 
             }
 
@@ -155,12 +165,12 @@ public:
 
                 if (sArg.startsWith("--"))
                 {
-                    postData.addQueryItem(sArg , "");
+                    pPostData->addQueryItem(sArg , "");
                 } else if (sArg.startsWith("-"))
                 {
                     if (i+1 < oArgs.size())
                     {
-                        postData.addQueryItem(sArg , oArgs.at(i+1));
+                        pPostData->addQueryItem(sArg , oArgs.at(i+1));
                         ++i;
                     }
                 } else {
@@ -173,10 +183,10 @@ public:
 
 
 
-        QNetworkRequest oNetRequest( qsURL );
-        oNetRequest.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
+        QNetworkRequest* pNetRequest = new QNetworkRequest( qsURL );
+        pNetRequest->setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
 
-        HTTPExecuteThread* pThread = new HTTPExecuteThread(pNetworkManager, &oNetRequest, &postData);
+        HTTPExecuteThread* pThread = new HTTPExecuteThread(pNetworkManager, pNetRequest, pPostData);
 
         this->evaluateChildren(pID2Node, pInputID2Value, pInputID2Widget, NULL, pThread, false);
 

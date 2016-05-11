@@ -55,9 +55,16 @@ public:
 
         QDomDocument* pDocument = new QDomDocument();
 
+        QString sErrorString;
+        int iErrorLine;
+        int iErrorColumn;
+
         // loading
-        if(!pDocument->setContent(pFile))
+        if(!pDocument->setContent(pFile, false, &sErrorString, &iErrorLine, &iErrorColumn))
         {
+
+            std::cerr << "Error loading File " << sFileName.toStdString() << " in line " << iErrorLine << ":" << iErrorColumn << " : " << sErrorString.toStdString() << std::endl;
+
             //throw "Failed to load the file for reading.";
             pFile->close();
             delete pFile;

@@ -93,6 +93,8 @@ public:
 
 
         m_iPort = this->getDomElementAttribute(pElement, "port", "-1").toInt();
+        m_sDelim = this->getDomElementAttribute(pElement, "delim", "&").toInt();
+        m_bPortCLtoPOST = (this->getDomElementAttribute(pElement, "cl_to_post", "FALSE").compare("TRUE", Qt::CaseInsensitive) == 0);
 
     }
 
@@ -119,28 +121,57 @@ public:
         std::string sCLArg = this->getCLArgs(pID2Node, pInputID2Value, pInputID2Widget);
         QString qsCLArg(sCLArg.c_str());
 
-        QStringList oArgs = ProcessLauncher::stringToArguments(qsCLArg, '\"');
-
-        for (int i = 0; i < oArgs.size(); ++i)
+        if (!m_bPortCLtoPOST)
         {
 
-            QString sArg = oArgs.at(i);
+            QStringList vArgs = qsCLArg.split( QString(m_sDelim.c_str()) );
 
-            if (sArg.startsWith("--"))
+            for (int i = 0; i < vArgs.size(); ++i)
             {
-                postData.addQueryItem(sArg , "");
-            } else if (sArg.startsWith("-"))
-            {
-                if (i+1 < oArgs.size())
+
+                QString sParamPair = vArgs.at(i);
+                QStringList vParamPair = sParamPair.split( "=" );
+
+                // if multiple = in text ... for whatever reason...
+                QString sParam = "";
+                for (int j = 1; j < vParamPair.size(); ++j)
                 {
-                    postData.addQueryItem(sArg , oArgs.at(i+1));
-                    ++i;
+                    sParam += vParamPair.at(j);
                 }
-            } else {
-                throw "error parsing post data";
+
+                postData.addQueryItem( vParamPair.at(0),  sParam);
+
+            }
+
+
+        } else {
+
+            QStringList oArgs = ProcessLauncher::stringToArguments(qsCLArg, '\"');
+
+            for (int i = 0; i < oArgs.size(); ++i)
+            {
+
+                QString sArg = oArgs.at(i);
+
+                if (sArg.startsWith("--"))
+                {
+                    postData.addQueryItem(sArg , "");
+                } else if (sArg.startsWith("-"))
+                {
+                    if (i+1 < oArgs.size())
+                    {
+                        postData.addQueryItem(sArg , oArgs.at(i+1));
+                        ++i;
+                    }
+                } else {
+                    throw "error parsing post data";
+                }
+
             }
 
         }
+
+
 
         QNetworkRequest oNetRequest( qsURL );
         oNetRequest.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
@@ -165,6 +196,8 @@ public:
 protected:
 
     int m_iPort = -1;
+    std::string m_sDelim;
+    bool m_bPortCLtoPOST = false;
 
 };
 

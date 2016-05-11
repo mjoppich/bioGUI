@@ -125,6 +125,7 @@ public:
             m_pThread = new ProcessThread(m_sProgram + " " + m_sParam);
 
             this->connect(m_pThread, &ExecuteThread::executionFinished, this, &ProcessLauncher::executionFinished);
+            this->connect(m_pThread, &QThread::started, m_pThread, &ExecuteThread::startExecution);
 
             m_pThread->start();
 

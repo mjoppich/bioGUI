@@ -19,7 +19,6 @@ public:
     ExecuteThread() : QThread()
     {
         this->connect(this, &QThread::started, this, &ExecuteThread::startExecution);
-
     }
 
 
@@ -46,6 +45,11 @@ public slots:
 
 
 protected:
+
+    virtual void run()
+    {
+        this->exec();
+    }
 
     virtual void execute() = 0;
 

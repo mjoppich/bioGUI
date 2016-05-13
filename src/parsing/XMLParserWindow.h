@@ -766,12 +766,16 @@ protected:
         QString sSelected = this->getAttribute(pElement, "selected", "");
         QStringList vSelected;
 
-        if (sSelected.compare("TRUE", Qt::CaseInsensitive) == 0)
+        if (pGroupBox->isCheckable())
         {
-            pGroupBox->setChecked(true);
-        } else if (sSelected.compare("FALSE", Qt::CaseInsensitive) == 0)
-        {
-            pGroupBox->setChecked(false);
+            if (sSelected.compare("TRUE", Qt::CaseInsensitive) == 0)
+            {
+                pGroupBox->setChecked(true);
+            } else if (sSelected.compare("FALSE", Qt::CaseInsensitive) == 0)
+            {
+                pGroupBox->setChecked(false);
+            }
+
         } else {
 
             pGroupBox->setChecked(true);
@@ -852,7 +856,7 @@ protected:
 
     bioGUIapp* m_pApp;
 
-    std::map<std::string, std::function< std::string()> >* m_pID2Value;
+    std::map<std::string, std::function< std::string() > >* m_pID2Value;
     std::map<std::string, QWidget*>* m_pID2Widget;
     std::vector<QWidget*> m_vWidgets;
     std::vector<QPushButton*> m_vActions;

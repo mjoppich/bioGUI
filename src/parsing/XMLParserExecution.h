@@ -18,7 +18,7 @@
 #include "nodes/ExecutionAddNode.h"
 #include "nodes/ExecutionExecuteNode.h"
 #include "nodes/ExecutionOutputNode.h"
-
+#include "nodes/ExecutionEnvNode.h"
 #include "nodes/ExecutionNode.h"
 #include "nodes/ExecutionNetwork.h"
 #include "XMLParser.h"
@@ -32,19 +32,83 @@ public:
     XMLParserExecution(std::string sFileName)
     : XMLParser(sFileName)
     {
-        m_pKnownTags->push_back("add");
-        m_pKnownTags->push_back("orderedadd");
-        m_pKnownTags->push_back("value");
-        m_pKnownTags->push_back("execute");
-        m_pKnownTags->push_back("httpexecute");
-        m_pKnownTags->push_back("const");
-        m_pKnownTags->push_back("math");
-        m_pKnownTags->push_back("output");
-        m_pKnownTags->push_back("execution");
-        m_pKnownTags->push_back("savefile");
-        m_pKnownTags->push_back("if");
-        m_pKnownTags->push_back("else");
-        m_pKnownTags->push_back("relocate");
+
+        this->insertNodeType("execute", [] (QDomElement* pElement) {
+            ExecutionExecuteNode* pNode = new ExecutionExecuteNode( pElement );
+            return (ExecutionNode*) pNode;
+        });
+
+        this->insertNodeType("httpexecute", [] (QDomElement* pElement) {
+            ExecutionHTTPExecuteNode* pNode = new ExecutionHTTPExecuteNode( pElement );
+            return (ExecutionNode*) pNode;
+        });
+
+        this->insertNodeType("savefile", [] (QDomElement* pElement) {
+            ExecutionSaveFileNode* pNode = new ExecutionSaveFileNode( pElement );
+            return (ExecutionNode*) pNode;
+        });
+
+        this->insertNodeType("const", [] (QDomElement* pElement) {
+            ExecutionConstNode* pNode = new ExecutionConstNode( pElement );
+            return (ExecutionNode*) pNode;
+        });
+
+        this->insertNodeType("value", [] (QDomElement* pElement) {
+            ExecutionValueNode* pNode = new ExecutionValueNode( pElement );
+            return (ExecutionNode*) pNode;
+        });
+
+        this->insertNodeType("add", [] (QDomElement* pElement) {
+            ExecutionAddNode* pNode = new ExecutionAddNode( pElement );
+            return (ExecutionNode*) pNode;
+        });
+
+        this->insertNodeType("replace", [] (QDomElement* pElement) {
+            ExecutionStringReplaceNode* pNode = new ExecutionStringReplaceNode( pElement );
+            return (ExecutionNode*) pNode;
+        });
+
+        this->insertNodeType("orderedadd", [] (QDomElement* pElement) {
+            ExecutionOrderedAddNode* pNode = new ExecutionOrderedAddNode( pElement );
+            return (ExecutionNode*) pNode;
+        });
+
+        this->insertNodeType("math", [] (QDomElement* pElement) {
+            ExecutionMathNode* pNode = new ExecutionMathNode( pElement );
+            return (ExecutionNode*) pNode;
+        });
+
+        this->insertNodeType("output", [] (QDomElement* pElement) {
+            ExecutionOutputNode* pNode = new ExecutionOutputNode( pElement );
+            return (ExecutionNode*) pNode;
+        });
+
+        this->insertNodeType("if", [] (QDomElement* pElement) {
+            ExecutionIfNode* pNode = new ExecutionIfNode( pElement );
+            return (ExecutionNode*) pNode;
+        });
+
+        this->insertNodeType("else", [] (QDomElement* pElement) {
+            ExecutionPlaceholderNode* pNode = new ExecutionPlaceholderNode( pElement );
+            return (ExecutionNode*) pNode;
+        });
+
+        this->insertNodeType("relocate", [] (QDomElement* pElement) {
+            ExecutionPathRelocateNode* pNode = new ExecutionPathRelocateNode( pElement );
+            return (ExecutionNode*) pNode;
+        });
+
+        this->insertNodeType("env", [] (QDomElement* pElement) {
+            ExecutionEnvNode* pNode = new ExecutionEnvNode( pElement );
+            return (ExecutionNode*) pNode;
+        });
+
+
+
+        if (m_pKnownTags != NULL)
+            delete m_pKnownTags;
+
+        m_pKnownTags = this->getKnownTags();
 
         m_pDocument = loadFromFile(sFileName);
 
@@ -55,127 +119,58 @@ public:
 
 protected:
 
+    void insertNodeType(std::string sType, std::function< ExecutionNode* ( QDomElement* )> oFunc)
+    {
+        std::pair<std::string, std::function< ExecutionNode*( QDomElement*)> > oPair;
+
+        oPair = std::pair<std::string, std::function< ExecutionNode*( QDomElement*)>>( sType, oFunc);
+        m_mCreateNodeMap.insert(oPair);
+
+    }
+
+
+    std::vector<std::string>* getKnownTags()
+    {
+        std::vector<std::string>* pTags = new std::vector<std::string>();
+
+        std::map<std::string, std::function< ExecutionNode*( QDomElement*)> >::iterator oIt = m_mCreateNodeMap.begin();
+
+        while (oIt != m_mCreateNodeMap.end())
+        {
+            pTags->push_back( oIt->first );
+            ++oIt;
+        }
+
+
+        // manually add master node!
+        pTags->push_back("execution");
+
+        return pTags;
+    }
+
+    ExecutionNode* createNode(QDomElement* pElement, std::string sNodeType)
+    {
+
+        std::map<std::string, std::function< ExecutionNode*( QDomElement*)> >::iterator oIt = m_mCreateNodeMap.find( sNodeType );
+
+        if (oIt != m_mCreateNodeMap.end())
+        {
+            return oIt->second( pElement );
+        } else {
+            return NULL;
+        }
+
+
+    }
 
     ExecutionNode* createExecutionNode(QDomElement* pElement)
     {
-        ExecutionNode* pReturn = NULL;
+
 
         QString sTagName = pElement->tagName();
 
-        if ( sTagName.compare("execute", Qt::CaseInsensitive)==0 )
-        {
+        ExecutionNode* pReturn = this->createNode(pElement, sTagName.toStdString());
 
-            ExecutionExecuteNode* pNode = new ExecutionExecuteNode( pElement );
-
-            pReturn = pNode;
-
-        }
-
-        if ( sTagName.compare("httpexecute", Qt::CaseInsensitive)==0 )
-        {
-
-            ExecutionHTTPExecuteNode* pNode = new ExecutionHTTPExecuteNode( pElement );
-
-            pReturn = pNode;
-
-        }
-
-        if ( sTagName.compare("savefile", Qt::CaseInsensitive)==0 )
-        {
-
-            ExecutionSaveFileNode* pNode = new ExecutionSaveFileNode( pElement );
-
-            pReturn = pNode;
-
-        }
-
-        if ( sTagName.compare("const", Qt::CaseInsensitive)==0 )
-        {
-
-            ExecutionConstNode* pNode = new ExecutionConstNode( pElement );
-
-            pReturn = pNode;
-
-        }
-
-        if ( sTagName.compare("value", Qt::CaseInsensitive)==0 )
-        {
-
-            ExecutionValueNode* pNode = new ExecutionValueNode( pElement );
-
-            pReturn = pNode;
-
-        }
-
-        if ( sTagName.compare("add", Qt::CaseInsensitive)==0 )
-        {
-
-            ExecutionAddNode* pNode = new ExecutionAddNode( pElement );
-
-            pReturn = pNode;
-
-        }
-
-        if (sTagName.compare("replace", Qt::CaseInsensitive) == 0)
-        {
-            ExecutionStringReplaceNode* pNode = new ExecutionStringReplaceNode(pElement);
-
-            pReturn = pNode;
-        }
-
-        if ( sTagName.compare("orderedadd", Qt::CaseInsensitive)==0 )
-        {
-
-            ExecutionOrderedAddNode* pNode = new ExecutionOrderedAddNode( pElement );
-
-            pReturn = pNode;
-
-        }
-
-        if ( sTagName.compare("math", Qt::CaseInsensitive)==0 )
-        {
-
-            ExecutionMathNode* pNode = new ExecutionMathNode( pElement );
-
-            pReturn = pNode;
-
-        }
-
-        if ( sTagName.compare("output", Qt::CaseInsensitive)==0 )
-        {
-
-            ExecutionOutputNode* pNode = new ExecutionOutputNode( pElement );
-
-            pReturn = pNode;
-
-        }
-
-        if ( sTagName.compare("if", Qt::CaseInsensitive)==0 )
-        {
-
-            ExecutionIfNode* pNode = new ExecutionIfNode( pElement );
-
-            pReturn = pNode;
-
-        }
-
-        if ( sTagName.compare("else", Qt::CaseInsensitive)==0 )
-        {
-
-            ExecutionPlaceholderNode* pNode = new ExecutionPlaceholderNode( pElement );
-
-            pReturn = pNode;
-
-        }
-
-        if ( sTagName.compare("relocate", Qt::CaseInsensitive)==0 )
-        {
-
-            ExecutionPathRelocateNode* pNode = new ExecutionPathRelocateNode( pElement );
-
-            pReturn = pNode;
-
-        }
 
         if (pReturn == NULL)
         {
@@ -195,6 +190,9 @@ protected:
     ExecutionNetwork * createNetwork(QDomElement* pElement);
 
     ExecutionNode * getExecutionNodes(QDomElement* pElement );
+
+
+    std::map< std::string, std::function< ExecutionNode*( QDomElement*)> > m_mCreateNodeMap;
 
 };
 

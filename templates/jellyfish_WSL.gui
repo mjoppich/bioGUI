@@ -78,17 +78,17 @@
 <relocate id="wsl_count_input_fasta1" wsl="true"><value from="count_input_fasta1"/></relocate>
 <relocate id="wsl_count_input_fasta2" wsl="true"><value from="count_input_fasta2"/></relocate>
 
-<relocate id="wsl_count_output_path" wsl="true"><value from="count_output_path"/></relocate>
-<relocate id="wsl_count_output_path" wsl="true"><value from="count_output_path"/></relocate>
+<relocate id="wsl_merge_output" wsl="true"><value from="merge_output"/></relocate>
+<relocate id="wsl_merge_input" wsl="true"><value from="merge_input"/></relocate>
 
-<relocate id="wsl_count_output_path" wsl="true"><value from="count_output_path"/></relocate>
-<relocate id="wsl_count_output_path" wsl="true"><value from="count_output_path"/></relocate>
+<relocate id="wsl_dump_output_file" wsl="true"><value from="dump_output_file"/></relocate>
+<relocate id="wsl_dump_input_folder" wsl="true"><value from="dump_input_folder"/></relocate>
 
-<relocate id="wsl_count_output_path" wsl="true"><value from="count_output_path"/></relocate>
-<relocate id="wsl_count_output_path" wsl="true"><value from="count_output_path"/></relocate>
+<relocate id="wsl_stats_input_path" wsl="true"><value from="stats_input_path"/></relocate>
+<relocate id="wsl_stats_output_file" wsl="true"><value from="stats_output_file"/></relocate>
 
-<relocate id="wsl_count_output_path" wsl="true"><value from="count_output_path"/></relocate>
-<relocate id="wsl_count_output_path" wsl="true"><value from="count_output_path"/></relocate>
+<relocate id="wsl_histo_input_path" wsl="true"><value from="histo_input_path"/></relocate>
+<relocate id="wsl_histo_output_file" wsl="true"><value from="histo_output_file"/></relocate>
 
 <add id="cl_cite" sep=" ">
 <const>cite</const>

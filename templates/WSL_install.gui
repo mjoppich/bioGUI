@@ -1,0 +1,40 @@
+<!--<?xml version="1.0" encoding="UTF-8"?>-->
+<template description="Install WSL programs" title="WSL Install">
+
+<window width="500" height="500" title="WSL Install">
+
+  <vgroup>
+
+  <filelist ext="*.igui"/>
+
+
+<action id="runprog" hint="click here to run program">run program</action>  
+  
+    <streambox id="output1">
+      <stream id="outputstream1">OS1</stream>
+    </streambox>
+
+  </vgroup>
+
+</window>
+
+<execution>
+    
+  <add id="cl_post" sep="&amp;">
+    <add sep="=">
+      <const>input</const>
+      <value from="input"/>
+    </add>
+  </add>
+
+  <add id="cl" sep=" ">
+    <const>-input</const>
+    <value from="input"/>
+  </add>
+	
+  <httpexecute exec="/v1/run/" location="http://192.168.92.128" port="31331" param="${cl}" cl_to_post="TRUE">
+    <output id="outcout" type="STD" color="green" to="outputstream1" />
+  </httpexecute>
+  
+</execution>
+</template>

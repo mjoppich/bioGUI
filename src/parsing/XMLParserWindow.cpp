@@ -399,6 +399,56 @@ QWidget* XMLParserWindow::createComponent(QDomElement* pElement, bool* pChildren
 
     }
 
+    if (sTag.compare("filelist", Qt::CaseInsensitive) == 0)
+    {
+
+        (*pChildrenFinished) = true;
+
+        QComboBox *pComboBox = new QComboBox();
+
+        QString sCurrentPath = QDir::current().absolutePath();
+        QString sSearchPath = sCurrentPath + "/install_templates/";
+        QStringList vFileEnding;
+        vFileEnding << "*.igui";
+
+        std::cerr << "starting in " << sCurrentPath.toStdString() << std::endl;
+        std::cerr << "searching in " << sSearchPath.toStdString() << std::endl;
+
+        QDirIterator oDirIterator( sSearchPath,
+                          vFileEnding,
+                         QDir::NoSymLinks | QDir::Files,
+                         QDirIterator::NoIteratorFlags );
+
+        while (oDirIterator.hasNext()) {
+
+            QString sFoundFile = oDirIterator.next();
+
+            QFileInfo oFileInfo(sFoundFile);
+
+            QString sFilePath = sFoundFile;
+            QString sFileName = oFileInfo.baseName();
+
+            QComboItem* pNewItem = new QComboItem( sFileName, sFilePath);
+            pComboBox->addItem( pNewItem->getValue(), pNewItem->getData() );
+
+        }
+
+        this->addValueFetcher(pElement, [pComboBox] () {
+
+
+            QVariant oSelected = pComboBox->currentData();
+
+            if (oSelected.isNull())
+                return std::string("");
+
+            return oSelected.toString().toStdString();
+
+        });
+
+        pWidget = pComboBox;
+
+    }
+
     if (sTag.compare("image", Qt::CaseInsensitive) == 0)
     {
 

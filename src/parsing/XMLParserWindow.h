@@ -59,7 +59,6 @@ public:
         m_pKnownTags->push_back("hgroup");
         m_pKnownTags->push_back("vgroup");
         m_pKnownTags->push_back("grid");
-
         m_pKnownTags->push_back("label");
         m_pKnownTags->push_back("link");
         m_pKnownTags->push_back("input");
@@ -75,6 +74,8 @@ public:
         m_pKnownTags->push_back("streambox");
         m_pKnownTags->push_back("combobox");
         m_pKnownTags->push_back("comboitem");
+        m_pKnownTags->push_back("filelist");
+
 
         m_pDocument = loadFromFile(sFileName);
 

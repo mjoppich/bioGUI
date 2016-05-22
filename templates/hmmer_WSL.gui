@@ -7,66 +7,28 @@
   
     <group title="Operation" exclusive="true">
 
-      <group id="sel_count" title="count" checkable="true">
+      <group id="sel_build" title="hmmbuild" checkable="true">
 	<grid cols="2">
-	  <label>Output Prefix</label><input id="count_output_prefix"></input>
-	  <label>Output Path</label><filedialog id="count_output_path" location="" folder="true" output="true">Output</filedialog>
-	  <label>Input FASTA</label><filedialog id="count_input_fasta1" location="">Input Fasta</filedialog>
-	  <group id="both_strands" checkable="true" title="Both Strands" selected="false"><filedialog id="count_input_fasta2" location="">Input Fasta2</filedialog></group><label></label>
-	  <label>Parameter m/k</label><input id="count_param_k" type="int">22</input>
-	  <label>Threads</label><input id="count_threads" type="int">2</input>
-	  <label>Hash-Size</label><input id="count_hash_size" type="int">10000000</input>
+	  <label>Multiple Alignment File</label><filedialog id="build_msa" location="" multiple="true">Input Files</filedialog>
+	  <label>Model Output File</label><filedialog id="build_model" location="" output="true">Output</filedialog>
 	</grid>
       </group>
 
-      <group id="sel_merge" title="merge" checkable="true">
+      <group id="sel_search" title="hmmsearch" checkable="true">
 	<grid cols="2">
-	  <label>Hash-Size</label><input id="merge_hash_size" type="int">10000000</input>
-	  <label>Output Path</label><filedialog id="merge_output" location="" output="true">Output</filedialog>
-	  <label>Input files</label><filedialog id="merge_input" location="" multiple="true">Input Files</filedialog>
+	  <label>Model File</label><filedialog id="search_model" location="" multiple="true">Input Files</filedialog>
+	  <label>Database File</label><filedialog id="search_db" location="" multiple="true">Input Files</filedialog>
+	  <label>Output File</label><filedialog id="search_output" location="" output="true">Output</filedialog>
 	</grid>
       </group>
 
-      <group id="sel_dump" title="dump" checkable="true">
-	<grid cols="2">
-	  <label>Output Options</label><group><checkbox id="dump_col_format">Column Format</checkbox><checkbox id="dump_tab_sep">Tab separator</checkbox></group>
-	  <label>Lower Limit</label><input id="dump_lower_limit" type="int">0</input>
-	  <label>Upper Limit</label><input id="dump_upper_limit" type="int">10000</input>
-	  <label>Output File</label><filedialog id="dump_output_file" location="" output="true">Output</filedialog>
-	  <label>Input Path</label><filedialog id="dump_input_folder" location="" folder="true">Input DB</filedialog>
-	</grid>
-      </group>
-
-      <group id="sel_stats" title="stats" checkable="true">
-	<grid cols="2">
-	  <label>Input Path</label><filedialog id="stats_input_path" location="" folder="true">Input Path</filedialog>
-	  <label>Lower Limit</label><input id="stats_lower_limit" type="int">0</input>
-	  <label>Upper Limit</label><input id="stats_upper_limit" type="int">10000</input>
-	  <label>Output File</label><filedialog id="stats_output_file" location="" output="true">Output</filedialog>
-	</grid>
-      </group>
-
-      <group id="sel_histo" title="histo" checkable="true">
-	<grid cols="2">
-	  <label>Low</label><input id="histo_low" type="int">1</input>
-	  <label>High</label><input id="histo_high" type="int">10000</input>
-	  <label>Increment</label><input id="histo_incr" type="int">10</input>
-	  <label>Input Path</label><filedialog id="histo_input_path" location="">Input Path</filedialog>
-	  <label>Output File</label><filedialog id="histo_output_file" location="" output="true">Output</filedialog>
-	  <label>Threads</label><input id="histo_threads" type="int">1</input>
-	</grid>
-      </group>
-
-      <group id="sel_cite" title="cite" checkable="true">
-	<label>How to cite jellyfish</label><link>http://www.genome.umd.edu/jellyfish.html</link>
-      </group>
-  
+      
     </group>
     <action id="runprog" hint="click here to run program">run program</action>  
 
    <streambox id="output1">
-    <stream id="outputstream1">OS1</stream>
-    <stream id="outputstream2">OS2</stream>
+    <stream id="outputstream1">COUT</stream>
+    <stream id="outputstream2">CERR</stream>
    </streambox>
 
   </vgroup>
@@ -74,89 +36,44 @@
 
 <execution>
 
-<relocate id="wsl_count_output_path" wsl="true"><value from="count_output_path"/></relocate>
-<relocate id="wsl_count_input_fasta1" wsl="true"><value from="count_input_fasta1"/></relocate>
-<relocate id="wsl_count_input_fasta2" wsl="true"><value from="count_input_fasta2"/></relocate>
+<relocate id="wsl_build_msa" wsl="true"><value from="build_msa"/></relocate>
+<relocate id="wsl_build_model" wsl="true"><value from="build_model"/></relocate>
 
-<relocate id="wsl_merge_output" wsl="true"><value from="merge_output"/></relocate>
-<relocate id="wsl_merge_input" wsl="true"><value from="merge_input"/></relocate>
+<relocate id="wsl_search_model" wsl="true"><value from="search_model"/></relocate>
+<relocate id="wsl_search_db" wsl="true"><value from="search_db"/></relocate>
+<relocate id="wsl_search_output" wsl="true"><value from="search_output"/></relocate>
 
-<relocate id="wsl_dump_output_file" wsl="true"><value from="dump_output_file"/></relocate>
-<relocate id="wsl_dump_input_folder" wsl="true"><value from="dump_input_folder"/></relocate>
+<const id="bindir">~/bioGUI/progs/hmmer-3.1b2/bin/</const>
 
-<relocate id="wsl_stats_input_path" wsl="true"><value from="stats_input_path"/></relocate>
-<relocate id="wsl_stats_output_file" wsl="true"><value from="stats_output_file"/></relocate>
-
-<relocate id="wsl_histo_input_path" wsl="true"><value from="histo_input_path"/></relocate>
-<relocate id="wsl_histo_output_file" wsl="true"><value from="histo_output_file"/></relocate>
-
-<add id="cl_cite" sep=" ">
-<const>cite</const>
+<add id="cl_build" sep=" ">
+<add sep="">
+<value from="bindir"/>
+<const>hmmbuild</const>
+</add>
+<value from="wsl_build_model"/>
+<value from="wsl_build_msa"/>
 </add>
 
-<add id="cl_count" sep=" ">
-<const>count</const>
-<const>-o </const><add sep=""><value from="wsl_count_output_path"/><value from="count_output_prefix"/></add>
-<const>-t </const><value from="count_threads"/>
-<const>-s </const><value from="count_hash_size"/>
-<const>-m </const><value from="count_param_k"/>
-<if comp="EQUALS" value1="count_both_strands" value2="true"><const>--both-strands</const></if>
-<value from="wsl_count_input_fasta1"/>
-<if comp="EQUALS" value1="count_both_strands" value2="true"><value from="wsl_count_input_fasta2"/></if>
+<add id="cl_search" sep=" ">
+<add sep="">
+<value from="bindir"/>
+<const>hmmbuild</const>
 </add>
-
-<add id="cl_merge" sep=" ">
-<const>merge</const>
-<const>-o </const><value from="merge_output"/>
-<const>-s </const><value from="merge_hash_size"/>
-<value from="merge_input"/>
+<value from="wsl_search_model"/>
+<value from="wsl_search_db"/>
+<const>&gt;</const>
+<value from="wsl_search_output"/>
 </add>
-
-
-<add id="cl_histo" sep=" ">
-<const>histo</const>
-<const>-o </const><value from="histo_output_file"/>
-<const>-l </const><value from="histo_low"/>
-<const>-h </const><value from="histo_high"/>
-<const>-i </const><value from="histo_incr"/>
-<const>-t </const><value from="histo_threads"/>
-<value from="histo_input_path"/>
-</add>
-
-<add id="cl_stats" sep=" ">
-<const>stats</const>
-<const>-L </const><value from="stats_lower_limit"/>
-<const>-U </const><value from="stats_upper_limit"/>
-<const>-o </const><value from="stats_output_file"/>
-<value from="stats_input_path"/>
-</add>
-
-<add id="cl_dump" sep=" ">
-<const>dump</const>
-<const>-L </const><value from="dump_lower_limit"/>
-<const>-U </const><value from="dump_upper_limit"/>
-<const>-o </const><value from="dump_output_file"/>
-<if comp="EQUALS" value1="dump_col_format" value2="true">-c</if>
-<if comp="EQUALS" value1="dump_tab_sep" value2="true">-t</if>
-<value from="dump_input_folder"/>
-</add>
-
 
 <add id="cl">
-<if comp="EQUALS" value1="sel_cite" value2="TRUE"><value from="cl_cite"/></if>
-<if comp="EQUALS" value1="sel_count" value2="TRUE"><value from="cl_count"/></if>
-<if comp="EQUALS" value1="sel_merge" value2="TRUE"><value from="cl_merge"/></if>
-<if comp="EQUALS" value1="sel_histo" value2="TRUE"><value from="cl_histo"/></if>
-<if comp="EQUALS" value1="sel_stats" value2="TRUE"><value from="cl_stats"/></if>
-<if comp="EQUALS" value1="sel_dump" value2="TRUE"><value from="cl_dump"/></if>
+<if comp="EQUALS" value1="sel_build" value2="TRUE"><value from="cl_build"/></if>
+<if comp="EQUALS" value1="sel_search" value2="TRUE"><value from="cl_search"/></if>
 </add>
 
-
-
-    
-<execute exec="/home/users/joppich/progs/jellyfish-1.1.11/bin/jellyfish" location="" param="cl">
-   <output id="outcout" type="cout" color="green" to="outputstream1"/>
-   <output id="outcerr" type="cerr" color="red" to="outputstream2"/>  </execute>
+  <execute location="" exec="" wsl="true" param="${cl} 2&gt;&amp;1 | netcat 127.0.0.1 55025">
+    <output id="outcout" type="TCP" host="" port="55025" color="green" to="outputstream1" />
+  </execute>
+  
   
 </execution>
 </template>

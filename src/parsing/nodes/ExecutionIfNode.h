@@ -160,7 +160,7 @@ public:
         if (m_iHasExecuteChild == 0)
             emit finishedExecution();
 
-        return "";
+        return sReturn;
 
     }
 

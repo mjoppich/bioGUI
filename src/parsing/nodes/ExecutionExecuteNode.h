@@ -31,18 +31,12 @@ public:
 
         std::string sNotSet = "#NOTSET#";
 
-        m_sExecutable = this->getDomElementAttribute(pElement, "exec", QString(sNotSet.c_str())).toStdString();
-        m_sExecLocation = this->getDomElementAttribute(pElement, "location", QString(sNotSet.c_str())).toStdString();
+        m_sExecutable = this->getDomElementAttribute(pElement, "exec", "").toStdString();
+        m_sExecLocation = this->getDomElementAttribute(pElement, "location", "").toStdString();
         m_sCLArg = this->getDomElementAttribute(pElement, "param", QString(sNotSet.c_str())).toStdString();
 
         m_bTest = (this->getDomElementAttribute(pElement, "test", "false").compare("True", Qt::CaseInsensitive) == 0);
         m_bWSL = (this->getDomElementAttribute(pElement, "wsl", "false").compare("True", Qt::CaseInsensitive) == 0);
-
-        if (m_sExecutable.compare(sNotSet) == 0)
-            throw "executable not set";
-
-        if (m_sExecLocation.compare(sNotSet) == 0)
-            throw "executable location not set";
 
 
     }

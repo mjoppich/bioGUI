@@ -67,6 +67,7 @@ public:
             return m_sTo;
         }
 
+        return "";
     }
 
 protected:

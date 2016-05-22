@@ -113,7 +113,10 @@ QWidget* XMLParserWindow::createComponent(QDomElement* pElement, bool* pChildren
 
     if (sTag.compare("link", Qt::CaseInsensitive) == 0)
     {
-        QClickableLabel *pLabel = new QClickableLabel( sValue );
+        QString sText = this->getAttribute(pElement, "text", sValue);
+
+        QClickableLabel *pLabel = new QClickableLabel( sText );
+        pLabel->setStyleSheet("QLabel { color : blue; }");
 
         this->addValueFetcher(pElement, [sValue] () {return sValue.toStdString();});
 
@@ -141,6 +144,12 @@ QWidget* XMLParserWindow::createComponent(QDomElement* pElement, bool* pChildren
 
             if (sType.size() != 0)
             {
+
+                if (sType.compare("string", Qt::CaseInsensitive) == 0)
+                {
+                    // nothing
+                }
+
                 if (sType.compare("int", Qt::CaseInsensitive) == 0)
                 {
                     pLineEdit->setValidator( new QIntValidator() );
@@ -199,7 +208,7 @@ QWidget* XMLParserWindow::createComponent(QDomElement* pElement, bool* pChildren
         bool bOutput = (this->getAttribute(pElement, "output", "FALSE").compare("TRUE", Qt::CaseInsensitive) == 0);
         bool bFolder = (this->getAttribute(pElement, "folder", "FALSE").compare("TRUE", Qt::CaseInsensitive) == 0);
         QString sFileDelim = this->getAttribute(pElement, "multiples_delim", ";");
-        QString sFileFilter = this->getAttribute(pElement, "multiples_filter", "");
+        QString sFileFilter = this->getAttribute(pElement, "filter", "");
 
         pFileButton->connect(pFileButton,&QAbstractButton::clicked,[pLineEdit, bMultiples, bOutput, bFolder, sFileDelim, sFileFilter, sPathHint] (bool bChecked){
 
@@ -297,6 +306,18 @@ QWidget* XMLParserWindow::createComponent(QDomElement* pElement, bool* pChildren
         QString sButtonValue = this->getAttribute(pElement, "value", sValue);
         QExtendedCheckBox* pButtonItem = new QExtendedCheckBox(sValue, sButtonValue);
 
+        bool bSelected = (this->getAttribute(pElement, "selected", "FALSE").compare("TRUE", Qt::CaseInsensitive) == 0);
+        pButtonItem->setChecked(bSelected);
+
+        this->addValueFetcher(pElement, [pButtonItem] () {
+
+            if (pButtonItem->isChecked())
+                return pButtonItem->getValue().toStdString();
+
+            return std::string("");
+
+        });
+
         pWidget = pButtonItem;
 
     }
@@ -314,118 +335,6 @@ QWidget* XMLParserWindow::createComponent(QDomElement* pElement, bool* pChildren
 
 
         pWidget = this->createGroup(pElement, pChildrenFinished);
-
-        if (false)
-        {
-            (*pChildrenFinished) = true;
-
-            QExclusiveGroupBox* pGroupBox = new QExclusiveGroupBox("");
-
-            /*
-             * Window Title
-             */
-            QString sTitle = this->getAttribute(pElement, "title", "bioGUI");
-            pGroupBox->setTitle( sTitle );
-
-            /*
-             * checkable?
-             */
-            std::string sCheckable = this->getAttribute(pElement, "checkable", "false").toUpper().toStdString();
-            if (sCheckable.compare("TRUE") == 0)
-            {
-                pGroupBox->setCheckable(true);
-                pGroupBox->setChecked(false);
-
-                std::string sCheckedValue = this->getAttribute(pElement, "checked_value", "true").toStdString();
-                std::string sUncheckedValue = this->getAttribute(pElement, "unchecked_value", "false").toStdString();
-
-                this->addValueFetcher(pElement, [pGroupBox, sCheckedValue, sUncheckedValue] () {
-
-                    if (pGroupBox->isChecked())
-                    {
-                        return sCheckedValue;
-                    } else {
-                        return sUncheckedValue;
-                    }
-
-                });
-
-            }
-
-            /*
-             * exclusive?
-             */
-            QString sExclusive = this->getAttribute(pElement, "exclusive", "false");
-            if (sExclusive.compare("TRUE", Qt::CaseInsensitive) == 0)
-            {
-                pGroupBox->setExclusive(true);
-            } else {
-                pGroupBox->setExclusive(false);
-            }
-
-            /*
-             * ordered
-             *
-             */
-
-            bool bOrdered = (this->getAttribute(pElement, "ordered", "false").compare("true", Qt::CaseInsensitive) == 0);
-            pGroupBox->setOrdered(bOrdered);
-
-            /*
-             * state?
-             */
-            QString sSelected = this->getAttribute(pElement, "selected", "false");
-
-            qDebug() << sSelected << " " << this->getAttribute(pElement, "id", "unknown");
-
-
-            if (sSelected.compare("TRUE", Qt::CaseInsensitive) == 0)
-            {
-                pGroupBox->setChecked(true);
-            }
-
-            // this could also be a hboxlayout or a grid layout
-            QLayout* pLayout = new QVBoxLayout();
-
-            QDomNodeList oChildren = pElement->childNodes();
-
-            if (oChildren.size() == 1)
-            {
-                QDomElement oChildNode = oChildren.at(0).toElement();
-
-                if (this->getElementType(&oChildNode) == ELEMENT_TYPE::LAYOUT)
-                {
-
-                    delete pLayout;
-                    pLayout = this->createLayout(&oChildNode);
-                    oChildren = oChildren.at(0).childNodes();
-
-                }
-            }
-
-            for (size_t i = 0; i < oChildren.size(); ++i)
-            {
-                QDomElement oChildNode = oChildren.at(i).toElement();
-                QWidget* pChildElement = createComponent(&oChildNode, &bBoolean);
-
-                if (pChildElement == NULL)
-                {
-
-                    std::cout << "error in creating groupbox components: " + oChildNode.text().toStdString() << std::endl;
-                    throw "error in creating groupbox components: " + oChildNode.text().toStdString();
-                }
-
-                pChildElement = pGroupBox->addNextWidget(pChildElement);
-                this->addToLayout(pLayout, pChildElement);
-
-                this->setID(pChildElement, &oChildNode, true);
-            }
-
-            pGroupBox->getConsistent();
-            pGroupBox->setLayout(pLayout);
-
-            pWidget = pGroupBox;
-        }
 
     }
 
@@ -483,6 +392,56 @@ QWidget* XMLParserWindow::createComponent(QDomElement* pElement, bool* pChildren
         this->addValueFetcher(pElement, [pComboBox] () {
 
             return pComboBox->currentData().toString().toStdString();
+
+        });
+
+        pWidget = pComboBox;
+
+    }
+
+    if (sTag.compare("filelist", Qt::CaseInsensitive) == 0)
+    {
+
+        (*pChildrenFinished) = true;
+
+        QComboBox *pComboBox = new QComboBox();
+
+        QString sCurrentPath = QDir::current().absolutePath();
+        QString sSearchPath = sCurrentPath + "/install_templates/";
+        QStringList vFileEnding;
+        vFileEnding << "*.igui";
+
+        std::cerr << "starting in " << sCurrentPath.toStdString() << std::endl;
+        std::cerr << "searching in " << sSearchPath.toStdString() << std::endl;
+
+        QDirIterator oDirIterator( sSearchPath,
+                          vFileEnding,
+                         QDir::NoSymLinks | QDir::Files,
+                         QDirIterator::NoIteratorFlags );
+
+        while (oDirIterator.hasNext()) {
+
+            QString sFoundFile = oDirIterator.next();
+
+            QFileInfo oFileInfo(sFoundFile);
+
+            QString sFilePath = sFoundFile;
+            QString sFileName = oFileInfo.baseName();
+
+            QComboItem* pNewItem = new QComboItem( sFileName, sFilePath);
+            pComboBox->addItem( pNewItem->getValue(), pNewItem->getData() );
+
+        }
+
+        this->addValueFetcher(pElement, [pComboBox] () {
+
+
+            QVariant oSelected = pComboBox->currentData();
+
+            if (oSelected.isNull())
+                return std::string("");
+
+            return oSelected.toString().toStdString();
 
         });
 

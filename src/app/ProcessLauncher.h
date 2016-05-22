@@ -9,9 +9,16 @@
 #include "ExecuteThread.h"
 
 #ifndef __linux
-#include <windows.h>
-
+    #include <windows.h>
 #endif
+
+#include <cstdint>
+#if INTPTR_MAX == INT32_MAX
+    #define __BIOGUI__32
+#elif INTPTR_MAX == INT64_MAX
+    #define __BIOGUI__64
+#endif
+
 
 class ProcessThread : public ExecuteThread
 {
@@ -19,10 +26,10 @@ Q_OBJECT
 
 public:
 
-    ProcessThread(QString sCMD)
+    ProcessThread(QString sLinuxCMD)
     : ExecuteThread()
     {
-        m_sCMD = sCMD;
+        m_sLinuxCMD = sLinuxCMD;
 
     }
 
@@ -41,14 +48,25 @@ protected:
     void execute()
     {
 
+        QString sBash;
+
+#ifdef __BIOGUI__32
+        sBash = "C:\\Windows\\sysnative\\bash";
+#else
+        sBash = "bash";
+#endif
+
+        sBash.append( " -c \""+ m_sLinuxCMD +"\"" );
+
 #ifndef __linux
+
 
         STARTUPINFO sinfo = {sizeof(sinfo), 0};
         PROCESS_INFORMATION pinfo = {0};
 
-        if (CreateProcess(NULL, (LPSTR)m_sCMD.toStdString().c_str(), NULL, NULL, FALSE, CREATE_NEW_CONSOLE, NULL, NULL, &sinfo, &pinfo)) {
+        if (CreateProcess(NULL, (LPSTR)sBash.toStdString().c_str(), NULL, NULL, FALSE, CREATE_NEW_CONSOLE, NULL, NULL, &sinfo, &pinfo)) {
 
-            std::cerr << "executed: " << m_sCMD.toStdString() << std::endl;
+            std::cerr << "executed: " << sBash.toStdString() << std::endl;
 
             WaitForSingleObject (pinfo.hProcess, INFINITE);
 
@@ -65,7 +83,8 @@ protected:
 
 
 
-    QString m_sCMD;
+    QString m_sLinuxCMD;
+    QString m_sWSLlaunch;
 
 };
 

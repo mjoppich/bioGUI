@@ -18,7 +18,7 @@
 
 <execution>
     
-  <execute exec="C:\\Windows\\sysnative\\bash.exe" location="" wsl="true" param="-c &quot; /usr/games/cowsay '${input}' | netcat 127.0.0.1 55025 &quot;">
+  <execute location="/usr/games/" exec="cowsay" wsl="true" param="'${input}' | netcat 127.0.0.1 55025">
     <output id="outcout" type="TCP" host="" port="55025" color="green" to="outputstream1" />
   </execute>
   

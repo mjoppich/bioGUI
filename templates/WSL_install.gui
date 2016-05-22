@@ -5,13 +5,17 @@
 
   <vgroup>
 
-  <filelist ext="*.igui"/>
+	<label>Install Program:</label>
+  <filelist id="prog" ext="*.igui"/>
+  <label>Install Location on WSL:</label>
+  <input id="instpath">~/bioGUI/progs/</input>
 
 
-<action id="runprog" hint="click here to run program">run program</action>  
+	<action id="runprog" hint="Click here to install selected program into WSL">Install Program</action>  
   
     <streambox id="output1">
-      <stream id="outputstream1">OS1</stream>
+    <stream id="outputstream1">Normal Log</stream>
+	<stream id="outputstream2">Error Log</stream>
     </streambox>
 
   </vgroup>
@@ -19,22 +23,18 @@
 </window>
 
 <execution>
-    
-  <add id="cl_post" sep="&amp;">
-    <add sep="=">
-      <const>input</const>
-      <value from="input"/>
-    </add>
-  </add>
 
-  <add id="cl" sep=" ">
-    <const>-input</const>
-    <value from="input"/>
-  </add>
-	
-  <httpexecute exec="/v1/run/" location="http://192.168.92.128" port="31331" param="${cl}" cl_to_post="TRUE">
-    <output id="outcout" type="STD" color="green" to="outputstream1" />
-  </httpexecute>
+<relocate id="prog_wsl" from="prog" wsl="true"/>
+
+<add id="cl" sep=" ">
+<value from="prog_wsl"/>
+<value from="instpath"/>
+</add>
+    
+  <execute location="" exec="sh" wsl="true" param="${cl} do_something 2&gt;&amp;1 | netcat 127.0.0.1 55025">
+    <output id="outcout" type="TCP" host="" port="55025" color="green" to="outputstream1" />
+	<output id="outcout2" type="TCP" host="" port="55026" color="red" to="outputstream2" />
+  </execute>
   
 </execution>
 </template>

@@ -11,6 +11,7 @@
 #include <QtCore/qdir.h>
 #include "ExecutionNode.h"
 #include "ExecutionValueNode.h"
+#include <iostream>
 
 class ExecutionPathRelocateNode : public ExecutionNode {
 
@@ -50,6 +51,8 @@ public:
 
         }
 
+        std::string sStart = sChildren;
+
         QString qsChildren(sChildren.c_str());
 
         // replace from with to
@@ -83,6 +86,7 @@ public:
             qsChildren.prepend("/mnt/");
         }
 
+        std::cerr << "relocated from " << sChildren << " to " << qsChildren.toStdString() << std::endl;
 
         return qsChildren.toStdString();
 

@@ -6,8 +6,10 @@
 #define BIOGUI_EXECUTIONRUNTHREAD_H
 
 #include <QThread>
+#include <QMessageBox>
 
 class XMLParserWindow;
+class XMLParserExecution;
 class ExecutionNetwork;
 
 class ExecutionRunThread : public QThread
@@ -16,7 +18,9 @@ class ExecutionRunThread : public QThread
 
 public:
 
-    ExecutionRunThread(XMLParserWindow* pWindowParser, ExecutionNetwork* pNetwork);
+    ExecutionRunThread(XMLParserWindow* pWindowParser, XMLParserExecution* pExecution);
+
+    ~ExecutionRunThread();
 
 public slots:
 
@@ -29,6 +33,7 @@ signals:
 
 protected:
 
+    XMLParserExecution* m_pExecutionParser;
     ExecutionNetwork* m_pNetwork;
     XMLParserWindow* m_pWindowParser;
 

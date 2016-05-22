@@ -3,6 +3,57 @@
 //
 
 #include "ExecutionIfNode.h"
+#include "ExecutionExecuteNode.h"
+
+std::string ExecutionIfNode::evaluateChildren(std::map<std::string, ExecutionNode *> *pID2Node, std::map<std::string, std::string> *pInputID2Value, std::map<std::string, QWidget *> *pInputID2Widget)
+{
+
+    std::vector<std::string> vReturn;
+
+    for (size_t i = 0; i < m_vChildren.size(); ++i)
+    {
+
+        ExecutionNode* pChild = m_vChildren.at(i);
+
+        if (m_bEvaluateElse)
+        {
+            if (pChild != m_pElseNode)
+                continue;
+        } else {
+            if (pChild == m_pElseNode)
+                continue;
+        }
+
+        if (ExecutionExecuteNode* pExecNode = dynamic_cast<ExecutionExecuteNode*>( pChild ))
+        {
+            ++m_iHasExecuteChild;
+
+            QObject::connect(pExecNode, &ExecutionExecutableNode::finishedExecution, this, &ExecutionIfNode::childHasFinished);
+
+        }
+
+        std::string sReturn = pChild->evaluate(pID2Node, pInputID2Value, pInputID2Widget);
+        if (sReturn.size() != 0)
+            vReturn.push_back(sReturn);
+
+    }
+
+
+    std::string sReturn = "";
+
+    if ( vReturn.size() > 0 )
+    {
+        for(size_t i = 0; i < vReturn.size(); ++i)
+        {
+            if (i > 0)
+                sReturn = sReturn + m_sSeperator;
+
+            sReturn = sReturn + vReturn.at(i);
+        }
+    }
+
+    return sReturn;
+}
 
 std::string ExecutionIfNode::evaluateElseNode(std::map< std::string, ExecutionNode*>* pID2Node,
                                               std::map<std::string, std::string>* pInputID2Value,

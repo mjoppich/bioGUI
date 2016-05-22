@@ -155,7 +155,7 @@ protected:
             return oJt->second->evaluate(pID2Node, pInputID2Value, pInputID2Widget);
         }
 
-        throw "id not found " + sID;
+        throw "Node ID not found: " + sID;
 
     }
 

@@ -7,13 +7,14 @@
 
 #include <iostream>
 #include "ExecutionNode.h"
+#include "ExecutionExecutableNode.h"
 
-class ExecutionIfNode : public ExecutionNode {
+class ExecutionIfNode : public ExecutionExecutableNode {
 
 public:
 
     ExecutionIfNode(QDomElement* pElement)
-            : ExecutionNode(pElement)
+            : ExecutionExecutableNode(pElement)
     {
 
         std::string sNotSet = "#NOTSET#";
@@ -92,46 +93,7 @@ public:
 
     virtual std::string evaluateChildren( std::map< std::string, ExecutionNode*>* pID2Node,
                                           std::map<std::string, std::string>* pInputID2Value,
-                                          std::map<std::string, QWidget*>* pInputID2Widget)
-    {
-
-        std::vector<std::string> vReturn;
-
-        for (size_t i = 0; i < m_vChildren.size(); ++i)
-        {
-
-            ExecutionNode* pChild = m_vChildren.at(i);
-
-            if ((i > 0) && (pChild != m_pElseNode))
-            {
-                //sReturn = sReturn + "\n";
-            }
-
-            if (pChild != m_pElseNode)
-            {
-                std::string sReturn = pChild->evaluate(pID2Node, pInputID2Value, pInputID2Widget);
-                if (sReturn.size() != 0)
-                    vReturn.push_back(sReturn);
-            }
-
-        }
-
-
-        std::string sReturn = "";
-
-        if ( vReturn.size() > 0 )
-        {
-            for(size_t i = 0; i < vReturn.size(); ++i)
-            {
-                if (i > 0)
-                    sReturn = sReturn + m_sSeperator;
-
-                sReturn = sReturn + vReturn.at(i);
-            }
-        }
-
-        return sReturn;
-    }
+                                          std::map<std::string, QWidget*>* pInputID2Widget);
 
 
     std::string evaluate( std::map< std::string, ExecutionNode*>* pID2Node,
@@ -139,7 +101,12 @@ public:
                           std::map<std::string, QWidget*>* pInputID2Widget)
     {
 
+        std::string sReturn = "";
+
         std::string sValue1 = this->getValue( m_sValue1, pID2Node, pInputID2Value, pInputID2Widget);
+
+        // by default do not evaluate else part
+        m_bEvaluateElse = false;
 
         /*
          *
@@ -155,10 +122,8 @@ public:
         if (m_sCompareMode.compare("is_set") == 0)
         {
 
-            if (sValue1.size() > 0)
-                return this->evaluateChildren(pID2Node, pInputID2Value, pInputID2Widget);
-            else
-                return this->evaluateElseNode(pID2Node, pInputID2Value, pInputID2Widget);
+            if (sValue1.size() == 0)
+                m_bEvaluateElse = true;
 
         }
 
@@ -169,7 +134,6 @@ public:
          */
 
         std::string sValue2 = this->getValue( m_sValue2, pID2Node, pInputID2Value, pInputID2Widget);
-
 
         if (QString(m_sCompareMode.c_str()).compare("EQUALS", Qt::CaseInsensitive) == 0)
         {
@@ -182,22 +146,33 @@ public:
 
             if ( QString(sValue1.c_str()).compare( QString(sValue2.c_str()), eCaseSensitivity ) == 0 )
             {
-
-                return this->evaluateChildren(pID2Node, pInputID2Value, pInputID2Widget);
+                m_bEvaluateElse = false;
 
             } else {
 
-                return this->evaluateElseNode(pID2Node, pInputID2Value, pInputID2Widget);
+                m_bEvaluateElse = true;
             }
+
         }
 
+        sReturn = this->evaluateChildren(pID2Node, pInputID2Value, pInputID2Widget);
 
+        if (m_iHasExecuteChild == 0)
+            emit finishedExecution();
 
         return "";
 
     }
 
 protected:
+
+    void childHasFinished()
+    {
+        --m_iHasExecuteChild;
+
+        if (m_iHasExecuteChild == 0)
+            emit finishedExecution();
+    }
 
 
     std::string evaluateElseNode(std::map< std::string, ExecutionNode*>* pID2Node,
@@ -211,6 +186,9 @@ protected:
     std::vector<std::string> m_vValidCompareModes;
 
     ExecutionNode* m_pElseNode = NULL;
+
+    int m_iHasExecuteChild = 0;
+    bool m_bEvaluateElse = false;
 
 };
 

@@ -6,6 +6,7 @@
 #define BIOGUI_BIOGUIAPP_H
 
 #include <QApplication>
+#include <QMessageBox>
 #include <QStyleFactory>
 #include <QXmlQuery>
 #include <QDomDocument>
@@ -28,6 +29,9 @@ public:
     bioGUIapp(int argc, char* argv[])
     : QApplication(argc, argv)
     {
+
+        std::cerr << "Main Application" << std::endl;
+        std::cerr << QThread::currentThreadId() << std::endl;
 
         qDebug() << QStyleFactory::keys();
 
@@ -260,20 +264,20 @@ public:
     void runProgram()
     {
 
+        ExecutionNetwork* pNetwork = NULL;
+        ExecutionRunThread* pThread = NULL;
+
         this->disableActions();
 
-        XMLParserExecution oParseExecution( m_pWindowParser->getTemplateFile() );
-        ExecutionNetwork* pNetwork = oParseExecution.getExecutionNetwork();
+        XMLParserExecution* pParseExecution = new XMLParserExecution( m_pWindowParser->getTemplateFile() );
 
-        ExecutionRunThread* pThread = new ExecutionRunThread(m_pWindowParser, pNetwork);
-
-        XMLParserWindow* pWindowParser = m_pWindowParser;
+        pThread = new ExecutionRunThread(m_pWindowParser, pParseExecution);
 
         this->connect(pThread, &QThread::started, pThread, &ExecutionRunThread::startExecution);
         this->connect(pThread, &ExecutionRunThread::executionFinished, this, &bioGUIapp::programFinished);
+        this->connect(pThread, &ExecutionRunThread::executionFinished, pThread, &ExecutionRunThread::deleteLater);
 
         pThread->start();
-
 
     }
 

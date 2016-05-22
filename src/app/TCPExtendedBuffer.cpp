@@ -26,10 +26,12 @@ QBufferTcpServer::QBufferTcpServer(QString sHost, int iPort, TCPExtendedBuffer* 
     std::cerr << "listening on port " << iPort << " " << this->isListening() <<  std::endl;
 
     QTcpServer::connect(this, &QBufferTcpServer::socketReady, m_pParent, &TCPExtendedBuffer::receiveProcData, Qt::DirectConnection);
+
 }
 
 void QBufferTcpServer::incomingConnection(qintptr socketDescripter)
 {
+    std::cout << "incoming connection" << std::endl;
 
     QTcpSocket* pSocket = new QTcpSocket();
     m_pCurrentSocket = pSocket;

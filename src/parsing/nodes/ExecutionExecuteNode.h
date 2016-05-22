@@ -13,6 +13,7 @@
 #include <src/app/ProcessLauncher.h>
 #include "ExecutionNode.h"
 #include "ExecutionOutputNode.h"
+#include "ExecutionExecutableNode.h"
 
 #ifdef WINDOWS
     #include <windows.h>
@@ -20,12 +21,12 @@
 
 class HTTPExecuteThread;
 
-class ExecutionExecuteNode : public ExecutionNode {
+class ExecutionExecuteNode : public ExecutionExecutableNode {
 
 public:
 
     ExecutionExecuteNode(QDomElement* pElement)
-            : ExecutionNode(pElement)
+            : ExecutionExecutableNode(pElement)
     {
 
         std::string sNotSet = "#NOTSET#";
@@ -79,7 +80,13 @@ public:
 
                 } else {
 
-                    sReturn = sReturn + m_vChildren.at(i)->evaluate(pID2Node, pInputID2Value, pInputID2Widget);
+                    if (ExecutionOutputNode* pOutPutnode = dynamic_cast<ExecutionOutputNode*>( m_vChildren.at(i) ))
+                    {
+                        sReturn = sReturn + pOutPutnode->evaluateDeferred(pID2Node, pInputID2Value, pInputID2Widget, pProcess, pThread, bDeferred);
+                    } else {
+                        sReturn = sReturn + m_vChildren.at(i)->evaluate(pID2Node, pInputID2Value, pInputID2Widget);
+
+                    }
 
                 }
 
@@ -197,6 +204,9 @@ public:
 
                     this->evaluateChildren(pID2Node, pInputID2Value, pInputID2Widget, pLauncher->getProcess(), pLauncher->getThread(), true);
                     pLauncher->deleteLater();
+
+                    // calculation finished!
+                    emit finishedExecution();
 
                 });
 

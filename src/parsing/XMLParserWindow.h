@@ -281,6 +281,11 @@ public:
         return m_pID2Value;
     }
 
+    ~XMLParserWindow()
+    {
+
+    }
+
 protected:
 
     virtual QDomElement* getRoot(QDomDocument* pDocument)

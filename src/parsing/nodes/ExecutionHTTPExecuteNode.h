@@ -200,6 +200,8 @@ public:
             this->evaluateChildren(pID2Node, pInputID2Value, pInputID2Widget, NULL, pThread, true);
             pNetworkManager->deleteLater();
 
+            emit finishedExecution();
+
         });
 
         return "";

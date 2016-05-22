@@ -41,7 +41,7 @@ ExecutionNode *XMLParserExecution::getExecutionNodes(QDomElement* pElement ) {
 
 ExecutionNetwork *XMLParserExecution::createNetwork(QDomElement* pElement) {
 
-    ExecutionNetwork* pNetwork = new ExecutionNetwork();
+    ExecutionNetwork* pNetwork = new ExecutionNetwork(NULL, NULL);
 
     QDomNodeList oExecutionNodes = pElement->childNodes();
     for (size_t i = 0; i < oExecutionNodes.length(); ++i)

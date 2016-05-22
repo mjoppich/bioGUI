@@ -46,13 +46,29 @@ public:
         m_iPort = iPort;
 
         m_pServer = new QBufferTcpServer(sHost, iPort, this);
+
+        std::cerr << "TCPExtendedBuffer" << std::endl;
+        std::cerr << QThread::currentThreadId() << std::endl;
+
     }
 
     ~TCPExtendedBuffer()
     {
 
+        this->stopTransmissions();
+
         m_pServer->deleteLater();
 
+    }
+
+    virtual void stopTransmissions()
+    {
+        ExtendedThreadBuffer::stopTransmissions();
+
+        std::cout << "closing TCP buffer on port " << m_iPort << std::endl;
+
+        if (m_pServer->isListening())
+            m_pServer->close();
     }
 
 
@@ -87,7 +103,8 @@ public:
 
             memset(cBuffer, 0, std::min(iReadBytes, iBuffer));
 
-            emit sendText(sString, m_oColor, m_sID);
+            if (m_bTransmissionAllowed)
+                emit sendText(sString, m_oColor, m_sID);
         }
 
         free(cBuffer);

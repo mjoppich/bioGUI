@@ -115,6 +115,16 @@ public:
 
     }
 
+    ~XMLParserExecution()
+    {
+
+        for (size_t i = 0; i < m_vCreatedNodes.size(); ++i)
+        {
+            delete m_vCreatedNodes.at(i);
+        }
+
+    }
+
     ExecutionNetwork * getExecutionNetwork();
 
 protected:
@@ -171,7 +181,6 @@ protected:
 
         ExecutionNode* pReturn = this->createNode(pElement, sTagName.toStdString());
 
-
         if (pReturn == NULL)
         {
 
@@ -193,6 +202,7 @@ protected:
 
 
     std::map< std::string, std::function< ExecutionNode*( QDomElement*)> > m_mCreateNodeMap;
+    std::vector<ExecutionNode*> m_vCreatedNodes;
 
 };
 

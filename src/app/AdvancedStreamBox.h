@@ -173,6 +173,8 @@ public:
     void finishThread( ExecuteThread* pThread )
     {
 
+        std::cout << "finishing thread: " << pThread << std::endl;
+
 
         std::map<ExecuteThread*, std::vector<ExtendedThreadBuffer*> >::iterator oJt = m_mThreadToBuffer.find(pThread);
 
@@ -184,6 +186,7 @@ public:
 
                 ExtendedThreadBuffer* pBuffer = oJt->second.at(i);
                 pBuffer->transferText("\n");
+                pBuffer->stopTransmissions();
                 pBuffer->deleteLater();
 
             }
@@ -203,7 +206,7 @@ public:
 
         this->addThreadBuffer(pThread, pBuffer);
 
-        this->connect(pBuffer, &TCPExtendedBuffer::sendText, this , &AdvancedStreamBox::receiveText, Qt::QueuedConnection );
+        QObject::connect(pBuffer, &TCPExtendedBuffer::sendText, this , &AdvancedStreamBox::receiveText, Qt::QueuedConnection );
 
     }
 
@@ -349,6 +352,8 @@ protected slots:
             }
 
         }
+
+        this->scrollToBottom();
 
     }
 

@@ -62,10 +62,17 @@ public slots:
 
         QString sString = QString(oArray);
 
-        emit sendText(sString, m_oColor, m_sID);
+        if (m_bTransmissionAllowed)
+        {
+            emit sendText(sString, m_oColor, m_sID);
+        }
+
     }
 
-
+    virtual void stopTransmissions()
+    {
+        m_bTransmissionAllowed = false;
+    }
 
 protected:
 
@@ -75,10 +82,8 @@ protected:
         QProcess::ProcessChannel eChannel;
     };
 
-
-
-
     sParentThread* m_pParentThread = NULL;
+    bool m_bTransmissionAllowed = true;
 };
 
 

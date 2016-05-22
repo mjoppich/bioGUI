@@ -18,7 +18,13 @@ public:
 
     ExecuteThread() : QThread()
     {
-        this->connect(this, &QThread::started, this, &ExecuteThread::startExecution);
+    }
+
+    virtual ~ExecuteThread()
+    {
+
+        std::cerr << QThread::currentThreadId() << " destroyed" << std::endl;
+
     }
 
 
@@ -29,15 +35,12 @@ public slots:
 
     virtual void startExecution() //QPrivateSignal* pSignal
     {
-
-        std::cout.rdbuf();
-        std::cerr.rdbuf();
-
         this->execute();
     }
 
     signals:
 
+    void threadRunned();
     void executionFinished();
 
     void readyReadStandardOutput();
@@ -48,6 +51,10 @@ protected:
 
     virtual void run()
     {
+        this->connect(this, &ExecuteThread::threadRunned, this, &ExecuteThread::startExecution, Qt::DirectConnection);
+
+        emit threadRunned();
+
         this->exec();
     }
 

@@ -30,8 +30,12 @@
 <value from="prog_wsl"/>
 <value from="instpath"/>
 </add>
-    
-  <execute location="" exec="sh" wsl="true" param="${cl} do_something 2&gt;&amp;1 | netcat 127.0.0.1 55025">
+  
+<execute location="" exec="dos2unix" wsl="true" param="${prog_wsl} | netcat 127.0.0.1 55025">
+    <output type="TCP" host="" port="55025" color="green" to="outputstream1" />
+</execute>
+  
+  <execute location="" exec="sh" wsl="true" param="${cl} 2&gt;&amp;1 | netcat 127.0.0.1 55025">
     <output id="outcout" type="TCP" host="" port="55025" color="green" to="outputstream1" />
 	<output id="outcout2" type="TCP" host="" port="55026" color="red" to="outputstream2" />
   </execute>

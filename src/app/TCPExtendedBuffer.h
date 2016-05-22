@@ -46,6 +46,10 @@ public:
         m_iPort = iPort;
 
         m_pServer = new QBufferTcpServer(sHost, iPort, this);
+
+        std::cerr << "TCPExtendedBuffer" << std::endl;
+        std::cerr << QThread::currentThreadId() << std::endl;
+
     }
 
     ~TCPExtendedBuffer()

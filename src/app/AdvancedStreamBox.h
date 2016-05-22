@@ -203,7 +203,7 @@ public:
 
         this->addThreadBuffer(pThread, pBuffer);
 
-        this->connect(pBuffer, &TCPExtendedBuffer::sendText, this , &AdvancedStreamBox::receiveText, Qt::QueuedConnection );
+        QObject::connect(pBuffer, &TCPExtendedBuffer::sendText, this , &AdvancedStreamBox::receiveText, Qt::QueuedConnection );
 
     }
 

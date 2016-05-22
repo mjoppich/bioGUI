@@ -30,6 +30,7 @@ QBufferTcpServer::QBufferTcpServer(QString sHost, int iPort, TCPExtendedBuffer* 
 
 void QBufferTcpServer::incomingConnection(qintptr socketDescripter)
 {
+    std::cout << "incoming connection" << std::endl;
 
     QTcpSocket* pSocket = new QTcpSocket();
     m_pCurrentSocket = pSocket;

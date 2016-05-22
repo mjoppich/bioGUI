@@ -29,6 +29,9 @@ public:
     : QApplication(argc, argv)
     {
 
+        std::cerr << "Main Application" << std::endl;
+        std::cerr << QThread::currentThreadId() << std::endl;
+
         qDebug() << QStyleFactory::keys();
 
 #ifdef __linux

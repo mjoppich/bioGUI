@@ -36,6 +36,11 @@ public:
         return QByteArray();
     }
 
+    void setCMD(QString sCMD)
+    {
+        m_sCMD = sCMD;
+    }
+
 protected:
 
     void execute()
@@ -49,6 +54,7 @@ protected:
         if (CreateProcess(NULL, (LPSTR)m_sCMD.toStdString().c_str(), NULL, NULL, FALSE, CREATE_NEW_CONSOLE, NULL, NULL, &sinfo, &pinfo)) {
 
             std::cerr << "executed: " << m_sCMD.toStdString() << std::endl;
+            std::cerr << QThread::currentThreadId() << std::endl;
 
             WaitForSingleObject (pinfo.hProcess, INFINITE);
 
@@ -82,6 +88,8 @@ public:
         if (!m_bWindowsProcNoHandle)
         {
             m_pProcess = new QProcess();
+        } else {
+            m_pThread = new ProcessThread(m_sProgram + " " + m_sParam);
         }
     }
 
@@ -121,8 +129,7 @@ public:
 
         if (m_bWindowsProcNoHandle)
         {
-
-            m_pThread = new ProcessThread(m_sProgram + " " + m_sParam);
+            m_pThread->setCMD(m_sProgram + " " + m_sParam);
 
             this->connect(m_pThread, &ExecuteThread::executionFinished, this, &ProcessLauncher::executionFinished);
 
@@ -169,10 +176,10 @@ public slots:
     void executionFinished()
     {
         if (m_pThread != NULL)
-            delete m_pThread;
+            m_pThread->deleteLater();
 
         if (m_pProcess != NULL)
-            delete m_pProcess;
+            m_pProcess->deleteLater();
 
 
         emit finished();

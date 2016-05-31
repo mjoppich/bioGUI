@@ -410,6 +410,32 @@ protected slots:
 
     }
 
+    std::string getStreamContent(std::string* pStreamID)
+    {
+        std::string sReturn = "";
+
+        size_t iCount = this->count();
+
+        for (size_t i = 0; i < iCount; ++i)
+        {
+
+            size_t iIndex = iCount - 1 - i;
+
+            AdvancedListWidgetItem* pItem = dynamic_cast<AdvancedListWidgetItem*>( this->item(iIndex) );
+
+            if (pItem == NULL)
+                return NULL;
+
+            if (pItem->getStreamID().compare( QString(pStreamID->c_str()), Qt::CaseInsensitive) == 0)
+            {
+                sReturn.append(pItem->text().toStdString());
+            }
+
+        }
+
+        return sReturn;
+    }
+
 protected:
 
 

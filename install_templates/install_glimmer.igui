@@ -1,6 +1,6 @@
 
 ## set all variables
-PROG=GlimmerHMM-3.0.4
+PROG=glimmer302b
 
 PROGDIR=$1
 if [ -z "${PROGDIR}" ]; then
@@ -11,8 +11,15 @@ fi
 mkdir -p $PROGDIR
 
 #download and unzip
-wget ftp://ccb.jhu.edu/pub/software/glimmerhmm/$PROG.tar.gz -O $PROGDIR/$PROG.tar.gz
+wget http://ccb.jhu.edu/software/glimmer/$PROG.tar.gz -O $PROGDIR/$PROG.tar.gz
 
-tar -xzf $PROG.tar.gz -C $PROGDIR/$PROG
+cd $PROGDIR
+tar -xzf $PROG.tar.gz -C $PROGDIR/
 
 #install prog
+cd $PROGDIR/$PROG
+
+./configure -prefix=$PROGDIR/$PROG
+make
+make check
+make install

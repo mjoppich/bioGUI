@@ -27,6 +27,7 @@ public:
         m_sType = this->getDomElementAttribute(pElement, "TYPE", "STD").toUpper().toStdString();
         m_sColor = this->getDomElementAttribute(pElement, "COLOR", "black").toStdString();
         m_sTo = this->getDomElementAttribute(pElement, "TO", "").toStdString();
+        m_sFrom = this->getDomElementAttribute(pElement, "FROM", "").toStdString();
         m_sLocation = this->getDomElementAttribute(pElement, "location", "").toStdString();
 
         m_sHost = this->getDomElementAttribute(pElement, "host", "").toStdString();
@@ -198,6 +199,25 @@ public:
 
                 pTextEdit->finishProcess(pProcess);
                 pTextEdit->finishThread(pThread);
+
+                if (m_sType.compare("FILE") == 0)
+                {
+
+                    std::string sSaveTo = m_sTo;
+
+                    try
+                    {
+                        // if it is a node value, fetch it here!
+                        sSaveTo = this->evaluateID(sID, pID2Node, pInputID2Value, pInputID2Widget);
+                    }
+
+                    std::ofstream oOutputStream( m_sTo );
+
+                    oOutputStream << pTextEdit->getStreamContent( &m_sFrom );
+
+                    oOutputStream.close();
+                }
+
             }
 
             return "";
@@ -235,6 +255,7 @@ protected:
 
     std::string m_sType;
     std::string m_sTo;
+    std::string m_sFrom;
     std::string m_sColor;
     std::string m_sLocation;
 
@@ -243,6 +264,8 @@ protected:
     int m_iPort;
 
     bool m_bDefferred;
+
+
 
 
 };

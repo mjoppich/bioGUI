@@ -66,31 +66,6 @@ public:
         }
     }
 
-    std::string getValue(std::string sNodeID, std::map< std::string, ExecutionNode*>* pID2Node,
-                         std::map<std::string, std::string>* pInputID2Value,
-                         std::map<std::string, QWidget*>* pInputID2Widget)
-    {
-
-        std::map<std::string, std::string>::iterator oValueIt = pInputID2Value->find(sNodeID);
-        if ( oValueIt != pInputID2Value->end())
-        {
-            return oValueIt->second;
-        }
-
-
-        std::map< std::string, ExecutionNode*>::iterator oNodeIt = pID2Node->find(sNodeID);
-
-        if ( oNodeIt != pID2Node->end() )
-        {
-            return oNodeIt->second->evaluate(pID2Node, pInputID2Value, pInputID2Widget);
-
-        }
-
-        return sNodeID;
-
-
-    }
-
     virtual std::string evaluateChildren( std::map< std::string, ExecutionNode*>* pID2Node,
                                           std::map<std::string, std::string>* pInputID2Value,
                                           std::map<std::string, QWidget*>* pInputID2Widget);
@@ -103,7 +78,7 @@ public:
 
         std::string sReturn = "";
 
-        std::string sValue1 = this->getValue( m_sValue1, pID2Node, pInputID2Value, pInputID2Widget);
+        std::string sValue1 = this->getNodeValueOrValue( m_sValue1, m_sValue1, pID2Node, pInputID2Value, pInputID2Widget);
 
         // by default do not evaluate else part
         m_bEvaluateElse = false;
@@ -133,7 +108,8 @@ public:
          *
          */
 
-        std::string sValue2 = this->getValue( m_sValue2, pID2Node, pInputID2Value, pInputID2Widget);
+        std::string sValue2 = this->getNodeValueOrValue( m_sValue2, m_sValue2, pID2Node, pInputID2Value, pInputID2Widget);
+
 
         if (QString(m_sCompareMode.c_str()).compare("EQUALS", Qt::CaseInsensitive) == 0)
         {

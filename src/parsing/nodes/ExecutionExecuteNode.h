@@ -35,9 +35,8 @@ public:
         m_sExecLocation = this->getDomElementAttribute(pElement, "location", "").toStdString();
         m_sCLArg = this->getDomElementAttribute(pElement, "param", QString(sNotSet.c_str())).toStdString();
 
-        m_bTest = (this->getDomElementAttribute(pElement, "test", "false").compare("True", Qt::CaseInsensitive) == 0);
-        m_bWSL = (this->getDomElementAttribute(pElement, "wsl", "false").compare("True", Qt::CaseInsensitive) == 0);
-
+        m_sTest = this->getDomElementAttribute(pElement, "test", "false").toStdString();
+        m_sWSL = this->getDomElementAttribute(pElement, "wsl", "false").toStdString();
 
     }
 
@@ -183,13 +182,15 @@ public:
         std::string sCLArg = this->getCLArgs(pID2Node, pInputID2Value, pInputID2Widget);
         std::string sProgram = m_sExecLocation + m_sExecutable;
 
-        if (m_bTest)
+        bool bTest = this->asBool(this->getNodeValueOrValue(m_sTest, "false", pID2Node, pInputID2Value, pInputID2Widget));
+        bool bWSL = this->asBool(this->getNodeValueOrValue(m_sWSL, "false", pID2Node, pInputID2Value, pInputID2Widget));
+
+        if (bTest)
         {
             sProgram = "/usr/bin/echo " + sProgram;
         }
 
-
-        ProcessLauncher* pLauncher = new ProcessLauncher(QString(sProgram.c_str()), QString(sCLArg.c_str()), m_bWSL);
+        ProcessLauncher* pLauncher = new ProcessLauncher(QString(sProgram.c_str()), QString(sCLArg.c_str()), bWSL);
 
         this->evaluateChildren(pID2Node, pInputID2Value, pInputID2Widget, pLauncher->getProcess(), pLauncher->getThread(), false);
 
@@ -219,8 +220,8 @@ protected:
     std::string m_sExecLocation;
     std::string m_sCLArg;
 
-    bool m_bTest = false;
-    bool m_bWSL = true;
+    std::string m_sTest = "false";
+    std::string m_sWSL = "true";
 
 };
 

@@ -14,6 +14,7 @@
 #include <QtGui/qdesktopservices.h>
 #include <QtCore/qdir.h>
 #include <src/app/ExecuteThread.h>
+#include <fstream>
 
 #include "ExecutionNode.h"
 
@@ -203,19 +204,17 @@ public:
                 if (m_sType.compare("FILE") == 0)
                 {
 
-                    std::string sSaveTo = m_sTo;
+                    std::string sSaveTo = this->getNodeValueOrValue(m_sFrom, "", pID2Node, pInputID2Value, pInputID2Widget);
 
-                    try
+                    if (sSaveTo.size() != 0)
                     {
-                        // if it is a node value, fetch it here!
-                        sSaveTo = this->evaluateID(sID, pID2Node, pInputID2Value, pInputID2Widget);
+                        std::ofstream oOutputStream( m_sFrom );
+
+                        oOutputStream << pTextEdit->getStreamContent( &m_sTo );
+
+                        oOutputStream.close();
                     }
 
-                    std::ofstream oOutputStream( m_sTo );
-
-                    oOutputStream << pTextEdit->getStreamContent( &m_sFrom );
-
-                    oOutputStream.close();
                 }
 
             }
@@ -250,6 +249,8 @@ public:
         return "";
 
     }
+
+
 
 protected:
 

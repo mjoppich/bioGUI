@@ -113,6 +113,9 @@ public:
 
         ExecutionNode* pNode = *oIt;
 
+        // this should never be called again :)
+        m_vExecNodes.erase(oIt);
+
         if (ExecutionExecutableNode* pExecNode = dynamic_cast<ExecutionExecutableNode*>( pNode ))
         {
 
@@ -122,8 +125,6 @@ public:
             pExecNode->evaluate( &mID2Node, &mInputID2Value, m_pInputID2Widget );
 
         }
-
-        m_vExecNodes.erase(oIt);
 
     }
 

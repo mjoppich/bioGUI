@@ -3,8 +3,6 @@
 PROG=hmmer-3.1b2
 
 PROGDIR=$1
-IP=$2
-PORT=$3
 
 if [ -z "${PROGDIR}" ]; then
 	PROGDIR=~/bioGUI/progs/
@@ -26,6 +24,11 @@ cd $PROGDIR/$PROG
 make
 make check
 make install
+
+if [ $# == 3 ]; then
+
+IP=$2
+PORT=$3
 
 cat << EOF | netcat $IP $PORT
 <template rootid="hmmerroot" description="HMMER for WSL" title="HMMER (WSL)">
@@ -107,3 +110,6 @@ cat << EOF | netcat $IP $PORT
 </execution>
 </template>
 EOF
+
+
+fi

@@ -159,6 +159,32 @@ protected:
 
     }
 
+    std::string getNodeValueOrValue(std::string sValue, std::string sDefaultValue,
+                                std::map< std::string, ExecutionNode*>* pID2Node,
+                                std::map<std::string, std::string>* pInputID2Value,
+                                std::map<std::string, QWidget*>* pInputID2Widget)
+    {
+
+        std::string sReturn;
+
+        try
+        {
+            // if it is a node value, fetch it here!
+            sReturn = this->evaluateID(sValue, pID2Node, pInputID2Value, pInputID2Widget);
+        } catch (...)
+        {
+            sReturn = sDefaultValue;
+        }
+
+        return sReturn;
+
+    }
+
+    bool asBool(std::string sValue)
+    {
+        return (QString(sValue.c_str()).compare("true", Qt::CaseInsensitive) == 0);
+    }
+
     QString getDomElementAttribute(QDomElement* pElement, QString sAttribName, QString sDefault);
 
     std::vector<ExecutionNode*> m_vChildren;

@@ -1,7 +1,7 @@
 <!--<?xml version="1.0" encoding="UTF-8"?>-->
-<template description="Install WSL programs" title="WSL Install">
+<template description="Install WSL programs" title="Install Scripts">
 
-<window width="500" height="500" title="WSL Install">
+<window width="500" height="500" title="Install Scripts">
 
   <vgroup>
 
@@ -9,6 +9,9 @@
   <filelist id="prog" ext="*.igui"/>
   <label>Install Location on WSL:</label>
   <input id="instpath">~/bioGUI/progs/</input>
+  <group checkable="true" title="Where to store the template?">
+  <filedialog id="instpath" output="true" filter="*.gui">Save Template to</filedialog>
+  </group>
 
 
 	<action id="runprog" hint="Click here to install selected program into WSL">Install Program</action>  
@@ -16,6 +19,7 @@
     <streambox id="output1">
     <stream id="outputstream1">Normal Log</stream>
 	<stream id="outputstream2">Error Log</stream>
+	<stream id="savetemplate">Template</stream>
     </streambox>
 
   </vgroup>
@@ -26,9 +30,13 @@
 
 <relocate id="prog_wsl" from="prog" wsl="true"/>
 
+<env id="localip" get="IP"/>
+
 <add id="cl" sep=" ">
 <value from="prog_wsl"/>
 <value from="instpath"/>
+<value from="localip"/>
+<const>33333</const>
 </add>
   
 <execute location="" exec="dos2unix" wsl="true" param="${prog_wsl} | netcat 127.0.0.1 55025">
@@ -38,6 +46,8 @@
   <execute location="" exec="sh" wsl="true" param="${cl} 2&gt;&amp;1 | netcat 127.0.0.1 55025">
     <output id="outcout" type="TCP" host="" port="55025" color="green" to="outputstream1" />
 	<output id="outcout2" type="TCP" host="" port="55026" color="red" to="outputstream2" />
+	<output type="TCP" host="" port="33333" color="blue" to="savetemplate" />
+	<output type="FILE" from="savetemplate" to="instpath" />
   </execute>
   
 </execution>

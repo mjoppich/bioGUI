@@ -1,5 +1,4 @@
-<!--<?xml version="1.0" encoding="UTF-8"?>-->
-<template rootid="blubb" intatt="111" description="HMMER for WSL" title="HMMER (WSL)">
+<template rootid="hmmerroot" description="HMMER for WSL" title="HMMER (WSL)">
 
 <window width="500" height="1900" title="Jellyfish (WSL)">
 

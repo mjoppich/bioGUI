@@ -64,6 +64,7 @@ public:
         m_pKnownTags->push_back("input");
         m_pKnownTags->push_back("image");
         m_pKnownTags->push_back("filedialog");
+        m_pKnownTags->push_back("fileselectbox");
         m_pKnownTags->push_back("group");
         m_pKnownTags->push_back("groupbox");
         m_pKnownTags->push_back("radiobutton");

@@ -14,6 +14,7 @@
 #include <src/app/QExtGridLayout.h>
 #include <src/app/QClickableLabel.h>
 #include <QTextEdit>
+#include <src/app/QSortableFileList.h>
 
 #include "../bioGUIapp.h"
 
@@ -129,6 +130,23 @@ QWidget* XMLParserWindow::createComponent(QDomElement* pElement, bool* pChildren
 
 
         pWidget = pLabel;
+    }
+
+
+    if (sTag.compare("fileselectbox", Qt::CaseInsensitive) == 0)
+    {
+
+        QString sFileFilter = this->getAttribute(pElement, "filter", "");
+        QString sFilePath = this->getAttribute(pElement, "location", "");
+        QString sDelimeter = this->getAttribute(pElement, "delim", " ");
+
+
+
+        QSortableFileList *pList = new QSortableFileList( sFilePath, sFileFilter, sDelimeter );
+
+        this->addValueFetcher(pElement, [pList] () {return pList->evaluate().toStdString();});
+
+        pWidget = pList;
     }
 
     if (sTag.compare("input", Qt::CaseInsensitive) == 0)

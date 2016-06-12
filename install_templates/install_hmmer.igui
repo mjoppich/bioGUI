@@ -102,7 +102,7 @@ cat << EOF | netcat $IP $PORT
 <if comp="EQUALS" value1="sel_search" value2="TRUE"><value from="cl_search"/></if>
 </add>
 
-  <execute location="" exec="" wsl="true" param="${cl} 2&gt;&amp;1 | netcat 127.0.0.1 55025">
+  <execute location="" exec="" wsl="true" param="\${cl} 2&gt;&amp;1 | netcat 127.0.0.1 55025">
     <output id="outcout" type="TCP" host="" port="55025" color="green" to="outputstream1" />
   </execute>
   

@@ -91,6 +91,10 @@ public:
         return m_sTemplateFile;
     }
 
+    bool isValid()
+    {
+        return m_pDocument != NULL;
+    }
 
 protected:
 
@@ -230,6 +234,7 @@ protected:
 
 
     }
+
 
 
     QDomDocument* m_pDocument;

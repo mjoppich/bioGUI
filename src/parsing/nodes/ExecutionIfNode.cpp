@@ -5,7 +5,10 @@
 #include "ExecutionIfNode.h"
 #include "ExecutionExecuteNode.h"
 
-std::string ExecutionIfNode::evaluateChildren(std::map<std::string, ExecutionNode *> *pID2Node, std::map<std::string, std::string> *pInputID2Value, std::map<std::string, QWidget *> *pInputID2Widget)
+std::string ExecutionIfNode::evaluateChildren(std::map<std::string, ExecutionNode *> *pID2Node,
+                                              std::map<std::string, std::string> *pInputID2Value,
+                                              std::map<std::string, QWidget *> *pInputID2Widget,
+                                              bool bEmitSignal)
 {
 
     std::vector<std::string> vReturn;
@@ -24,12 +27,20 @@ std::string ExecutionIfNode::evaluateChildren(std::map<std::string, ExecutionNod
                 continue;
         }
 
-        if (ExecutionExecuteNode* pExecNode = dynamic_cast<ExecutionExecuteNode*>( pChild ))
+        if (bEmitSignal)
         {
-            ++m_iHasExecuteChild;
+            if (ExecutionExecutableNode* pExecNode = dynamic_cast<ExecutionExecutableNode*>( pChild ))
+            {
+                ++m_iHasExecuteChild;
 
-            QObject::connect(pExecNode, &ExecutionExecutableNode::finishedExecution, this, &ExecutionIfNode::childHasFinished);
+                QObject::connect(pExecNode, &ExecutionExecutableNode::finishedExecution, [bEmitSignal, this] () { emit this->childHasFinished(bEmitSignal);});
 
+                std::string sReturn = pExecNode->evaluate(pID2Node, pInputID2Value, pInputID2Widget, bEmitSignal);
+                if (sReturn.size() != 0)
+                    vReturn.push_back(sReturn);
+
+                continue;
+            }
         }
 
         std::string sReturn = pChild->evaluate(pID2Node, pInputID2Value, pInputID2Widget);
@@ -55,6 +66,7 @@ std::string ExecutionIfNode::evaluateChildren(std::map<std::string, ExecutionNod
     return sReturn;
 }
 
+/*
 std::string ExecutionIfNode::evaluateElseNode(std::map< std::string, ExecutionNode*>* pID2Node,
                                               std::map<std::string, std::string>* pInputID2Value,
                                               std::map<std::string, QWidget*>* pInputID2Widget) {
@@ -67,3 +79,4 @@ std::string ExecutionIfNode::evaluateElseNode(std::map< std::string, ExecutionNo
     return "";
 
 }
+*/

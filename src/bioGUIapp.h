@@ -188,6 +188,15 @@ public:
 
             XMLParserInfo oInfoParser(oFile.absoluteFilePath().toStdString());
 
+            if (oInfoParser.isValid() == false)
+            {
+
+                std::cerr << "Error loading template: " << oFile.absoluteFilePath().toStdString() << std::endl;
+
+                continue;
+            }
+
+
             QString sIconPath = oInfoParser.getIcon();
 
             if ((sIconPath.length() > 0))

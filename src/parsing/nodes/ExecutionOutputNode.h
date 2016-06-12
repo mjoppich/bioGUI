@@ -67,13 +67,15 @@ public:
         if (m_sTo.size() == 0)
         {
 
+            std::string sOpenLocation = this->getNodeValueOrValue(m_sLocation, m_sLocation, pID2Node, pInputID2Value, pInputID2Widget);
+
 
             if (m_sType.compare("FILE") == 0)
             {
 
                 if (bDeferred)
                 {
-                    QDir oLocation = QDir(QString(m_sLocation.c_str()));
+                    QDir oLocation = QDir(QString(sOpenLocation.c_str()));
 
                     if (!oLocation.isAbsolute())
                     {
@@ -95,7 +97,7 @@ public:
                 {
 
 
-                    QDir oLocation = QDir(QString(m_sLocation.c_str()));
+                    QDir oLocation = QDir(QString(sOpenLocation.c_str()));
 
                     if (!oLocation.isAbsolute())
                     {
@@ -208,10 +210,16 @@ public:
 
                     if (sSaveTo.size() != 0)
                     {
-                        std::ofstream oOutputStream( m_sFrom );
+
+                        QFileInfo oInfo(QString(sSaveTo.c_str()));
+
+                        std::cerr << "Writing output to: " << oInfo.absoluteFilePath().toStdString() << std::endl;
+
+                        std::ofstream oOutputStream( oInfo.absoluteFilePath().toStdString(), std::ios_base::trunc );
 
                         oOutputStream << pTextEdit->getStreamContent( &m_sTo );
 
+                        oOutputStream.flush();
                         oOutputStream.close();
                     }
 

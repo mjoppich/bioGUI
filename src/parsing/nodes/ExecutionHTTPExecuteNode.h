@@ -107,7 +107,7 @@ public:
 
     virtual std::string evaluate( std::map< std::string, ExecutionNode*>* pID2Node,
                                   std::map<std::string, std::string>* pInputID2Value,
-                                  std::map<std::string, QWidget*>* pInputID2Widget)
+                                  std::map<std::string, QWidget*>* pInputID2Widget, bool bEmitSignal = false)
     {
 
         QNetworkAccessManager *pNetworkManager = new QNetworkAccessManager();
@@ -195,12 +195,13 @@ public:
 
         pThread->start();
 
-        QObject::connect(pThread, &ExecuteThread::executionFinished, [pThread, pNetworkManager, pID2Node, pInputID2Value, pInputID2Widget, this](){
+        QObject::connect(pThread, &ExecuteThread::executionFinished, [pThread, pNetworkManager, pID2Node, pInputID2Value, pInputID2Widget, bEmitSignal, this](){
 
             this->evaluateChildren(pID2Node, pInputID2Value, pInputID2Widget, NULL, pThread, true);
             pNetworkManager->deleteLater();
 
-            emit finishedExecution();
+            if (bEmitSignal)
+                emit finishedExecution();
 
         });
 

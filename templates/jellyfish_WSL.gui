@@ -74,21 +74,77 @@
 
 <execution>
 
-<relocate id="wsl_count_output_path" wsl="true"><value from="count_output_path"/></relocate>
-<relocate id="wsl_count_input_fasta1" wsl="true"><value from="count_input_fasta1"/></relocate>
-<relocate id="wsl_count_input_fasta2" wsl="true"><value from="count_input_fasta2"/></relocate>
+<if id="wsl_count_output_path" comp="EQUALS" value1="WSLsel" value2="true">
+<relocate wsl="true"><value from="count_output_path"/></relocate>
+<else>
+<value from="count_output_path"/>
+</else>
+</if>
+<if id="wsl_count_input_fasta1" comp="EQUALS" value1="WSLsel" value2="true">
+<relocate wsl="true"><value from="count_input_fasta1"/></relocate>
+<else>
+<value from="count_input_fasta1"/>
+</else>
+</if>
+<if id="wsl_count_input_fasta2" comp="EQUALS" value1="WSLsel" value2="true">
+<relocate wsl="true"><value from="count_input_fasta2"/></relocate>
+<else>
+<value from="count_input_fasta2"/>
+</else>
+</if>
 
-<relocate id="wsl_merge_output" wsl="true"><value from="merge_output"/></relocate>
-<relocate id="wsl_merge_input" wsl="true"><value from="merge_input"/></relocate>
+<if id="wsl_merge_output" comp="EQUALS" value1="WSLsel" value2="true">
+<relocate wsl="true"><value from="merge_output"/></relocate>
+<else>
+<value from="merge_output"/>
+</else>
+</if>
+<if id="wsl_merge_input" comp="EQUALS" value1="WSLsel" value2="true">
+<relocate wsl="true"><value from="merge_input"/></relocate>
+<else>
+<value from="merge_input"/>
+</else>
+</if>
 
-<relocate id="wsl_dump_output_file" wsl="true"><value from="dump_output_file"/></relocate>
-<relocate id="wsl_dump_input_folder" wsl="true"><value from="dump_input_folder"/></relocate>
 
-<relocate id="wsl_stats_input_path" wsl="true"><value from="stats_input_path"/></relocate>
-<relocate id="wsl_stats_output_file" wsl="true"><value from="stats_output_file"/></relocate>
+<if id="wsl_dump_output_file" comp="EQUALS" value1="WSLsel" value2="true">
+<relocate wsl="true"><value from="dump_output_file"/></relocate>
+<else>
+<value from="dump_output_file"/>
+</else>
+</if>
+<if id="wsl_dump_input_folder" comp="EQUALS" value1="WSLsel" value2="true">
+<relocate wsl="true"><value from="dump_input_folder"/></relocate>
+<else>
+<value from="dump_input_folder"/>
+</else>
+</if>
 
-<relocate id="wsl_histo_input_path" wsl="true"><value from="histo_input_path"/></relocate>
-<relocate id="wsl_histo_output_file" wsl="true"><value from="histo_output_file"/></relocate>
+<if id="wsl_stats_input_path" comp="EQUALS" value1="WSLsel" value2="true">
+<relocate wsl="true"><value from="stats_input_path"/></relocate>
+<else>
+<value from="stats_input_path"/>
+</else>
+</if>
+<if id="wsl_stats_output_file" comp="EQUALS" value1="WSLsel" value2="true">
+<relocate wsl="true"><value from="stats_output_file"/></relocate>
+<else>
+<value from="stats_output_file"/>
+</else>
+</if>
+
+<if id="wsl_histo_input_path" comp="EQUALS" value1="WSLsel" value2="true">
+<relocate wsl="true"><value from="histo_input_path"/></relocate>
+<else>
+<value from="histo_input_path"/>
+</else>
+</if>
+<if id="wsl_histo_output_file" comp="EQUALS" value1="WSLsel" value2="true">
+<relocate wsl="true"><value from="histo_output_file"/></relocate>
+<else>
+<value from="histo_output_file"/>
+</else>
+</if>
 
 <add id="cl_cite" sep=" ">
 <const>cite</const>

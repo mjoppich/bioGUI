@@ -102,40 +102,37 @@ public:
         size_t iVarPos;
         size_t iStartPos = iPos;
 
-        while ( (iVarPos = pCommand->find("${", iPos)) != std::string::npos )
+        while( ( iVarPos = std::min(pCommand->find("${", iPos), pCommand->find("}", iPos))  ) != std::string::npos )
         {
+            if ( pCommand->at(iVarPos) == '}' )
+            {
 
-            iPos = this->parseCommand(pCommand, iVarPos+2, pID2Node, pInputID2Value, pInputID2Widget);
+                std::string sPrefix = pCommand->substr(0, iStartPos-2);
+                std::string sSuffix = pCommand->substr(iVarPos+1, pCommand->size());
+                std::string sID = pCommand->substr(iStartPos, iVarPos-iStartPos);
 
+                pCommand->clear();
+                pCommand->append(sPrefix);
+
+                std::string sValue = this->evaluateID(sID, pID2Node, pInputID2Value, pInputID2Widget);
+
+                std::cout << "id " << sID << " value " << sValue << std::endl;
+                pCommand->append(sValue);
+                size_t iReturn = pCommand->size();
+
+                pCommand->append(sSuffix);
+
+                // uncommented because I might want to replace variables in variables :)
+                iPos = sPrefix.size() + sValue.size();
+
+
+            } else {
+                iPos = this->parseCommand(pCommand, iVarPos+2, pID2Node, pInputID2Value, pInputID2Widget);
+            }
         }
 
-        size_t iVarEnd = pCommand->find("}", iPos);
 
-        if (iVarEnd == std::string::npos)
-        {
-            iVarEnd = pCommand->size();
-            return iVarEnd;
-        }
-
-
-        std::string sPrefix = pCommand->substr(0, iStartPos-2);
-        std::string sSuffix = pCommand->substr(iVarEnd+1, pCommand->size());
-        std::string sID = pCommand->substr(iStartPos, iVarEnd-iStartPos);
-
-        pCommand->clear();
-        pCommand->append(sPrefix);
-
-        std::string sValue = this->evaluateID(sID, pID2Node, pInputID2Value, pInputID2Widget);
-
-
-        std::cout << "id " << sID << " value " << sValue << std::endl;
-        pCommand->append(sValue);
-        size_t iReturn = pCommand->size();
-
-        pCommand->append(sSuffix);
-
-
-        return iReturn;
+        return iVarPos;
 
 
     }
@@ -176,7 +173,7 @@ public:
 
     virtual std::string evaluate( std::map< std::string, ExecutionNode*>* pID2Node,
                           std::map<std::string, std::string>* pInputID2Value,
-                          std::map<std::string, QWidget*>* pInputID2Widget)
+                          std::map<std::string, QWidget*>* pInputID2Widget, bool bEmitSignal = false)
     {
 
         std::string sCLArg = this->getCLArgs(pID2Node, pInputID2Value, pInputID2Widget);
@@ -195,13 +192,14 @@ public:
         this->evaluateChildren(pID2Node, pInputID2Value, pInputID2Widget, pLauncher->getProcess(), pLauncher->getThread(), false);
 
         pLauncher->connect(pLauncher, &ProcessLauncher::finished,
-                [pLauncher, pID2Node, pInputID2Value, pInputID2Widget, this](){
+                [pLauncher, pID2Node, pInputID2Value, pInputID2Widget, bEmitSignal, this](){
 
                     this->evaluateChildren(pID2Node, pInputID2Value, pInputID2Widget, pLauncher->getProcess(), pLauncher->getThread(), true);
                     pLauncher->deleteLater();
 
                     // calculation finished!
-                    emit finishedExecution();
+                    if (bEmitSignal == true)
+                        emit finishedExecution();
 
                 });
 

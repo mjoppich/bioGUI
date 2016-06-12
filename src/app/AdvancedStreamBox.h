@@ -119,9 +119,7 @@ public:
         for (size_t i = 0; i < iCount; ++i)
         {
 
-            size_t iIndex = iCount - 1 - i;
-
-            AdvancedListWidgetItem* pItem = dynamic_cast<AdvancedListWidgetItem*>( this->item(iIndex) );
+            AdvancedListWidgetItem* pItem = dynamic_cast<AdvancedListWidgetItem*>( this->item(i) );
 
             if (pItem == NULL)
                 return NULL;
@@ -129,6 +127,9 @@ public:
             if (pItem->getStreamID().compare( QString(pStreamID->c_str()), Qt::CaseInsensitive) == 0)
             {
                 sReturn.append(pItem->text().toStdString());
+
+                if (sReturn.size() > 0)
+                    sReturn.append("\n");
             }
 
         }

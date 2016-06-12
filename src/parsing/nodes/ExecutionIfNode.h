@@ -68,12 +68,13 @@ public:
 
     virtual std::string evaluateChildren( std::map< std::string, ExecutionNode*>* pID2Node,
                                           std::map<std::string, std::string>* pInputID2Value,
-                                          std::map<std::string, QWidget*>* pInputID2Widget);
+                                          std::map<std::string, QWidget*>* pInputID2Widget,
+                                          bool bEmitSignal);
 
 
     std::string evaluate( std::map< std::string, ExecutionNode*>* pID2Node,
                           std::map<std::string, std::string>* pInputID2Value,
-                          std::map<std::string, QWidget*>* pInputID2Widget)
+                          std::map<std::string, QWidget*>* pInputID2Widget, bool bEmitSignal = false)
     {
 
         std::string sReturn = "";
@@ -131,10 +132,13 @@ public:
 
         }
 
-        sReturn = this->evaluateChildren(pID2Node, pInputID2Value, pInputID2Widget);
+        sReturn = this->evaluateChildren(pID2Node, pInputID2Value, pInputID2Widget, bEmitSignal);
 
-        if (m_iHasExecuteChild == 0)
-            emit finishedExecution();
+        if (bEmitSignal)
+        {
+            if (m_iHasExecuteChild == 0)
+                    emit finishedExecution();
+        }
 
         return sReturn;
 
@@ -142,19 +146,24 @@ public:
 
 protected:
 
-    void childHasFinished()
+    void childHasFinished( bool bEmitSignal = false )
     {
-        --m_iHasExecuteChild;
 
-        if (m_iHasExecuteChild == 0)
-            emit finishedExecution();
+        if (bEmitSignal)
+        {
+            --m_iHasExecuteChild;
+
+            if (m_iHasExecuteChild == 0)
+                    emit finishedExecution();
+        }
+
     }
 
-
+/*
     std::string evaluateElseNode(std::map< std::string, ExecutionNode*>* pID2Node,
                                  std::map<std::string, std::string>* pInputID2Value,
                                  std::map<std::string, QWidget*>* pInputID2Widget);
-
+*/
     std::string m_sCompareMode;
     std::string m_sValue1, m_sValue2;
     std::string m_sSeperator = "";

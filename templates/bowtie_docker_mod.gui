@@ -5,7 +5,7 @@
 
   <vgroup>
   <label>What do you want to say?</label>
-  <input id="input">TTTCGCGATGTTAGCAATCGCCTGATCCAGCTGCTCATCG</input>
+  <filedialog id="input" location="C:/libraries/bioGUI/algorun_mods/bowtie_test_in.fq">FASTQ File</filedialog>
 <action id="runprog" hint="click here to run program">Run Bowtie via Docker</action>  
   
     <streambox id="output1">
@@ -18,6 +18,10 @@
 
 <execution>
    
+  <relocate id="relocated_input" unix="true" prepend="/data/">
+	<value from="input"/>
+  </relocate>
+
   <add id="cl" sep=" ">
     <const>-input</const>
     <value from="relocated_input"/>

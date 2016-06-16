@@ -14,25 +14,25 @@
 class HTTPExecuteThread : public ExecuteThread
 {
 public:
-    HTTPExecuteThread(QNetworkAccessManager* pNetworkAccessManager, QNetworkRequest* pRequest, QUrlQuery* pParams)
+    HTTPExecuteThread(QNetworkAccessManager* pManager, QNetworkRequest* pRequest, QUrlQuery* pParams)
     : ExecuteThread()
-    {
-        m_pNetworkAccessManager = pNetworkAccessManager;
+    {        
         m_pRequest = pRequest;
         m_pParams = pParams;
+        m_pNetworkAccessManager = pManager;
 
-
-        m_pNetworkAccessManager->connect(m_pNetworkAccessManager, &QNetworkAccessManager::finished, [this](QNetworkReply* pReply){
-            this->getExecutionResponse(pReply);
-        });
-
-
+    }
+    ~HTTPExecuteThread()
+    {
+        m_pNetworkAccessManager->deleteLater();
     }
 
     void getExecutionResponse(QNetworkReply* pReply)
     {
 
         m_vReplies.push_back(pReply);
+
+        std::cerr << "received reply" << std::endl;
 
         emit readyReadStandardOutput();
         emit executionFinished();
@@ -69,7 +69,6 @@ public:
 
     void execute()
     {
-
         QString sRequestAddress = m_pRequest->url().toString();
         std::string sParams = m_pParams->toString(QUrl::FullyEncoded).toUtf8().toStdString();
 
@@ -109,9 +108,6 @@ public:
                                   std::map<std::string, std::string>* pInputID2Value,
                                   std::map<std::string, QWidget*>* pInputID2Widget, bool bEmitSignal = false)
     {
-
-        QNetworkAccessManager *pNetworkManager = new QNetworkAccessManager();
-
         std::string sURL = m_sExecLocation;
 
         if (m_iPort != -1)
@@ -189,21 +185,30 @@ public:
         QNetworkRequest* pNetRequest = new QNetworkRequest( qsURL );
         pNetRequest->setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
 
-        HTTPExecuteThread* pThread = new HTTPExecuteThread(pNetworkManager, pNetRequest, pPostData);
+        QNetworkAccessManager* pNetworkAccessManager = new QNetworkAccessManager();
+        HTTPExecuteThread* pThread = new HTTPExecuteThread(pNetworkAccessManager, pNetRequest, pPostData);
+
+
+        pNetworkAccessManager->connect(pNetworkAccessManager, &QNetworkAccessManager::finished, [pThread,pNetworkAccessManager](QNetworkReply* pReply){
+            pThread->getExecutionResponse(pReply);
+
+            pNetworkAccessManager->deleteLater();
+        });
+
 
         this->evaluateChildren(pID2Node, pInputID2Value, pInputID2Widget, NULL, pThread, false);
 
-        pThread->start();
-
-        QObject::connect(pThread, &ExecuteThread::executionFinished, [pThread, pNetworkManager, pID2Node, pInputID2Value, pInputID2Widget, bEmitSignal, this](){
+        QObject::connect(pThread, &ExecuteThread::executionFinished, [pThread, pID2Node, pInputID2Value, pInputID2Widget, bEmitSignal, this](){
 
             this->evaluateChildren(pID2Node, pInputID2Value, pInputID2Widget, NULL, pThread, true);
-            pNetworkManager->deleteLater();
+            pThread->deleteLater();
 
             if (bEmitSignal)
                 emit finishedExecution();
 
         });
+
+        pThread->start();
 
         return "";
 

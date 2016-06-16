@@ -23,6 +23,7 @@ public:
 
         m_sFrom = this->getDomElementAttribute(pElement, "from", "").toStdString();
         m_sTo = this->getDomElementAttribute(pElement, "to", "").toStdString();
+        m_sPrepend = this->getDomElementAttribute(pElement, "prepend", "").toStdString();
         m_bMakeUnix = (this->getDomElementAttribute(pElement, "unix", "false").compare("TRUE", Qt::CaseInsensitive) == 0);
         m_bToWSL = (this->getDomElementAttribute(pElement, "wsl", "false").compare("TRUE", Qt::CaseInsensitive) == 0);
 
@@ -89,6 +90,9 @@ public:
             qsChildren.prepend("/mnt/");
         }
 
+        if (m_sPrepend.size() > 0)
+            qsChildren.prepend( QString(m_sPrepend.c_str()) );
+
         std::cerr << "relocated from " << sChildren << " to " << qsChildren.toStdString() << std::endl;
 
         return qsChildren.toStdString();
@@ -99,6 +103,7 @@ protected:
 
     std::string m_sFrom;
     std::string m_sTo;
+    std::string m_sPrepend;
 
     bool m_bMakeUnix = true;
     bool m_bToWSL = true;

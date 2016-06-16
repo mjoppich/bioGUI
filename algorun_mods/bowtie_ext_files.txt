@@ -1,0 +1,16 @@
+## steps to make algorun access filesystem
+
+# delete any existing container
+docker stop algorun_bowtie_test
+docker rm $(docker ps -aq)
+
+# first start a container
+docker run -v c:/:/data/c/ -it -p 31331:8765 --name algorun_bowtie_test algorun/bowtie
+
+# then start it again if ever lost
+docker start algorun_bowtie_test
+
+# now you can execute bash commands ..-
+docker exec -it algorun_bowtie_test bash
+
+cp /data/c/libraries/bioGUI/algorun_mods/bowtie.rb /home/algorithm/src/bowtie.rb

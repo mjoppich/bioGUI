@@ -1,64 +1,18 @@
-
-## set all variables
-PROG=glimmer302b
-
-PROGDIR=$1
-if [ -z "${PROGDIR}" ]; then
-	PROGDIR=~/bioGUI/progs/
-fi
-
-## create progdir
-mkdir -p $PROGDIR
-mkdir -p $PROGDIR/$PROG
-
-#download and unzip
-wget http://ccb.jhu.edu/software/glimmer/$PROG.tar.gz -O $PROGDIR/$PROG.tar.gz
-
-cd $PROGDIR
-tar -xzf $PROG.tar.gz --strip 1 -C $PROGDIR/$PROG
-
-#install prog
-cd $PROGDIR/$PROG/src
-
-make
-
-if [ $# -eq 3 ]; then
-
-# fix scripts
-
-for script in $PROGDIR/$PROG/scripts/*.csh; do
-
-sed -i "/set awkpath = /c\set awkpath = $PROGDIR/$PROG/scripts/" $script
-sed -i "/set glimmerpath = /c\set glimmerpath = $PROGDIR/$PROG/bin/" $script
-
-done
-
-
-echo "sending template"
-
-IP=$2
-PORT=$3
-
-cat << EOF | netcat $IP $PORT
 <!--<?xml version="1.0" encoding="UTF-8")>-->
-<template description="Glimmer3 scripts ($PROG)" title="Glimmer3">
-
+<template description="Glimmer3 scripts (glimmer302b)" title="Glimmer3">
 <window width="500" height="1000" title="Glimmer3">
   <vgroup>
-
    <label>Run Program in WSL?</label>
    <checkbox id="WSLsel" value="true" selectonwindows="true">WSL</checkbox>
       
     <group title="Operation" exclusive="true">
-
 <group id="fromscratch" title="From Scratch" checkable="true">
 <label>Output Folder</label>
 <filedialog id="scr_output_folder" output="true" folder="true" location="output">Select output folder</filedialog>
 <label>Run Prefix</label>
 <input id="scr_run_prefix">test1</input>
-<filedialog id="scr_input_gen" location="">Input Genome</filedialog>
+<filedialog id="scr_input_gen" location="sample-run/tpall.fna">Input Genome</filedialog>
 </group>
-
 <group id="fromtraining" title="From Training" checkable="true">
 <filedialog id="tra_output_folder" output="true" folder="true">Select output folder</filedialog>
 <label>Run Prefix</label>
@@ -66,26 +20,19 @@ cat << EOF | netcat $IP $PORT
 <filedialog id="tra_input_gen" type="">Input Genome</filedialog>
 <filedialog id="tra_input_train" type="">Input Training</filedialog>
 </group>
-
 </group>
-
-
-
     <action id="runprog" hint="click here to run program">run program</action>  
   
     <streambox id="output1">
       <stream id="outputstream1">OS1</stream>
       <stream id="outputstream2">OS2</stream>
     </streambox>
-
   
   </vgroup>
 </window>
-
 <execution>
-
 <env id="ip" get="IPv4"/>
-<const id="progdir">${PROGDIR}/${PROG}</const>
+<const id="progdir">/home/joppich/bioGUI/progs//glimmer302b</const>
     
 <!-- scratch -->
 <if id="scr_output_folder_rel" comp="EQUALS" value1="WSLsel" value2="true">
@@ -94,15 +41,12 @@ cat << EOF | netcat $IP $PORT
 <value from="scr_output_folder"/>
 </else>
 </if>
-
 <if id="scr_input_gen_rel" comp="EQUALS" value1="WSLsel" value2="true">
 <relocate from="scr_input_gen" wsl="true"/>
 <else>
 <value from="scr_input_gen"/>
 </else>
 </if>
-
-
 <!-- training -->
 <if id="tra_output_folder_rel" comp="EQUALS" value1="WSLsel" value2="true">
 <relocate from="tra_output_folder" wsl="true"/>
@@ -110,14 +54,12 @@ cat << EOF | netcat $IP $PORT
 <value from="tra_output_folder"/>
 </else>
 </if>
-
 <if id="tra_input_gen_rel" comp="EQUALS" value1="WSLsel" value2="true">
 <relocate from="tra_input_gen" wsl="true"/>
 <else>
 <value from="tra_input_gen"/>
 </else>
 </if>
-
 <if id="tra_input_train_rel" comp="EQUALS" value1="WSLsel" value2="true">
 <relocate from="tra_input_train" wsl="true"/>
 <else>
@@ -126,22 +68,17 @@ cat << EOF | netcat $IP $PORT
 </if>
 
 <if comp="EQUALS" value1="fromscratch" value2="true">
-<execute exec="sh" wsl="WSLsel" location="" param="-c &quot;cd \${scr_output_folder_rel}; csh \${progdir}/scripts/g3-from-scratch.csh \${scr_input_gen_rel} \${scr_run_prefix} | netcat \${ip} 55025&quot;">
+<execute exec="sh" wsl="WSLsel" location="" param="-c &quot;cd ${scr_output_folder_rel}; { csh ${progdir}/scripts/g3-from-scratch.csh ${scr_input_gen_rel} ${scr_run_prefix}  2>&amp;1 1>&amp;3 3>&amp;- | netcat ${ip} 55026; } 3>&amp;1 1>&amp;2 | netcat ${ip} 55025  &quot;">
     <output type="TCP" host="" port="55025" color="green" to="outputstream1" />
+    <output type="TCP" host="" port="55026" color="green" to="outputstream2" />
     <output type="folder" deferred="true" location="scr_output_folder"/>
 </execute>
 </if>
-
 <if comp="EQUALS" value1="fromtraining" value2="true">
-<execute exec="sh" wsl="WSLsel" location="" param="-c &quot;cd \${scr_output_folder_rel}; csh \${progdir}/scripts/g3-from-training.csh \${scr_input_gen_rel} \${tra_input_train_rel} \${tra_run_prefix} | netcat \${ip} 55025&quot;">
+<execute exec="sh" wsl="WSLsel" location="" param="-c &quot;cd ${scr_output_folder_rel}; csh ${progdir}/scripts/g3-from-training.csh ${scr_input_gen_rel} ${tra_input_train_rel} ${tra_run_prefix} | netcat ${ip} 55025&quot;">
     <output type="TCP" host="" port="55025" color="green" to="outputstream1" />
 </execute>
 </if>
   
 </execution>
 </template>
-
-EOF
-
-
-fi

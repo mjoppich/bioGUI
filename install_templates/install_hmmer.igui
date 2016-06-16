@@ -31,11 +31,13 @@ IP=$2
 PORT=$3
 
 cat << EOF | netcat $IP $PORT
-<template rootid="hmmerroot" description="HMMER for WSL" title="HMMER (WSL)">
+<template rootid="hmmerroot" description="HMMER ($PROG)" title="HMMER">
 
-<window width="500" height="1900" title="Jellyfish (WSL)">
-
+<window width="500" height="800" title="HMMER">
   <vgroup>
+  
+     <label>Run Program in WSL?</label>
+   <checkbox id="WSLsel" value="true" selectonwindows="true">WSL</checkbox>
   
     <group title="Operation" exclusive="true">
 
@@ -68,12 +70,40 @@ cat << EOF | netcat $IP $PORT
 
 <execution>
 
-<relocate id="wsl_build_msa" wsl="true"><value from="build_msa"/></relocate>
-<relocate id="wsl_build_model" wsl="true"><value from="build_model"/></relocate>
+<if id="loc_build_msa" comp="EQUALS" value1="WSLsel" value2="true">
+	<relocate from="build_msa" wsl="true"/>
+<else>
+	<value from="build_msa"/>
+</else>
+</if>
 
-<relocate id="wsl_search_model" wsl="true"><value from="search_model"/></relocate>
-<relocate id="wsl_search_db" wsl="true"><value from="search_db"/></relocate>
-<relocate id="wsl_search_output" wsl="true"><value from="search_output"/></relocate>
+<if id="loc_build_model" comp="EQUALS" value1="WSLsel" value2="true">
+	<relocate from="build_model" wsl="true"/>
+<else>
+	<value from="build_model"/>
+</else>
+</if>
+
+<if id="loc_search_model" comp="EQUALS" value1="WSLsel" value2="true">
+	<relocate from="search_model" wsl="true"/>
+<else>
+	<value from="search_model"/>
+</else>
+</if>
+
+<if id="loc_search_db" comp="EQUALS" value1="WSLsel" value2="true">
+	<relocate from="search_db" wsl="true"/>
+<else>
+	<value from="search_db"/>
+</else>
+</if>
+
+<if id="loc_search_output" comp="EQUALS" value1="WSLsel" value2="true">
+	<relocate from="search_output" wsl="true"/>
+<else>
+	<value from="search_output"/>
+</else>
+</if>
 
 <const id="bindir">${PROGDIR}/${PROG}/bin/</const>
 
@@ -82,8 +112,8 @@ cat << EOF | netcat $IP $PORT
 <value from="bindir"/>
 <const>hmmbuild</const>
 </add>
-<value from="wsl_build_model"/>
-<value from="wsl_build_msa"/>
+<value from="loc_build_model"/>
+<value from="loc_build_msa"/>
 </add>
 
 <add id="cl_search" sep=" ">
@@ -91,10 +121,10 @@ cat << EOF | netcat $IP $PORT
 <value from="bindir"/>
 <const>hmmbuild</const>
 </add>
-<value from="wsl_search_model"/>
-<value from="wsl_search_db"/>
+<value from="loc_search_model"/>
+<value from="loc_search_db"/>
 <const>&gt;</const>
-<value from="wsl_search_output"/>
+<value from="loc_search_output"/>
 </add>
 
 <add id="cl">
@@ -102,7 +132,10 @@ cat << EOF | netcat $IP $PORT
 <if comp="EQUALS" value1="sel_search" value2="TRUE"><value from="cl_search"/></if>
 </add>
 
-  <execute location="" exec="" wsl="true" param="\${cl} 2&gt;&amp;1 | netcat 127.0.0.1 55025">
+
+<env id="ip" get="IPv4"/>
+
+<execute location="" exec="sh" wsl="WSLsel" param="-c &quot; \${cl} 2>&amp;1 | netcat \${ip} 55025 &quot;">
     <output id="outcout" type="TCP" host="" port="55025" color="green" to="outputstream1" />
   </execute>
   

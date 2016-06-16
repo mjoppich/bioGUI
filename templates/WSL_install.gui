@@ -1,14 +1,14 @@
 <!--<?xml version="1.0" encoding="UTF-8"?>-->
 <template description="Install WSL programs" title="Install Scripts">
 
-<window width="500" height="700" title="Install Scripts">
+<window width="500" height="800" title="Install Scripts">
 
   <vgroup>
 
 	<label>Install Program:</label>
   <filelist id="prog" ext="*.igui"/>
   <label>Install Program to WSL?</label>
-  <checkbox id="WSLsel" value="true">WSL</checkbox>
+  <checkbox id="WSLsel" value="true" selectonwindows="true">WSL</checkbox>
   <label>Install Location on WSL:</label>
   <input id="instpath">~/bioGUI/progs/</input>
   <group id="templpath_sel" checkable="true" title="Where to store the template?">

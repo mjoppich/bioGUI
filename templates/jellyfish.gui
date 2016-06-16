@@ -1,12 +1,11 @@
-<!--<?xml version="1.0" encoding="UTF-8"?>-->
-<template rootid="blubb" intatt="111">
-
+<template rootid="blubb" intatt="111" description="Jellyfish (jellyfish-2.2.6)" title="Jellyfish">
 <window width="500" height="1900" title="Jellyfish">
-
   <vgroup>
   
+   <label>Run Program in WSL?</label>
+   <checkbox id="WSLsel" value="true" selectonwindows="true">WSL</checkbox>
+  
     <group title="Operation" exclusive="true">
-
       <group id="sel_count" title="count" checkable="true">
 	<grid cols="2">
 	  <label>Output Prefix</label><input id="count_output_prefix"></input>
@@ -18,7 +17,6 @@
 	  <label>Hash-Size</label><input id="count_hash_size" type="int">10000000</input>
 	</grid>
       </group>
-
       <group id="sel_merge" title="merge" checkable="true">
 	<grid cols="2">
 	  <label>Hash-Size</label><input id="merge_hash_size" type="int">10000000</input>
@@ -26,7 +24,6 @@
 	  <label>Input files</label><filedialog id="merge_input" location="" multiple="true">Input Files</filedialog>
 	</grid>
       </group>
-
       <group id="sel_dump" title="dump" checkable="true">
 	<grid cols="2">
 	  <label>Output Options</label><group><checkbox id="dump_col_format">Column Format</checkbox><checkbox id="dump_tab_sep">Tab separator</checkbox></group>
@@ -36,7 +33,6 @@
 	  <label>Input Path</label><filedialog id="dump_input_folder" location="" folder="true">Input DB</filedialog>
 	</grid>
       </group>
-
       <group id="sel_stats" title="stats" checkable="true">
 	<grid cols="2">
 	  <label>Input Path</label><filedialog id="stats_input_path" location="" folder="true">Input Path</filedialog>
@@ -45,7 +41,6 @@
 	  <label>Output File</label><filedialog id="stats_output_file" location="" output="true">Output</filedialog>
 	</grid>
       </group>
-
       <group id="sel_histo" title="histo" checkable="true">
 	<grid cols="2">
 	  <label>Low</label><input id="histo_low" type="int">1</input>
@@ -56,47 +51,104 @@
 	  <label>Threads</label><input id="histo_threads" type="int">1</input>
 	</grid>
       </group>
-
       <group id="sel_cite" title="cite" checkable="true">
 	<label>How to cite jellyfish</label><link>http://www.genome.umd.edu/jellyfish.html</link>
       </group>
   
     </group>
     <action id="runprog" hint="click here to run program">run program</action>  
-
    <streambox id="output1">
-    <stream id="outputstream1">OS1</stream>
-    <stream id="outputstream2">OS2</stream>
+    <stream id="outputstream1">cout</stream>
+    <stream id="outputstream2">cerr</stream>
    </streambox>
-
   </vgroup>
 </window>
-
 <execution>
-
+<if id="loc_count_output_path" comp="EQUALS" value1="WSLsel" value2="true">
+<relocate wsl="true"><value from="count_output_path"/></relocate>
+<else>
+<value from="count_output_path"/>
+</else>
+</if>
+<if id="loc_count_input_fasta1" comp="EQUALS" value1="WSLsel" value2="true">
+<relocate wsl="true"><value from="count_input_fasta1"/></relocate>
+<else>
+<value from="count_input_fasta1"/>
+</else>
+</if>
+<if id="loc_count_input_fasta2" comp="EQUALS" value1="WSLsel" value2="true">
+<relocate wsl="true"><value from="count_input_fasta2"/></relocate>
+<else>
+<value from="count_input_fasta2"/>
+</else>
+</if>
+<if id="loc_merge_output" comp="EQUALS" value1="WSLsel" value2="true">
+<relocate wsl="true"><value from="merge_output"/></relocate>
+<else>
+<value from="merge_output"/>
+</else>
+</if>
+<if id="loc_merge_input" comp="EQUALS" value1="WSLsel" value2="true">
+<relocate wsl="true"><value from="merge_input"/></relocate>
+<else>
+<value from="merge_input"/>
+</else>
+</if>
+<if id="loc_dump_output_file" comp="EQUALS" value1="WSLsel" value2="true">
+<relocate wsl="true"><value from="dump_output_file"/></relocate>
+<else>
+<value from="dump_output_file"/>
+</else>
+</if>
+<if id="loc_dump_input_folder" comp="EQUALS" value1="WSLsel" value2="true">
+<relocate wsl="true"><value from="dump_input_folder"/></relocate>
+<else>
+<value from="dump_input_folder"/>
+</else>
+</if>
+<if id="loc_stats_input_path" comp="EQUALS" value1="WSLsel" value2="true">
+<relocate wsl="true"><value from="stats_input_path"/></relocate>
+<else>
+<value from="stats_input_path"/>
+</else>
+</if>
+<if id="loc_stats_output_file" comp="EQUALS" value1="WSLsel" value2="true">
+<relocate wsl="true"><value from="stats_output_file"/></relocate>
+<else>
+<value from="stats_output_file"/>
+</else>
+</if>
+<if id="loc_histo_input_path" comp="EQUALS" value1="WSLsel" value2="true">
+<relocate wsl="true"><value from="histo_input_path"/></relocate>
+<else>
+<value from="histo_input_path"/>
+</else>
+</if>
+<if id="loc_histo_output_file" comp="EQUALS" value1="WSLsel" value2="true">
+<relocate wsl="true"><value from="histo_output_file"/></relocate>
+<else>
+<value from="histo_output_file"/>
+</else>
+</if>
 <add id="cl_cite" sep=" ">
 <const>cite</const>
 </add>
-
 <add id="cl_count" sep=" ">
 <const>count</const>
-<const>-o </const><add sep=""><value from="count_output_path"/><value from="count_output_prefix"/></add>
+<const>-o </const><add sep=""><value from="loc_count_output_path"/><value from="count_output_prefix"/></add>
 <const>-t </const><value from="count_threads"/>
 <const>-s </const><value from="count_hash_size"/>
 <const>-m </const><value from="count_param_k"/>
 <if comp="EQUALS" value1="count_both_strands" value2="true"><const>--both-strands</const></if>
-<value from="count_input_fasta1"/>
-<if comp="EQUALS" value1="count_both_strands" value2="true"><value from="count_input_fasta2"/></if>
+<value from="loc_count_input_fasta1"/>
+<if comp="EQUALS" value1="count_both_strands" value2="true"><value from="loc_count_input_fasta2"/></if>
 </add>
-
 <add id="cl_merge" sep=" ">
 <const>merge</const>
 <const>-o </const><value from="merge_output"/>
 <const>-s </const><value from="merge_hash_size"/>
 <value from="merge_input"/>
 </add>
-
-
 <add id="cl_histo" sep=" ">
 <const>histo</const>
 <const>-o </const><value from="histo_output_file"/>
@@ -106,7 +158,6 @@
 <const>-t </const><value from="histo_threads"/>
 <value from="histo_input_path"/>
 </add>
-
 <add id="cl_stats" sep=" ">
 <const>stats</const>
 <const>-L </const><value from="stats_lower_limit"/>
@@ -114,7 +165,6 @@
 <const>-o </const><value from="stats_output_file"/>
 <value from="stats_input_path"/>
 </add>
-
 <add id="cl_dump" sep=" ">
 <const>dump</const>
 <const>-L </const><value from="dump_lower_limit"/>
@@ -124,8 +174,6 @@
 <if comp="EQUALS" value1="dump_tab_sep" value2="true">-t</if>
 <value from="dump_input_folder"/>
 </add>
-
-
 <add id="cl">
 <if comp="EQUALS" value1="sel_cite" value2="TRUE"><value from="cl_cite"/></if>
 <if comp="EQUALS" value1="sel_count" value2="TRUE"><value from="cl_count"/></if>
@@ -134,13 +182,19 @@
 <if comp="EQUALS" value1="sel_stats" value2="TRUE"><value from="cl_stats"/></if>
 <if comp="EQUALS" value1="sel_dump" value2="TRUE"><value from="cl_dump"/></if>
 </add>
-
-
-
+<env id="ip" get="IPv4"/>
+<const id="bindir">/home/joppich/bioGUI/progs//jellyfish-2.2.6/bin/</const>
     
-<execute exec="/home/users/joppich/progs/jellyfish-1.1.11/bin/jellyfish" location="" param="cl">
-   <output id="outcout" type="cout" color="green" to="outputstream1"/>
-   <output id="outcerr" type="cerr" color="red" to="outputstream2"/>  </execute>
-  
+	<if comp="EQUALS" value1="WSLsel" value2="true">
+		<execute wsl="WSLsel" exec="sh" location="" param="-c &quot;${bindir}/jellyfish ${cl} | netcat ${ip} 55025 &quot;">
+			<output type="TCP" host="" port="55025" color="green" to="outputstream1" />
+		</execute>
+	<else>
+		<execute exec="sh" location="" param="-c &quot;${bindir}/jellyfish cl&quot;">
+			<output id="outcout" type="cout" color="green" to="outputstream1"/>
+			<output id="outcerr" type="cerr" color="red" to="outputstream2"/>
+		</execute>
+	</else>
+	</if>
 </execution>
 </template>

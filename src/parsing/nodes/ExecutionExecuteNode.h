@@ -102,9 +102,11 @@ public:
         size_t iVarPos;
         size_t iStartPos = iPos;
 
+        // { prog  2>&amp;1 1>&amp;3 3>&amp;- | netcat ${ip} 55026; } 3>&amp;1 1>&amp;2 | netcat ${ip} 55025
+
         while( ( iVarPos = std::min(pCommand->find("${", iPos), pCommand->find("}", iPos))  ) != std::string::npos )
         {
-            if ( pCommand->at(iVarPos) == '}' )
+            if (( pCommand->at(iVarPos) == '}' ) && (iStartPos != -1))
             {
 
                 std::string sPrefix = pCommand->substr(0, iStartPos-2);
@@ -124,6 +126,8 @@ public:
 
                 // uncommented because I might want to replace variables in variables :)
                 iPos = sPrefix.size() + sValue.size();
+
+                iStartPos = -1;
 
 
             } else {

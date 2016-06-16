@@ -389,8 +389,6 @@ protected slots:
     void receiveText(QString sString, QColor oColor, QString sStreamID)
     {
 
-        sString = sString.trimmed();
-
         std::cout << "received: " << sString.toStdString() << " for stream " << sStreamID.toStdString()  << std::endl;
 
         AdvancedListWidgetItem* pLastStream = this->getLastItemForStream(&sStreamID);

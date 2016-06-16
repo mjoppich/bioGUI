@@ -324,7 +324,18 @@ QWidget* XMLParserWindow::createComponent(QDomElement* pElement, bool* pChildren
         QString sButtonValue = this->getAttribute(pElement, "value", sValue);
         QExtendedCheckBox* pButtonItem = new QExtendedCheckBox(sValue, sButtonValue);
 
+        bool bSelectOnWindows = (this->getAttribute(pElement, "selectonwindows", "FALSE").compare("TRUE", Qt::CaseInsensitive) == 0);
         bool bSelected = (this->getAttribute(pElement, "selected", "FALSE").compare("TRUE", Qt::CaseInsensitive) == 0);
+
+        if ((!bSelected) && (bSelectOnWindows))
+        {
+            // get current OS
+            if (QSysInfo::windowsVersion() != QSysInfo::WV_None)
+            {
+                bSelected = true;
+            }
+        }
+
         pButtonItem->setChecked(bSelected);
 
         this->addValueFetcher(pElement, [pButtonItem] () {

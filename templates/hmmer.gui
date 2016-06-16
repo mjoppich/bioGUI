@@ -1,18 +1,17 @@
-<!--<?xml version="1.0" encoding="UTF-8"?>-->
-<template rootid="hmmerroot" description="HMMER for WSL" title="HMMER (WSL)">
-<window width="500" height="1900" title="Jellyfish (WSL)">
-
+<template rootid="hmmerroot" description="HMMER (hmmer-3.1b2)" title="HMMER">
+<window width="500" height="1200" title="HMMER">
   <vgroup>
   
+     <label>Run Program in WSL?</label>
+   <checkbox id="WSLsel" value="true" selectonwindows="true">WSL</checkbox>
+  
     <group title="Operation" exclusive="true">
-
       <group id="sel_build" title="hmmbuild" checkable="true">
 	<grid cols="2">
 	  <label>Multiple Alignment File</label><filedialog id="build_msa" location="" multiple="true">Input Files</filedialog>
 	  <label>Model Output File</label><filedialog id="build_model" location="" output="true">Output</filedialog>
 	</grid>
       </group>
-
       <group id="sel_search" title="hmmsearch" checkable="true">
 	<grid cols="2">
 	  <label>Model File</label><filedialog id="search_model" location="" multiple="true">Input Files</filedialog>
@@ -20,57 +19,71 @@
 	  <label>Output File</label><filedialog id="search_output" location="" output="true">Output</filedialog>
 	</grid>
       </group>
-
       
     </group>
     <action id="runprog" hint="click here to run program">run program</action>  
-
    <streambox id="output1">
     <stream id="outputstream1">COUT</stream>
     <stream id="outputstream2">CERR</stream>
    </streambox>
-
   </vgroup>
 </window>
-
 <execution>
-
-<relocate id="wsl_build_msa" wsl="true"><value from="build_msa"/></relocate>
-<relocate id="wsl_build_model" wsl="true"><value from="build_model"/></relocate>
-
-<relocate id="wsl_search_model" wsl="true"><value from="search_model"/></relocate>
-<relocate id="wsl_search_db" wsl="true"><value from="search_db"/></relocate>
-<relocate id="wsl_search_output" wsl="true"><value from="search_output"/></relocate>
-
-<const id="bindir">~/bioGUI/progs/hmmer-3.1b2/bin/</const>
-
+<if id="loc_build_msa" comp="EQUALS" value1="WSLsel" value2="true">
+	<relocate from="build_msa" wsl="true"/>
+<else>
+	<value from="build_msa"/>
+</else>
+</if>
+<if id="loc_build_model" comp="EQUALS" value1="WSLsel" value2="true">
+	<relocate from="build_model" wsl="true"/>
+<else>
+	<value from="build_model"/>
+</else>
+</if>
+<if id="loc_search_model" comp="EQUALS" value1="WSLsel" value2="true">
+	<relocate from="search_model" wsl="true"/>
+<else>
+	<value from="search_model"/>
+</else>
+</if>
+<if id="loc_search_db" comp="EQUALS" value1="WSLsel" value2="true">
+	<relocate from="search_db" wsl="true"/>
+<else>
+	<value from="search_db"/>
+</else>
+</if>
+<if id="loc_search_output" comp="EQUALS" value1="WSLsel" value2="true">
+	<relocate from="search_output" wsl="true"/>
+<else>
+	<value from="search_output"/>
+</else>
+</if>
+<const id="bindir">/home/joppich/bioGUI/progs//hmmer-3.1b2/bin/</const>
 <add id="cl_build" sep=" ">
 <add sep="">
 <value from="bindir"/>
 <const>hmmbuild</const>
 </add>
-<value from="wsl_build_model"/>
-<value from="wsl_build_msa"/>
+<value from="loc_build_model"/>
+<value from="loc_build_msa"/>
 </add>
-
 <add id="cl_search" sep=" ">
 <add sep="">
 <value from="bindir"/>
 <const>hmmbuild</const>
 </add>
-<value from="wsl_search_model"/>
-<value from="wsl_search_db"/>
+<value from="loc_search_model"/>
+<value from="loc_search_db"/>
 <const>&gt;</const>
-<value from="wsl_search_output"/>
+<value from="loc_search_output"/>
 </add>
-
 <add id="cl">
 <if comp="EQUALS" value1="sel_build" value2="TRUE"><value from="cl_build"/></if>
 <if comp="EQUALS" value1="sel_search" value2="TRUE"><value from="cl_search"/></if>
-</add>
-
-  <execute location="" exec="" wsl="true" param="${cl} 2&gt;&amp;1 | netcat 127.0.0.1 55025">
-    <output id="outcout" type="TCP" host="" port="55025" color="green" to="outputstream1" />
+</add><env id="ip" get="IPv4"/>
+<execute location="" exec="sh" wsl="WSLsel" param="-c &quot; ${cl} 2>&amp;1 | netcat ${ip} 55025 &quot;">
+    <output id="outcout" type="TCP" host="" port="55025" color="amber" to="outputstream1" />
   </execute>
   
   

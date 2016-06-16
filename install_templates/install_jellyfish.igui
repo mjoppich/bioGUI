@@ -1,4 +1,3 @@
-
 ## set all variables
 PROG=jellyfish-2.2.6
 
@@ -21,7 +20,7 @@ cd $PROGDIR/$PROG
 
 ./configure --prefix=$PROGDIR/$PROG
 make
-make check
+#make check
 make install
 
 if [ $# -eq 3 ]; then
@@ -30,11 +29,14 @@ IP=$2
 PORT=$3
 
 cat << EOF | netcat $IP $PORT
-<template rootid="blubb" intatt="111" description="Jellyfish for WSL" title="Jellyfish (WSL)">
+<template rootid="blubb" intatt="111" description="Jellyfish ($PROG)" title="Jellyfish">
 
-<window width="500" height="1900" title="Jellyfish (WSL)">
+<window width="500" height="1900" title="Jellyfish">
 
   <vgroup>
+  
+   <label>Run Program in WSL?</label>
+   <checkbox id="WSLsel" value="true" selectonwindows="true">WSL</checkbox>
   
     <group title="Operation" exclusive="true">
 
@@ -96,8 +98,8 @@ cat << EOF | netcat $IP $PORT
     <action id="runprog" hint="click here to run program">run program</action>  
 
    <streambox id="output1">
-    <stream id="outputstream1">OS1</stream>
-    <stream id="outputstream2">OS2</stream>
+    <stream id="outputstream1">cout</stream>
+    <stream id="outputstream2">cerr</stream>
    </streambox>
 
   </vgroup>
@@ -105,32 +107,32 @@ cat << EOF | netcat $IP $PORT
 
 <execution>
 
-<if id="wsl_count_output_path" comp="EQUALS" value1="WSLsel" value2="true">
+<if id="loc_count_output_path" comp="EQUALS" value1="WSLsel" value2="true">
 <relocate wsl="true"><value from="count_output_path"/></relocate>
 <else>
 <value from="count_output_path"/>
 </else>
 </if>
-<if id="wsl_count_input_fasta1" comp="EQUALS" value1="WSLsel" value2="true">
+<if id="loc_count_input_fasta1" comp="EQUALS" value1="WSLsel" value2="true">
 <relocate wsl="true"><value from="count_input_fasta1"/></relocate>
 <else>
 <value from="count_input_fasta1"/>
 </else>
 </if>
-<if id="wsl_count_input_fasta2" comp="EQUALS" value1="WSLsel" value2="true">
+<if id="loc_count_input_fasta2" comp="EQUALS" value1="WSLsel" value2="true">
 <relocate wsl="true"><value from="count_input_fasta2"/></relocate>
 <else>
 <value from="count_input_fasta2"/>
 </else>
 </if>
 
-<if id="wsl_merge_output" comp="EQUALS" value1="WSLsel" value2="true">
+<if id="loc_merge_output" comp="EQUALS" value1="WSLsel" value2="true">
 <relocate wsl="true"><value from="merge_output"/></relocate>
 <else>
 <value from="merge_output"/>
 </else>
 </if>
-<if id="wsl_merge_input" comp="EQUALS" value1="WSLsel" value2="true">
+<if id="loc_merge_input" comp="EQUALS" value1="WSLsel" value2="true">
 <relocate wsl="true"><value from="merge_input"/></relocate>
 <else>
 <value from="merge_input"/>
@@ -138,39 +140,39 @@ cat << EOF | netcat $IP $PORT
 </if>
 
 
-<if id="wsl_dump_output_file" comp="EQUALS" value1="WSLsel" value2="true">
+<if id="loc_dump_output_file" comp="EQUALS" value1="WSLsel" value2="true">
 <relocate wsl="true"><value from="dump_output_file"/></relocate>
 <else>
 <value from="dump_output_file"/>
 </else>
 </if>
-<if id="wsl_dump_input_folder" comp="EQUALS" value1="WSLsel" value2="true">
+<if id="loc_dump_input_folder" comp="EQUALS" value1="WSLsel" value2="true">
 <relocate wsl="true"><value from="dump_input_folder"/></relocate>
 <else>
 <value from="dump_input_folder"/>
 </else>
 </if>
 
-<if id="wsl_stats_input_path" comp="EQUALS" value1="WSLsel" value2="true">
+<if id="loc_stats_input_path" comp="EQUALS" value1="WSLsel" value2="true">
 <relocate wsl="true"><value from="stats_input_path"/></relocate>
 <else>
 <value from="stats_input_path"/>
 </else>
 </if>
-<if id="wsl_stats_output_file" comp="EQUALS" value1="WSLsel" value2="true">
+<if id="loc_stats_output_file" comp="EQUALS" value1="WSLsel" value2="true">
 <relocate wsl="true"><value from="stats_output_file"/></relocate>
 <else>
 <value from="stats_output_file"/>
 </else>
 </if>
 
-<if id="wsl_histo_input_path" comp="EQUALS" value1="WSLsel" value2="true">
+<if id="loc_histo_input_path" comp="EQUALS" value1="WSLsel" value2="true">
 <relocate wsl="true"><value from="histo_input_path"/></relocate>
 <else>
 <value from="histo_input_path"/>
 </else>
 </if>
-<if id="wsl_histo_output_file" comp="EQUALS" value1="WSLsel" value2="true">
+<if id="loc_histo_output_file" comp="EQUALS" value1="WSLsel" value2="true">
 <relocate wsl="true"><value from="histo_output_file"/></relocate>
 <else>
 <value from="histo_output_file"/>
@@ -183,13 +185,13 @@ cat << EOF | netcat $IP $PORT
 
 <add id="cl_count" sep=" ">
 <const>count</const>
-<const>-o </const><add sep=""><value from="wsl_count_output_path"/><value from="count_output_prefix"/></add>
+<const>-o </const><add sep=""><value from="loc_count_output_path"/><value from="count_output_prefix"/></add>
 <const>-t </const><value from="count_threads"/>
 <const>-s </const><value from="count_hash_size"/>
 <const>-m </const><value from="count_param_k"/>
 <if comp="EQUALS" value1="count_both_strands" value2="true"><const>--both-strands</const></if>
-<value from="wsl_count_input_fasta1"/>
-<if comp="EQUALS" value1="count_both_strands" value2="true"><value from="wsl_count_input_fasta2"/></if>
+<value from="loc_count_input_fasta1"/>
+<if comp="EQUALS" value1="count_both_strands" value2="true"><value from="loc_count_input_fasta2"/></if>
 </add>
 
 <add id="cl_merge" sep=" ">
@@ -238,14 +240,22 @@ cat << EOF | netcat $IP $PORT
 <if comp="EQUALS" value1="sel_dump" value2="TRUE"><value from="cl_dump"/></if>
 </add>
 
-
-
+<env id="ip" get="IPv4"/>
+<const id="bindir">${PROGDIR}/${PROG}/bin/</const>
     
-<execute exec="/home/users/joppich/progs/jellyfish-1.1.11/bin/jellyfish" location="" param="cl">
-   <output id="outcout" type="cout" color="green" to="outputstream1"/>
-   <output id="outcerr" type="cerr" color="red" to="outputstream2"/>  </execute>
-  
+	<if comp="EQUALS" value1="WSLsel" value2="true">
+		<execute wsl="WSLsel" exec="sh" location="" param="-c &quot;\${bindir}/jellyfish \${cl} | netcat \${ip} 55025 &quot;">
+			<output type="TCP" host="" port="55025" color="green" to="outputstream1" />
+		</execute>
+	<else>
+		<execute exec="sh" location="" param="-c &quot;\${bindir}/jellyfish cl&quot;">
+			<output id="outcout" type="cout" color="green" to="outputstream1"/>
+			<output id="outcerr" type="cerr" color="red" to="outputstream2"/>
+		</execute>
+	</else>
+	</if>
 </execution>
+
 </template>
 EOF
 

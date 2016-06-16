@@ -8,7 +8,7 @@
 	<label>Install Program:</label>
   <filelist id="prog" ext="*.igui"/>
   <label>Install Program to WSL?</label>
-  <checkbox id="WSLsel">WSL</checkbox>
+  <checkbox id="WSLsel" value="true">WSL</checkbox>
   <label>Install Location on WSL:</label>
   <input id="instpath">~/bioGUI/progs/</input>
   <group id="templpath_sel" checkable="true" title="Where to store the template?">
@@ -30,14 +30,14 @@
 
 <execution>
 
-<if id="prog_wsl" comp="EQUALS" value1="WSLsel" value2="true">
+<if id="prog_wsl" comp="is_set" value1="WSLsel" value2="true">
 <relocate from="prog" wsl="true"/>
 <else>
 <value from="prog"/>
 </else>
 </if>
 
-<env id="localip" get="IP"/>
+<env id="localip" get="IPv4"/>
 
 <add id="cl" sep=" ">
 <value from="prog_wsl"/>

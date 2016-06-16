@@ -64,6 +64,19 @@ public:
 
     }
 
+    std::string getOS()
+    {
+
+        if (QSysInfo::windowsVersion() != QSysInfo::WV_None)
+            return "WINDOWS";
+
+        if (QSysInfo::macVersion() != QSysInfo::MV_None)
+            return "MAC";
+
+
+        return "LINUX";
+    }
+
 
     std::string evaluate( std::map< std::string, ExecutionNode*>* pID2Node,
                           std::map<std::string, std::string>* pInputID2Value,
@@ -91,6 +104,33 @@ public:
             return this->getIPaddress(QAbstractSocket::IPv6Protocol).toString().toStdString();
         }
 
+        if (m_sGet.compare("LINUX", Qt::CaseInsensitive) == 0)
+        {
+
+            return (this->getOS().compare("LINUX") == 0) ? "True" : "False";
+
+        }
+
+        if (m_sGet.compare("UNIX", Qt::CaseInsensitive) == 0)
+        {
+            return ((this->getOS().compare("LINUX") == 0) || (this->getOS().compare("MAC") == 0)) ? "True" : "False";
+
+        }
+
+        if (m_sGet.compare("MAC", Qt::CaseInsensitive) == 0)
+        {
+            return (this->getOS().compare("MAC") == 0) ? "True" : "False";
+        }
+
+        if (m_sGet.compare("WIN", Qt::CaseInsensitive) == 0)
+        {
+            return (this->getOS().compare("WIN") == 0) ? "True" : "False";
+        }
+
+        if (m_sGet.compare("OS", Qt::CaseInsensitive) == 0)
+        {
+            return this->getOS();
+        }
 
         return sResult;
 

@@ -122,6 +122,8 @@ public:
             // when node is finished, we start the next execution
             this->connect( pExecNode,&ExecutionExecutableNode::finishedExecution, this, &ExecutionNetwork::performExecution );
 
+            std::cout << "evaluate " << pExecNode->getID() << std::endl;
+
             pExecNode->evaluate( &mID2Node, &mInputID2Value, m_pInputID2Widget, true );
 
         }

@@ -61,7 +61,7 @@ protected:
         sBash = "bash";
 #endif
 
-        sBash.append( " -c \""+ m_sLinuxCMD +"\"" );
+        sBash.append( " -c '"+ m_sLinuxCMD +"'" );
 
 #ifndef __linux
 
@@ -148,6 +148,8 @@ public:
 
         if (m_bWindowsProcNoHandle)
         {
+            std::cout << "Running WSL: " << m_sProgram.toStdString() << " " << m_sParam.toStdString() << std::endl;
+
             m_pThread->setCMD(m_sProgram + " " + m_sParam);
 
             this->connect(m_pThread, &ExecuteThread::executionFinished, this, &ProcessLauncher::executionFinished);
@@ -157,7 +159,7 @@ public:
         } else {
 
             QIODevice::OpenMode eMode = QIODevice::ReadWrite;
-            std::cout << "running " << m_sProgram.toStdString() << " " << m_sParam.toStdString() << std::endl;
+            std::cout << "Running QProcess for: " << m_sProgram.toStdString() << " " << m_sParam.toStdString() << std::endl;
 
             QStringList oArgs;
             if (m_sParam.size() > 0)

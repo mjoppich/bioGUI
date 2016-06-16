@@ -99,7 +99,7 @@ public:
             std::cerr << "received bytes: " << iReadBytes << std::endl;
 
 
-            QString sString = QString(cBuffer);
+            QString sString = QString::fromLatin1(cBuffer, (int) iReadBytes);
 
             memset(cBuffer, 0, std::min(iReadBytes, iBuffer));
 

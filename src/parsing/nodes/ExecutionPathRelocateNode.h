@@ -51,6 +51,9 @@ public:
 
         }
 
+        if (sChildren.size() == 0)
+            return sChildren;
+
         std::string sStart = sChildren;
 
         QString qsChildren(sChildren.c_str());

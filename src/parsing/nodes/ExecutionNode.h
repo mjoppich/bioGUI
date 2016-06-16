@@ -52,6 +52,10 @@ public:
 
     }
 
+    std::string getID()
+    {
+        return m_sID;
+    }
 
     std::string getTag()
     {

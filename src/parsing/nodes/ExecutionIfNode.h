@@ -111,6 +111,8 @@ public:
 
         std::string sValue2 = this->getNodeValueOrValue( m_sValue2, m_sValue2, pID2Node, pInputID2Value, pInputID2Widget);
 
+        std::cerr << "Val 1: " << sValue1 << std::endl;
+        std::cerr << "Val 2: " << sValue2 << std::endl;
 
         if (QString(m_sCompareMode.c_str()).compare("EQUALS", Qt::CaseInsensitive) == 0)
         {
@@ -131,6 +133,8 @@ public:
             }
 
         }
+
+        std::cerr << "Evaluating else node: " << m_bEvaluateElse << std::endl;
 
         sReturn = this->evaluateChildren(pID2Node, pInputID2Value, pInputID2Widget, bEmitSignal);
 

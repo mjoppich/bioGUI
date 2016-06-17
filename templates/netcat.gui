@@ -18,7 +18,9 @@
 
 <execution>
     
-  <execute location="/usr/games/" exec="cowsay" wsl="true" param="'${input}' | netcat 127.0.0.1 55025">
+	<env id="ip" get="IPv4"/>
+	
+  <execute wsl="true" location="/usr/games/" exec="cowsay" param="&quot;${input}&quot; | netcat ${ip} 55025">
     <output id="outcout" type="TCP" host="" port="55025" color="green" to="outputstream1" />
   </execute>
   

@@ -184,7 +184,7 @@ public:
         std::string sProgram = m_sExecLocation + m_sExecutable;
 
         bool bTest = this->asBool(this->getNodeValueOrValue(m_sTest, "false", pID2Node, pInputID2Value, pInputID2Widget));
-        bool bWSL = this->asBool(this->getNodeValueOrValue(m_sWSL, "false", pID2Node, pInputID2Value, pInputID2Widget));
+        bool bWSL = this->asBool(this->getNodeValueOrValue(m_sWSL, m_sWSL, pID2Node, pInputID2Value, pInputID2Widget));
 
         if (bTest)
         {

@@ -1,11 +1,15 @@
 <!--<?xml version="1.0" encoding="UTF-8"?>-->
-<template description="WSL call to echo, pipe to netcat" title="netcat demo">
+<template description="Execute cowsay and netcat (on WSL)" title="Cowsay/netcat demo">
 
-<window width="500" height="500" title="netcat demo">
+<window width="500" height="500" title="Cowsay/netcat Demo">
 
   <vgroup>
+
+   <label>Run Program in WSL?</label>
+   <checkbox id="WSLsel" value="true" selectonwindows="true">WSL</checkbox>
+
   <label>What do you want to say?</label>
-  <input id="input">Hello World</input>
+  <input id="input">cowsay/netcat demo</input>
 <action id="runprog" hint="click here to run program">run program</action>  
   
     <streambox id="output1">
@@ -18,9 +22,14 @@
 
 <execution>
     
+<add id="cl" sep=" ">
+<const>bioGUI: </const>
+<value from="input"/>
+</add>
+
 	<env id="ip" get="IPv4"/>
 	
-  <execute wsl="true" location="/usr/games/" exec="cowsay" param="&quot;${input}&quot; | netcat ${ip} 55025">
+  <execute wsl="true" location="/usr/games/" exec="cowsay" param="&quot;${cl}&quot; | netcat ${ip} 55025">
     <output id="outcout" type="TCP" host="" port="55025" color="green" to="outputstream1" />
   </execute>
   

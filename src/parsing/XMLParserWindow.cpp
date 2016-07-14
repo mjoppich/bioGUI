@@ -428,6 +428,67 @@ QWidget* XMLParserWindow::createComponent(QDomElement* pElement, bool* pChildren
 
     }
 
+    if (sTag.compare("slideritem", Qt::CaseInsensitive) == 0) {
+
+
+        QComboItem* pItem =  new QComboItem("", "");
+
+        pItem->setValue( sValue );
+        QString sData = this->getAttribute(pElement, "value", sValue);
+        pItem->setData(sData);
+
+        pWidget = pItem;
+    }
+
+
+    if (sTag.compare("slider", Qt::CaseInsensitive) == 0)
+    {
+
+        (*pChildrenFinished) = true;
+
+        QString sSelected = this->getAttribute(pElement, "selected", "");
+        QStringList vSelected;
+
+        if (sSelected.length() > 0)
+        {
+            vSelected = sSelected.split(";");
+        }
+
+        QComboBox *pComboBox = new QComboBox();
+
+        QDomNodeList oChildren = pElement->childNodes();
+        for (size_t i = 0; i < oChildren.size(); ++i)
+        {
+            QDomElement oChildNode = oChildren.at(i).toElement();
+            QWidget* pChildElement = createComponent(&oChildNode, &bBoolean);
+
+            if (pChildElement == NULL)
+                throw "error in creating groupbox components";
+
+            if (QComboItem* pComboItem = dynamic_cast<QComboItem *>(pChildElement))
+            {
+
+                pComboBox->addItem( pComboItem->getValue(), pComboItem->getData() );
+
+                if (i == 0)
+                    pComboBox->setCurrentIndex(0);
+
+                if ( vSelected.contains( pComboItem->getData().toString() ) )
+                    pComboBox->setCurrentIndex(i);
+
+            }
+        }
+
+        this->addValueFetcher(pElement, [pComboBox] () {
+
+            return pComboBox->currentData().toString().toStdString();
+
+        });
+
+        pWidget = pComboBox;
+
+    }
+
     if (sTag.compare("filelist", Qt::CaseInsensitive) == 0)
     {
 

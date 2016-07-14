@@ -250,8 +250,6 @@ public:
         m_pApplicationWindowArea->setWidget(m_pWindow);
         m_pApplicationWindowArea->setWidgetResizable(true);
 
-        QWidget* pWindow = m_pMainWindow;
-
         m_pMainMainWindow->setWindowTitle("bioGUI - " + m_pWindow->windowTitle());
 
         //this->connect(m_pApplicationWindowArea, SIGNAL(resizeEvent(QResizeEvent*)), this, SLOT(resizeContent(QResizeEvent*)));

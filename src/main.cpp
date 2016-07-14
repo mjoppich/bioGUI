@@ -28,5 +28,7 @@ int main(int argc, char *argv[])
 
     pApp->exec();
 
+    delete pApp;
+
     return 0;
 }

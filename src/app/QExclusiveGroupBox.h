@@ -135,6 +135,8 @@ public:
             if ( QAbstractButton* pButton = dynamic_cast<QAbstractButton*> (m_vChildren.at(i)))
             {
 
+                pButton->toggled(pButton->isChecked());
+
                 if (pButton->isChecked())
                     ++iSelected;
 
@@ -142,6 +144,8 @@ public:
 
             if ( QExclusiveGroupBox* pGroup = dynamic_cast<QExclusiveGroupBox*> (m_vChildren.at(i)))
             {
+
+                pGroup->toggled(pGroup->isChecked());
 
                 if (pGroup->isChecked())
                     ++iSelected;
@@ -151,20 +155,51 @@ public:
 
         if (iSelected != 1)
         {
+            iSelected = 0;
+
             for (size_t i = 0; i < m_vChildren.size(); ++i)
             {
 
                 if ( QAbstractButton* pButton = dynamic_cast<QAbstractButton*> (m_vChildren.at(i)))
                 {
 
-                    pButton->setChecked( i==0 );
+                    if (((pButton->isChecked()) && (iSelected == 0)))
+                    {
+                        ++iSelected;
+                    } else {
+                        pButton->setChecked( false );
+                    }
 
                 }
 
                 if ( QExclusiveGroupBox* pGroup = dynamic_cast<QExclusiveGroupBox*> (m_vChildren.at(i)))
                 {
 
-                    pGroup->setChecked( i==0 );
+                    if (((pGroup->isChecked()) && (iSelected == 0)))
+                    {
+                        ++iSelected;
+                    } else {
+                        pGroup->setChecked( false );
+                    }
+                }
+            }
+
+            if (iSelected == 0)
+            {
+                if (m_vChildren.size() > 0)
+                {
+
+                    if ( QAbstractButton* pButton = dynamic_cast<QAbstractButton*> (m_vChildren.at(0)))
+                    {
+
+                        pButton->setChecked( true );
+
+
+                    } else if ( QExclusiveGroupBox* pGroup = dynamic_cast<QExclusiveGroupBox*> (m_vChildren.at(0)))
+                    {
+
+                        pGroup->setChecked( true );
+                    }
 
                 }
             }

@@ -6,7 +6,7 @@
    <checkbox id="WSLsel" value="true" selectonwindows="true">WSL</checkbox>
   
     <group title="Operation" exclusive="true">
-      <group id="sel_count" title="count" checkable="true">
+      <group id="sel_count" title="count" checkable="true" visible="false">
 	<grid cols="2">
 	  <label>Output Prefix</label><input id="count_output_prefix"></input>
 	  <label>Output Path</label><filedialog id="count_output_path" location="" folder="true" output="true">Output</filedialog>
@@ -17,7 +17,7 @@
 	  <label>Hash-Size</label><input id="count_hash_size" type="int">10000000</input>
 	</grid>
       </group>
-      <group id="sel_merge" title="merge" checkable="true">
+      <group id="sel_merge" title="merge" checkable="true" visible="false">
 	<grid cols="2">
 	  <label>Hash-Size</label><input id="merge_hash_size" type="int">10000000</input>
 	  <label>Output Path</label><filedialog id="merge_output" location="" output="true">Output</filedialog>

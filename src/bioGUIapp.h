@@ -14,6 +14,7 @@
 #include <QDebug>
 #include <QXmlResultItems>
 #include <QDesktopWidget>
+
 #include <iostream>
 #include <src/app/TemplateListDelegate.h>
 #include <src/parsing/XMLParserInfo.h>

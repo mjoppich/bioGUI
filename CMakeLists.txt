@@ -93,8 +93,8 @@ qt5_use_modules(parsing Core Widgets Gui Xml XmlPatterns)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../splitter/include)
 
-ADD_LIBRARY(splitutils STATIC IMPORTED)
-SET_TARGET_PROPERTIES(splitutils PROPERTIES IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/../splitter/lib/libsplitutils.a)
+#ADD_LIBRARY(splitutils STATIC IMPORTED)
+#SET_TARGET_PROPERTIES(splitutils PROPERTIES IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/../splitter/lib/libsplitutils.a)
 #TARGET_LINK_LIBRARIES(parsing splitutils)
 
 

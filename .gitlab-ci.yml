@@ -1,0 +1,11 @@
+types:
+  - build
+  - test
+
+build_app:
+  type: build
+  script: echo Building!
+
+test_app:
+  type: test
+  script: python manage.py test

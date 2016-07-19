@@ -76,14 +76,13 @@ public:
         m_pKnownTags->push_back("combobox");
         m_pKnownTags->push_back("comboitem");
         m_pKnownTags->push_back("filelist");
-
+        m_pKnownTags->push_back("slider");
+        m_pKnownTags->push_back("slideritem");
 
         m_pDocument = loadFromFile(sFileName);
 
 
     }
-
-
 
     void setActionsEnabled(bool bEnabled)
     {
@@ -854,8 +853,57 @@ protected:
         }
 
         // Finally set Layout
+        QWidget* pComponentWidget = new QWidget();
+
+        pComponentWidget->setLayout(pLayout);
+
+        QLayout* pComponentLayout = new QHBoxLayout();
+        pComponentLayout->addWidget(pComponentWidget);
+
+        pGroupBox->setLayout(pComponentLayout);
+
+        /*
+         * AFTER SETTING LAYOUT CARE FOR VISIBILITY
+         */
+
+        if (pGroupBox->isCheckable() == true)
+        {
+
+
+            std::string sVisible = this->getAttribute(pElement, "visible", "ALWAYS").toUpper().toStdString();
+
+            if (sVisible.compare("ALWAYS") != 0)
+            {
+                QObject::connect( pGroupBox, &QExclusiveGroupBox::toggled, [pGroupBox, pComponentWidget] () {
+
+                    if (pGroupBox->isCheckable())
+                    {
+
+                        if (pGroupBox->isChecked())
+                        {
+                            pComponentWidget->setVisible(true);
+                        } else {
+                            pComponentWidget->setVisible(false);
+                        }
+
+                    }
+
+                } );
+
+                if (sVisible.compare("FALSE") == 0)
+                {
+                    pGroupBox->setChecked(false);
+                } else if (sVisible.compare("TRUE"))
+                {
+                    pGroupBox->setChecked(true);
+                }
+
+            }
+
+        }
+
         pGroupBox->getConsistent();
-        pGroupBox->setLayout(pLayout);
+
 
         return pGroupBox;
     }

@@ -13,129 +13,23 @@
 #include <QFile>
 #include <QDebug>
 #include <QXmlResultItems>
+#include <QWidget>
 #include <QDesktopWidget>
+#include <QSplitter>
+
 #include <iostream>
 #include <src/app/TemplateListDelegate.h>
 #include <src/parsing/XMLParserInfo.h>
-#include <QtWidgets/qsplitter.h>
-#include "parsing/XMLParserExecution.h"
-#include "parsing/XMLParserWindow.h"
-#include "app/ExecutionRunThread.h"
+#include <src/app/QDownloadTemplatesWindow.h>
+#include <src/parsing/XMLParserExecution.h>
+#include <src/parsing/XMLParserWindow.h>
+#include <src/app/ExecutionRunThread.h>
 
 class bioGUIapp : public QApplication {
     Q_OBJECT
 public:
 
-    bioGUIapp(int argc, char* argv[])
-    : QApplication(argc, argv)
-    {
-
-        std::cerr << "Main Application" << std::endl;
-        std::cerr << QThread::currentThreadId() << std::endl;
-
-        qDebug() << QStyleFactory::keys();
-
-#ifdef __linux
-
-#else
-        QStyle* pStyle = NULL;
-        pStyle = QStyleFactory::create("Fusion");
-        QApplication::setStyle(pStyle);
-#endif
-
-        //m_sGUIFile = "/cygdrive/c/libraries/bioGUI/example.gui";
-        //m_sGUIFile = "/home/users/joppich/cpp/bioGUI/example.gui";
-
-        //m_pWindowParser = new XMLParserWindow( this, "/home/users/joppich/cpp/bioGUI/example.gui" );
-
-        QDir oTemplatePath = QDir::currentPath() + "/templates/";
-
-        m_pMainWindow = new QWidget();
-
-        //QHBoxLayout* pMainLayout = new QHBoxLayout();
-        QSplitter* pSplitter = new QSplitter(Qt::Horizontal);
-
-        QVBoxLayout* pLeftLayout = new QVBoxLayout();
-
-        // this listwidget shows all available items
-        m_pTemplates = new QListWidget();
-        //m_pTemplates->setMaximumWidth(220);
-
-        this->connect(m_pTemplates, &QListWidget::itemSelectionChanged, [this] () {
-
-            QList<QListWidgetItem*> vSelected = m_pTemplates->selectedItems();
-
-            if (vSelected.size() == 1)
-            {
-                QString oFileName = qvariant_cast<QString>(vSelected.at(0)->data(Qt::UserRole+2));
-
-                std::string sFileName = oFileName.toStdString();
-
-                this->showTemplate(sFileName);
-            }
-
-
-
-        });
-
-        pLeftLayout->addWidget(m_pTemplates);
-
-
-        QGroupBox* pOptionsGroup = new QGroupBox("Options");
-        QGridLayout* pOptionsLayout = new QGridLayout();
-
-        // opens save template dialogue
-        m_pReloadTemplates = new QPushButton("Reload");
-
-        connect(m_pReloadTemplates, &QAbstractButton::clicked, [this] () {
-
-            this->reloadTemplates();
-
-        });
-
-        pOptionsLayout->addWidget(m_pReloadTemplates, 0, 0);
-
-        m_pSaveTemplate = new QPushButton("Save Template");
-
-        connect(m_pSaveTemplate, &QAbstractButton::clicked, [oTemplatePath, this] () {
-
-            this->saveCurrentTemplate(oTemplatePath);
-
-        });
-
-        pOptionsLayout->addWidget(m_pSaveTemplate, 0, 1);
-        pOptionsGroup->setLayout(pOptionsLayout);
-
-        pLeftLayout->addWidget(pOptionsGroup);
-
-        QWidget* pLeft = new QWidget;
-        pLeft->setLayout(pLeftLayout);
-
-        pSplitter->addWidget(pLeft);
-
-        //pMainLayout->addLayout(pLeftLayout);
-
-        m_pApplicationWindowArea = new QScrollArea();
-        //pMainLayout->addWidget(m_pApplicationWindowArea);
-        pSplitter->addWidget(m_pApplicationWindowArea);
-
-        QGridLayout* pGridLayout = new QGridLayout();
-        pGridLayout->addWidget(pSplitter, 0,0);
-        m_pMainWindow->setLayout(pGridLayout);
-
-        //m_pMainWindow->setLayout(pMainLayout);
-        //m_pMainWindow->show();
-
-        m_pMainMainWindow = new QMainWindow();
-        m_pMainMainWindow->setCentralWidget(pSplitter);
-        m_pMainMainWindow->show();
-
-        // For testing purposes only
-        //this->runProgram();
-
-        this->reloadTemplates();
-
-    }
+    bioGUIapp(int& argc, char** argv);
 
     void reloadTemplates()
     {
@@ -146,20 +40,36 @@ public:
 
     }
 
+
+
+
     void enableActions()
     {
-        m_pWindowParser->setActionsEnabled(true);
-
-        this->m_pSaveTemplate->setEnabled(true);
-        this->m_pTemplates->setEnabled(true);
+        this->setActionsState(true);
     }
 
     void disableActions()
     {
-        m_pWindowParser->setActionsEnabled(false);
+        this->setActionsState(false);
+    }
 
-        this->m_pSaveTemplate->setEnabled(false);
-        this->m_pTemplates->setEnabled(false);
+    void downloadTemplatesDialogue()
+    {
+        this->disableActions();
+        this->m_pMainMainWindow->setEnabled(false);
+
+        QDownloadTemplatesWindow* pNewWindow = new QDownloadTemplatesWindow();
+        pNewWindow->show();
+
+        connect(pNewWindow, &QDownloadTemplatesWindow::closed, [this, pNewWindow] () {
+
+            pNewWindow->deleteLater();
+            std::cerr << "received closed signal" << std::endl;
+            this->enableActions();
+            this->m_pMainMainWindow->setEnabled(true);
+
+        });
+
     }
 
     void addTemplates(QDir oDirectory)
@@ -250,8 +160,6 @@ public:
         m_pApplicationWindowArea->setWidget(m_pWindow);
         m_pApplicationWindowArea->setWidgetResizable(true);
 
-        QWidget* pWindow = m_pMainWindow;
-
         m_pMainMainWindow->setWindowTitle("bioGUI - " + m_pWindow->windowTitle());
 
         //this->connect(m_pApplicationWindowArea, SIGNAL(resizeEvent(QResizeEvent*)), this, SLOT(resizeContent(QResizeEvent*)));
@@ -307,7 +215,15 @@ public slots:
 protected:
 
 
+    void setActionsState(bool bState)
+    {
+        if (m_pWindowParser != NULL)
+            m_pWindowParser->setActionsEnabled(bState);
 
+        this->m_pSaveTemplate->setEnabled(bState);
+        this->m_pTemplates->setEnabled(bState);
+        this->m_pReloadTemplates->setEnabled(bState);
+    }
 
     void saveCurrentTemplate(QDir oTemplatePath)
     {
@@ -330,6 +246,7 @@ protected:
     QListWidget* m_pTemplates = NULL;
     QAbstractButton* m_pSaveTemplate = NULL;
     QAbstractButton* m_pReloadTemplates = NULL;
+    QAbstractButton* m_pDownloadTemplates = NULL;
     QScrollArea* m_pApplicationWindowArea = NULL;
 
 

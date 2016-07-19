@@ -120,7 +120,6 @@ public:
 
                 std::cout << "id " << sID << " value " << sValue << std::endl;
                 pCommand->append(sValue);
-                size_t iReturn = pCommand->size();
 
                 pCommand->append(sSuffix);
 

@@ -16,6 +16,10 @@
 #include <QTextEdit>
 #include <src/app/QSortableFileList.h>
 
+#include <src/Maths.h>
+#include <iomanip>
+#include <sstream>
+
 #include "../bioGUIapp.h"
 
 QLayout* XMLParserWindow::createLayout(QDomElement* pElement)
@@ -425,6 +429,116 @@ QWidget* XMLParserWindow::createComponent(QDomElement* pElement, bool* pChildren
         });
 
         pWidget = pComboBox;
+
+    }
+
+    if (sTag.compare("slideritem", Qt::CaseInsensitive) == 0) {
+
+
+        QComboItem* pItem =  new QComboItem("", "");
+
+        pItem->setValue( sValue );
+        QString sData = this->getAttribute(pElement, "value", sValue);
+        pItem->setData(sData);
+
+        pWidget = pItem;
+    }
+
+
+    if (sTag.compare("slider", Qt::CaseInsensitive) == 0)
+    {
+
+        (*pChildrenFinished) = true;
+
+        QSlider* pSlider = new QSlider(Qt::Orientation::Horizontal);
+        pSlider->setFocusPolicy(Qt::StrongFocus);
+        pSlider->setTickPosition(QSlider::TicksBelow);
+
+        float fMin = this->getAttribute(pElement, "min", "0.0").toFloat();
+        float fMax = this->getAttribute(pElement, "max", "1.0").toFloat();
+        float fStep = this->getAttribute(pElement, "step", "0.1").toFloat();
+
+        int iMinFactor  = Maths<float>::getIntegerFactor(fMin);
+        int iMaxFactor  = Maths<float>::getIntegerFactor(fMax);
+        int iStepFactor = Maths<float>::getIntegerFactor(fStep);
+
+        const int iFactor = std::max(std::max(iMaxFactor, iMinFactor), iStepFactor);
+
+        int iMin = fMin * iFactor;
+        int iMax = fMax * iFactor;
+        int iStep = fStep * iFactor;
+
+        std::cerr << "Slider: " << iMin << " " << iMax << " " << iStep << std::endl;
+
+        pSlider->setRange(iMin, iMax);
+        pSlider->setSingleStep( iStep );
+
+
+        int iInterval = (iMax-iMin) / 20;
+        pSlider->setTickInterval( iInterval );
+        pSlider->setPageStep(iInterval);
+
+
+
+        this->addValueFetcher(pElement, [iFactor, pSlider] () {
+
+            return std::to_string(pSlider->value() / iFactor);
+
+        });
+
+        pSlider->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+
+        /*
+         *
+         * Assemble consturct
+         *
+         */
+
+        std::stringstream oMinSS;
+        oMinSS << std::setprecision( std::ceil(log10(fMin) + log10(iMinFactor))+1 ) << fMin;
+
+        std::stringstream oMaxSS;
+        oMaxSS << std::setprecision( std::ceil(log10(fMax) + log10(iMaxFactor))+1 ) << fMax;
+
+
+        QWidget* pSliderWidget = new QWidget();
+        QLabel* pLeftSliderValue  = new QLabel( QString( oMinSS.str().c_str() ) );
+        QLabel* pRightSliderValue = new QLabel( QString( oMaxSS.str().c_str() ) );
+
+        QLineEdit *pLineEdit = new QLineEdit( "0" );
+        pLineEdit->setValidator( new QDoubleValidator() );
+
+        pLineEdit->setMaxLength( std::ceil(log10(fMax) + log10(iMaxFactor) + log10(fStep) + log10(iStepFactor))+1 );
+        pLineEdit->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+
+        this->connect(pSlider, &QSlider::valueChanged, [pLineEdit, iFactor, pSlider] () {
+
+            float fValue = (float) pSlider->value() / (float) iFactor;
+
+            std::stringstream oValSS;
+            int iValueFactor = Maths<float>::getIntegerFactor(fValue);
+            oValSS << std::setprecision( std::ceil(log10(fValue) + log10(iValueFactor))+1 ) << fValue;
+
+            pLineEdit->setText( QString(oValSS.str().c_str()) );
+
+        });
+
+        this->connect(pLineEdit, &QLineEdit::textChanged, [iFactor, pLineEdit, pSlider] () {
+
+            int iPosition = pLineEdit->text().toFloat() * iFactor;
+
+            pSlider->setValue(iPosition);
+        });
+
+        QLayout* pLayout = new QHBoxLayout();
+        pLayout->addWidget(pLeftSliderValue);
+        pLayout->addWidget(pSlider);
+        pLayout->addWidget(pRightSliderValue);
+        pLayout->addWidget(pLineEdit);
+
+        pSliderWidget->setLayout(pLayout);
+
+        pWidget = pSliderWidget;
 
     }
 

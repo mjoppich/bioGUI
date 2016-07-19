@@ -2,6 +2,8 @@
 <template description="BLASTN" title="nucleotide BLAST">
  <window title="BLASTN" height="1500" width="1000">
   <vgroup>
+  <slider id="test" min="10" max="10000" step="0.1" />
+
    <group title="Query/Input Options" exclusive="true">
     <hgroup>
 

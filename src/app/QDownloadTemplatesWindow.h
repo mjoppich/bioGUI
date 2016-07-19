@@ -156,7 +156,7 @@ protected:
 
         });
 
-        pNetworkManager->get( QNetworkRequest(QUrl("http://google.de")) );
+        pNetworkManager->get( QNetworkRequest(QUrl("http://mjoppich.ddns.net:81/biogui/list_templates.php")) );
 
 
     }

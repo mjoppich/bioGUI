@@ -1,5 +1,5 @@
 <template rootid="hmmerroot" description="HMMER (hmmer-3.1b2)" title="HMMER">
-<window width="500" height="1200" title="HMMER">
+<window width="500" height="800" title="HMMER">
   <vgroup>
   
      <label>Run Program in WSL?</label>
@@ -81,9 +81,10 @@
 <add id="cl">
 <if comp="EQUALS" value1="sel_build" value2="TRUE"><value from="cl_build"/></if>
 <if comp="EQUALS" value1="sel_search" value2="TRUE"><value from="cl_search"/></if>
-</add><env id="ip" get="IPv4"/>
+</add>
+<env id="ip" get="IPv4"/>
 <execute location="" exec="sh" wsl="WSLsel" param="-c &quot; ${cl} 2>&amp;1 | netcat ${ip} 55025 &quot;">
-    <output id="outcout" type="TCP" host="" port="55025" color="amber" to="outputstream1" />
+    <output id="outcout" type="TCP" host="" port="55025" color="green" to="outputstream1" />
   </execute>
   
   

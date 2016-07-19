@@ -1,7 +1,7 @@
 <!--<?xml version="1.0" encoding="UTF-8"?>-->
-<template description="File-based AlgoRun Docker Call" title="(Mod) AlgoRun Bowtie">
+<template description="File-based AlgoRun Docker Call" title="(no mod) AlgoRun Bowtie">
 
-<window width="500" height="500" title="AlgoRun Bowtie (mod)">
+<window width="500" height="500" title="AlgoRun Bowtie (no mod)">
 
   <vgroup>
   <label>What do you want to say?</label>
@@ -20,10 +20,10 @@
    
   <add id="cl" sep=" ">
     <const>-input</const>
-    <value from="relocated_input"/>
+    <value from="input"/>
   </add>
 	
-  <httpexecute exec="/v1/run/" location="http://10.0.75.2" port="31331" param="${cl}" cl_to_post="TRUE">
+  <httpexecute exec="/v1/run/" location="http://10.0.75.2" port="33333" param="${cl}" cl_to_post="TRUE">
     <output id="outcout" type="STD" color="green" to="outputstream1" />
   </httpexecute>
   

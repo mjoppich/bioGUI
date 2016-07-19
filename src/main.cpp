@@ -21,7 +21,7 @@
 #include <QPushButton>
 #include "bioGUIapp.h"
 
-int main(int argc, char *argv[])
+int main(int argc, char **argv)
 {
 
     bioGUIapp* pApp = new bioGUIapp(argc, argv);

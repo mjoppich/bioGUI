@@ -17,6 +17,8 @@
 #include <QNetworkRequest>
 #include <QNetworkReply>
 #include "QStringTableWidgetItem.h"
+#include <QAbstractItemView>
+#include <QLineEdit>
 
 
 class QDownloadTemplatesWindow : public QWidget {
@@ -40,8 +42,22 @@ public:
         pButtonLayout->addWidget( m_pCancelButton );
         pButtonWidget->setLayout(pButtonLayout);
 
+        pLayout->setAlignment(Qt::AlignLeft);
+
         m_pTable = this->setupTable();
         pLayout->addWidget(m_pTable);
+
+        QLabel* pLabel = new QLabel("Filter: ");
+        QLineEdit* pFilterEdit = new QLineEdit();
+
+        QWidget* pFilterWidget = new QWidget();
+        QHBoxLayout* pFilterLayout = new QHBoxLayout();
+
+        pFilterLayout->addWidget(pLabel);
+        pFilterLayout->addWidget(pFilterEdit);
+        pFilterWidget->setLayout(pFilterLayout);
+
+        pLayout->addWidget(pFilterWidget);
 
         pLayout->addWidget(pButtonWidget);
 
@@ -64,12 +80,18 @@ public:
     {
         QTableWidget* pTable = new QTableWidget();
 
-        const int iColCount = 3;
+        pTable->setAlternatingRowColors(true);
+
+
+        const int iColCount = 5;
         pTable->setColumnCount( iColCount );
 
         m_pSorting = (Qt::SortOrder*) calloc(iColCount, sizeof(Qt::SortOrder));
 
-        QTableWidgetItem* pColumnHeader = new QTableWidgetItem("Type");
+        QTableWidgetItem* pColumnHeader = NULL;
+
+
+        pColumnHeader = new QTableWidgetItem("Type");
         pTable->setHorizontalHeaderItem(0, pColumnHeader);
 
         pColumnHeader = new QTableWidgetItem("Name");
@@ -77,6 +99,15 @@ public:
 
         pColumnHeader = new QTableWidgetItem("Author");
         pTable->setHorizontalHeaderItem(2, pColumnHeader);
+
+        pColumnHeader = new QTableWidgetItem("id");
+        pTable->setHorizontalHeaderItem(3, pColumnHeader);
+
+        pColumnHeader = new QTableWidgetItem("filename");
+        pTable->setHorizontalHeaderItem(4, pColumnHeader);
+
+        pTable->setColumnHidden(3, true);
+        pTable->setColumnHidden(4, true);
 
         QHeaderView* pHView = pTable->horizontalHeader();
         pHView->setSectionResizeMode(QHeaderView::Interactive);
@@ -91,7 +122,7 @@ public:
 
         Qt::SortOrder* pSorting = m_pSorting;
 
-        connect(pTable, &QTableWidget::cellClicked, [this, pTable, pSorting] (int iRow, int iCol){
+        connect(pHView, &QHeaderView::sectionDoubleClicked, [this, pTable, pSorting] (int iCol){
 
             pTable->sortItems(iCol, m_pSorting[iCol]);
 
@@ -103,6 +134,14 @@ public:
             }
 
         } );
+
+        connect(pTable, &QTableWidget::cellClicked, [this, pTable, pSorting] (int iRow, int iCol){
+
+            std::cerr << iRow << " " << iCol << std::endl;
+
+        } );
+
+        pTable->setSelectionBehavior(QAbstractItemView::SelectRows);
 
         this->populateTable(pTable);
 
@@ -128,10 +167,25 @@ protected:
 
         QStringList vElems = sLine.split("\t");
 
-        pTable->setItem(iCurrentRow, 0, new QStringTableWidgetItem( vElems.at(0) ));
-        pTable->setItem(iCurrentRow, 1, new QStringTableWidgetItem( vElems.at(1) ));
-        pTable->setItem(iCurrentRow, 2, new QStringTableWidgetItem( vElems.at(2) ));
+        qDebug() << vElems;
 
+        QString sTypeID = vElems.at(1);
+        QString sType = "";
+        if (sTypeID.compare("0") == 0)
+        {
+            sType = "GUI";
+        } else {
+            sType = "Install";
+        }
+
+        pTable->setItem(iCurrentRow, 0, new QStringTableWidgetItem( sType ));
+        pTable->setItem(iCurrentRow, 1, new QStringTableWidgetItem( vElems.at(2) ));
+        pTable->setItem(iCurrentRow, 2, new QStringTableWidgetItem( vElems.at(4) ));
+
+        //id
+        pTable->setItem(iCurrentRow, 3, new QStringTableWidgetItem( vElems.at(0) ));
+        //filename
+        pTable->setItem(iCurrentRow, 4, new QStringTableWidgetItem( "" ));
     }
 
     void populateTable(QTableWidget* pTable)

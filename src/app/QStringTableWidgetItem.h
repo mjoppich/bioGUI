@@ -16,6 +16,7 @@ public:
     {
 
         this->setData(Qt::EditRole, sText);
+        this->setFlags(this->flags() &  ~Qt::ItemIsEditable);
 
     }
 

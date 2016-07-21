@@ -74,6 +74,24 @@ public:
             this->close();
         });
 
+        connect(m_pDownloadButton, &QAbstractButton::clicked, [this, m_pTable] () {
+
+            QItemSelectionModel *pSelection = table->selectionModel();
+
+            if (!pSelection->hasSelection())
+                return;
+
+            QModelIndexList* pSelRows = pSelection->selectedRows();
+
+            // Multiple rows can be selected
+            for(int i=0; i< selection.count(); i++)
+            {
+                QModelIndex index = selection.at(i);
+                qDebug() << index.row();
+            }
+
+        });
+
     }
 
     QTableWidget* setupTable()
@@ -171,11 +189,13 @@ protected:
 
         QString sTypeID = vElems.at(1);
         QString sType = "";
+        int iType = 0;
         if (sTypeID.compare("0") == 0)
         {
             sType = "GUI";
         } else {
             sType = "Install";
+            iType = 1;
         }
 
         pTable->setItem(iCurrentRow, 0, new QStringTableWidgetItem( sType ));
@@ -186,10 +206,17 @@ protected:
         pTable->setItem(iCurrentRow, 3, new QStringTableWidgetItem( vElems.at(0) ));
         //filename
         pTable->setItem(iCurrentRow, 4, new QStringTableWidgetItem( "" ));
+
+        QString sID = vElems.at(0);
+        int iID = sID.toInt();
+
+        m_mID2Type.insert(std::pair<int,int>(iID, iType));
     }
 
     void populateTable(QTableWidget* pTable)
     {
+
+        m_mID2Type.clear();
 
         QNetworkAccessManager* pNetworkManager = new QNetworkAccessManager(this);
 
@@ -215,12 +242,86 @@ protected:
 
     }
 
+    void downloadTemplate(int iID)
+    {
+        QString sDownloadDir = QString(m_sTargetDirectory);
+
+        std::map<int, int>::iterator oIt = m_mID2Type.find(iID);
+
+        if (oIt == m_mID2Type->end())
+            return;
+
+        int iType = oIt->second();
+
+        switch (iType)
+        {
+
+        case 0:
+            sDownloadDir.append("/templates/");
+            break;
+
+        case 1:
+
+            sDownloadDir.append("/install/");
+            break;
+
+        }
+
+        QString sFilename = sDownloadDir.append(QUuid::toString() + ".gui");
+        QFileInfo oInfo(sFileName);
+
+        while (oInfo.exists())
+        {
+            sFilename = sDownloadDir.append(QUuid::toString() + ".gui");
+            oInfo = QFileInfo(sFileName);
+        }
+
+
+
+        QNetworkAccessManager* pNetworkManager = new QNetworkAccessManager(this);
+
+        connect(pNetworkManager, &QNetworkAccessManager::finished, [this, pTable, sFilename] (QNetworkReply* pReply) {
+
+            QByteArray oReplyData = pReply->readAll();
+
+            QString oReplyLines = QString(oReplyData);
+
+            qDebug() << oReplyLines;
+
+
+            QFile file ( sFilename ) ;
+
+            if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
+                return;
+
+            QTextStream oSaveStream(&file);
+            oSaveStream << oReplyLines;
+            oSaveStream.close();
+
+
+
+        });
+
+
+        QString sURL = "http://mjoppich.ddns.net:81/biogui/get_template.php?";
+        sURL.append( std::to_string(iID).c_str() );
+
+        pNetworkManager->get( QNetworkRequest(QUrl( sURL )) );
+
+
+    }
+
 
     QPushButton* m_pDownloadButton = NULL;
     QPushButton* m_pCancelButton = NULL;
     QTableWidget* m_pTable = NULL;
 
     Qt::SortOrder* m_pSorting = NULL;
+    QString m_sTargetDirectory;
+
+    std::map<int, int> m_mID2Type;
+
+
 
 };
 

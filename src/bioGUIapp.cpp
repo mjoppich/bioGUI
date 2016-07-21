@@ -26,7 +26,7 @@ bioGUIapp::bioGUIapp(int& argc, char** argv)
 
     //m_pWindowParser = new XMLParserWindow( this, "/home/users/joppich/cpp/bioGUI/example.gui" );
 
-    QDir oTemplatePath = QDir::currentPath() + "/templates/";
+    m_oTemplatePath = QDir::currentPath() + "/templates/";
 
     m_pMainWindow = new QWidget();
 
@@ -91,9 +91,9 @@ bioGUIapp::bioGUIapp(int& argc, char** argv)
     // saves current template
     m_pSaveTemplate = new QPushButton("Save Template");
 
-    connect(m_pSaveTemplate, &QAbstractButton::clicked, [oTemplatePath, this] () {
+    connect(m_pSaveTemplate, &QAbstractButton::clicked, [this] () {
 
-        this->saveCurrentTemplate(oTemplatePath);
+        this->saveCurrentTemplate(this->m_oTemplatePath.path() + "/templates/");
 
     });
     pOptionsLayout->addWidget(m_pSaveTemplate, 0, 1);

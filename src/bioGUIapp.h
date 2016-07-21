@@ -58,7 +58,7 @@ public:
         this->disableActions();
         this->m_pMainMainWindow->setEnabled(false);
 
-        QDownloadTemplatesWindow* pNewWindow = new QDownloadTemplatesWindow();
+        QDownloadTemplatesWindow* pNewWindow = new QDownloadTemplatesWindow(m_oTemplatePath.path());
         pNewWindow->show();
 
         connect(pNewWindow, &QDownloadTemplatesWindow::closed, [this, pNewWindow] () {
@@ -249,7 +249,7 @@ protected:
     QAbstractButton* m_pDownloadTemplates = NULL;
     QScrollArea* m_pApplicationWindowArea = NULL;
 
-
+    QDir m_oTemplatePath;
 
     QWidget* m_pWindow = NULL;
     XMLParserWindow* m_pWindowParser = NULL;

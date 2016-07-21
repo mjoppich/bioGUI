@@ -19,6 +19,9 @@
 #include "QStringTableWidgetItem.h"
 #include <QAbstractItemView>
 #include <QLineEdit>
+#include <QtCore/QFileInfo>
+#include <QTemporaryFile>
+#include <QtCore/QTemporaryDir>
 
 
 class QDownloadTemplatesWindow : public QWidget {
@@ -27,9 +30,12 @@ class QDownloadTemplatesWindow : public QWidget {
 
 public:
 
-    QDownloadTemplatesWindow()
+    QDownloadTemplatesWindow(QString sTemplateDir)
     : QWidget()
     {
+
+        m_sTargetDirectory = sTemplateDir;
+
         this->setMinimumSize(200,200);
 
         QLayout* pLayout = new QVBoxLayout();
@@ -74,20 +80,24 @@ public:
             this->close();
         });
 
-        connect(m_pDownloadButton, &QAbstractButton::clicked, [this, m_pTable] () {
+        connect(m_pDownloadButton, &QAbstractButton::clicked, [this] () {
 
-            QItemSelectionModel *pSelection = table->selectionModel();
+            QItemSelectionModel *pSelection = this->m_pTable->selectionModel();
 
             if (!pSelection->hasSelection())
                 return;
 
-            QModelIndexList* pSelRows = pSelection->selectedRows();
+            QModelIndexList oSelRows = pSelection->selectedRows();
 
             // Multiple rows can be selected
-            for(int i=0; i< selection.count(); i++)
+            for(int i=0; i< oSelRows.count(); i++)
             {
-                QModelIndex index = selection.at(i);
+                QModelIndex index = oSelRows.at(i);
                 qDebug() << index.row();
+
+                int iRowTemplateID = m_pTable->item(index.row(), 3)->data(Qt::EditRole).toInt();
+
+                this->downloadTemplate(iRowTemplateID);
             }
 
         });
@@ -248,58 +258,67 @@ protected:
 
         std::map<int, int>::iterator oIt = m_mID2Type.find(iID);
 
-        if (oIt == m_mID2Type->end())
+        if (oIt == m_mID2Type.end())
             return;
 
-        int iType = oIt->second();
+        int iType = oIt->second;
+        QString sFileExtension = "";
 
         switch (iType)
         {
 
         case 0:
             sDownloadDir.append("/templates/");
+            sFileExtension = ".gui";
             break;
 
         case 1:
 
-            sDownloadDir.append("/install/");
+            sDownloadDir.append("/install_templates/");
+            sFileExtension = ".igui";
             break;
 
         }
 
-        QString sFilename = sDownloadDir.append(QUuid::toString() + ".gui");
-        QFileInfo oInfo(sFileName);
+        QDir oCurrentWorkDir = QDir::current();
+        QDir::setCurrent( sDownloadDir );
 
-        while (oInfo.exists())
-        {
-            sFilename = sDownloadDir.append(QUuid::toString() + ".gui");
-            oInfo = QFileInfo(sFileName);
-        }
+        QTemporaryFile oUniqueFileName("biogui_template.XXXXXX" + sFileExtension);
+        oUniqueFileName.open();
 
+        qDebug() << oUniqueFileName.fileName();
 
+        QString sFilename = oUniqueFileName.fileName();
+        oUniqueFileName.close();
+
+        QFileInfo oInfo(sFilename);
+
+        QDir::setCurrent(oCurrentWorkDir.path());
 
         QNetworkAccessManager* pNetworkManager = new QNetworkAccessManager(this);
 
-        connect(pNetworkManager, &QNetworkAccessManager::finished, [this, pTable, sFilename] (QNetworkReply* pReply) {
+        connect(pNetworkManager, &QNetworkAccessManager::finished, [this, sFilename] (QNetworkReply* pReply) {
 
             QByteArray oReplyData = pReply->readAll();
 
             QString oReplyLines = QString(oReplyData);
 
             qDebug() << oReplyLines;
-
+            qDebug() << "trying to save to " << sFilename;
 
             QFile file ( sFilename ) ;
 
             if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
+            {
+                std::cerr << "could not open " << sFilename.toStdString() << " for writing template" << std::endl;
+
                 return;
+            }
+
 
             QTextStream oSaveStream(&file);
             oSaveStream << oReplyLines;
-            oSaveStream.close();
-
-
-
+            oSaveStream.flush();
         });
 
 

@@ -17,11 +17,14 @@
 #include <QNetworkRequest>
 #include <QNetworkReply>
 #include "QStringTableWidgetItem.h"
+#include "QNetworkReplyTimer.h"
 #include <QAbstractItemView>
 #include <QLineEdit>
 #include <QtCore/QFileInfo>
 #include <QTemporaryFile>
 #include <QtCore/QTemporaryDir>
+
+#include <QMessageBox>
 
 
 class QDownloadTemplatesWindow : public QWidget {
@@ -236,6 +239,9 @@ protected:
 
             QString oReplyLines = QString(oReplyData);
 
+            if (oReplyLines.size() == 0)
+                return;
+
             qDebug() << oReplyLines;
 
             QStringList vLines = oReplyLines.split("\n");
@@ -247,7 +253,12 @@ protected:
 
         });
 
-        pNetworkManager->get( QNetworkRequest(QUrl("http://mjoppich.ddns.net:81/biogui/list_templates.php")) );
+        QNetworkRequest oRequest = QNetworkRequest(QUrl("http://mjoppich.ddns.net:81/biogui/list_templates.php"));
+        QNetworkReply* pReply = pNetworkManager->get( oRequest );
+
+        QNetworkReplyTimer::set(pReply, 2000, [this] () {
+            QMessageBox::critical(this, "A timeout has occurred.", "The application failed to reach the template server.");
+        });
 
 
     }
@@ -286,6 +297,8 @@ protected:
         QTemporaryFile oUniqueFileName("biogui_template.XXXXXX" + sFileExtension);
         oUniqueFileName.open();
 
+        qDebug() << sDownloadDir;
+        qDebug() << QDir::current();
         qDebug() << oUniqueFileName.fileName();
 
         QString sFilename = oUniqueFileName.fileName();
@@ -298,6 +311,8 @@ protected:
         QNetworkAccessManager* pNetworkManager = new QNetworkAccessManager(this);
 
         connect(pNetworkManager, &QNetworkAccessManager::finished, [this, sFilename] (QNetworkReply* pReply) {
+
+            qDebug() << pReply->url();
 
             QByteArray oReplyData = pReply->readAll();
 
@@ -322,10 +337,15 @@ protected:
         });
 
 
-        QString sURL = "http://mjoppich.ddns.net:81/biogui/get_template.php?";
+        QString sURL = "http://mjoppich.ddns.net:81/biogui/get_template.php?templid=";
         sURL.append( std::to_string(iID).c_str() );
 
-        pNetworkManager->get( QNetworkRequest(QUrl( sURL )) );
+        QNetworkReply* pReply = pNetworkManager->get( QNetworkRequest(QUrl( sURL )) );
+        QNetworkReplyTimer::set(pReply, 2000, [this] () {
+
+            QMessageBox::critical(this, "A timeout has occurred.", "The application failed to reach the template server.");
+
+        });
 
 
     }

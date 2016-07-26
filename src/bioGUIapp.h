@@ -76,8 +76,10 @@ public:
     {
 
         m_pTemplates->clear();
-
         m_pTemplates->setItemDelegate(new TemplateListDelegate(m_pTemplates));
+
+        // TODO do i have to delete them first?
+        m_vTemplateItems.clear();
 
         std::cout << "adding templates from " << oDirectory.path().toStdString() << std::endl;
 
@@ -94,13 +96,14 @@ public:
 
             std::cout << oFile.baseName().toStdString() << std::endl;
 
-            QListWidgetItem *item = new QListWidgetItem();
+            QListWidgetItem *pItem = new QListWidgetItem();
 
             XMLParserInfo oInfoParser(oFile.absoluteFilePath().toStdString());
 
             if (oInfoParser.isValid() == false)
             {
 
+                delete pItem;
                 std::cerr << "Error loading template: " << oFile.absoluteFilePath().toStdString() << std::endl;
 
                 continue;
@@ -115,16 +118,18 @@ public:
                 //QIcon oIcon(sIconPath);
                 QIcon oIcon = QIcon(sIconPath);
 
-                item->setData(Qt::DecorationRole, oIcon.pixmap(QSize(200,200)));
+                pItem->setData(Qt::DecorationRole, oIcon.pixmap(QSize(200,200)));
 
             }
 
 
-            item->setData(Qt::DisplayRole, oInfoParser.getTitle());
-            item->setData(Qt::UserRole + 1, oInfoParser.getDescription());
-            item->setData(Qt::UserRole + 2, QString(oInfoParser.getTemplateFile().c_str()));
+            pItem->setData(Qt::DisplayRole, oInfoParser.getTitle());
+            pItem->setData(Qt::UserRole + 1, oInfoParser.getDescription());
+            pItem->setData(Qt::UserRole + 2, QString(oInfoParser.getTemplateFile().c_str()));
 
-            m_pTemplates->addItem(item);
+            m_vTemplateItems.append(pItem);
+
+            m_pTemplates->addItem(pItem);
 
 
         }
@@ -238,6 +243,51 @@ protected:
 
     }
 
+    void filterTemplates(const QString& sText)
+    {
+
+        if (m_pTemplates == NULL)
+            return;
+
+        if (m_pTemplates->count() == 0)
+            return;
+
+
+        for (int i = 0; i < m_vTemplateItems.size(); ++i)
+        {
+
+            QListWidgetItem* pItem = m_vTemplateItems.at(i);
+
+            QString sTitle = pItem->data(Qt::DisplayRole).toString();
+            QString sDescription = pItem->data(Qt::UserRole + 1).toString();
+
+            if (sText.size() == 0)
+            {
+                // only set it to true - "" matches everywhere
+                pItem->setHidden(false);
+                continue;
+            } else {
+
+                bool bShow = sTitle.contains(sText);
+                bShow |= sDescription.contains(sText);
+
+                qDebug() << sTitle << " " << sDescription << " " << sText << " " << bShow;
+
+                if ( bShow )
+                {
+                    pItem->setHidden(false);
+                } else {
+                    pItem->setHidden(true);
+                }
+
+            }
+
+        }
+
+
+
+    }
+
 
 
     QMainWindow* m_pMainMainWindow = NULL;
@@ -253,6 +303,8 @@ protected:
 
     QWidget* m_pWindow = NULL;
     XMLParserWindow* m_pWindowParser = NULL;
+
+    QList<QListWidgetItem*> m_vTemplateItems;
 
 
 };

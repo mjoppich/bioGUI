@@ -143,6 +143,9 @@ protected:
     QString getAttribute(QDomElement* pElement, QString sAttribName, QString sDefault)
     {
 
+        if (pElement == NULL)
+            return sDefault;
+
         QDomNamedNodeMap mAttributes = pElement->attributes();
 
         for (size_t i = 0; i < mAttributes.length(); ++i)

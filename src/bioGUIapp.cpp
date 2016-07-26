@@ -26,7 +26,7 @@ bioGUIapp::bioGUIapp(int& argc, char** argv)
 
     //m_pWindowParser = new XMLParserWindow( this, "/home/users/joppich/cpp/bioGUI/example.gui" );
 
-    m_oTemplatePath = QDir::currentPath() + "/templates/";
+    m_oTemplatePath = QDir::currentPath();
 
     m_pMainWindow = new QWidget();
 
@@ -40,6 +40,14 @@ bioGUIapp::bioGUIapp(int& argc, char** argv)
     QLabel* pFilterLabel = new QLabel("Filter:");
     QLineEdit* pFilterLine = new QLineEdit();
 
+    m_pTemplates = new QListWidget();
+
+    connect(pFilterLine, &QLineEdit::textChanged, [this] (const QString& text) {
+
+        this->filterTemplates(text);
+
+    });
+
     pFilterLayout->addWidget(pFilterLabel);
     pFilterLayout->addWidget(pFilterLine);
 
@@ -51,7 +59,6 @@ bioGUIapp::bioGUIapp(int& argc, char** argv)
 
 
     // this listwidget shows all available items
-    m_pTemplates = new QListWidget();
     //m_pTemplates->setMaximumWidth(220);
 
     this->connect(m_pTemplates, &QListWidget::itemSelectionChanged, [this] () {

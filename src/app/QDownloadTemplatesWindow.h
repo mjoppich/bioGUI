@@ -66,6 +66,10 @@ public:
         pFilterLayout->addWidget(pFilterEdit);
         pFilterWidget->setLayout(pFilterLayout);
 
+        connect(pFilterEdit, &QLineEdit::textChanged, [this] (const QString& text) {
+           this->filterTemplates(text);
+        });
+
         pLayout->addWidget(pFilterWidget);
 
         pLayout->addWidget(pButtonWidget);
@@ -166,11 +170,13 @@ public:
 
         } );
 
+        /*
         connect(pTable, &QTableWidget::cellClicked, [this, pTable, pSorting] (int iRow, int iCol){
 
             std::cerr << iRow << " " << iCol << std::endl;
 
         } );
+        */
 
         pTable->setSelectionBehavior(QAbstractItemView::SelectRows);
 
@@ -190,6 +196,42 @@ signals:
     void closed();
 
 protected:
+
+    void filterTemplates(const QString& sText)
+    {
+        if (this->m_pTable == NULL)
+            return;
+
+        int iRows = m_pTable->rowCount();
+        int iCols = m_pTable->columnCount();
+
+        for (int i = 0; i < iRows; ++i)
+        {
+            bool bKeep = False;
+
+            for (int j = 0; j < iCols; ++j)
+            {
+
+
+
+            }
+
+            if (!bKeep)
+            {
+
+                m_pTable->hideRow(i);
+
+            } else {
+
+                m_pTable->showRow(i);
+
+            }
+
+
+
+        }
+
+    }
 
     void insertRow(QTableWidget* pTable, QString sLine)
     {

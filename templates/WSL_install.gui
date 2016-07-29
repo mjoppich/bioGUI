@@ -1,7 +1,7 @@
 <!--<?xml version="1.0" encoding="UTF-8"?>-->
-<template description="Install WSL programs" title="Install Scripts">
+<template description="Install (WSL) Programs" title="Install Programs">
 
-<window width="500" height="800" title="Install Scripts">
+<window width="500" height="800" title="Install Programs">
 
   <vgroup>
 

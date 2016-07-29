@@ -416,8 +416,26 @@ protected:
 
                 if (*pIsElement)
                 {
-                    bool bNotNeeded = false;
-                    createComponents((QWidget*)pParent, &oChild, &bNotNeeded);
+                    bool bChildIsElement = false;
+                    QWidget* pReturn = createComponents((QWidget*)pParent, &oChild, &bChildIsElement);
+
+                    if (bChildIsElement)
+                    {
+                        // create a layout for current parent and add pReturn to this layout
+                        QWidget* pWParent = (QWidget*) pParent;
+
+                        QLayout* pLParent = pWParent->layout();
+
+                        if (pLParent == NULL)
+                        {
+                            pLParent = new QVBoxLayout();
+                            pWParent->setLayout(pLParent);
+                        }
+
+                        pLParent->addWidget(pReturn);
+
+                    }
+
                 } else {
 
                     bool bChildIsElement = false;

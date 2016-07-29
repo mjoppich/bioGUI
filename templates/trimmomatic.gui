@@ -35,8 +35,8 @@
       </group>
       <group id="adapters_auto" selected="true" title="Predefined" checkable="true">
        <combobox id="illuminaclip_auto_opt" selected="ILLUMINACLIP:./adapters/TruSeqU-SE.fa:2:30:10">
-        <comboitem value="ILLUMINACLIP:/home/users/joppich/progs/Trimmomatic-0.33/adapters/TruSeqU-SE.fa:2:30:10">TruSeqU SE</comboitem>
-        <comboitem value="ILLUMINACLIP:/home/users/joppich/progs/Trimmomatic-0.33/adapters/TruSeqU-PE.fa:2:30:10">TruSeqU PE</comboitem>
+        <comboitem value="ILLUMINACLIP:./adapters/TruSeqU-SE.fa:2:30:10">TruSeqU SE</comboitem>
+        <comboitem value="ILLUMINACLIP:./adapters/TruSeqU-PE.fa:2:30:10">TruSeqU PE</comboitem>
        </combobox>
       </group>
      </group>

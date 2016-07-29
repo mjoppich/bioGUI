@@ -39,7 +39,7 @@ public:
 
         m_sTargetDirectory = sTemplateDir;
 
-        this->setMinimumSize(200,200);
+        //this->setMinimumSize(200,200);
 
         QLayout* pLayout = new QVBoxLayout();
 
@@ -207,12 +207,18 @@ protected:
 
         for (int i = 0; i < iRows; ++i)
         {
-            bool bKeep = False;
+            bool bKeep = false;
 
             for (int j = 0; j < iCols; ++j)
             {
 
+                QString sData = m_pTable->item(i,j)->data(Qt::EditRole).toString();
 
+                if (sData.contains(sText, Qt::CaseInsensitive))
+                {
+                    bKeep = true;
+                    break;
+                }
 
             }
 

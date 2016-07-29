@@ -454,91 +454,136 @@ QWidget* XMLParserWindow::createComponent(QDomElement* pElement, bool* pChildren
         pSlider->setFocusPolicy(Qt::StrongFocus);
         pSlider->setTickPosition(QSlider::TicksBelow);
 
-        float fMin = this->getAttribute(pElement, "min", "0.0").toFloat();
-        float fMax = this->getAttribute(pElement, "max", "1.0").toFloat();
-        float fStep = this->getAttribute(pElement, "step", "0.1").toFloat();
+        if (pElement->hasChildNodes())
+        {
 
-        int iMinFactor  = Maths<float>::getIntegerFactor(fMin);
-        int iMaxFactor  = Maths<float>::getIntegerFactor(fMax);
-        int iStepFactor = Maths<float>::getIntegerFactor(fStep);
+            std::vector<std::pair<QString, QString> > vValues;
 
-        const int iFactor = std::max(std::max(iMaxFactor, iMinFactor), iStepFactor);
+            QDomNodeList oChildren = pElement->childNodes();
+            for (size_t i = 0; i < oChildren.size(); ++i)
+            {
+                QDomElement oChildNode = oChildren.at(i).toElement();
 
-        int iMin = fMin * iFactor;
-        int iMax = fMax * iFactor;
-        int iStep = fStep * iFactor;
+                QString sValue = this->getAttribute(&oChildNode, "value", "");
+                QString sDisplay = this->getAttribute(&oChildNode, "display", sValue);
 
-        std::cerr << "Slider: " << iMin << " " << iMax << " " << iStep << std::endl;
+                vValues.push_back( std::pair<QString, QString>(sValue, sDisplay) );
+            }
 
-        pSlider->setRange(iMin, iMax);
-        pSlider->setSingleStep( iStep );
+            pSlider->setRange(1, vValues.size());
+
+            QGridLayout* pGLayout = new QGridLayout();
+            pGLayout->addWidget(pSlider, 0,0,1, vValues.size(), Qt::AlignCenter);
+
+            for (size_t i = 0; i < vValues.size(); ++i)
+            {
+
+                QLabel* pLabel = new QLabel( vValues.at(i).second);
+                pGLayout->addWidget( pLabel, 1, i, 1, 1, Qt::AlignCenter );
+
+            }
+
+            this->addValueFetcher(pElement, [vValues, pSlider] () {
+
+                return vValues.at(pSlider->value()-1).first.toStdString();
+
+            });
+
+        } else {
+
+            float fMin = this->getAttribute(pElement, "min", "0.0").toFloat();
+            float fMax = this->getAttribute(pElement, "max", "1.0").toFloat();
+            float fStep = this->getAttribute(pElement, "step", "0.1").toFloat();
+
+            int iMinFactor  = Maths<float>::getIntegerFactor(fMin);
+            int iMaxFactor  = Maths<float>::getIntegerFactor(fMax);
+            int iStepFactor = Maths<float>::getIntegerFactor(fStep);
+
+            const int iFactor = std::max(std::max(iMaxFactor, iMinFactor), iStepFactor);
+
+            int iMin = fMin * iFactor;
+            int iMax = fMax * iFactor;
+            int iStep = fStep * iFactor;
+
+            std::cerr << "Slider: " << iMin << " " << iMax << " " << iStep << std::endl;
+
+            pSlider->setRange(iMin, iMax);
+            pSlider->setSingleStep( iStep );
 
 
-        int iInterval = (iMax-iMin) / 20;
-        pSlider->setTickInterval( iInterval );
-        pSlider->setPageStep(iInterval);
+            int iInterval = (iMax-iMin) / 20;
+            pSlider->setTickInterval( iInterval );
+            pSlider->setPageStep(iInterval);
 
 
 
-        this->addValueFetcher(pElement, [iFactor, pSlider] () {
+            this->addValueFetcher(pElement, [iFactor, pSlider] () {
 
-            return std::to_string(pSlider->value() / iFactor);
+                return std::to_string(pSlider->value() / iFactor);
 
-        });
+            });
 
-        pSlider->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+            pSlider->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
-        /*
-         *
-         * Assemble consturct
-         *
-         */
+            /*
+             *
+             * Assemble consturct
+             *
+             */
 
-        std::stringstream oMinSS;
-        oMinSS << std::setprecision( std::ceil(log10(fMin) + log10(iMinFactor))+1 ) << fMin;
+            std::stringstream oMinSS;
+            oMinSS << std::setprecision( std::ceil(log10(fMin) + log10(iMinFactor))+1 ) << fMin;
 
-        std::stringstream oMaxSS;
-        oMaxSS << std::setprecision( std::ceil(log10(fMax) + log10(iMaxFactor))+1 ) << fMax;
+            std::stringstream oMaxSS;
+            oMaxSS << std::setprecision( std::ceil(log10(fMax) + log10(iMaxFactor))+1 ) << fMax;
 
 
-        QWidget* pSliderWidget = new QWidget();
-        QLabel* pLeftSliderValue  = new QLabel( QString( oMinSS.str().c_str() ) );
-        QLabel* pRightSliderValue = new QLabel( QString( oMaxSS.str().c_str() ) );
+            QWidget* pSliderWidget = new QWidget();
+            QLabel* pLeftSliderValue  = new QLabel( QString( oMinSS.str().c_str() ) );
+            QLabel* pRightSliderValue = new QLabel( QString( oMaxSS.str().c_str() ) );
 
-        QLineEdit *pLineEdit = new QLineEdit( "0" );
-        pLineEdit->setValidator( new QDoubleValidator() );
+            QLineEdit *pLineEdit = new QLineEdit( "0" );
+            pLineEdit->setValidator( new QDoubleValidator() );
 
-        pLineEdit->setMaxLength( std::ceil(log10(fMax) + log10(iMaxFactor) + log10(fStep) + log10(iStepFactor))+1 );
-        pLineEdit->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+            pLineEdit->setMaxLength( std::ceil(log10(fMax) + log10(iMaxFactor) + log10(fStep) + log10(iStepFactor))+1 );
+            pLineEdit->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
 
-        this->connect(pSlider, &QSlider::valueChanged, [pLineEdit, iFactor, pSlider] () {
+            this->connect(pSlider, &QSlider::valueChanged, [pLineEdit, iFactor, pSlider] () {
 
-            float fValue = (float) pSlider->value() / (float) iFactor;
+                float fValue = (float) pSlider->value() / (float) iFactor;
 
-            std::stringstream oValSS;
-            int iValueFactor = Maths<float>::getIntegerFactor(fValue);
-            oValSS << std::setprecision( std::ceil(log10(fValue) + log10(iValueFactor))+1 ) << fValue;
+                std::stringstream oValSS;
+                int iValueFactor = Maths<float>::getIntegerFactor(fValue);
+                oValSS << std::setprecision( std::ceil(log10(fValue) + log10(iValueFactor))+1 ) << fValue;
 
-            pLineEdit->setText( QString(oValSS.str().c_str()) );
+                pLineEdit->setText( QString(oValSS.str().c_str()) );
 
-        });
+            });
 
-        this->connect(pLineEdit, &QLineEdit::textChanged, [iFactor, pLineEdit, pSlider] () {
+            this->connect(pLineEdit, &QLineEdit::textChanged, [iFactor, pLineEdit, pSlider] () {
 
-            int iPosition = pLineEdit->text().toFloat() * iFactor;
+                int iPosition = pLineEdit->text().toFloat() * iFactor;
 
-            pSlider->setValue(iPosition);
-        });
+                pSlider->setValue(iPosition);
+            });
 
-        QLayout* pLayout = new QHBoxLayout();
-        pLayout->addWidget(pLeftSliderValue);
-        pLayout->addWidget(pSlider);
-        pLayout->addWidget(pRightSliderValue);
-        pLayout->addWidget(pLineEdit);
+            this->addValueFetcher(pElement, [pLineEdit] () {return pLineEdit->text().toStdString();});
 
-        pSliderWidget->setLayout(pLayout);
+            QLayout* pLayout = new QHBoxLayout();
+            pLayout->addWidget(pLeftSliderValue);
+            pLayout->addWidget(pSlider);
+            pLayout->addWidget(pRightSliderValue);
+            pLayout->addWidget(pLineEdit);
 
-        pWidget = pSliderWidget;
+            pSliderWidget->setLayout(pLayout);
+
+            pWidget = pSliderWidget;
+
+        }
+
+
+
+
 
     }
 
@@ -569,7 +614,7 @@ QWidget* XMLParserWindow::createComponent(QDomElement* pElement, bool* pChildren
             QFileInfo oFileInfo(sFoundFile);
 
             QString sFilePath = sFoundFile;
-            QString sFileName = oFileInfo.baseName();
+            QString sFileName = oFileInfo.completeBaseName();
 
             QComboItem* pNewItem = new QComboItem( sFileName, sFilePath);
             pComboBox->addItem( pNewItem->getValue(), pNewItem->getData() );

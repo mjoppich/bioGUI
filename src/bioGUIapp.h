@@ -268,10 +268,10 @@ protected:
                 continue;
             } else {
 
-                bool bShow = sTitle.contains(sText);
-                bShow |= sDescription.contains(sText);
+                bool bShow = sTitle.contains(sText, Qt::CaseInsensitive);
+                bShow |= sDescription.contains(sText, Qt::CaseInsensitive);
 
-                qDebug() << sTitle << " " << sDescription << " " << sText << " " << bShow;
+                //qDebug() << sTitle << " " << sDescription << " " << sText << " " << bShow;
 
                 if ( bShow )
                 {

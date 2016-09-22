@@ -172,6 +172,12 @@ QWidget* XMLParserWindow::createComponent(QDomElement* pElement, bool* pChildren
                     // nothing
                 }
 
+                if (sType.compare("password", Qt::CaseInsensitive) == 0)
+                {
+                    pLineEdit->setEchoMode(QLineEdit::Password);
+
+                }
+
                 if (sType.compare("int", Qt::CaseInsensitive) == 0)
                 {
                     pLineEdit->setValidator( new QIntValidator() );
@@ -594,10 +600,10 @@ QWidget* XMLParserWindow::createComponent(QDomElement* pElement, bool* pChildren
 
         QComboBox *pComboBox = new QComboBox();
 
+
         QString sCurrentPath = QDir::current().absolutePath();
-        QString sSearchPath = sCurrentPath + "/install_templates/";
-        QStringList vFileEnding;
-        vFileEnding << "*.igui";
+        QString sSearchPath = this->getAttribute(pElement, "path", sCurrentPath + "/install_templates/");
+        QStringList vFileEnding = this->getAttribute(pElement, "ext", "*.igui").split(",");
 
         std::cerr << "starting in " << sCurrentPath.toStdString() << std::endl;
         std::cerr << "searching in " << sSearchPath.toStdString() << std::endl;

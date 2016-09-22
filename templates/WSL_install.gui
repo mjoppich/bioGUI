@@ -5,14 +5,22 @@
 
   <vgroup>
 
+  <group>
 	<label>Install Program:</label>
   <filelist id="prog" ext="*.igui"/>
+  </group>
+
+  <group title="Install Options">
   <label>Install Program to WSL?</label>
-  <checkbox id="WSLsel" value="true" selectonwindows="true">WSL</checkbox>
-  <label>Install Location on WSL:</label>
-  <input id="instpath">~/bioGUI/progs/</input>
-  <group id="templpath_sel" checkable="true" title="Where to store the template?">
-  <filedialog id="templpath" output="true" filter="*.gui" location="./templates/hmmer_WSL_test.gui">Save Template to</filedialog>
+    <checkbox id="WSLsel" value="true" selectonwindows="true">WSL</checkbox>
+    <label>Install Location:</label>
+    <input id="instpath">~/bioGUI/progs/</input>
+    <label>sudo Password</label>
+    <input id="sudopw" type="password"></input>
+  </group>
+
+  <group id="templpath_sel" checkable="true" title="Store template?">
+    <filedialog id="templpath" output="true" filter="*.gui" location="./templates/hmmer_WSL_test.gui">Save Template to</filedialog>
   </group>
 
 
@@ -45,6 +53,7 @@
 <if comp="EQUALS" value1="templpath_sel" value2="true" sep=" ">
 <value from="localip"/>
 <const>33333</const>
+<value from="sudopw"/>
 </if>
 </add>
 

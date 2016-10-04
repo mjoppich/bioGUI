@@ -1,0 +1,51 @@
+<zk>
+    <zscript>
+        <![CDATA[
+
+    import java.util.ArrayList;
+    import bioGUI.*;
+
+    Object o = Executions.getCurrent().getNativeResponse();
+    o.setContentType("txt");
+
+    String sTemplateID = Executions.getCurrent().getParameter("templid");
+
+    if (sTemplateID == null)
+    {
+    o.getWriter().print("");
+    o.getWriter().close();
+    return;
+    }
+
+    if (sTemplateID.length() == 0)
+    {
+    o.getWriter().print("");
+    o.getWriter().close();
+    return;
+    }
+
+
+    int iTemplateID = -1;
+
+    try
+    {
+        iTemplateID = Integer.parseInt( sTemplateID );
+
+    } catch (Exception e)
+    {
+        o.getWriter().print("");
+        o.getWriter().close();
+
+        return;
+    }
+
+    TemplateManager oTempIT = new TemplateManager();
+    Template oTemp = oTempIT.getTemplate( iTemplateID );
+
+    o.getWriter().print( oTemp.getFullTemplate() );
+
+    o.getWriter().close();
+]]>
+    </zscript>
+
+</zk>

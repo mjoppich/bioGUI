@@ -1,0 +1,64 @@
+<zk>
+	<window apply="org.zkoss.bind.BindComposer" viewModel="@id('vt')@init('bioGUI.ViewTemplates')" validationMessages="@id('vtsgs')">
+		<vlayout>
+			<radiogroup id="template_type" selectedItem="@bind(vt.templatecreation.typeStr)" />
+
+			<grid>
+				<columns>
+					<column label="Description"/>
+					<column label="Value"/>
+				</columns>
+
+				<rows>
+
+					<row> Your name: <textbox value="@bind(vt.usercreation.name)" width="150px" tabindex="1" /> </row>
+					<row> Your eMail address: <textbox value="@bind(vt.usercreation.email)" width="150px" tabindex="2" /> </row>
+					<row>  <checkbox id="l1" label="Submit Anonymously?" tabindex="3" checked="@bind(vt.templatecreation.anonym)"/> </row>
+					<row> Template Name: <textbox value="@bind(vt.templatecreation.displayname)" width="150px" tabindex="4" /> </row>
+					<row>
+						Template Type:
+
+						<vlayout>
+
+							<radio id="ra1" label="Template" checked="True" value="0" radiogroup="template_type" tabindex="5" />
+							<radio id="ra2" label="Install Template" value="1" radiogroup="template_type" tabindex="6"/>
+
+						</vlayout>
+
+					</row>
+
+					<row>
+						Template Code
+
+						<vlayout>
+
+							<textbox rows="5" cols="40" value="@bind(vt.templatecreation.template)">
+							</textbox>
+
+							<button label="Load from file" onClick="@command('cmd')" tabindex="7"/>
+
+						</vlayout>
+
+					</row>
+
+					<row> <button label="Submit Template" tabindex="8"/> </row>
+
+				</rows>
+
+			</grid>
+
+
+		</vlayout>
+
+		<listbox id="box" width="100%" >
+		<listhead >
+			<listheader label="Author" sort="auto" />
+		</listhead>
+
+			<listitem label="${each.toString()}" forEach="${vt.getTemplates()}"/>   
+
+		</listbox>
+
+
+	</window>
+</zk>

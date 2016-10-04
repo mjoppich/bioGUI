@@ -1,0 +1,29 @@
+<zk>
+    <zscript>
+        <![CDATA[
+
+    import java.util.ArrayList;
+    import bioGUI.*;
+
+    Object o = Executions.getCurrent().getNativeResponse();
+    o.setContentType("txt");
+
+    TemplateManager oTempIT = new TemplateManager();
+
+    String sDel = "\t";
+
+    for (Template oTemp : oTempIT.getTemplates())
+    {
+
+        String sLine = oTemp.getTemplateID() + sDel + oTemp.getType() + sDel + oTemp.getDisplayName() + sDel + oTemp.getTimestampDate() + sDel + oTemp.getAuthor();
+
+        o.getWriter().print( sLine + "\n");
+
+    }
+
+
+    o.getWriter().close();
+]]>
+    </zscript>
+
+</zk>

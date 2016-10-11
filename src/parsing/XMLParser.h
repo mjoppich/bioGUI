@@ -140,6 +140,28 @@ protected:
 
     }
 
+    bool hasAttribute(QDomElement* pElement, QString sAttribName)
+    {
+        if (pElement == NULL)
+            return false;
+
+        QDomNamedNodeMap mAttributes = pElement->attributes();
+
+        for (size_t i = 0; i < mAttributes.length(); ++i)
+        {
+
+            QDomAttr oItem = mAttributes.item(i).toAttr();
+
+            if (oItem.name().compare( sAttribName, Qt::CaseInsensitive ) == 0)
+            {
+                return true;
+            }
+
+        }
+
+        return false;
+    }
+
     QString getAttribute(QDomElement* pElement, QString sAttribName, QString sDefault)
     {
 

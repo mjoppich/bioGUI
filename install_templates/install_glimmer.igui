@@ -1,4 +1,4 @@
-
+#! Install glimmer302b
 ## set all variables
 PROG=glimmer302b
 
@@ -6,6 +6,8 @@ PROGDIR=$1
 if [ -z "${PROGDIR}" ]; then
 	PROGDIR=~/bioGUI/progs/
 fi
+
+rm -rf $PROGDIR
 
 ## create progdir
 mkdir -p $PROGDIR
@@ -22,7 +24,7 @@ cd $PROGDIR/$PROG/src
 
 make
 
-if [ $# -eq 3 ]; then
+if [ $# -eq 4 ]; then
 
 # fix scripts
 
@@ -36,8 +38,8 @@ done
 
 echo "sending template"
 
-IP=$2
-PORT=$3
+IP=$3
+PORT=$4
 
 cat << EOF | netcat $IP $PORT
 <!--<?xml version="1.0" encoding="UTF-8")>-->

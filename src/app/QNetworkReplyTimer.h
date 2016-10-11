@@ -9,6 +9,7 @@
 #include <QBasicTimer>
 #include <QTimerEvent>
 #include <QNetworkReply>
+#include <functional>
 
 class QNetworkReplyTimer : public QObject {
 Q_OBJECT

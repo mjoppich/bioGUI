@@ -33,14 +33,23 @@ public:
 
     void reloadTemplates()
     {
-
         QDir oTemplatePath = QDir::currentPath() + "/templates/";
 
         this->addTemplates( oTemplatePath );
-
     }
 
+    void loadInitFile(QDir oPath)
+    {
+        QString sConfigFilePath = oPath.absolutePath() + "/config.ini";
 
+        QSettings* pSettings = new QSettings(sConfigFilePath, QSettings::IniFormat);
+
+        QStringList allKeys = pSettings->allKeys();
+        m_sDownloadServerLocation = pSettings->value("server/location", "localhost").toString();
+
+        delete pSettings;
+
+    }
 
 
     void enableActions()
@@ -58,7 +67,7 @@ public:
         this->disableActions();
         this->m_pMainMainWindow->setEnabled(false);
 
-        QDownloadTemplatesWindow* pNewWindow = new QDownloadTemplatesWindow(m_oTemplatePath.path());
+        QDownloadTemplatesWindow* pNewWindow = new QDownloadTemplatesWindow(m_oTemplatePath.path(), m_sDownloadServerLocation);
         pNewWindow->show();
 
         connect(pNewWindow, &QDownloadTemplatesWindow::closed, [this, pNewWindow] () {
@@ -305,6 +314,9 @@ protected:
     XMLParserWindow* m_pWindowParser = NULL;
 
     QList<QListWidgetItem*> m_vTemplateItems;
+
+
+    QString m_sDownloadServerLocation = "";
 
 
 };

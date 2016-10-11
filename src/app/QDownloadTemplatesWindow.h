@@ -33,8 +33,8 @@ class QDownloadTemplatesWindow : public QWidget {
 
 public:
 
-    QDownloadTemplatesWindow(QString sTemplateDir)
-    : QWidget()
+    QDownloadTemplatesWindow(QString sTemplateDir, QString& sServerLocation)
+    : QWidget(), m_sServerLocation(sServerLocation)
     {
 
         m_sTargetDirectory = sTemplateDir;
@@ -248,6 +248,9 @@ protected:
 
         qDebug() << vElems;
 
+        if (((sLine.size() == 0) || vElems.size() == 0))
+            return;
+
         QString sTypeID = vElems.at(1);
         QString sType = "";
         int iType = 0;
@@ -283,12 +286,19 @@ protected:
 
         connect(pNetworkManager, &QNetworkAccessManager::finished, [this, pTable] (QNetworkReply* pReply) {
 
+            qDebug() << pReply->errorString();
+            qDebug() << pReply->isRunning();
+
             QByteArray oReplyData = pReply->readAll();
 
             QString oReplyLines = QString(oReplyData);
 
             if (oReplyLines.size() == 0)
+            {
+                QMessageBox::critical(this, "The server does not respond", "The application received an empty result. Error code: " + pReply->errorString());
+
                 return;
+            }
 
             qDebug() << oReplyLines;
 
@@ -301,7 +311,11 @@ protected:
 
         });
 
-        QNetworkRequest oRequest = QNetworkRequest(QUrl("http://mjoppich.ddns.net:81/biogui/list_templates.php"));
+        QString sQueryURL = m_sServerLocation + "/list_templates.php";
+
+        qDebug() << sQueryURL;
+
+        QNetworkRequest oRequest = QNetworkRequest(QUrl(sQueryURL));
         QNetworkReply* pReply = pNetworkManager->get( oRequest );
 
         QNetworkReplyTimer::set(pReply, 2000, [this] () {
@@ -385,7 +399,7 @@ protected:
         });
 
 
-        QString sURL = "http://mjoppich.ddns.net:81/biogui/get_template.php?templid=";
+        QString sURL = m_sServerLocation + "/get_template.php?templid=";
         sURL.append( std::to_string(iID).c_str() );
 
         QNetworkReply* pReply = pNetworkManager->get( QNetworkRequest(QUrl( sURL )) );
@@ -405,6 +419,8 @@ protected:
 
     Qt::SortOrder* m_pSorting = NULL;
     QString m_sTargetDirectory;
+
+    QString m_sServerLocation = "";
 
     std::map<int, int> m_mID2Type;
 

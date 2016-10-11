@@ -15,7 +15,7 @@
     for (Template oTemp : oTempIT.getTemplates())
     {
 
-        String sLine = oTemp.getTemplateID() + sDel + oTemp.getType() + sDel + oTemp.getDisplayName() + sDel + oTemp.getTimestampDate() + sDel + oTemp.getAuthor();
+        String sLine = oTemp.getTemplateid() + sDel + oTemp.getTypeStr() + sDel + oTemp.getDisplayname() + sDel + oTemp.getTimestampDate() + sDel + oTemp.getAuthor();
 
         o.getWriter().print( sLine + "\n");
 

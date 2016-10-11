@@ -1,3 +1,5 @@
+#! Install jellyfish-2.2.6
+
 ## set all variables
 PROG=jellyfish-2.2.6
 
@@ -5,6 +7,8 @@ PROGDIR=$1
 if [ -z "${PROGDIR}" ]; then
 	PROGDIR=~/bioGUI/progs/
 fi
+
+rm -rf $PROGDIR
 
 ## create progdir
 mkdir -p $PROGDIR
@@ -23,10 +27,10 @@ make
 #make check
 make install
 
-if [ $# -eq 3 ]; then
+if [ $# -eq 4 ]; then
 
-IP=$2
-PORT=$3
+IP=$3
+PORT=$4
 
 cat << EOF | netcat $IP $PORT
 <template rootid="blubb" intatt="111" description="Jellyfish ($PROG)" title="Jellyfish">

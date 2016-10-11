@@ -1,6 +1,9 @@
 package bioGUI;
 
+import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 
 /**
@@ -57,6 +60,19 @@ public class Template {
     public void setTypeStr(String type) {
 
         this.setType( Integer.parseInt(type) );
+    }
+
+    public String getTemplateTypeDescr()
+    {
+        switch( type )
+        {
+
+            case 0: return "Template";
+            case 1: return "Install Template";
+
+            default:
+                return null;
+        }
     }
 
     public int getUserid() {

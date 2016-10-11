@@ -1,7 +1,7 @@
 <!--<?xml version="1.0" encoding="UTF-8"?>-->
 <template description="Install (WSL) Programs" title="Install Programs">
 
-<window width="500" height="800" title="Install Programs">
+<window width="500" height="900" title="Install Programs">
 
   <vgroup>
 
@@ -50,10 +50,14 @@
 <add id="cl" sep=" ">
 <value from="prog_wsl"/>
 <value from="instpath"/>
+<add sep="">
+<const>'</const>
+<value from="sudopw"/>
+<const>'</const>
+</add>
 <if comp="EQUALS" value1="templpath_sel" value2="true" sep=" ">
 <value from="localip"/>
 <const>33333</const>
-<value from="sudopw"/>
 </if>
 </add>
 

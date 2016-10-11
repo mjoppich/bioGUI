@@ -7,6 +7,21 @@
 	<description><![CDATA[My ZK Application]]></description>
 	<display-name>bioGUI</display-name>
 
+
+	<filter>
+		<filter-name>UrlRewriteFilter</filter-name>
+		<filter-class>org.tuckey.web.filters.urlrewrite.UrlRewriteFilter</filter-class>
+		<init-param>
+			<param-name>logLevel</param-name>
+			<param-value>TRACE</param-value>
+		</init-param>
+	</filter>
+	<filter-mapping>
+		<filter-name>UrlRewriteFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+
+
 	<!-- //// -->
 	<!-- ZK -->
 	<listener>
@@ -59,6 +74,9 @@
 		<url-pattern>/zk/*</url-pattern>
 	</servlet-mapping>
 	-->
+
+	<servlet-mapping> <servlet-name>zkLoader</servlet-name> <url-pattern>*.foo</url-pattern> </servlet-mapping>
+
 	<servlet>
 		<description>The asynchronous update engine for ZK</description>
 		<servlet-name>auEngine</servlet-name>
@@ -196,4 +214,6 @@
 		<welcome-file>index.html</welcome-file>
 		<welcome-file>index.htm</welcome-file>
 	</welcome-file-list>
+
+
 </web-app>

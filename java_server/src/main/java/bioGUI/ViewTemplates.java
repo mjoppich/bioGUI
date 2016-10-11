@@ -3,6 +3,10 @@ package bioGUI;
 import org.zkoss.bind.annotation.Command;
 import org.zkoss.bind.annotation.Init;
 import org.zkoss.bind.annotation.NotifyChange;
+import org.zkoss.zk.ui.event.Event;
+import org.zkoss.zul.Messagebox;
+import org.zkoss.zul.Textbox;
+import sun.plugin2.message.Message;
 
 import java.util.ArrayList;
 
@@ -13,6 +17,11 @@ public class ViewTemplates {
 	private User usercreation = new User();
 	private Template templatecreation = new Template();
 
+	private TemplateManager oTempManager = new TemplateManager();
+
+	private ArrayList templates = oTempManager.getTemplates();
+
+	private String filterText;
 
 	@Init
 	public void init() {
@@ -20,25 +29,55 @@ public class ViewTemplates {
 	}
 
 	@Command
-	@NotifyChange("count")
-	public void cmd() {
-		++count;
+	@NotifyChange({"templatecreation", "usercreation", "templates"})
+	public void addTemplate()
+	{
+		int iSecsSince0 =  (int) (System.currentTimeMillis() / 1000L);
+		templatecreation.setTimestamp(iSecsSince0);
+
+		templatecreation.setUser(usercreation);
+
+		UserManager oUserManager = oTempManager.getUserManager();
+
+		int iUserID = oUserManager.addUser( usercreation );
+
+		if (iUserID != -1) {
+
+			templatecreation.setUserid(iUserID);
+
+			int iAddTemplate = oTempManager.addTemplate(templatecreation);
+
+			if (iAddTemplate != -1)
+			{
+				usercreation = new User();
+				templatecreation = new Template();
+
+				Messagebox.show("Template inserted.");
+			} else {
+				Messagebox.show("Error adding template.");
+			}
+
+
+		} else {
+			Messagebox.show("Error creating user.");
+		}
+
 	}
 
 	@Command
-	@NotifyChange("fetch")
-	public void addTemplate() {
+	@NotifyChange("templates")
+	public void changeFilter() {
 
 
+		templates = oTempManager.getTemplates( filterText );
 
+		System.out.println("templates: " + templates.size());
 
 	}
 
 	public ArrayList<Template> getTemplates()
 	{
-		TemplateManager oTempIT = new TemplateManager();
-
-		return oTempIT.getTemplates();
+		return templates;
 	}
 
 	public int getCount() {
@@ -59,5 +98,16 @@ public class ViewTemplates {
 
 	public void setTemplatecreation(Template templatecreation) {
 		this.templatecreation = templatecreation;
+	}
+
+	public String getFilterText() {
+		return filterText;
+	}
+
+	public void setFilterText(String filterText) {
+
+		System.out.println(filterText);
+
+		this.filterText = filterText;
 	}
 }

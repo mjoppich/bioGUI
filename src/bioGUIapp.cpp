@@ -8,8 +8,10 @@ bioGUIapp::bioGUIapp(int& argc, char** argv)
         : QApplication(argc, (char**)argv)
 {
 
-    std::cerr << "Main Application" << std::endl;
-    std::cerr << QThread::currentThreadId() << std::endl;
+    std::cerr << "Main Application currently in dir: " << std::endl;
+    std::cerr << QDir::currentPath().toStdString() << std::endl;
+
+    this->loadInitFile(QDir::currentPath());
 
     qDebug() << QStyleFactory::keys();
 

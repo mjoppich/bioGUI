@@ -1,18 +1,28 @@
 <zk>
+
+
+	<zscript>
+		import bioGUI.TemplateManager;
+
+
+
+	</zscript>
+
 	<window apply="org.zkoss.bind.BindComposer" viewModel="@id('vt')@init('bioGUI.ViewTemplates')" validationMessages="@id('vtsgs')">
 		<vlayout>
 			<radiogroup id="template_type" selectedItem="@bind(vt.templatecreation.typeStr)" />
 
+			<label class="h1" value="Add new Template" />
 			<grid>
 				<columns>
-					<column label="Description"/>
-					<column label="Value"/>
+					<column label=""/>
+					<column label=""/>
 				</columns>
 
 				<rows>
 
 					<row> Your name: <textbox value="@bind(vt.usercreation.name)" width="150px" tabindex="1" /> </row>
-					<row> Your eMail address: <textbox value="@bind(vt.usercreation.email)" width="150px" tabindex="2" /> </row>
+					<row> Your eMail address: <textbox type="email" value="@bind(vt.usercreation.email)" width="150px" tabindex="2" /> </row>
 					<row>  <checkbox id="l1" label="Submit Anonymously?" tabindex="3" checked="@bind(vt.templatecreation.anonym)"/> </row>
 					<row> Template Name: <textbox value="@bind(vt.templatecreation.displayname)" width="150px" tabindex="4" /> </row>
 					<row>
@@ -32,32 +42,62 @@
 
 						<vlayout>
 
-							<textbox rows="5" cols="40" value="@bind(vt.templatecreation.template)">
+							<textbox id="codebox" rows="5" cols="40" value="@bind(vt.templatecreation.template)">
 							</textbox>
 
-							<button label="Load from file" onClick="@command('cmd')" tabindex="7"/>
+							<button label="Load from file" tabindex="7" upload="true">
+								<attribute name="onUpload"><![CDATA[
+
+            org.zkoss.util.media.Media media = event.getMedia();
+
+ codebox.setValue(media.getStringData());
+]]></attribute>
+							</button>
 
 						</vlayout>
 
 					</row>
 
-					<row> <button label="Submit Template" tabindex="8"/> </row>
+					<row> <button label="Submit Template" tabindex="8" onClick="@command('addTemplate')"/> </row>
 
 				</rows>
 
 			</grid>
 
 
+
+			<label value=""/>
+			<label class="h1" value="Existing Templates" />
+
+
+			<hlayout>Search: <textbox value="@bind(vt.filterText)" width="150px" tabindex="1" onClick="@command('changeFilter')"/> </hlayout>
+
+
+			<listbox id="box" width="100%" mold="paging" pageSize="5" model="@load(vt.templates)">
+				<listhead >
+					<listheader label="Type" sort="auto" />
+					<listheader label="Template Name" sort="auto"/>
+					<listheader label="Template Submit Date" sort="auto"/>
+					<listheader label="Template Author" sort="auto"/>
+
+				</listhead>
+
+				<template name="model" var="template" status="s">
+
+					<listitem self="@{each=template}">
+						<listcell label="${template.getTemplateTypeDescr()}"/>
+						<listcell label="${template.getDisplayname()}"/>
+						<listcell label="${template.getTimestampDate()}"/>
+						<listcell label="${template.getAuthor()}"/>
+
+					</listitem>
+
+				</template>
+
+
+
+			</listbox>
 		</vlayout>
-
-		<listbox id="box" width="100%" >
-		<listhead >
-			<listheader label="Author" sort="auto" />
-		</listhead>
-
-			<listitem label="${each.toString()}" forEach="${vt.getTemplates()}"/>   
-
-		</listbox>
 
 
 	</window>

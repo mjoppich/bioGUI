@@ -603,6 +603,9 @@ QWidget* XMLParserWindow::createComponent(QDomElement* pElement, bool* pChildren
 
         QString sCurrentPath = QDir::current().absolutePath();
         QString sSearchPath = this->getAttribute(pElement, "path", sCurrentPath + "/install_templates/");
+
+        bool bHasPathSet = this->hasAttribute(pElement, "path");
+
         QStringList vFileEnding = this->getAttribute(pElement, "ext", "*.igui").split(",");
 
         std::cerr << "starting in " << sCurrentPath.toStdString() << std::endl;
@@ -621,6 +624,29 @@ QWidget* XMLParserWindow::createComponent(QDomElement* pElement, bool* pChildren
 
             QString sFilePath = sFoundFile;
             QString sFileName = oFileInfo.completeBaseName();
+
+            /*
+             * if this is an install template, now only show filename but read first line ...
+             * */
+            if (!bHasPathSet)
+            {
+                QFile oFile( sFoundFile );
+                oFile.open(QFile::ReadOnly);
+                QTextStream in(&oFile);
+                QString sFirstLine = in.readLine();
+
+                if (sFirstLine.startsWith("#!"))
+                {
+
+                    QString sName = sFirstLine.right(sFirstLine.size()-2);
+
+                    sName = sName.trimmed();
+
+                    sFileName = sName;
+                }
+
+
+            }
 
             QComboItem* pNewItem = new QComboItem( sFileName, sFilePath);
             pComboBox->addItem( pNewItem->getValue(), pNewItem->getData() );

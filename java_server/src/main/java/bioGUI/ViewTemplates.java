@@ -6,7 +6,6 @@ import org.zkoss.bind.annotation.NotifyChange;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zul.Messagebox;
 import org.zkoss.zul.Textbox;
-import sun.plugin2.message.Message;
 
 import java.util.ArrayList;
 

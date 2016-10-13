@@ -2,7 +2,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>bioGUI</groupId>
-	<artifactId>bioGUI</artifactId>
+	<artifactId>biogui</artifactId>
 	<version>1.0-SNAPSHOT</version>
 	<properties>
 		<zk.version>8.0.1.1</zk.version>
@@ -110,7 +110,24 @@
 			<plugin>
 				<artifactId>maven-war-plugin</artifactId>
 				<groupId>org.apache.maven.plugins</groupId>
-				<version>2.1.1</version>
+				<version>3.0.0</version>
+				<configuration>
+					<!--<webappDirectory>/home/users/joppich/progs/apache-tomcat-7.0.59/webapps/${project.artifactId}</webappDirectory>-->
+					<webappDirectory>/home/proj/projekte/web/biogui</webappDirectory>
+				</configuration>
+				<executions>
+					<execution>
+						<id>default-war</id>
+						<phase>none</phase>
+					</execution>
+					<execution>
+						<id>war-exploded</id>
+						<phase>package</phase>
+						<goals>
+							<goal>exploded</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 			<!-- Pack zips -->
 			<plugin>

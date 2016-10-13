@@ -288,6 +288,11 @@ protected:
 
             qDebug() << pReply->errorString();
             qDebug() << pReply->isRunning();
+            if (! pReply->isReadable() )
+            {
+                qDebug() << "not readable";
+                return;
+            }
 
             QByteArray oReplyData = pReply->readAll();
 
@@ -306,7 +311,11 @@ protected:
 
             for (int i = 0; i < vLines.size(); ++i)
             {
-                this->insertRow(pTable, vLines.at(i));
+
+                QString sLine = vLines.at(i);
+
+                if (sLine.length() > 0)
+                    this->insertRow(pTable, sLine);
             }
 
         });
@@ -315,14 +324,28 @@ protected:
 
         qDebug() << sQueryURL;
 
-        QNetworkRequest oRequest = QNetworkRequest(QUrl(sQueryURL));
+        this->querySSLURL(sQueryURL, pNetworkManager);
+
+
+    }
+
+    void querySSLURL(QString& sURL, QNetworkAccessManager* pNetworkManager)
+    {
+        QNetworkRequest oRequest = QNetworkRequest(QUrl(sURL));
+        QSslConfiguration oSSLConfig = oRequest.sslConfiguration();
+        oSSLConfig.setProtocol(QSsl::AnyProtocol);
+        oSSLConfig.setPeerVerifyMode(QSslSocket::VerifyNone);
+
+        oRequest.setSslConfiguration(oSSLConfig);
         QNetworkReply* pReply = pNetworkManager->get( oRequest );
+
+        QList<QSslError> expectedSslErrors;
+        expectedSslErrors.append( QSslError(QSslError::SelfSignedCertificate) );
+        pReply->ignoreSslErrors(expectedSslErrors);
 
         QNetworkReplyTimer::set(pReply, 2000, [this] () {
             QMessageBox::critical(this, "A timeout has occurred.", "The application failed to reach the template server.");
         });
-
-
     }
 
     void downloadTemplate(int iID)
@@ -396,19 +419,23 @@ protected:
             QTextStream oSaveStream(&file);
             oSaveStream << oReplyLines;
             oSaveStream.flush();
+
+            QMessageBox* msgBox = new QMessageBox();
+            msgBox->setWindowTitle("Template Installed");
+
+            QString sMessage = "Template downloaded into file:\n" + sFilename;
+
+            msgBox->setText(sMessage);
+            msgBox->setWindowFlags(Qt::WindowStaysOnTopHint);
+            msgBox->show();
+
         });
 
 
         QString sURL = m_sServerLocation + "/get_template.php?templid=";
         sURL.append( std::to_string(iID).c_str() );
 
-        QNetworkReply* pReply = pNetworkManager->get( QNetworkRequest(QUrl( sURL )) );
-        QNetworkReplyTimer::set(pReply, 2000, [this] () {
-
-            QMessageBox::critical(this, "A timeout has occurred.", "The application failed to reach the template server.");
-
-        });
-
+        this->querySSLURL(sURL, pNetworkManager);
 
     }
 

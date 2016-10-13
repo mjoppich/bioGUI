@@ -2,7 +2,9 @@
 // Created by joppich on 4/6/16.
 //
 
+#include <QtCore/QFileInfo>
 #include "TemplateListDelegate.h"
+#include <QDebug>
 
 TemplateListDelegate::TemplateListDelegate(QObject *parent)
 {
@@ -61,6 +63,7 @@ void TemplateListDelegate::paint (QPainter * painter, const QStyleOptionViewItem
     QIcon ic = QIcon(qvariant_cast<QPixmap>(index.data(Qt::DecorationRole)));
     QString title = index.data(Qt::DisplayRole).toString();
     QString description = index.data(Qt::UserRole + 1).toString();
+    QString filelocation = index.data(Qt::UserRole + 2).toString();
 
     int imageSpace = 10;
     if (!ic.isNull()) {
@@ -70,15 +73,30 @@ void TemplateListDelegate::paint (QPainter * painter, const QStyleOptionViewItem
         imageSpace = 75;
     }
 
+    QFont oInfoFont( "Lucida Grande", -1, QFont::Normal );
+
     //TITLE
-    r = option.rect.adjusted(imageSpace, 0, -10, -30);
-    painter->setFont( QFont( "Lucida Grande", -1, QFont::Normal ) );
+    r = option.rect.adjusted(imageSpace, -25, -10, -40);
+    painter->setFont( oInfoFont );
     painter->drawText(r.left(), r.top(), r.width(), r.height(), Qt::AlignBottom|Qt::AlignLeft, title, &r);
 
     //DESCRIPTION
-    r = option.rect.adjusted(imageSpace, 30, -10, 0);
-    painter->setFont( QFont( "Lucida Grande", -1, QFont::Normal ) );
-    painter->drawText(r.left(), r.top(), r.width(), r.height(), Qt::AlignLeft, description, &r);
+    r = option.rect.adjusted(imageSpace, -10, -10, -25);
+    painter->setFont( oInfoFont );
+    painter->drawText(r.left(), r.top(), r.width(), r.height(), Qt::AlignBottom|Qt::AlignLeft, description, &r);
+
+    QFont oFileFont(oInfoFont);
+    oFileFont.setItalic(true);
+
+    QFontMetrics fontMetrics(oFileFont);
+    int iRightBorder = 30;
+    QString sElidedFileLocation = fontMetrics.elidedText(filelocation, Qt::ElideLeft, 300);
+
+
+    //File
+    r = option.rect.adjusted(imageSpace, 5, -1, -10);
+    painter->setFont( oFileFont );
+    painter->drawText(r.left(), r.top(), r.width(), r.height(), Qt::AlignBottom|Qt::AlignLeft, sElidedFileLocation, &r);
 }
 
 QSize TemplateListDelegate::sizeHint (const QStyleOptionViewItem & option, const QModelIndex & index ) const{

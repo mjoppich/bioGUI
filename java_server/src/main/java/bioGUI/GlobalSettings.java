@@ -8,12 +8,12 @@ import java.sql.DriverManager;
  */
 public class GlobalSettings {
 
-    public static int m_iDBPort = 3306;
-    public static String m_sDBHost = "localhost";
+    public static int m_iDBPort = 3308;
+    public static String m_sDBHost = "mysql2-ext";
 
-    public static String m_sDBName = "biogui";
-    public static String m_sDBUser = "root";
-    public static String m_sDBPW = null;
+    public static String m_sDBName = "bioGUI";
+    public static String m_sDBUser = "ewms";
+    public static String m_sDBPW = "EwMsA0";
 
     public static Connection getDB()
     {

@@ -4,6 +4,8 @@
 
 #include "bioGUIapp.h"
 
+#include <src/app/TemplateListWidget.h>
+
 bioGUIapp::bioGUIapp(int& argc, char** argv)
         : QApplication(argc, (char**)argv)
 {
@@ -42,7 +44,7 @@ bioGUIapp::bioGUIapp(int& argc, char** argv)
     QLabel* pFilterLabel = new QLabel("Filter:");
     QLineEdit* pFilterLine = new QLineEdit();
 
-    m_pTemplates = new QListWidget();
+    m_pTemplates = new TemplateListWidget();
 
     connect(pFilterLine, &QLineEdit::textChanged, [this] (const QString& text) {
 

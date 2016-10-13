@@ -25,9 +25,25 @@ project (bioGUI)
 set(CMAKE_CXX_STANDARD 11)
 
 find_package(OpenMP)
+
 if (OPENMP_FOUND)
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}") #-pg
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
 #     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS} ")
+endif()
+
+# Search OpenSSL
+find_package(OpenSSL REQUIRED)
+
+if( OPENSSL_FOUND )
+    include_directories(${OPENSSL_INCLUDE_DIRS})
+    #set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OPENSSL_C_FLAGS}")
+    #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OPENSSL_CXX_FLAGS}")
+    message(WARNING "Using OpenSSL ${OPENSSL_VERSION}")
+    message(WARNING ${OPENSSL_LIBRARIES})
+
+
+else()
+    # Error; with REQUIRED, pkg_search_module() will throw an error by it's own
 endif()
 
 MESSAGE(WARNING ${CMAKE_SYSTEM_NAME})
@@ -88,7 +104,8 @@ target_include_directories (parsing PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 install(TARGETS parsing DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/lib)
 install(FILES ${parsinglib_H} DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/include/parsing)
 install(FILES ${parsinglib_nodes_H} DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/include/parsing/nodes)
-qt5_use_modules(parsing Core Widgets Gui Xml XmlPatterns)
+
+qt5_use_modules(parsing Core Widgets Gui Xml XmlPatterns Network)
 
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../splitter/include)
@@ -113,5 +130,6 @@ file(GLOB bioGUI_SRC
         )
 ADD_EXECUTABLE(bioGUI ${bioGUI_SRC} ${bioGUI_H} ${bioGUIapp_H})
 target_include_directories(bioGUI PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
-TARGET_LINK_LIBRARIES(bioGUI parsing)
+
+TARGET_LINK_LIBRARIES(bioGUI parsing ) #${OPENSSL_LIBRARIES}
 install(TARGETS bioGUI DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/bin)

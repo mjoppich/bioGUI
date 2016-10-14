@@ -13,7 +13,7 @@ public:
     ExecutionExecutableNode(QDomElement* pElement)
         : QObject(NULL), ExecutionNode(pElement)
     {
-
+        m_sProgramName = this->getDomElementAttribute(pElement, "program", "").toStdString();
     }
 
     virtual std::string evaluate( std::map< std::string, ExecutionNode*>* pID2Node,
@@ -27,10 +27,19 @@ public:
         return this->evaluate(pID2Node, pInputID2Value, pInputID2Widget, false);
     }
 
+    std::string getProgramName()
+    {
+        return m_sProgramName;
+    }
+
 signals:
 
     void finishedExecution();
 
+
+protected:
+
+    std::string m_sProgramName = "";
 
 };
 

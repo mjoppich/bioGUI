@@ -300,11 +300,16 @@ QWidget* XMLParserWindow::createComponent(QDomElement* pElement, bool* pChildren
     {
         QPushButton *pAction = new QPushButton( sValue );
 
+        QString sQProgramToRun = this->getAttribute(pElement, "program", "");
+        std::string sProgramToRun = sQProgramToRun.toStdString();
+
         bioGUIapp* pApp = this->m_pApp;
 
-        pAction->connect(pAction,&QAbstractButton::clicked,[pApp] (bool bChecked){
+        pAction->connect(pAction,&QAbstractButton::clicked,[pApp, sProgramToRun] (bool bChecked){
 
-            pApp->runProgram();
+            std::string sTmp = sProgramToRun;
+
+            pApp->runProgram( sTmp );
 
         });
 
@@ -600,11 +605,25 @@ QWidget* XMLParserWindow::createComponent(QDomElement* pElement, bool* pChildren
 
         QComboBox *pComboBox = new QComboBox();
 
-
         QString sCurrentPath = QDir::current().absolutePath();
         QString sSearchPath = this->getAttribute(pElement, "path", sCurrentPath + "/install_templates/");
 
         bool bHasPathSet = this->hasAttribute(pElement, "path");
+
+        if (bHasPathSet)
+        {
+
+            QFileInfo oSetPath(sSearchPath);
+
+            if (oSetPath.isRelative())
+            {
+                std::cerr << "Changed path from " << sSearchPath.toStdString();
+                sSearchPath = sCurrentPath + "/" + sSearchPath;
+
+                std::cerr << " to " << sSearchPath.toStdString() << std::endl;
+            }
+
+        }
 
         QStringList vFileEnding = this->getAttribute(pElement, "ext", "*.igui").split(",");
 

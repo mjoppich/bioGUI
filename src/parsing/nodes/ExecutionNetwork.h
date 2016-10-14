@@ -38,7 +38,7 @@ public:
         m_pInputID2Widget = pInputID2Widget;
     }
 
-    int execute( )
+    int execute( std::string& sProgramToRun )
     {
 
         mInputID2Value.clear();
@@ -69,14 +69,20 @@ public:
             if (ExecutionExecuteNode* pExecNode = dynamic_cast<ExecutionExecuteNode*>( pNode ))
             {
 
-                m_vExecNodes.push_back(pExecNode);
+                if ((sProgramToRun.size() == 0) || (sProgramToRun.compare( pExecNode->getProgramName() )))
+                {
+                    m_vExecNodes.push_back(pExecNode);
+                }
 
             }
 
             if (ExecutionIfNode* pExecNode = dynamic_cast<ExecutionIfNode*>( pNode ))
             {
 
-                m_vExecNodes.push_back(pExecNode);
+                if ((sProgramToRun.size() == 0) || (sProgramToRun.compare( pExecNode->getProgramName() )))
+                {
+                    m_vExecNodes.push_back(pExecNode);
+                }
 
             }
 

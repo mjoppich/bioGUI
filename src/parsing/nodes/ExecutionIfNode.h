@@ -25,6 +25,7 @@ public:
 
         m_sSeperator = this->getDomElementAttribute(pElement, "sep", "").toStdString();
 
+
         m_vValidCompareModes.push_back("is_set");
         m_vValidCompareModes.push_back("equals");
         m_vValidCompareModes.push_back("EQUALS");

@@ -38,6 +38,8 @@ public:
         m_sTest = this->getDomElementAttribute(pElement, "test", "false").toStdString();
         m_sWSL = this->getDomElementAttribute(pElement, "wsl", "false").toStdString();
 
+        m_sProgram = this->getDomElementAttribute(pElement, "program", "").toStdString();
+
     }
 
     virtual std::string evaluateChildren( std::map< std::string, ExecutionNode*>* pID2Node,
@@ -223,6 +225,8 @@ protected:
 
     std::string m_sTest = "false";
     std::string m_sWSL = "true";
+
+    std::string m_sProgram = "";
 
 };
 

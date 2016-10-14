@@ -18,7 +18,7 @@ class ExecutionRunThread : public QThread
 
 public:
 
-    ExecutionRunThread(XMLParserWindow* pWindowParser, XMLParserExecution* pExecution);
+    ExecutionRunThread(XMLParserWindow* pWindowParser, XMLParserExecution* pExecution, std::string& sProgramToRun);
 
     ~ExecutionRunThread();
 
@@ -36,6 +36,8 @@ protected:
     XMLParserExecution* m_pExecutionParser;
     ExecutionNetwork* m_pNetwork;
     XMLParserWindow* m_pWindowParser;
+
+    std::string m_sProgramToRun = "";
 
 };
 

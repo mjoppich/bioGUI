@@ -1,13 +1,12 @@
 apt-get update
 
-apt-get -y build-essential
-apt-get -y install qtbase5-dev
-apt-get -y install cmake
+apt-get -y install build-essential git cmake libssl-dev
+apt-get -y install qtbase5-dev libqt5xmlpatterns5-dev
 
 mkdir build
 
 cd build
 
-ccmake ..
+cmake ..
 
 make

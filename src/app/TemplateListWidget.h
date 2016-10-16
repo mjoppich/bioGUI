@@ -12,7 +12,7 @@
 #include <QFile>
 
 class TemplateListWidget : public QListWidget {
-
+Q_OBJECT
 public:
 
     TemplateListWidget()
@@ -40,20 +40,17 @@ public:
         // Create menu and insert some actions
         QMenu myMenu;
 
-QAction* pInfoAction = new QAction(QIcon(":/images/open.png"), tr("&Info"), this);
-pInfoAction->setStatusTip(tr("Get Template Info"));
-connect(pInfoAction, SIGNAL(triggered()), this, SLOT(infoTemplate));
+	const QIcon oOpenIcon(":/images/open.png");
+	const QString sInfoString("Info");
+	const QKeySequence sInfoKey(tr("Ctrl+I"));
 
-        myMenu.addAction( pInfoAction );
+        myMenu.addAction( oOpenIcon, sInfoString , (TemplateListWidget*) this, SLOT(infoTemplate()), sInfoKey);
 
+	const QIcon oCloseIcon(":/images/close.png");
+	const QString sDeleteString("Delete");
+	const QKeySequence sDeleteKey(tr("Ctrl+D"));
 
-
-QAction* pDeleteAction = new QAction(QIcon(":/images/open.png"), tr("&Delete"), this);
-pInfoAction->setStatusTip(tr("Delete Template"));
-connect(pDeleteAction, SIGNAL(triggered()), this, SLOT(deleteTemplate));
-        myMenu.addAction(pDeleteAction);
-
-
+        myMenu.addAction( oCloseIcon, sDeleteString , (TemplateListWidget*) this, SLOT(deleteTemplate()), sDeleteKey);
 
         // Show context menu at handling position
         myMenu.exec(globalPos);

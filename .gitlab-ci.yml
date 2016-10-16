@@ -3,9 +3,7 @@ types:
   - test
 
 build_app:
+  image: ubuntu
   type: build
-  script: echo Building!
+  script: sh build-in-place.sh
 
-test_app:
-  type: test
-  script: python manage.py test

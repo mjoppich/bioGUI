@@ -1,9 +1,8 @@
-types:
+stages:
   - build
-  - test
 
 build_app:
-  image: jemc/qt5
-  type: build
+  image: ubuntu
+  stage: build
   script: sh build-in-place.sh
 

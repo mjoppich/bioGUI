@@ -79,7 +79,7 @@ MESSAGE(WARNING "QT_QMAKE_EXECUTABLE " ${QT_QMAKE_EXECUTABLE})
 if (MINGW)
     find_package(Qt5 5.6 COMPONENTS Core Gui Widgets Network Xml XmlPatterns PATHS "/home/users/joppich/progs/Qt/5.7/gcc_64/" REQUIRED)
 else()
-    find_package(Qt5 5.7 COMPONENTS Core Gui Widgets Network Xml XmlPatterns PATHS "/home/users/joppich/Qt/5.7/gcc_64/" "/usr/lib/qt5/x86_64-w64-mingw32/" REQUIRED )
+    find_package(Qt5 COMPONENTS Core Gui Widgets Network Xml XmlPatterns PATHS "/home/users/joppich/Qt/5.7/gcc_64/" "/usr/lib/qt5/x86_64-w64-mingw32/" REQUIRED )
 endif()
 
 

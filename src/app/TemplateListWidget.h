@@ -27,7 +27,39 @@ public:
 
     }
 
+    void showContextMenu(const QPoint &pos)
+    {
+        // Handle global position
+        QPoint globalPos = this->mapToGlobal(pos);
 
+        this->clearSelection();
+
+        QListWidgetItem* pItemUnderCursor = this->itemAt(pos);
+        pItemUnderCursor->setSelected(true);
+
+        // Create menu and insert some actions
+        QMenu myMenu;
+
+QAction* pInfoAction = new QAction(QIcon(":/images/open.png"), tr("&Info"), this);
+pInfoAction->setStatusTip(tr("Get Template Info"));
+connect(pInfoAction, SIGNAL(triggered()), this, SLOT(infoTemplate));
+
+        myMenu.addAction( pInfoAction );
+
+
+
+QAction* pDeleteAction = new QAction(QIcon(":/images/open.png"), tr("&Delete"), this);
+pInfoAction->setStatusTip(tr("Delete Template"));
+connect(pDeleteAction, SIGNAL(triggered()), this, SLOT(deleteTemplate));
+        myMenu.addAction(pDeleteAction);
+
+
+
+        // Show context menu at handling position
+        myMenu.exec(globalPos);
+    }
+
+public slots:
 
     void deleteTemplate()
     {
@@ -69,25 +101,6 @@ public:
     void infoTemplate()
     {
         QMessageBox::information(this, "No information", "There is currently no information to display.");
-    }
-
-    void showContextMenu(const QPoint &pos)
-    {
-        // Handle global position
-        QPoint globalPos = this->mapToGlobal(pos);
-
-        this->clearSelection();
-
-        QListWidgetItem* pItemUnderCursor = this->itemAt(pos);
-        pItemUnderCursor->setSelected(true);
-
-        // Create menu and insert some actions
-        QMenu myMenu;
-        myMenu.addAction("Info", this, &TemplateListWidget::infoTemplate);
-        myMenu.addAction("Delete",  this, &TemplateListWidget::deleteTemplate);
-
-        // Show context menu at handling position
-        myMenu.exec(globalPos);
     }
 
 };

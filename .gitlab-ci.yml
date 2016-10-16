@@ -1,11 +1,8 @@
-types:
+stages:
   - build
-  - test
 
 build_app:
-  type: build
-  script: echo Building!
+  image: ubuntu
+  stage: build
+  script: sh build-in-place.sh
 
-test_app:
-  type: test
-  script: python manage.py test

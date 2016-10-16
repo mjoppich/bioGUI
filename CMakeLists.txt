@@ -24,7 +24,7 @@ cmake_minimum_required(VERSION 3.1.0 FATAL_ERROR)
 project (bioGUI)
 set(CMAKE_CXX_STANDARD 11)
 
-find_package(OpenMP)
+find_package(OpenMP REQUIRED)
 
 if (OPENMP_FOUND)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
@@ -32,14 +32,21 @@ if (OPENMP_FOUND)
 endif()
 
 # Search OpenSSL
+set(OPENSSL_USE_STATIC_LIBS TRUE)
 find_package(OpenSSL REQUIRED)
 
 if( OPENSSL_FOUND )
+
     include_directories(${OPENSSL_INCLUDE_DIRS})
     #set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OPENSSL_C_FLAGS}")
     #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OPENSSL_CXX_FLAGS}")
     message(WARNING "Using OpenSSL ${OPENSSL_VERSION}")
     message(WARNING ${OPENSSL_LIBRARIES})
+    message(WARNING ${OPENSSL_SSL_LIBRARY})
+    message(WARNING ${OPENSSL_CRYPTO_LIBRARY})
+
+    set(MYOPENSSL_LIBS ${OPENSSL_LIBRARIES})
+    message(WARNING ${MYOPENSSL_LIBS})
 
 
 else()
@@ -101,6 +108,7 @@ file(GLOB parsinglib_SRC
 )
 add_library(parsing ${parsinglib_SRC} ${parsinglib_H} ${parsinglib_nodes_H} )
 target_include_directories (parsing PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+
 install(TARGETS parsing DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/lib)
 install(FILES ${parsinglib_H} DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/include/parsing)
 install(FILES ${parsinglib_nodes_H} DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/include/parsing/nodes)
@@ -128,8 +136,17 @@ file(GLOB bioGUI_SRC
         "src/*.cpp"
         "src/app/*.cpp"
         )
-ADD_EXECUTABLE(bioGUI ${bioGUI_SRC} ${bioGUI_H} ${bioGUIapp_H})
+
+#set(CMAKE_VERBOSE_MAKEFILE "TRUE")
+
+ADD_EXECUTABLE(bioGUI ${bioGUI_SRC} ${bioGUI_H} ${bioGUIapp_H} )
 target_include_directories(bioGUI PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
-TARGET_LINK_LIBRARIES(bioGUI parsing ) #${OPENSSL_LIBRARIES}
+ADD_LIBRARY(mylibeay STATIC IMPORTED)
+SET_TARGET_PROPERTIES(mylibeay PROPERTIES IMPORTED_LOCATION ${OPENSSL_SSL_LIBRARY})
+
+ADD_LIBRARY(myssleay STATIC IMPORTED)
+SET_TARGET_PROPERTIES(myssleay PROPERTIES IMPORTED_LOCATION ${OPENSSL_CRYPTO_LIBRARY})
+
+TARGET_LINK_LIBRARIES(bioGUI parsing mylibeay myssleay)
 install(TARGETS bioGUI DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/bin)

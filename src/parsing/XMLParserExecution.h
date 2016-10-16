@@ -5,7 +5,7 @@
 #ifndef BIOGUI_XMLPARSEREXECUTION_H
 #define BIOGUI_XMLPARSEREXECUTION_H
 
-#include <src/parsing/nodes/ExecutionSaveFileNode.h>
+#include <src/parsing/nodes/ExecutionFileNode.h>
 #include <src/parsing/nodes/ExecutionStringReplaceNode.h>
 #include <src/parsing/nodes/ExecutionPathRelocateNode.h>
 #include <src/parsing/nodes/ExecutionHTTPExecuteNode.h>
@@ -43,8 +43,8 @@ public:
             return (ExecutionNode*) pNode;
         });
 
-        this->insertNodeType("savefile", [] (QDomElement* pElement) {
-            ExecutionSaveFileNode* pNode = new ExecutionSaveFileNode( pElement );
+        this->insertNodeType("file", [] (QDomElement* pElement) {
+            ExecutionFileNode* pNode = new ExecutionFileNode( pElement );
             return (ExecutionNode*) pNode;
         });
 

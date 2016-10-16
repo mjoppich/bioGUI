@@ -69,7 +69,7 @@ public:
             if (ExecutionExecuteNode* pExecNode = dynamic_cast<ExecutionExecuteNode*>( pNode ))
             {
 
-                if ((sProgramToRun.size() == 0) || (sProgramToRun.compare( pExecNode->getProgramName() )))
+                if ((sProgramToRun.size() == 0) || (sProgramToRun.compare( pExecNode->getProgramName() ) == 0))
                 {
                     m_vExecNodes.push_back(pExecNode);
                 }
@@ -79,7 +79,7 @@ public:
             if (ExecutionIfNode* pExecNode = dynamic_cast<ExecutionIfNode*>( pNode ))
             {
 
-                if ((sProgramToRun.size() == 0) || (sProgramToRun.compare( pExecNode->getProgramName() )))
+                if ((sProgramToRun.size() == 0) || (sProgramToRun.compare( pExecNode->getProgramName() ) == 0))
                 {
                     m_vExecNodes.push_back(pExecNode);
                 }

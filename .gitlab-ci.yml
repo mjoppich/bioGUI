@@ -3,7 +3,7 @@ types:
   - test
 
 build_app:
-  image: ubuntu
+  image: jemc/qt5
   type: build
   script: sh build-in-place.sh
 

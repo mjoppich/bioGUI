@@ -1,3 +1,4 @@
+apt-get update
 apt-get -y install cmake
 
 mkdir build

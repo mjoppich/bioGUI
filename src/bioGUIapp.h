@@ -77,6 +77,8 @@ public:
             this->enableActions();
             this->m_pMainMainWindow->setEnabled(true);
 
+            this->reloadTemplates();
+
         });
 
     }
@@ -192,7 +194,7 @@ public:
     }
 
 
-    void runProgram()
+    void runProgram(std::string& sProgramToRun)
     {
 
         ExecutionNetwork* pNetwork = NULL;
@@ -202,7 +204,7 @@ public:
 
         XMLParserExecution* pParseExecution = new XMLParserExecution( m_pWindowParser->getTemplateFile() );
 
-        pThread = new ExecutionRunThread(m_pWindowParser, pParseExecution);
+        pThread = new ExecutionRunThread(m_pWindowParser, pParseExecution, sProgramToRun);
 
         this->connect(pThread, &QThread::started, pThread, &ExecutionRunThread::startExecution);
         this->connect(pThread, &ExecutionRunThread::executionFinished, this, &bioGUIapp::programFinished);

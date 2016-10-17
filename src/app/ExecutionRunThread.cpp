@@ -8,12 +8,14 @@
 #include "../parsing/XMLParserExecution.h"
 #include "../parsing/nodes/ExecutionNetwork.h"
 
-ExecutionRunThread::ExecutionRunThread(XMLParserWindow* pWindowParser, XMLParserExecution* pExecution) {
+ExecutionRunThread::ExecutionRunThread(XMLParserWindow* pWindowParser, XMLParserExecution* pExecution, std::string& sProgramToRun) {
 
     m_pExecutionParser = pExecution;
     m_pWindowParser = pWindowParser;
 
     m_pNetwork = m_pExecutionParser->getExecutionNetwork();
+
+    m_sProgramToRun = sProgramToRun;
 }
 
 ExecutionRunThread::~ExecutionRunThread()
@@ -31,10 +33,12 @@ void ExecutionRunThread::startExecution()
     try
     {
 
+        std::cerr << "Executing program: " << m_sProgramToRun << std::endl;
+
         QObject::connect(m_pNetwork, &ExecutionNetwork::executionFinished, this, &ExecutionRunThread::executionFinished);
 
         m_pNetwork->setMaps( m_pWindowParser->getID2Value(), m_pWindowParser->getID2Widget() );
-        m_pNetwork->execute();
+        m_pNetwork->execute( m_sProgramToRun );
 
     } catch (const char* e)
     {

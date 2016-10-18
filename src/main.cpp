@@ -41,7 +41,7 @@ int main(int argc, char **argv)
     L = luaL_newstate();                        /* Create Lua state variable */
     luaL_openlibs(L);                           /* Load Lua libraries */
 
-    if (luaL_loadfile(L, "test.lua"))    /* Load but don't run the Lua script */
+    if (luaL_loadfile(L, "lua_scripts/test.lua"))    /* Load but don't run the Lua script */
     bail(L, "luaL_loadfile() failed");      /* Error out if file can't be read */
 
     printf("In C, calling Lua\n");

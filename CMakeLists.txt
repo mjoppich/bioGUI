@@ -39,7 +39,7 @@ message("   *** Lua include: ${LUA_INCLUDE_DIR}")
 message("   *** Lua lib: ${LUA_LIBRARIES}")
 
 # Search OpenSSL
-set(OPENSSL_USE_STATIC_LIBS TRUE)
+#set(OPENSSL_USE_STATIC_LIBS TRUE)
 find_package(OpenSSL REQUIRED)
 
 if( OPENSSL_FOUND )
@@ -63,7 +63,7 @@ endif()
 MESSAGE(WARNING ${CMAKE_SYSTEM_NAME})
 
 if ( CMAKE_SYSTEM_NAME STREQUAL "Windows" OR CYGWIN OR MINGW)
-    SET(Qt5_DIR "/usr/lib/qt5/x86_64-w64-mingw32/")
+    SET(ENV{Qt5_DIR} "/usr/lib/qt5/x86_64-w64-mingw32/")
     set(QT_QMAKE_EXECUTABLE /usr/lib/qt5/bin/qmake.exe)
 
     if (MINGW)
@@ -72,7 +72,7 @@ if ( CMAKE_SYSTEM_NAME STREQUAL "Windows" OR CYGWIN OR MINGW)
     endif()
 
 else()
-    SET(Qt5_DIR "/home/users/joppich/progs/Qt/5.7/gcc_64/" )
+    SET(ENV{Qt5_DIR} "/home/users/joppich/progs/Qt/5.5/gcc_64/" )
     set(QT_QMAKE_EXECUTABLE ${Qt5_DIR}/bin/qmake)
     set(QT_ROOT ${Qt5_DIR})
 

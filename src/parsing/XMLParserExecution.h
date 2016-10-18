@@ -9,6 +9,7 @@
 #include <src/parsing/nodes/ExecutionStringReplaceNode.h>
 #include <src/parsing/nodes/ExecutionPathRelocateNode.h>
 #include <src/parsing/nodes/ExecutionHTTPExecuteNode.h>
+#include <src/parsing/nodes/ExecutionScriptNode.h>
 #include "nodes/ExecutionOrderedAddNode.h"
 #include "nodes/ExecutionPlaceholderNode.h"
 #include "nodes/ExecutionIfNode.h"
@@ -20,6 +21,7 @@
 #include "nodes/ExecutionOutputNode.h"
 #include "nodes/ExecutionEnvNode.h"
 #include "nodes/ExecutionNode.h"
+#include "nodes/ExecutionScriptNode.h"
 #include "nodes/ExecutionNetwork.h"
 #include "XMLParser.h"
 
@@ -100,6 +102,11 @@ public:
 
         this->insertNodeType("env", [] (QDomElement* pElement) {
             ExecutionEnvNode* pNode = new ExecutionEnvNode( pElement );
+            return (ExecutionNode*) pNode;
+        });
+
+        this->insertNodeType("script", [] (QDomElement* pElement) {
+            ExecutionScriptNode* pNode = new ExecutionScriptNode( pElement );
             return (ExecutionNode*) pNode;
         });
 

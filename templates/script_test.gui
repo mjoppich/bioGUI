@@ -1,0 +1,25 @@
+<!--<?xml version="1.0" encoding="UTF-8"?>-->
+<template description="Script Test" title="Script Test">
+ <window title="Trimmomatic" >
+  <vgroup>
+    <action id="action">action</action>
+  </vgroup>
+  </window>
+  <execution>
+
+    <script id="cl">
+    <![CDATA[
+
+    this is my lua code
+
+    ]]>
+    </script>
+
+
+  <execute param="${cl}" location="" exec="echo" test="false">
+   <output id="outcout" type="cout" color="green" to="outputstream1"/>
+   <output id="outcerr" type="cerr" color="red" to="outputstream2"/>
+  </execute>
+
+  </execution>
+  </template>

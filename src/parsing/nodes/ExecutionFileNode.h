@@ -104,9 +104,9 @@ public:
         return "";
     }
 
-protected:
 
-    inline bool file_exists (const std::string& name) {
+
+    static bool file_exists (const std::string& name) {
         if (FILE *file = fopen(name.c_str(), "r")) {
             fclose(file);
             return true;
@@ -114,6 +114,10 @@ protected:
             return false;
         }
     }
+
+protected:
+
+
 
 
     std::string readFile(std::string* pFilename, std::string* pSep) {

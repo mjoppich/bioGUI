@@ -7,7 +7,7 @@ Especially in biology, the domain experts are often computer novices and have di
 ## Who is bioGUI for?
 
 With bioGUI domain experts, which have no clue about the command line, should be enabled to use highly sophisticated tools written for them.
-bioGUI specifically aims at Windows users, as Microsoft just introduced the Windows Subsystem for Linux with its Bash on Ubuntu on Windows.
+bioGUI specifically aims at Windows users, as Microsoft just introduced the Windows Subsystem for Linux (WSL) with its _Bash on Ubuntu on Windows_.
 This system allows the usage of said sophisticated tools on a regular Windows computer as most people have.
 With bioGUI one also does not need any knowledge about the command line, because the task of executing a given tools becomes a point & click solution.
 
@@ -15,6 +15,7 @@ With bioGUI one also does not need any knowledge about the command line, because
 
 It is not about generating a GUI by its own.
 
+# About using/building bioGUI
 ## How to obtain bioGUI?
 
 Currently the only way is to clone this repository and build bioGUI.
@@ -25,15 +26,29 @@ It is planned to also distribute full installers/archives to download with binar
 Before building bioGUI check that the following dependencies are installed:
 
 	* cmake
-	* libssl-dev
 	* Qt 5.5+
+	* libssl-dev
+	* liblua5.3-dev
 	
 then create a new folder `build` within the git root, cd into it and execute `cmake .. && make && make install`
 
-## How to create and submit new templates?
+## How to see which templates exist and how to install new templates?
 
-New templates can be submitted via [link](https://services.bio.ifi.lmu.de/biogui).
+The _Download Templates_ button in bioGUI lists all available templates and allows also for filtering.
+You can also explore all templates at [link](https://services.bio.ifi.lmu.de/biogui).
+This is also where you can submit new/modified templates.
 
-### How to obtain new templates?
+After clicking on _Download Templates_, you can select one or multiple templates to download.
+These will then be downloaded and saved for you.
+Upon exiting the _Download Templates_ dialogue, you will see the templates in bioGUI.
+Install templates require the Template Installation Module to be downloaded before.
 
-New templates can be obtained directly from the bioGUI app by clicking the _Download Templates_ button.
+_README to be continued_
+
+# About Templates
+
+## How to create a new template?
+
+## Which visual elements exist?
+
+## Which execution nodes exist?

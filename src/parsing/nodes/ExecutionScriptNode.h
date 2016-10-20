@@ -23,11 +23,15 @@ public:
             : ExecutionNode(pElement)
     {
         m_sScriptFile = this->getDomElementAttribute(pElement, "script", "").toStdString();
+        m_sArguments = this->getDomElementAttribute(pElement, "argv", "").toStdString();
 
         // get only child
         if (pElement->hasChildNodes() && pElement->childNodes().item(0).isCDATASection())
         {
             m_sInlineLUA = pElement->childNodes().item(0).toCDATASection().data().toStdString();
+
+            m_bScriptBased = false;
+
         } else {
 
             throw "Script nodes may only have one CDATA child!";
@@ -45,6 +49,8 @@ public:
             if (!bLUAFileExists)
                 throw "Script for node does not exist!";
 
+            m_bScriptBased = true;
+
         }
 
         std::cerr << m_sInlineLUA << std::endl;
@@ -56,9 +62,48 @@ public:
                          std::map <std::string, std::string> *pInputID2Value,
                          std::map<std::string, QWidget *> *pInputID2Widget) {
 
+        // parse arguments
+        std::vector<std::string> vArguments;
+
+        QString oArgvString(m_sArguments.c_str());
+        QStringList vArgs = oArgvString.split(",");
+
+        if (!oArgvString.contains(','))
+        {
+            if (oArgvString.size() == 0)
+                vArgs.clear();
+        }
+
+        for (QString& oString : vArgs)
+        {
+            std::string sArgName = oString.toStdString();
+
+            if (sArgName.size() < 3)
+            {
+                vArguments.push_back( sArgName );
+            } else {
+
+                if ((sArgName[0] == '$') && (sArgName[1] == '{') && (sArgName[sArgName.size()-1] == '}'))
+                {
+
+                    std::string sFieldName = sArgName.substr(2, sArgName.size()-3);
+
+                    std::string sArg = this->getNodeValueOrValue(sFieldName, sFieldName, pID2Node, pInputID2Value, pInputID2Widget);
+
+                    vArguments.push_back( sArg );
+
+                } else {
+                    vArguments.push_back( sArgName );
+                }
+
+            }
+
+        }
 
 
-        return "";
+        std::string sReturn = this->runLUA(vArguments);
+
+        return sReturn;
 
     }
 
@@ -71,7 +116,7 @@ protected:
 
     }
 
-    std::string runLUA()
+    std::string runLUA( std::vector<std::string>& vArguments )
     {
 
         lua_State *L;
@@ -80,41 +125,48 @@ protected:
         luaL_openlibs(L);                           /* Load Lua libraries */
 
         //if (luaL_loadstring(L, "io.write(\"This is coming from lua.\\n\")"))    /* Load but don't run the Lua script */
-        if (luaL_loadfile(L, "lua_scripts/test.lua"))
-            bail(L, "luaL_loadfile() failed");      /* Error out if file can't be read */
+
+        if (m_bScriptBased)
+        {
+
+            if (luaL_loadfile(L, m_sScriptFile.c_str()))
+                bail(L, "luaL_loadfile() failed");
+
+        } else {
+
+            if (luaL_loadstring(L, m_sInlineLUA.c_str()))
+                bail(L, "luaL_loadfile() failed");
+
+        }
 
         if (lua_pcall(L, 0, 0, 0))                  /* PRIMING RUN. FORGET THIS AND YOU'RE TOAST */
             bail(L, "lua_pcall() failed");          /* Error out if Lua file has an error */
 
-        printf("In C, calling Lua->tellme()\n");
+        lua_getglobal(L, "evaluate");/* Tell it to run callfuncscript.lua->tellme() */
 
-        lua_getglobal(L, "tellme");                 /* Tell it to run callfuncscript.lua->tellme() */
-        if (lua_pcall(L, 0, 0, 0))                  /* Run the function */
-            bail(L, "lua_pcall() failed");          /* Error out if Lua file has an error */
+        for (size_t i = 0; i < vArguments.size(); ++i)
+        {
+            lua_pushstring(L, vArguments[i].c_str());
+        }
 
-        printf("Back in C again\n");
-        printf("In C, calling Lua->square(6)\n");
+        if (lua_pcall(L, vArguments.size(), 1, 0))                  /* Run the function */
+            bail(L, "calling evaluate failed");          /* Error out if Lua file has an error */
 
-        lua_getglobal(L, "square");                 /* Tell it to run callfuncscript.lua->square() */
-        lua_pushnumber(L, 6);                       /* Submit 6 as the argument to square() */
-        if (lua_pcall(L, 1, 1, 0))                  /* Run function, !!! NRETURN=1 !!! */
-            bail(L, "lua_pcall() failed");
+        std::string sResult = lua_tostring(L, -1);
 
-        printf("Back in C again\n");
-        int mynumber = lua_tonumber(L, 0);
-        std::string sResult = lua_tostring(L, 0);
-
-        printf("Returned number=%d\n", mynumber);
-
-        std::cerr << sResult << std::endl;
+        std::cerr << "LUA result: " << sResult << std::endl;
 
         lua_close(L);                               /* Clean up, free the Lua state var */
 
+        return sResult;
     }
 
 
     std::string m_sScriptFile;
     std::string m_sInlineLUA;
+    std::string m_sArguments;
+
+    bool m_bScriptBased = false;
 
 };
 

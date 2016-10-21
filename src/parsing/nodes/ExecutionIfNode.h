@@ -17,11 +17,11 @@ public:
             : ExecutionExecutableNode(pElement)
     {
 
-        std::string sNotSet = "#NOTSET#";
+        m_sNotSet = "#NOTSET#";
 
         m_sCompareMode = this->getDomElementAttribute(pElement, "comp", "is_set").toStdString();
-        m_sValue1 = this->getDomElementAttribute(pElement, "value1", QString(sNotSet.c_str())).toStdString();
-        m_sValue2 = this->getDomElementAttribute(pElement, "value2", QString(sNotSet.c_str())).toStdString();
+        m_sValue1 = this->getDomElementAttribute(pElement, "value1", QString(m_sNotSet.c_str())).toStdString();
+        m_sValue2 = this->getDomElementAttribute(pElement, "value2", QString(m_sNotSet.c_str())).toStdString();
 
         m_sSeperator = this->getDomElementAttribute(pElement, "sep", "").toStdString();
 
@@ -29,24 +29,6 @@ public:
         m_vValidCompareModes.push_back("is_set");
         m_vValidCompareModes.push_back("equals");
         m_vValidCompareModes.push_back("EQUALS");
-
-        if (!(std::find(m_vValidCompareModes.begin(), m_vValidCompareModes.end(), m_sCompareMode) != m_vValidCompareModes.end() ))
-        {
-            throw "unknown compare method " + m_sCompareMode;
-        }
-
-
-        if (m_sCompareMode.compare("is_set") != 0)
-        {
-
-            if (m_sValue2.compare(sNotSet) == 0)
-                throw "value2 must be set";
-
-        }
-
-        if (m_sValue1.compare(sNotSet) == 0)
-            throw "value1 must be set";
-
 
     }
 
@@ -77,6 +59,23 @@ public:
                           std::map<std::string, std::string>* pInputID2Value,
                           std::map<std::string, QWidget*>* pInputID2Widget, bool bEmitSignal = false)
     {
+
+        if (!(std::find(m_vValidCompareModes.begin(), m_vValidCompareModes.end(), m_sCompareMode) != m_vValidCompareModes.end() ))
+        {
+            throw ExecutionNodeException("unknown compare method " + m_sCompareMode);
+        }
+
+
+        if (m_sCompareMode.compare("is_set") != 0)
+        {
+
+            if (m_sValue2.compare(m_sNotSet) == 0)
+                throw ExecutionNodeException("value2 must be set");
+
+        }
+
+        if (m_sValue1.compare(m_sNotSet) == 0)
+            throw ExecutionNodeException("value1 must be set");
 
         std::string sReturn = "";
 
@@ -151,6 +150,15 @@ public:
 
 protected:
 
+    void addNodeAttributes(std::vector<std::string>& vAttributes)
+    {
+        vAttributes.push_back("COMP");
+        vAttributes.push_back("VALUE1");
+        vAttributes.push_back("VALUE2");
+        vAttributes.push_back("SEP");
+
+    }
+
     void childHasFinished( bool bEmitSignal = false )
     {
 
@@ -179,6 +187,8 @@ protected:
 
     int m_iHasExecuteChild = 0;
     bool m_bEvaluateElse = false;
+
+    std::string m_sNotSet;
 
 };
 

@@ -17,6 +17,8 @@ public:
 
         m_sSeperator = this->getDomElementAttribute(pElement, "sep", " ").toStdString();
 
+
+
     }
 
     std::string evaluate( std::map< std::string, ExecutionNode*>* pID2Node,
@@ -45,6 +47,11 @@ public:
 
 
 protected:
+
+    void addNodeAttributes(std::vector<std::string>& vAttributes)
+    {
+        vAttributes.push_back("sep");
+    }
 
 
     std::string m_sSeperator;

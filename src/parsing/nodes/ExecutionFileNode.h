@@ -26,14 +26,6 @@ public:
         m_sSep = this->getDomElementAttribute(pElement, "sep", "").toStdString();
         m_sTo = this->getDomElementAttribute(pElement, "to", "").toStdString();
 
-        if (QString("SAVE").compare(QString(m_sAction.c_str()), Qt::CaseInsensitive) == 0)
-        {
-            if (m_sTo.size() == 0)
-            {
-                throw "value node without from " + pElement->toCDATASection().nodeValue().toStdString();
-            }
-        }
-
     }
 
     std::string evaluate( std::map< std::string, ExecutionNode*>* pID2Node,
@@ -54,6 +46,10 @@ public:
         } else if ( QString("SAVE").compare(QString(m_sAction.c_str()), Qt::CaseInsensitive) == 0 )
         {
 
+            if (m_sTo.size() == 0)
+            {
+                throw ExecutionNodeException("file save node without to ");
+            }
 
             std::map<std::string, std::string>::iterator oIt = pInputID2Value->find( m_sFrom );
 
@@ -149,7 +145,13 @@ protected:
 
     }
 
+    void addNodeAttributes(std::vector<std::string>& vAttributes)
+    {
+        vAttributes.push_back("FROM");
+        vAttributes.push_back("SEP");
+        vAttributes.push_back("TO");
 
+    }
 
 
 

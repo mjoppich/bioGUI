@@ -29,28 +29,21 @@ public:
         if (pElement->hasChildNodes() && pElement->childNodes().item(0).isCDATASection())
         {
             m_sInlineLUA = pElement->childNodes().item(0).toCDATASection().data().toStdString();
-
             m_bScriptBased = false;
 
         } else {
 
-            throw "Script nodes may only have one CDATA child!";
+            //throw ExecutionNodeException("Script nodes may only have one CDATA child!");
         }
 
         if ((m_sScriptFile.size() > 0) && (m_sInlineLUA.size() > 0))
         {
-            throw "Script nodes may only have a script attribute or inline CDATA LUA!";
+            //throw ExecutionNodeException("Script nodes may only have a script attribute or inline CDATA LUA!");
         }
 
         if (m_sScriptFile.size() > 0)
         {
-            bool bLUAFileExists = ExecutionFileNode::file_exists( m_sScriptFile );
-
-            if (!bLUAFileExists)
-                throw "Script for node does not exist!";
-
             m_bScriptBased = true;
-
         }
 
         std::cerr << m_sInlineLUA << std::endl;
@@ -61,6 +54,11 @@ public:
     std::string evaluate(std::map<std::string, ExecutionNode *> *pID2Node,
                          std::map <std::string, std::string> *pInputID2Value,
                          std::map<std::string, QWidget *> *pInputID2Widget) {
+
+        bool bLUAFileExists = ExecutionFileNode::file_exists( m_sScriptFile );
+
+        if (!bLUAFileExists)
+            throw ExecutionNodeException("Script for node does not exist!");
 
         // parse arguments
         std::vector<std::string> vArguments;
@@ -159,6 +157,13 @@ protected:
         lua_close(L);                               /* Clean up, free the Lua state var */
 
         return sResult;
+    }
+
+    void addNodeAttributes(std::vector<std::string>& vAttributes)
+    {
+        vAttributes.push_back("SCRIPT");
+        vAttributes.push_back("ARGV");
+
     }
 
 

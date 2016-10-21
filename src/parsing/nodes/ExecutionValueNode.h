@@ -20,10 +20,7 @@ public:
         m_sFrom = this->getDomElementAttribute(pElement, "FROM", "").toStdString();
         m_sFor = this->getDomElementAttribute(pElement, "for", "").toStdString();
 
-        if (m_sFrom.size() == 0)
-        {
-            throw "value node without from " + pElement->toCDATASection().nodeValue().toStdString();
-        }
+
 
     }
 
@@ -56,6 +53,11 @@ public:
                           std::map<std::string, QWidget*>* pInputID2Widget)
     {
 
+        if (m_sFrom.size() == 0)
+        {
+            throw ExecutionNodeException("value node without from");
+        }
+
         return ExecutionValueNode::getFromID(m_sFrom, pID2Node, pInputID2Value, pInputID2Widget);
 
     }
@@ -81,6 +83,12 @@ public:
     }
 
 protected:
+
+    void addNodeAttributes(std::vector<std::string>& vAttributes)
+    {
+        vAttributes.push_back("FROM");
+        vAttributes.push_back("FOR");
+    }
 
     std::string m_sFrom;
     std::string m_sFor;

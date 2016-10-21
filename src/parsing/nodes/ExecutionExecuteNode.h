@@ -42,6 +42,8 @@ public:
 
     }
 
+
+
     virtual std::string evaluateChildren( std::map< std::string, ExecutionNode*>* pID2Node,
                                           std::map<std::string, std::string>* pInputID2Value,
                                           std::map<std::string, QWidget*>* pInputID2Widget,
@@ -217,6 +219,17 @@ public:
 
 protected:
 
+    void addNodeAttributes(std::vector<std::string>& vAttributes)
+    {
+        ExecutionExecutableNode::addNodeAttributes(vAttributes);
+
+        vAttributes.push_back("EXEC");
+        vAttributes.push_back("location");
+        vAttributes.push_back("param");
+        vAttributes.push_back("wsl");
+        vAttributes.push_back("program");
+
+    }
 
 
     std::string m_sExecutable;

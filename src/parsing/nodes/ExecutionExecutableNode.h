@@ -39,6 +39,11 @@ signals:
 
 protected:
 
+    void addNodeAttributes(std::vector<std::string>& vAttributes)
+    {
+        vAttributes.push_back("PROGRAM");
+    }
+
     std::string m_sProgramName = "";
 
 };

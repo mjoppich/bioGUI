@@ -103,7 +103,6 @@ public:
 
     }
 
-
     virtual std::string evaluate( std::map< std::string, ExecutionNode*>* pID2Node,
                                   std::map<std::string, std::string>* pInputID2Value,
                                   std::map<std::string, QWidget*>* pInputID2Widget, bool bEmitSignal = false)
@@ -215,6 +214,16 @@ public:
     }
 
 protected:
+
+    void addNodeAttributes(std::vector<std::string>& vAttributes)
+    {
+        ExecutionExecutableNode::addNodeAttributes(vAttributes);
+
+        vAttributes.push_back("PORT");
+        vAttributes.push_back("DELIM");
+        vAttributes.push_back("CL_TO_POST");
+
+    }
 
     int m_iPort = -1;
     std::string m_sDelim;

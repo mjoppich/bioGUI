@@ -138,6 +138,11 @@ public:
 
 protected:
 
+    void addNodeAttributes(std::vector<std::string>& vAttributes)
+    {
+        vAttributes.push_back("GET");
+    }
+
     QString m_sGet;
 
 };

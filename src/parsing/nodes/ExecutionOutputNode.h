@@ -262,6 +262,19 @@ public:
 
 protected:
 
+    void addNodeAttributes(std::vector<std::string>& vAttributes)
+    {
+        vAttributes.push_back("TYPE");
+        vAttributes.push_back("COLOR");
+        vAttributes.push_back("TO");
+        vAttributes.push_back("FROM");
+        vAttributes.push_back("LOCATION");
+        vAttributes.push_back("HOST");
+        vAttributes.push_back("PORT");
+        vAttributes.push_back("DEFERRED");
+
+    }
+
     std::string m_sType;
     std::string m_sTo;
     std::string m_sFrom;

@@ -54,6 +54,13 @@ class ExecutionStringReplaceNode : public ExecutionNode {
 
 protected:
 
+        void addNodeAttributes(std::vector<std::string>& vAttributes)
+        {
+            vAttributes.push_back("REPLACE");
+            vAttributes.push_back("REPLACE_WITH");
+
+        }
+
     std::string m_sReplace;
     std::string m_sReplaceWith;
 

@@ -34,6 +34,8 @@ public:
 
     }
 
+
+
     std::string evaluate( std::map< std::string, ExecutionNode*>* pID2Node,
                           std::map<std::string, std::string>* pInputID2Value,
                           std::map<std::string, QWidget*>* pInputID2Widget)
@@ -100,6 +102,16 @@ public:
     }
 
 protected:
+
+    void addNodeAttributes(std::vector<std::string>& vAttributes)
+    {
+        vAttributes.push_back("FROM");
+        vAttributes.push_back("TO");
+        vAttributes.push_back("PREPEND");
+        vAttributes.push_back("UNIX");
+        vAttributes.push_back("WSL");
+
+    }
 
     std::string m_sFrom;
     std::string m_sTo;

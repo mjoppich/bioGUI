@@ -25,6 +25,8 @@
 #include "nodes/ExecutionNetwork.h"
 #include "XMLParser.h"
 
+#include <sstream>
+
 class XMLParserExecution : public XMLParser {
 
     Q_OBJECT
@@ -111,15 +113,62 @@ public:
         });
 
 
-
         if (m_pKnownTags != NULL)
             delete m_pKnownTags;
 
         m_pKnownTags = this->getKnownTags();
 
+
+        QDomDocument oDoc;
+
+        for (size_t i = 0; i < m_pKnownTags->size(); ++i)
+        {
+            QDomElement oElement = oDoc.createElement( QString(m_pKnownTags->at(i).c_str()) );
+
+            ExecutionNode* pNode = NULL;
+
+            try
+            {
+                pNode = this->createExecutionNode(&oElement);
+
+            } catch(ExecutionNodeException oException)
+            {
+
+                std::cerr << oException.what() << std::endl;
+
+            }
+
+            this->handleAttributeNode(m_pKnownTags->at(i), pNode);
+
+        }
+
+
+
         m_pDocument = loadFromFile(sFileName);
 
 
+    }
+
+    void handleAttributeNode(std::string& sTag, ExecutionNode* pNode)
+    {
+        if (pNode == NULL)
+            return;
+
+        std::vector<std::string> vAttributes = pNode->getAcceptedAttributes();
+
+        std::stringstream oSS;
+        for (size_t j = 0; j < vAttributes.size(); ++j)
+            oSS << ", " << vAttributes[j];
+
+        std::string sJoined = oSS.str();
+
+        if (sJoined.size() > 2)
+            sJoined = sJoined.substr(2, -1);
+
+        std::cout << sTag << "\t" << sJoined << std::endl;
+
+        if (pNode != NULL)
+            delete pNode;
     }
 
     ~XMLParserExecution()

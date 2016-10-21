@@ -122,6 +122,13 @@ public:
 
 protected:
 
+    void addNodeAttributes(std::vector<std::string>& vAttributes)
+    {
+        vAttributes.push_back("FROM");
+        vAttributes.push_back("SELECTED");
+
+    }
+
     std::string m_sFrom = "";
 
     bool m_bSelected = false;

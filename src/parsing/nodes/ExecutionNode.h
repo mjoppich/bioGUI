@@ -12,6 +12,27 @@
 
 class QBufferTcpServer;
 
+class ExecutionNodeException : public std::exception
+{
+public:
+
+    ExecutionNodeException(std::string sMessage)
+        : std::exception(), m_sMessage(sMessage)
+    {
+
+    }
+
+    char const* what() const throw()
+    {
+        return m_sMessage.c_str();
+    }
+
+protected:
+
+    const std::string m_sMessage;
+
+};
+
 class ExecutionNode {
 
 public:
@@ -52,6 +73,20 @@ public:
 
     }
 
+    std::vector<std::string> getAcceptedAttributes()
+    {
+        std::vector<std::string> vReturnAttribs;
+
+        vReturnAttribs.push_back("ID");
+        vReturnAttribs.push_back("TYPE");
+
+        this->addNodeAttributes(vReturnAttribs);
+
+        std::sort(vReturnAttribs.begin(), vReturnAttribs.end());
+
+        return vReturnAttribs;
+    }
+
     std::string getID()
     {
         return m_sID;
@@ -66,8 +101,6 @@ public:
     {
         return QString(m_sTag.c_str());
     }
-
-
 
     virtual std::string evaluate( std::map< std::string, ExecutionNode*>* pID2Node,
                                   std::map<std::string, std::string>* pInputID2Value,
@@ -136,6 +169,8 @@ public:
     }
 
 protected:
+
+    virtual void addNodeAttributes(std::vector<std::string>& vAttributes) = 0;
 
     std::string evaluateID( std::string sID, std::map< std::string, ExecutionNode*>* pID2Node,
                           std::map<std::string, std::string>* pInputID2Value,

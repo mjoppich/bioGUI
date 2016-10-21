@@ -52,6 +52,11 @@ class ExecutionStringReplaceNode : public ExecutionNode {
 
         }
 
+    virtual ~ExecutionStringReplaceNode()
+    {
+
+    }
+
 protected:
 
         void addNodeAttributes(std::vector<std::string>& vAttributes)

@@ -9,14 +9,14 @@
 #include "XMLParser.h"
 
 class XMLParserInfo : public XMLParser {
-
-
 public:
 
     XMLParserInfo(std::string sFileName)
-    : XMLParser(sFileName)
+    : XMLParser()
     {
-        m_pDocument = loadFromFile(sFileName);
+
+        this->initializeFile(sFileName);
+
     }
 
 
@@ -34,7 +34,7 @@ public:
     {
         this->setRoot();
 
-        QFileInfo oFileInfo(QString(m_sTemplateFile.c_str()));
+        QFileInfo oFileInfo(QString(m_sCurrentDocument.c_str()));
 
         return this->getAttribute(m_pTemplateElement, "TITLE", oFileInfo.baseName());
 
@@ -44,7 +44,7 @@ public:
     {
         this->setRoot();
 
-        QFileInfo oFileInfo(QString(m_sTemplateFile.c_str()));
+        QFileInfo oFileInfo(QString(m_sCurrentDocument.c_str()));
 
         return this->getAttribute(m_pTemplateElement, "Description", oFileInfo.baseName());
 

@@ -111,6 +111,11 @@ public:
         }
     }
 
+    virtual ~ExecutionFileNode()
+    {
+
+    }
+
 protected:
 
 

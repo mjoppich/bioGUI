@@ -22,6 +22,10 @@ public:
 
     }
 
+    virtual ~ExecutionEnvNode()
+    {
+
+    }
 
     QHostAddress getIPaddress( QAbstractSocket::NetworkLayerProtocol eProtocol )
     {

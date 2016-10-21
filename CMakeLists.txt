@@ -107,11 +107,13 @@ file(GLOB parsinglib_H
 
 file(GLOB parsinglib_nodes_H
         "src/parsing/nodes/*.h"
+        "src/parsing/visual_nodes/*.h"
         )
 
 file(GLOB parsinglib_SRC
         "src/parsing/*.cpp"
         "src/parsing/nodes/*.cpp"
+        "src/parsing/visual_nodes/*.cpp"
 )
 add_library(parsing ${parsinglib_SRC} ${parsinglib_H} ${parsinglib_nodes_H} )
 target_include_directories (parsing PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
@@ -159,3 +161,4 @@ TARGET_LINK_LIBRARIES(bioGUI parsing mylibeay myssleay)
 TARGET_LINK_LIBRARIES(bioGUI ${LUA_LIBRARIES})
 
 install(TARGETS bioGUI DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/bin)
+

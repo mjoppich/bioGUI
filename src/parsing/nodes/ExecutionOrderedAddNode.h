@@ -23,6 +23,11 @@ public:
 
     }
 
+    virtual ~ExecutionOrderedAddNode()
+    {
+
+    }
+
     ExecutionValueNode* findNode(std::string sID, std::vector<ExecutionNode*>* pNodes)
     {
 

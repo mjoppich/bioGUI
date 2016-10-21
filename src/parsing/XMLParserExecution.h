@@ -33,8 +33,8 @@ class XMLParserExecution : public XMLParser {
 
 public:
 
-    XMLParserExecution(std::string sFileName)
-    : XMLParser(sFileName)
+    XMLParserExecution()
+    : XMLParser()
     {
 
         this->insertNodeType("execute", [] (QDomElement* pElement) {
@@ -118,7 +118,10 @@ public:
 
         m_pKnownTags = this->getKnownTags();
 
+    }
 
+    void printAvailableNodes()
+    {
         QDomDocument oDoc;
 
         for (size_t i = 0; i < m_pKnownTags->size(); ++i)
@@ -141,12 +144,6 @@ public:
             this->handleAttributeNode(m_pKnownTags->at(i), pNode);
 
         }
-
-
-
-        m_pDocument = loadFromFile(sFileName);
-
-
     }
 
     void handleAttributeNode(std::string& sTag, ExecutionNode* pNode)
@@ -165,7 +162,7 @@ public:
         if (sJoined.size() > 2)
             sJoined = sJoined.substr(2, -1);
 
-        std::cout << sTag << "\t" << sJoined << std::endl;
+        std::cout << "<" << sTag << ">" << "\t[" << sJoined << "]" << std::endl;
 
         if (pNode != NULL)
             delete pNode;
@@ -251,11 +248,8 @@ protected:
 
 
     QDomElement * getRoot(QDomDocument* pDocument);
-
     ExecutionNetwork * createNetwork(QDomElement* pElement);
-
     ExecutionNode * getExecutionNodes(QDomElement* pElement );
-
 
     std::map< std::string, std::function< ExecutionNode*( QDomElement*)> > m_mCreateNodeMap;
     std::vector<ExecutionNode*> m_vCreatedNodes;

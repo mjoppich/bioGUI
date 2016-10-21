@@ -42,7 +42,10 @@ public:
 
     }
 
+    virtual ~ExecutionExecuteNode()
+    {
 
+    }
 
     virtual std::string evaluateChildren( std::map< std::string, ExecutionNode*>* pID2Node,
                                           std::map<std::string, std::string>* pInputID2Value,

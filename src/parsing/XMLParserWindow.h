@@ -37,7 +37,13 @@
 #include <src/app/QExtGridLayout.h>
 #include <src/app/QAbstractButtonItem.h>
 #include <src/app/QExclusiveGroupBox.h>
+#include <src/parsing/visual_nodes/WindowWidgetInputNode.h>
 #include "XMLParser.h"
+
+#include "./visual_nodes/WindowNode.h"
+#include "./visual_nodes/WindowLayoutHorizontalNode.h"
+#include "./visual_nodes/WindowLayoutVerticalNode.h"
+#include "./visual_nodes/WindowLayoutGridNode.h"
 
 class bioGUIapp;
 
@@ -47,8 +53,8 @@ Q_OBJECT
 
 public:
 
-    XMLParserWindow(bioGUIapp* pApp, std::string sFileName)
-    : XMLParser(sFileName)
+    XMLParserWindow(bioGUIapp* pApp)
+    : XMLParser()
     {
 
         m_pApp = pApp;
@@ -56,9 +62,16 @@ public:
         m_pID2Value = new std::map<std::string, std::function< std::string()> >();
         m_pID2Widget = new std::map<std::string, QWidget* >();
 
-        m_pKnownTags->push_back("hgroup");
-        m_pKnownTags->push_back("vgroup");
-        m_pKnownTags->push_back("grid");
+
+        /**
+         * ADD WIDGETS
+         */
+        this->insertWidgetNode("input", [] (QDomElement* pElement) {
+
+            WindowWidgetInputNode oNode;
+            return oNode.getWindowElement(pElement);
+        });
+
         m_pKnownTags->push_back("label");
         m_pKnownTags->push_back("link");
         m_pKnownTags->push_back("input");
@@ -79,9 +92,40 @@ public:
         m_pKnownTags->push_back("slider");
         m_pKnownTags->push_back("slideritem");
 
+
+
+        m_pKnownTags = this->getKnownTags();
+    }
+
+    std::vector<std::string>* getKnownTags()
+    {
+        std::vector<std::string>* pTags = new std::vector<std::string>();
+
+        std::map<std::string, std::function< WindowNode<QLayout>::CreatedElement( QDomElement*)> >::iterator oIt = m_mCreateLayoutMap.begin();
+        while (oIt != m_mCreateLayoutMap.end())
+        {
+            pTags->push_back( oIt->first );
+            ++oIt;
+        }
+        std::map<std::string, std::function< WindowNode<QWidget>::CreatedElement( QDomElement*)> >::iterator oJt = m_mCreateWidgetMap.begin();
+        while (oIt != m_mCreateWidgetMap.end())
+        {
+            pTags->push_back( oIt->first );
+            ++oJt;
+        }
+
+        // manually add master node!
+        pTags->push_back("window");
+
+        return pTags;
+    }
+
+    void loadFile(std::string& sFileName)
+    {
+        if (m_pDocument != NULL)
+            delete m_pDocument;
+
         m_pDocument = loadFromFile(sFileName);
-
-
     }
 
     void setActionsEnabled(bool bEnabled)
@@ -233,22 +277,6 @@ public:
 
                     }
 
-
-                    /*
-                    // Iterate through it's children
-                    for(QDomNode n = element.firstChild(); !n.isNull(); n = n.nextSibling())
-                    {
-                        // Find the child that is of DOM type text
-                        QDomText t = n.toText();
-                        if (!t.isNull())
-                        {
-                            // Print out the original text
-                            qDebug() << "Old text in " <<  << " of type " << element.tagName() << " was " << t.data();
-                            // Set the new text
-                            t.setData("Here is the new text");
-                        }
-                    }
-                    */
                 }
             }
 
@@ -292,6 +320,7 @@ protected:
     {
         return this->getDocumentElementByName(pDocument, "window");
     }
+
 
 
 
@@ -938,3 +967,4 @@ protected:
 
 
 #endif //BIOGUI_PARSEXMLWINDOW_H
+

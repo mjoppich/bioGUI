@@ -21,6 +21,11 @@ public:
 
     }
 
+    virtual ~ExecutionMathNode()
+    {
+
+    }
+
     std::string evaluate( std::map< std::string, ExecutionNode*>* pID2Node,
                           std::map<std::string, std::string>* pInputID2Value,
                           std::map<std::string, QWidget*>* pInputID2Widget)

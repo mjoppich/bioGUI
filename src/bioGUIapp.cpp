@@ -15,7 +15,27 @@ bioGUIapp::bioGUIapp(int& argc, char** argv)
 
     this->loadInitFile(QDir::currentPath());
 
-    qDebug() << QStyleFactory::keys();
+    /*
+     *
+     * PRINT HELP
+     *
+     *
+     */
+
+    XMLParserExecution oXMLParser;
+    oXMLParser.printAvailableNodes();
+
+
+    /*
+     *
+     *
+     *
+     *
+     *
+     */
+
+
+    //qDebug() << QStyleFactory::keys();
 
 #ifdef __linux
 
@@ -25,13 +45,7 @@ bioGUIapp::bioGUIapp(int& argc, char** argv)
         QApplication::setStyle(pStyle);
 #endif
 
-    //m_sGUIFile = "/cygdrive/c/libraries/bioGUI/example.gui";
-    //m_sGUIFile = "/home/users/joppich/cpp/bioGUI/example.gui";
-
-    //m_pWindowParser = new XMLParserWindow( this, "/home/users/joppich/cpp/bioGUI/example.gui" );
-
     m_oTemplatePath = QDir::currentPath();
-
     m_pMainWindow = new QWidget();
 
     //QHBoxLayout* pMainLayout = new QHBoxLayout();

@@ -105,6 +105,10 @@ public:
 
     }
 
+    virtual ~ExecutionScriptNode()
+    {
+
+    }
 
 protected:
 

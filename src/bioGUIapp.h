@@ -109,37 +109,36 @@ public:
 
             QListWidgetItem *pItem = new QListWidgetItem();
 
-            XMLParserInfo oInfoParser(oFile.absoluteFilePath().toStdString());
+            QString sDocumentPath = oFile.absoluteFilePath();
 
-            if (oInfoParser.isValid() == false)
-            {
+
+            try {
+                XMLParserInfo oInfoParser(sDocumentPath.toStdString());
+
+                QString sIconPath = oInfoParser.getIcon();
+
+                if ((sIconPath.length() > 0))
+                {
+                    //QIcon oIcon(sIconPath);
+                    QIcon oIcon = QIcon(sIconPath);
+                    pItem->setData(Qt::DecorationRole, oIcon.pixmap(QSize(200,200)));
+                }
+
+                pItem->setData(Qt::DisplayRole, oInfoParser.getTitle());
+                pItem->setData(Qt::UserRole + 1, oInfoParser.getDescription());
+                pItem->setData(Qt::UserRole + 2, sDocumentPath);
+
+            } catch (...) {
+
+                std::cerr << "Error loading template: " << sDocumentPath.toStdString() << std::endl;
 
                 delete pItem;
-                std::cerr << "Error loading template: " << oFile.absoluteFilePath().toStdString() << std::endl;
 
                 continue;
-            }
-
-
-            QString sIconPath = oInfoParser.getIcon();
-
-            if ((sIconPath.length() > 0))
-            {
-
-                //QIcon oIcon(sIconPath);
-                QIcon oIcon = QIcon(sIconPath);
-
-                pItem->setData(Qt::DecorationRole, oIcon.pixmap(QSize(200,200)));
 
             }
-
-
-            pItem->setData(Qt::DisplayRole, oInfoParser.getTitle());
-            pItem->setData(Qt::UserRole + 1, oInfoParser.getDescription());
-            pItem->setData(Qt::UserRole + 2, QString(oInfoParser.getTemplateFile().c_str()));
 
             m_vTemplateItems.append(pItem);
-
             m_pTemplates->addItem(pItem);
 
 
@@ -154,7 +153,8 @@ public:
         if (m_pWindowParser)
             delete m_pWindowParser;
 
-        m_pWindowParser = new XMLParserWindow( this, sFileName);
+        m_pWindowParser = new XMLParserWindow( this );
+        m_pWindowParser->initializeFile(sFileName);
 
         m_pWindow = m_pWindowParser->getWindow();
 
@@ -202,7 +202,9 @@ public:
 
         this->disableActions();
 
-        XMLParserExecution* pParseExecution = new XMLParserExecution( m_pWindowParser->getTemplateFile() );
+        XMLParserExecution* pParseExecution = new XMLParserExecution();
+        std::string sCurrentFilePath = m_pWindowParser->getCurrentDocumentPath();
+        pParseExecution->initializeFile(sCurrentFilePath);
 
         pThread = new ExecutionRunThread(m_pWindowParser, pParseExecution, sProgramToRun);
 

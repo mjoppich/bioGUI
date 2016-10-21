@@ -14,6 +14,27 @@
 #include <string>
 #include <iostream>
 
+class XMLParserException : public std::exception
+{
+
+public:
+    XMLParserException(std::string sMessage)
+    : std::exception(), m_sMessage(sMessage)
+    {
+
+    }
+
+    char const* what() const throw()
+    {
+        return m_sMessage.c_str();
+    }
+
+
+protected:
+
+    const std::string m_sMessage;
+
+};
 
 class XMLParser : public QObject {
 
@@ -21,8 +42,8 @@ Q_OBJECT
 
 public:
 
-    XMLParser(std::string sFileName)
-    : QObject(0), m_sTemplateFile(sFileName)
+    XMLParser()
+    : QObject(0)
     {
 
         m_pKnownTags = new std::vector<std::string>();
@@ -31,11 +52,37 @@ public:
 
     ~XMLParser()
     {
-
-        delete m_pDocument;
         delete m_pKnownTags;
 
+        if (m_pDocument)
+        {
+            delete m_pDocument;
+        }
     }
+
+    void initializeFile(std::string& sFileName)
+    {
+        if (m_pDocument != NULL)
+        {
+            delete m_pDocument;
+            m_sCurrentDocument = "";
+
+        }
+
+        m_pDocument = this->loadFromFile(sFileName);
+        m_sCurrentDocument = sFileName;
+    }
+
+    std::string getCurrentDocumentPath()
+    {
+        return m_sCurrentDocument;
+    }
+
+    virtual void printAvailableNodes()
+    {
+
+    }
+protected:
 
     QDomDocument* loadFromFile(std::string sFileName)
     {
@@ -84,19 +131,6 @@ public:
         return pDocument;
 
     }
-
-
-    std::string getTemplateFile()
-    {
-        return m_sTemplateFile;
-    }
-
-    bool isValid()
-    {
-        return m_pDocument != NULL;
-    }
-
-protected:
 
     virtual QDomElement* getRoot( QDomDocument* pDocument ) = 0;
 
@@ -260,12 +294,9 @@ protected:
 
     }
 
-
-
-    QDomDocument* m_pDocument;
     std::vector<std::string>* m_pKnownTags;
-    std::string m_sTemplateFile;
-
+    QDomDocument* m_pDocument = NULL;
+    std::string m_sCurrentDocument;
 
 };
 

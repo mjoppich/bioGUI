@@ -19,6 +19,8 @@
 #include <src/Maths.h>
 #include <iomanip>
 #include <sstream>
+#include <src/parsing/visual_nodes/WindowNode.h>
+#include <src/parsing/visual_nodes/WindowWidgetInputNode.h>
 
 #include "../bioGUIapp.h"
 
@@ -27,40 +29,10 @@ QLayout* XMLParserWindow::createLayout(QDomElement* pElement)
     QString sTag = pElement->tagName();
 
 
-    if (sTag.compare("hgroup", Qt::CaseInsensitive) == 0)
-    {
-        QHBoxLayout *pLayout = new QOrderedHBoxLayout();
 
-        pLayout->setAlignment(Qt::AlignHorizontal_Mask);
+    WindowNode<QLayout>::CreatedElement oLayout =
 
-        return (QLayout*) pLayout;
-    }
-
-    if (sTag.compare("vgroup", Qt::CaseInsensitive) == 0)
-    {
-        QVBoxLayout *pLayout = new QOrderedVBoxLayout();
-
-        pLayout->setAlignment(Qt::AlignVertical_Mask);
-
-        return (QLayout*) pLayout;
-    }
-
-
-    if (sTag.compare("grid", Qt::CaseInsensitive) == 0)
-    {
-
-        int iRows = this->getAttribute(pElement, "rows", 0).toInt();
-        int iCols = this->getAttribute(pElement, "cols", 0).toInt();
-
-        QExtGridLayout *pLayout = new QExtGridLayout(iRows, iCols);
-
-        pLayout->setAlignment(Qt::AlignVertical_Mask);
-
-
-        return (QLayout*) pLayout;
-    }
-
-    return NULL;
+    return oLayout.pElement;
 }
 
 QWidget* XMLParserWindow::createComponent(QDomElement* pElement, bool* pChildrenFinished)
@@ -73,250 +45,44 @@ QWidget* XMLParserWindow::createComponent(QDomElement* pElement, bool* pChildren
     }
 
     QString sTag = pElement->tagName();
-    QString sValue = pElement->text();
+    std::string sUpperTag = sTag.toUpper().toStdString();
 
-    QWidget* pWidget = NULL;
 
-    if (sTag.compare("window", Qt::CaseInsensitive) == 0)
+    std::map<std::string, std::function<WindowNode<QWidget>::CreatedElement (QDomElement*)>>::iterator oFind = m_mCreateWidgetMap.find(sUpperTag);
+    if (!(oFind != m_mCreateWidgetMap.end()))
+        throw XMLParserException("Invalid Layout Tag: " + sUpperTag);
+
+    WindowNode<QWidget>::CreatedElement oWidget = oFind->second(pElement);
+
+    if (oWidget.bHasRetriever)
     {
-        QWidget *pWindow = new QWidget();
-        pWidget = pWindow;
+        this->addValueFetcher(pElement, oWidget.oRetriever);
+    }
 
-        /*
-         * apply sizes here
-         *
-         */
+    *pChildrenFinished = oWidget.bHasChildrenFinished;
 
-        QString sWidth =  this->getAttribute(pElement, "width" , "400");
-        QString sHeight = this->getAttribute(pElement, "height", "400");
+    QWidget* pReturn = oWidget.pElement;
 
-        int iWidth = sWidth.toInt();
-        int iHeight = sHeight.toInt();
+    if (pReturn != NULL)
+    {
 
-        pWidget->setMinimumSize(iWidth, iHeight);
+        m_vWidgets.push_back(pReturn);
 
-        /*
-         * Window Title
-         */
-
-        QString sTitle = this->getAttribute(pElement, "title", "bioGUI");
-        if (sTitle.length() > 0)
+        QString sToolTip = this->getAttribute(pElement, "hint", "");
+        if (sToolTip.length() > 0)
         {
-            pWidget->setWindowTitle( sTitle );
-        }
-
-    }
-
-    if (sTag.compare("label", Qt::CaseInsensitive) == 0)
-    {
-        QLabel *pLabel = new QLabel( sValue );
-
-        this->addValueFetcher(pElement, [sValue] () {return sValue.toStdString();});
-
-        pWidget = pLabel;
-    }
-
-    if (sTag.compare("link", Qt::CaseInsensitive) == 0)
-    {
-        QString sText = this->getAttribute(pElement, "text", sValue);
-
-        QClickableLabel *pLabel = new QClickableLabel( sText );
-        pLabel->setStyleSheet("QLabel { color : blue; }");
-
-        this->addValueFetcher(pElement, [sValue] () {return sValue.toStdString();});
-
-        QObject::connect(pLabel,&QClickableLabel::clicked,[pLabel] (){
-
-            QDesktopServices::openUrl(QUrl(pLabel->text()));
-
-        });
-
-
-
-        pWidget = pLabel;
-    }
-
-
-    if (sTag.compare("fileselectbox", Qt::CaseInsensitive) == 0)
-    {
-
-        QString sFileFilter = this->getAttribute(pElement, "filter", "");
-        QString sFilePath = this->getAttribute(pElement, "location", "");
-        QString sDelimeter = this->getAttribute(pElement, "delim", " ");
-
-
-
-        QSortableFileList *pList = new QSortableFileList( sFilePath, sFileFilter, sDelimeter );
-
-        this->addValueFetcher(pElement, [pList] () {return pList->evaluate().toStdString();});
-
-        pWidget = pList;
-    }
-
-    if (sTag.compare("input", Qt::CaseInsensitive) == 0)
-    {
-
-        bool bMultiLine = ( this->getAttribute(pElement, "multi", "false").compare("true", Qt::CaseInsensitive) == 0);
-
-        if (!bMultiLine)
-        {
-            QLineEdit *pLineEdit = new QLineEdit( sValue );
-
-            QString sType = this->getAttribute(pElement, "type", "");
-
-            if (sType.size() != 0)
-            {
-
-                if (sType.compare("string", Qt::CaseInsensitive) == 0)
-                {
-                    // nothing
-                }
-
-                if (sType.compare("password", Qt::CaseInsensitive) == 0)
-                {
-                    pLineEdit->setEchoMode(QLineEdit::Password);
-
-                }
-
-                if (sType.compare("int", Qt::CaseInsensitive) == 0)
-                {
-                    pLineEdit->setValidator( new QIntValidator() );
-                }
-
-                if (sType.compare("float", Qt::CaseInsensitive) == 0)
-                {
-                    pLineEdit->setValidator( new QDoubleValidator() );
-                }
-
-            }
-
-            this->addValueFetcher(pElement, [pLineEdit] () {return pLineEdit->text().toStdString();});
-
-            pWidget = pLineEdit;
-        } else {
-
-            QTextEdit* pTextEdit = new QTextEdit(sValue);
-
-            this->addValueFetcher(pElement, [pTextEdit] () {return pTextEdit->toPlainText().toStdString();});
-
-            pWidget = pTextEdit;
-
+            pReturn->setToolTip( sToolTip );
         }
 
 
+        this->setID(pReturn, pElement, false);
 
     }
 
-
-    if (sTag.compare("filedialog", Qt::CaseInsensitive) == 0)
-    {
-
-        QWidget* pLineButton = new QWidget();
-        QHBoxLayout* pLayout = new QHBoxLayout();
-
-
-        QLineEdit* pLineEdit = new QLineEdit();
-        QString sPathHint = QDir::currentPath();
-
-        QString sLineEditLocation = this->getAttribute(pElement, "location", "");
-        if (sLineEditLocation.length() > 0)
-        {
-            pLineEdit->setText(sLineEditLocation);
-
-            QFileInfo oLineEditInfo( sLineEditLocation );
-
-            sPathHint = oLineEditInfo.absoluteDir().path();
-        }
+    return oWidget.pElement;
 
 
 
-        QPushButton* pFileButton = new QPushButton(sValue);
-
-        bool bMultiples = (this->getAttribute(pElement, "multiples", "FALSE").compare("TRUE", Qt::CaseInsensitive) == 0);
-        bool bOutput = (this->getAttribute(pElement, "output", "FALSE").compare("TRUE", Qt::CaseInsensitive) == 0);
-        bool bFolder = (this->getAttribute(pElement, "folder", "FALSE").compare("TRUE", Qt::CaseInsensitive) == 0);
-        QString sFileDelim = this->getAttribute(pElement, "multiples_delim", ";");
-        QString sFileFilter = this->getAttribute(pElement, "filter", "");
-
-        pFileButton->connect(pFileButton,&QAbstractButton::clicked,[pLineEdit, bMultiples, bOutput, bFolder, sFileDelim, sFileFilter, sPathHint] (bool bChecked){
-
-            if (bFolder)
-            {
-
-                QString sFolder = QFileDialog::getExistingDirectory(0, ("Select Output Folder"), sPathHint);
-                pLineEdit->setText(sFolder);
-
-            } else {
-
-
-                if (bOutput)
-                {
-
-                    if (bMultiples)
-                    {
-                        throw "unsupported option: output and mutliples";
-
-                    } else {
-
-                        QString sFileName = QFileDialog::getSaveFileName(0, "Select Input File", sPathHint, sFileFilter);
-                        pLineEdit->setText(sFileName);
-
-                    }
-
-                } else {
-
-
-                    if (bMultiples)
-                    {
-                        QStringList vSelectedFiles = QFileDialog::getOpenFileNames(0, "Select Input Files", sPathHint, sFileFilter);
-                        QString sFiles = vSelectedFiles.join(sFileDelim);
-                        pLineEdit->setText(sFiles);
-
-                    } else {
-
-                        QString sFileName = QFileDialog::getOpenFileName(0, "Select Input File", sPathHint, sFileFilter);
-                        pLineEdit->setText(sFileName);
-
-                    }
-
-                }
-
-            }
-
-
-
-        });
-
-        pLayout->addWidget( pLineEdit, 0, Qt::AlignLeft );
-        pLayout->addWidget( pFileButton, 0, Qt::AlignLeft );
-        pLineButton->setLayout( pLayout );
-
-        this->addValueFetcher(pElement, [pLineEdit] () {return pLineEdit->text().toStdString();});
-
-        pWidget = pLineButton;
-    }
-
-    if (sTag.compare("action", Qt::CaseInsensitive) == 0)
-    {
-        QPushButton *pAction = new QPushButton( sValue );
-
-        QString sQProgramToRun = this->getAttribute(pElement, "program", "");
-        std::string sProgramToRun = sQProgramToRun.toStdString();
-
-        bioGUIapp* pApp = this->m_pApp;
-
-        pAction->connect(pAction,&QAbstractButton::clicked,[pApp, sProgramToRun] (bool bChecked){
-
-            std::string sTmp = sProgramToRun;
-
-            pApp->runProgram( sTmp );
-
-        });
-
-        m_vActions.push_back(pAction);
-
-        pWidget = pAction;
-    }
 
 
     if (sTag.compare("radiobutton", Qt::CaseInsensitive) == 0)

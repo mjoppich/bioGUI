@@ -161,7 +161,10 @@ public:
         return sReturn;
     }
 
+    virtual ~ExecutionNode()
+    {
 
+    }
 
     virtual void finishedCreation()
     {

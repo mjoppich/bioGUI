@@ -28,13 +28,8 @@
 int main(int argc, char **argv)
 {
 
-
-
-
     bioGUIapp* pApp = new bioGUIapp(argc, argv);
-
     pApp->exec();
-
     delete pApp;
 
     return 0;

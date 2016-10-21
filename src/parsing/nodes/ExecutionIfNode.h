@@ -32,6 +32,11 @@ public:
 
     }
 
+    virtual ~ExecutionIfNode()
+    {
+
+    }
+
     virtual void finishedCreation()
     {
         // find else node, stop on first found node

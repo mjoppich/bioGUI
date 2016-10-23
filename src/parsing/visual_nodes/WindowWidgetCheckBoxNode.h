@@ -12,8 +12,8 @@ class WindowWidgetCheckBoxNode : public WindowWidgetNode {
 
 public:
 
-    WindowWidgetCheckBoxNode()
-            : WindowWidgetNode()
+    WindowWidgetCheckBoxNode(WindowComponentFactory* pFactory)
+            : WindowWidgetNode(pFactory)
     {
 
     }
@@ -31,11 +31,11 @@ public:
 
         CreatedElement oReturn;
 
-        QString sButtonValue = this->getAttribute(pDOMElement, "value", sValue);
+        QString sButtonValue = this->getQAttribute(pDOMElement, "value", sValue);
         QExtendedCheckBox* pButtonItem = new QExtendedCheckBox(sValue, sButtonValue);
 
-        bool bSelectOnWindows = (this->getAttribute(pDOMElement, "selectonwindows", "FALSE").compare("TRUE", Qt::CaseInsensitive) == 0);
-        bool bSelected = (this->getAttribute(pDOMElement, "selected", "FALSE").compare("TRUE", Qt::CaseInsensitive) == 0);
+        bool bSelectOnWindows = (this->getQAttribute(pDOMElement, "selectonwindows", "FALSE").compare("TRUE", Qt::CaseInsensitive) == 0);
+        bool bSelected = (this->getQAttribute(pDOMElement, "selected", "FALSE").compare("TRUE", Qt::CaseInsensitive) == 0);
 
         if ((!bSelected) && (bSelectOnWindows))
         {
@@ -48,15 +48,14 @@ public:
 
         pButtonItem->setChecked(bSelected);
 
-        oReturn.bHasRetriever = true;
-        oReturn.oRetriever = [pButtonItem] () {
+        oReturn.addRetriever(this->getDomID(pDOMElement) , [pButtonItem] () {
 
             if (pButtonItem->isChecked())
                 return pButtonItem->getValue().toStdString();
 
             return std::string("");
 
-        };
+        });
 
         oReturn.pElement = pButtonItem;
         oReturn.bHasChildrenFinished = true;
@@ -64,6 +63,8 @@ public:
         return oReturn;
 
     }
+
+
 
 
 protected:

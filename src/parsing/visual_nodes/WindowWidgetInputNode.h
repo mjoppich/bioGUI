@@ -14,8 +14,8 @@ class WindowWidgetInputNode : public WindowWidgetNode {
 
 public:
 
-    WindowWidgetInputNode()
-    : WindowWidgetNode()
+    WindowWidgetInputNode(WindowComponentFactory* pFactory)
+    : WindowWidgetNode(pFactory)
     {
 
     }
@@ -28,18 +28,18 @@ public:
     virtual CreatedElement getWindowElement( QDomElement* pDOMElement )
     {
 
-        QString sTag = pDOMElement->tagName();
         QString sValue = pDOMElement->text();
+        std::string sID = this->getAttribute(pDOMElement, "ID", "");
 
         CreatedElement oReturn;
 
-        bool bMultiLine = ( this->getAttribute(pDOMElement, "multi", "false").compare("true", Qt::CaseInsensitive) == 0);
+        bool bMultiLine = ( this->getQAttribute(pDOMElement, "multi", "false").compare("true", Qt::CaseInsensitive) == 0);
 
         if (!bMultiLine)
         {
             QLineEdit *pLineEdit = new QLineEdit( sValue );
 
-            QString sType = this->getAttribute(pDOMElement, "type", "");
+            QString sType = this->getQAttribute(pDOMElement, "type", "");
 
             if (sType.size() != 0)
             {
@@ -68,13 +68,13 @@ public:
             }
 
             oReturn.pElement = pLineEdit;
-            oReturn.oRetriever = [pLineEdit] () {return pLineEdit->text().toStdString();};
+            oReturn.addRetriever(this->getDomID(pDOMElement) , [pLineEdit] () {return pLineEdit->text().toStdString();} );
 
         } else {
 
             QTextEdit* pTextEdit = new QTextEdit(sValue);
 
-            oReturn.oRetriever = [pTextEdit] () {return pTextEdit->toPlainText().toStdString();};
+            oReturn.addRetriever(this->getDomID(pDOMElement) , [pTextEdit] () {return pTextEdit->toPlainText().toStdString();} );
             oReturn.pElement = pTextEdit;
 
         }

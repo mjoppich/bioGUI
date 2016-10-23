@@ -13,43 +13,71 @@ class WindowWidgetGeneralGroupNode : public WindowWidgetNode {
 
 public:
 
-    WindowWidgetGeneralGroupNode()
-    : WindowWidgetNode()
+    WindowWidgetGeneralGroupNode(WindowComponentFactory* pFactory)
+    : WindowWidgetNode(pFactory)
     {
 
     }
 
 protected:
 
-    QWidget* createGeneralGroup(QDomElement* pElement,
-                                bool* pChildrenFinished,
+    enum LAYOUT_TYPE {NONE, VERTICAL, HORIZONTAL, GRID, UNKNOWN};
+
+    LAYOUT_TYPE getLayoutType(QDomElement* pElement)
+    {
+        QLayout* pLayout = m_pFactory->createLayoutElement(pElement).pElement;
+
+        if (pLayout == NULL)
+            return LAYOUT_TYPE::NONE;
+
+        if (QOrderedHBoxLayout* pOrderedLayout = dynamic_cast<QOrderedHBoxLayout*>(pLayout))
+        {
+            return LAYOUT_TYPE::HORIZONTAL;
+        }
+
+        if (QOrderedVBoxLayout* pOrderedLayout = dynamic_cast<QOrderedVBoxLayout*>(pLayout))
+        {
+            return LAYOUT_TYPE::VERTICAL;
+        }
+
+        if (QExtGridLayout* pOrderedLayout = dynamic_cast<QExtGridLayout*>(pLayout))
+        {
+            return LAYOUT_TYPE::GRID;
+        }
+
+        return LAYOUT_TYPE::UNKNOWN;
+    }
+
+    WindowNode<QWidget>::CreatedElement createGeneralGroup(QDomElement* pElement,
                                 std::function<QLayout* (QDomElement*, QDomNodeList*)> oLayoutFunc,
                                 std::function<QList<QWidget*> (QDomElement*, bool*, int)> oPreProcFunc = [] (QDomElement* pChildNode, bool* pBoolean, int iElement) {return QList<QWidget*>();},
                                 std::function<void (QExclusiveGroupBox*, QLayout*, QWidget*, QWidget*, QStringList*, int)> oPostProcFunc = [] (QExclusiveGroupBox* pBox, QLayout* pLay, QWidget* pWid1, QWidget* pWid2, QStringList* pList, int iElement) {})
     {
-        (*pChildrenFinished) = true;
+
+        WindowNode<QWidget>::CreatedElement oReturn;
+        oReturn.bHasChildrenFinished = true;
 
         QExclusiveGroupBox* pGroupBox = new QExclusiveGroupBox("");
 
         /*
          * Window Title
          */
-        QString sTitle = this->getAttribute(pElement, "title", "");
+        QString sTitle = this->getQAttribute(pElement, "title", "");
         pGroupBox->setTitle( sTitle );
 
         /*
          * checkable?
          */
-        std::string sCheckable = this->getAttribute(pElement, "checkable", "false").toUpper().toStdString();
+        std::string sCheckable = this->getQAttribute(pElement, "checkable", "false").toUpper().toStdString();
         if (sCheckable.compare("TRUE") == 0)
         {
             pGroupBox->setCheckable(true);
             pGroupBox->setChecked(false);
 
-            std::string sCheckedValue = this->getAttribute(pElement, "checked_value", "true").toStdString();
-            std::string sUncheckedValue = this->getAttribute(pElement, "unchecked_value", "false").toStdString();
+            std::string sCheckedValue = this->getAttribute(pElement, "checked_value", "true");
+            std::string sUncheckedValue = this->getAttribute(pElement, "unchecked_value", "false");
 
-            this->addValueFetcher(pElement, [pGroupBox, sCheckedValue, sUncheckedValue] () {
+            oReturn.addRetriever( this->getDomID(pElement), [pGroupBox, sCheckedValue, sUncheckedValue] () {
 
                 if (pGroupBox->isChecked())
                 {
@@ -65,7 +93,7 @@ protected:
         /*
          * exclusive?
          */
-        QString sExclusive = this->getAttribute(pElement, "exclusive", "false");
+        QString sExclusive = this->getQAttribute(pElement, "exclusive", "false");
         if (sExclusive.compare("TRUE", Qt::CaseInsensitive) == 0)
         {
             pGroupBox->setExclusive(true);
@@ -78,7 +106,7 @@ protected:
          *
          */
 
-        bool bOrdered = (this->getAttribute(pElement, "ordered", "false").compare("true", Qt::CaseInsensitive) == 0);
+        bool bOrdered = (this->getQAttribute(pElement, "ordered", "false").compare("true", Qt::CaseInsensitive) == 0);
         pGroupBox->setOrdered(bOrdered);
 
         /*
@@ -89,7 +117,7 @@ protected:
          * selected = [ids] may indicate that group is selected and children are selected
          *
          */
-        QString sSelected = this->getAttribute(pElement, "selected", "");
+        QString sSelected = this->getQAttribute(pElement, "selected", "");
         QStringList vSelected;
 
         if (pGroupBox->isCheckable())
@@ -138,10 +166,10 @@ protected:
 
             if (vChildren.size() == 0)
             {
-                QWidget* pChildElement = this->createComponent(&oChildNode, &bBoolean);
+                WindowNode<QWidget>::CreatedElement oCreated = m_pFactory->createWidgetElement(&oChildNode);
 
-                if (pChildElement != NULL)
-                    vChildren.append(pChildElement);
+                if (oCreated.pElement != NULL)
+                    vChildren.append(oCreated.pElement);
             }
 
 
@@ -161,8 +189,9 @@ protected:
 
                 // TODO this is not going to work with ordered radiobuttons ...
                 QWidget* pTransformedChildElement = pGroupBox->addNextWidget(pChildElement);
-                this->addToLayout(pLayout, pTransformedChildElement);
-                this->setID(pTransformedChildElement, &oChildNode, true);
+
+                // TODO this->addToLayout(pLayout, pTransformedChildElement);
+                // TODO this->setID(pTransformedChildElement, &oChildNode, true);
 
                 oPostProcFunc(pGroupBox, pLayout, pChildElement, pTransformedChildElement, &vSelected, iAdded);
             }
@@ -190,7 +219,7 @@ protected:
         {
 
 
-            std::string sVisible = this->getAttribute(pElement, "visible", "ALWAYS").toUpper().toStdString();
+            std::string sVisible = this->getQAttribute(pElement, "visible", "ALWAYS").toUpper().toStdString();
 
             if (sVisible.compare("ALWAYS") != 0)
             {
@@ -223,9 +252,10 @@ protected:
         }
 
         pGroupBox->getConsistent();
+        oReturn.pElement = pGroupBox;
 
 
-        return pGroupBox;
+        return oReturn;
     }
 
 };

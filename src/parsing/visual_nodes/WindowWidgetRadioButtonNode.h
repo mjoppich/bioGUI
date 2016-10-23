@@ -12,8 +12,8 @@ class WindowWidgetRadioButtonNode : public WindowWidgetNode {
 
 public:
 
-    WindowWidgetRadioButtonNode()
-            : WindowWidgetNode()
+    WindowWidgetRadioButtonNode(WindowComponentFactory* pFactory)
+            : WindowWidgetNode(pFactory)
     {
 
     }
@@ -31,7 +31,7 @@ public:
 
         CreatedElement oReturn;
 
-        QString sButtonValue = this->getAttribute(pDOMElement, "value", sValue);
+        QString sButtonValue = this->getQAttribute(pDOMElement, "value", sValue);
         QExtendedRadioButton* pButtonItem = new QExtendedRadioButton(sValue, sButtonValue);
 
         oReturn.bHasChildrenFinished = true;

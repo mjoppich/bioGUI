@@ -12,8 +12,8 @@ class WindowWidgetStreamNode : public WindowWidgetNode {
 
 public:
 
-    WindowWidgetStreamNode()
-            : WindowWidgetNode()
+    WindowWidgetStreamNode(WindowComponentFactory* pFactory)
+            : WindowWidgetNode(pFactory)
     {
 
     }

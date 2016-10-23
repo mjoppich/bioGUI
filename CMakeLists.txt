@@ -31,12 +31,12 @@ if (OPENMP_FOUND)
 #     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS} ")
 endif()
 
-set(ENV{LUA_DIR} "C:/lua53/src")
+set(ENV{LUA_DIR} "D:/libraries/lua-5.3.3/" "C:/lua53/src")
 find_package(Lua REQUIRED)
 include_directories(${LUA_INCLUDE_DIR})
 
-message("   *** Lua include: ${LUA_INCLUDE_DIR}")
-message("   *** Lua lib: ${LUA_LIBRARIES}")
+message(WARNING "   *** Lua include: ${LUA_INCLUDE_DIR}")
+message(WARNING "   *** Lua lib: ${LUA_LIBRARIES}")
 
 # Search OpenSSL
 #set(OPENSSL_USE_STATIC_LIBS TRUE)
@@ -67,7 +67,7 @@ if ( CMAKE_SYSTEM_NAME STREQUAL "Windows" OR CYGWIN OR MINGW)
     set(QT_QMAKE_EXECUTABLE /usr/lib/qt5/bin/qmake.exe)
 
     if (MINGW)
-        set(QT_QMAKE_EXECUTABLE C:\\Qt\\5.6\\mingw49_32\\bin\\qmake.exe)
+        SET(ENV{Qt5_DIR} "C:\\Qt\\5.7\\mingw53_32\\")
         #set(QT_QMAKE_EXECUTABLE G:\\Qt\\5.6\\mingw49_32\\bin\\qmake.exe)
     endif()
 

@@ -13,8 +13,8 @@ class WindowLayoutHorizontalNode : public WindowLayoutNode {
 
 public:
 
-    WindowLayoutHorizontalNode()
-            : WindowLayoutNode()
+    WindowLayoutHorizontalNode(WindowComponentFactory* pFactory)
+            : WindowLayoutNode(pFactory)
     {
 
     }

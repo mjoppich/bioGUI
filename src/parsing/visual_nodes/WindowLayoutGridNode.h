@@ -12,8 +12,8 @@ class WindowLayoutGridNode : public WindowLayoutNode {
 
 public:
 
-    WindowLayoutGridNode()
-            : WindowLayoutNode()
+    WindowLayoutGridNode(WindowComponentFactory* pFactory)
+            : WindowLayoutNode(pFactory)
     {
 
     }
@@ -26,8 +26,8 @@ public:
     virtual CreatedElement getWindowElement( QDomElement* pDOMElement )
     {
 
-        int iRows = this->getAttribute(pDOMElement, "rows", 0).toInt();
-        int iCols = this->getAttribute(pDOMElement, "cols", 0).toInt();
+        int iRows = this->getQAttribute(pDOMElement, "rows", 0).toInt();
+        int iCols = this->getQAttribute(pDOMElement, "cols", 0).toInt();
 
         QExtGridLayout *pLayout = new QExtGridLayout(iRows, iCols);
 

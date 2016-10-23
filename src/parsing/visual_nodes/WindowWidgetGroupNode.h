@@ -14,8 +14,8 @@ class WindowWidgetGroupNode : public WindowWidgetGeneralGroupNode {
 
 public:
 
-    WindowWidgetGroupNode()
-            : WindowWidgetNode()
+    WindowWidgetGroupNode(WindowComponentFactory* pFactory)
+            : WindowWidgetGeneralGroupNode(pFactory)
     {
 
     }
@@ -44,7 +44,7 @@ public:
 
                 WindowComponentFactory oFactory(NULL);
 
-                if ( oFactory.isLayout(&oChildNode) )
+                if ( oFactory.isLayout( oChildNode.tagName() ) )
                 {
 
                     pReturn = oFactory.createLayoutElement(&oChildNode).pElement;
@@ -60,9 +60,7 @@ public:
             return (QLayout*) new QVBoxLayout();
         };
 
-        QWidget* pReturn = this->createGeneralGroup(pElement, pChildrenFinished, oLayoutFunc);
-
-        oReturn.pElement = pReturn;
+        oReturn = this->createGeneralGroup(pDOMElement, oLayoutFunc);
 
         return oReturn;
 

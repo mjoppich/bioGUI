@@ -26,11 +26,7 @@
 
 QLayout* XMLParserWindow::createLayout(QDomElement* pElement)
 {
-    QString sTag = pElement->tagName();
-
-
-
-    WindowNode<QLayout>::CreatedElement oLayout =
+    WindowNode<QLayout>::CreatedElement oLayout = m_pWidgetNodeFactory->createLayoutElement(pElement);
 
     return oLayout.pElement;
 }
@@ -44,19 +40,15 @@ QWidget* XMLParserWindow::createComponent(QDomElement* pElement, bool* pChildren
         return NULL;
     }
 
-    QString sTag = pElement->tagName();
-    std::string sUpperTag = sTag.toUpper().toStdString();
+    WindowNode<QWidget>::CreatedElement oWidget = m_pWidgetNodeFactory->createWidgetElement(pElement);
 
-
-    std::map<std::string, std::function<WindowNode<QWidget>::CreatedElement (QDomElement*)>>::iterator oFind = m_mCreateWidgetMap.find(sUpperTag);
-    if (!(oFind != m_mCreateWidgetMap.end()))
-        throw XMLParserException("Invalid Layout Tag: " + sUpperTag);
-
-    WindowNode<QWidget>::CreatedElement oWidget = oFind->second(pElement);
-
-    if (oWidget.bHasRetriever)
+    if (oWidget.hasRetriever())
     {
-        this->addValueFetcher(pElement, oWidget.oRetriever);
+        for (Retriever& oRet : oWidget.vRetriever)
+        {
+            this->addValueFetcher(oRet.sElementID, oRet.oRetriever);
+        }
+
     }
 
     *pChildrenFinished = oWidget.bHasChildrenFinished;
@@ -83,6 +75,8 @@ QWidget* XMLParserWindow::createComponent(QDomElement* pElement, bool* pChildren
 
 
 
+/*
+ *
 
 
     if (sTag.compare("radiobutton", Qt::CaseInsensitive) == 0)
@@ -302,11 +296,7 @@ QWidget* XMLParserWindow::createComponent(QDomElement* pElement, bool* pChildren
 
             pSlider->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
-            /*
-             *
-             * Assemble consturct
-             *
-             */
+            //Assemble consturct
 
             std::stringstream oMinSS;
             oMinSS << std::setprecision( std::ceil(log10(fMin) + log10(iMinFactor))+1 ) << fMin;
@@ -410,9 +400,7 @@ QWidget* XMLParserWindow::createComponent(QDomElement* pElement, bool* pChildren
             QString sFilePath = sFoundFile;
             QString sFileName = oFileInfo.completeBaseName();
 
-            /*
-             * if this is an install template, now only show filename but read first line ...
-             * */
+            //if this is an install template, now only show filename but read first line ...
             if (!bHasPathSet)
             {
                 QFile oFile( sFoundFile );
@@ -467,10 +455,7 @@ QWidget* XMLParserWindow::createComponent(QDomElement* pElement, bool* pChildren
 
         pScene->addItem( pItem );
 
-        /*
-         * apply sizes here
-         *
-         */
+        //apply sizes here
 
         QString sWidth =  this->getAttribute(pElement, "width" , "");
         QString sHeight = this->getAttribute(pElement, "height", "");
@@ -595,4 +580,6 @@ QWidget* XMLParserWindow::createComponent(QDomElement* pElement, bool* pChildren
     }
 
     return pWidget;
+
+    */
 }

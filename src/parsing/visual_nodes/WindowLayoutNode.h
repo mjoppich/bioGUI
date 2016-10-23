@@ -11,12 +11,12 @@
 class WindowLayoutNode : public WindowNode<QLayout> {
 public:
 
-    WindowLayoutNode()
-            : WindowNode<QWidget>()
+    WindowLayoutNode(WindowComponentFactory* pFactory)
+            : WindowNode<QLayout>(pFactory)
     {
     }
 
-    virtual ~WindowWidgetNode()
+    virtual ~WindowLayoutNode()
     {
 
     }

@@ -11,8 +11,8 @@ class WindowWidgetWindowNode : public WindowWidgetNode {
 
 public:
 
-    WindowWidgetWindowNode()
-            : WindowWidgetNode()
+    WindowWidgetWindowNode(WindowComponentFactory* pFactory)
+            : WindowWidgetNode(pFactory)
     {
 
     }
@@ -37,8 +37,8 @@ public:
          *
          */
 
-        QString sWidth =  this->getAttribute(pDOMElement, "width" , "400");
-        QString sHeight = this->getAttribute(pDOMElement, "height", "400");
+        QString sWidth =  this->getQAttribute(pDOMElement, "width" , "400");
+        QString sHeight = this->getQAttribute(pDOMElement, "height", "400");
 
         int iWidth = sWidth.toInt();
         int iHeight = sHeight.toInt();
@@ -49,7 +49,7 @@ public:
          * Window Title
          */
 
-        QString sTitle = this->getAttribute(pDOMElement, "title", "bioGUI");
+        QString sTitle = this->getQAttribute(pDOMElement, "title", "bioGUI");
         if (sTitle.length() > 0)
         {
             pWindow->setWindowTitle( sTitle );

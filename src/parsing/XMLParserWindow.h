@@ -37,13 +37,8 @@
 #include <src/app/QExtGridLayout.h>
 #include <src/app/QAbstractButtonItem.h>
 #include <src/app/QExclusiveGroupBox.h>
-#include <src/parsing/visual_nodes/WindowWidgetInputNode.h>
+#include <src/parsing/visual_nodes/WindowComponentFactory.h>
 #include "XMLParser.h"
-
-#include "./visual_nodes/WindowNode.h"
-#include "./visual_nodes/WindowLayoutHorizontalNode.h"
-#include "./visual_nodes/WindowLayoutVerticalNode.h"
-#include "./visual_nodes/WindowLayoutGridNode.h"
 
 class bioGUIapp;
 
@@ -66,59 +61,12 @@ public:
         /**
          * ADD WIDGETS
          */
-        this->insertWidgetNode("input", [] (QDomElement* pElement) {
+        m_pWidgetNodeFactory = new WindowComponentFactory(pApp);
 
-            WindowWidgetInputNode oNode;
-            return oNode.getWindowElement(pElement);
-        });
-
-        m_pKnownTags->push_back("label");
-        m_pKnownTags->push_back("link");
-        m_pKnownTags->push_back("input");
-        m_pKnownTags->push_back("image");
-        m_pKnownTags->push_back("filedialog");
-        m_pKnownTags->push_back("fileselectbox");
-        m_pKnownTags->push_back("group");
-        m_pKnownTags->push_back("groupbox");
-        m_pKnownTags->push_back("radiobutton");
-        m_pKnownTags->push_back("checkbox");
-        m_pKnownTags->push_back("action");
-        m_pKnownTags->push_back("window");
-        m_pKnownTags->push_back("stream");
-        m_pKnownTags->push_back("streambox");
-        m_pKnownTags->push_back("combobox");
-        m_pKnownTags->push_back("comboitem");
-        m_pKnownTags->push_back("filelist");
-        m_pKnownTags->push_back("slider");
-        m_pKnownTags->push_back("slideritem");
-
-
-
-        m_pKnownTags = this->getKnownTags();
+        m_pKnownTags = m_pWidgetNodeFactory->getKnownTags();
     }
 
-    std::vector<std::string>* getKnownTags()
-    {
-        std::vector<std::string>* pTags = new std::vector<std::string>();
 
-        std::map<std::string, std::function< WindowNode<QLayout>::CreatedElement( QDomElement*)> >::iterator oIt = m_mCreateLayoutMap.begin();
-        while (oIt != m_mCreateLayoutMap.end())
-        {
-            pTags->push_back( oIt->first );
-            ++oIt;
-        }
-        std::map<std::string, std::function< WindowNode<QWidget>::CreatedElement( QDomElement*)> >::iterator oJt = m_mCreateWidgetMap.begin();
-        while (oIt != m_mCreateWidgetMap.end())
-        {
-            pTags->push_back( oIt->first );
-            ++oJt;
-        }
-
-        // manually add master node!
-        pTags->push_back("window");
-
-        return pTags;
-    }
 
     void loadFile(std::string& sFileName)
     {
@@ -325,7 +273,6 @@ protected:
 
 
     enum ELEMENT_TYPE {ELEMENT, LAYOUT};
-    enum LAYOUT_TYPE {NONE, VERTICAL, HORIZONTAL, GRID, UNKNOWN};
 
     ELEMENT_TYPE getElementType(QDomElement* pElement)
     {
@@ -339,46 +286,19 @@ protected:
 
     }
 
-    LAYOUT_TYPE getLayoutType(QDomElement* pElement)
-    {
-        QLayout* pLayout = this->createLayout(pElement);
 
-        if (pLayout == NULL)
-            return LAYOUT_TYPE::NONE;
 
-        if (QOrderedHBoxLayout* pOrderedLayout = dynamic_cast<QOrderedHBoxLayout*>(pLayout))
-        {
-            return LAYOUT_TYPE::HORIZONTAL;
-        }
-
-        if (QOrderedVBoxLayout* pOrderedLayout = dynamic_cast<QOrderedVBoxLayout*>(pLayout))
-        {
-            return LAYOUT_TYPE::VERTICAL;
-        }
-
-        if (QExtGridLayout* pOrderedLayout = dynamic_cast<QExtGridLayout*>(pLayout))
-        {
-            return LAYOUT_TYPE::GRID;
-        }
-
-        return LAYOUT_TYPE::UNKNOWN;
-    }
-
-    bool addValueFetcher(QDomElement* pElement, std::function<std::string()> oFunc)
+    bool addValueFetcher(std::string& sElemID, std::function<std::string()> oFunc)
     {
 
-        QString sID = this->getAttribute(pElement, "ID", "");
-
-        if (sID.length() == 0)
+        if (sElemID.length() == 0)
         {
-            std::cerr << "expected element id for " << pElement->tagName().toStdString() << " but none was given";
+            // std::cerr << "expected element id for but none was given";
 
             return false;
         }
 
-
-
-        m_pID2Value->insert( std::pair< std::string, std::function<std::string()> >( sID.toStdString(), oFunc ) );
+        m_pID2Value->insert( std::pair< std::string, std::function<std::string()> >( sElemID, oFunc ) );
 
         return true;
 
@@ -527,6 +447,8 @@ protected:
         }
 
     }
+
+    /*
 
     QWidget* createGroup(QDomElement* pElement, bool* pChildrenFinished)
     {
@@ -760,13 +682,13 @@ protected:
 
         /*
          * Window Title
-         */
+
         QString sTitle = this->getAttribute(pElement, "title", "");
         pGroupBox->setTitle( sTitle );
 
         /*
          * checkable?
-         */
+
         std::string sCheckable = this->getAttribute(pElement, "checkable", "false").toUpper().toStdString();
         if (sCheckable.compare("TRUE") == 0)
         {
@@ -791,7 +713,7 @@ protected:
 
         /*
          * exclusive?
-         */
+
         QString sExclusive = this->getAttribute(pElement, "exclusive", "false");
         if (sExclusive.compare("TRUE", Qt::CaseInsensitive) == 0)
         {
@@ -803,7 +725,7 @@ protected:
         /*
          * ordered
          *
-         */
+
 
         bool bOrdered = (this->getAttribute(pElement, "ordered", "false").compare("true", Qt::CaseInsensitive) == 0);
         pGroupBox->setOrdered(bOrdered);
@@ -815,7 +737,7 @@ protected:
          *
          * selected = [ids] may indicate that group is selected and children are selected
          *
-         */
+
         QString sSelected = this->getAttribute(pElement, "selected", "");
         QStringList vSelected;
 
@@ -840,18 +762,13 @@ protected:
 
         }
 
-        /*
-         * LAYOUT
-         */
+         //* LAYOUT
+
 
         QDomNodeList oChildren = pElement->childNodes();
         QLayout* pLayout = oLayoutFunc(pElement, &oChildren);
 
-        /*
-         *
-         * CREATE AND ADD CHILDREN
-         *
-         */
+                 // CREATE AND ADD CHILDREN
 
         bool bBoolean = false;
         int iAdded = 0;
@@ -909,9 +826,7 @@ protected:
 
         pGroupBox->setLayout(pComponentLayout);
 
-        /*
-         * AFTER SETTING LAYOUT CARE FOR VISIBILITY
-         */
+         // * AFTER SETTING LAYOUT CARE FOR VISIBILITY
 
         if (pGroupBox->isCheckable() == true)
         {
@@ -955,6 +870,7 @@ protected:
         return pGroupBox;
     }
 
+*/
 
     bioGUIapp* m_pApp;
 
@@ -962,6 +878,8 @@ protected:
     std::map<std::string, QWidget*>* m_pID2Widget;
     std::vector<QWidget*> m_vWidgets;
     std::vector<QPushButton*> m_vActions;
+
+    WindowComponentFactory* m_pWidgetNodeFactory;
 
 };
 

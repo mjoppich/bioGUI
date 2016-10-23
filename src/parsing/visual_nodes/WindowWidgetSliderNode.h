@@ -20,8 +20,8 @@ class WindowWidgetSliderNode : public WindowWidgetNode {
 
 public:
 
-    WindowWidgetSliderNode()
-            : WindowWidgetNode()
+    WindowWidgetSliderNode(WindowComponentFactory* pFactory)
+            : WindowWidgetNode(pFactory)
     {
 
     }
@@ -62,8 +62,8 @@ public:
                     throw WindowNodeException("Within slider only slideritem is allowed, but found: " + oChildNode.tagName().toStdString());
                 }
 
-                QString sValue = this->getAttribute(&oChildNode, "value", "");
-                QString sDisplay = this->getAttribute(&oChildNode, "display", sValue);
+                QString sValue = this->getQAttribute(&oChildNode, "value", "");
+                QString sDisplay = this->getQAttribute(&oChildNode, "display", sValue);
 
                 vValues.push_back(std::pair<QString, QString>(sValue, sDisplay));
             }
@@ -82,21 +82,21 @@ public:
 
 
             oReturn.pElement = pSlider;
-            oReturn.bHasRetriever = true;
-            oReturn.oRetriever = [vValues, pSlider] () {
+
+            oReturn.addRetriever(this->getDomID(pDOMElement) , [vValues, pSlider] () {
 
                 return vValues.at(pSlider->value()-1).first.toStdString();
 
-            };
+            });
 
 
              return oReturn;
 
         } else {
 
-            float fMin = this->getAttribute(pDOMElement, "min", "0.0").toFloat();
-            float fMax = this->getAttribute(pDOMElement, "max", "1.0").toFloat();
-            float fStep = this->getAttribute(pDOMElement, "step", "0.1").toFloat();
+            float fMin = this->getQAttribute(pDOMElement, "min", "0.0").toFloat();
+            float fMax = this->getQAttribute(pDOMElement, "max", "1.0").toFloat();
+            float fStep = this->getQAttribute(pDOMElement, "step", "0.1").toFloat();
 
             int iMinFactor = Maths<float>::getIntegerFactor(fMin);
             int iMaxFactor = Maths<float>::getIntegerFactor(fMax);
@@ -171,8 +171,8 @@ public:
             });
 
 
-            oReturn.bHasRetriever = true;
-            oReturn.oRetriever = [pLineEdit]() { return pLineEdit->text().toStdString(); };
+
+            oReturn.addRetriever(this->getDomID(pDOMElement) , [pLineEdit]() { return pLineEdit->text().toStdString(); });
 
             QLayout *pLayout = new QHBoxLayout();
             pLayout->addWidget(pLeftSliderValue);

@@ -16,8 +16,8 @@ class WindowWidgetFileDialogNode : public WindowWidgetNode {
 
 public:
 
-    WindowWidgetFileDialogNode()
-            : WindowWidgetNode()
+    WindowWidgetFileDialogNode(WindowComponentFactory* pFactory)
+            : WindowWidgetNode(pFactory)
     {
 
     }
@@ -41,7 +41,7 @@ public:
         QLineEdit* pLineEdit = new QLineEdit();
         QString sPathHint = QDir::currentPath();
 
-        QString sLineEditLocation = this->getAttribute(pDOMElement, "location", "");
+        QString sLineEditLocation = this->getQAttribute(pDOMElement, "location", "");
         if (sLineEditLocation.length() > 0)
         {
             pLineEdit->setText(sLineEditLocation);
@@ -53,11 +53,11 @@ public:
 
         QPushButton* pFileButton = new QPushButton(sValue);
 
-        bool bMultiples = (this->getAttribute(pDOMElement, "multiples", "FALSE").compare("TRUE", Qt::CaseInsensitive) == 0);
-        bool bOutput = (this->getAttribute(pDOMElement, "output", "FALSE").compare("TRUE", Qt::CaseInsensitive) == 0);
-        bool bFolder = (this->getAttribute(pDOMElement, "folder", "FALSE").compare("TRUE", Qt::CaseInsensitive) == 0);
-        QString sFileDelim = this->getAttribute(pDOMElement, "multiples_delim", ";");
-        QString sFileFilter = this->getAttribute(pDOMElement, "filter", "");
+        bool bMultiples = (this->getQAttribute(pDOMElement, "multiples", "FALSE").compare("TRUE", Qt::CaseInsensitive) == 0);
+        bool bOutput = (this->getQAttribute(pDOMElement, "output", "FALSE").compare("TRUE", Qt::CaseInsensitive) == 0);
+        bool bFolder = (this->getQAttribute(pDOMElement, "folder", "FALSE").compare("TRUE", Qt::CaseInsensitive) == 0);
+        QString sFileDelim = this->getQAttribute(pDOMElement, "multiples_delim", ";");
+        QString sFileFilter = this->getQAttribute(pDOMElement, "filter", "");
 
         pFileButton->connect(pFileButton,&QAbstractButton::clicked,[pLineEdit, bMultiples, bOutput, bFolder, sFileDelim, sFileFilter, sPathHint] (bool bChecked){
 
@@ -112,8 +112,7 @@ public:
         pLayout->addWidget( pFileButton, 0, Qt::AlignLeft );
         pLineButton->setLayout( pLayout );
 
-        oReturn.bHasRetriever = true;
-        oReturn.oRetriever = [pLineEdit] () {return pLineEdit->text().toStdString();};
+        oReturn.addRetriever(this->getDomID(pDOMElement) , [pLineEdit] () {return pLineEdit->text().toStdString();});
 
         oReturn.pElement = pLineButton;
 

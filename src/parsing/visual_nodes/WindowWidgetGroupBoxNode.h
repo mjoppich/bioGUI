@@ -10,17 +10,17 @@
 #include "WindowWidgetNode.h"
 #include "WindowWidgetGeneralGroupNode.h"
 
-class WindowWidgetInputNode : public WindowWidgetGeneralGroupNode {
+class WindowWidgetGroupBoxNode : public WindowWidgetGeneralGroupNode {
 
 public:
 
-    WindowWidgetInputNode()
-            : WindowWidgetNode()
+    WindowWidgetGroupBoxNode(WindowComponentFactory* pFactory)
+            : WindowWidgetGeneralGroupNode(pFactory)
     {
 
     }
 
-    virtual ~WindowWidgetInputNode()
+    virtual ~WindowWidgetGroupBoxNode()
     {
 
     }
@@ -65,7 +65,7 @@ public:
 
                     QExtGridLayout* pTestLayout = NULL;
                     if (eLayoutType == LAYOUT_TYPE::GRID)
-                        pTestLayout = (QExtGridLayout*) this->createLayout(&oChildNode);
+                        pTestLayout = (QExtGridLayout*) m_pFactory->createLayoutElement(&oChildNode).pElement;
 
 
                     switch ( eLayoutType )
@@ -151,7 +151,7 @@ public:
             if (!oSimpleTextNode.isNull())
             {
                 // TODO this must create a qlabel based widget for the simple case!
-                QAbstractButton* pBox = (QAbstractButton*) createComponent(pChildNode, pBoolean);
+                QAbstractButton* pBox = (QAbstractButton*) m_pFactory->createWidgetElement(pChildNode).pElement;
                 QString sText = pBox->text();
                 pBox->setText("");
 
@@ -164,7 +164,7 @@ public:
                 return vWidgets;
             }
 
-            QAbstractButton* pBox = (QAbstractButton*) createComponent(pChildNode, pBoolean);
+            QAbstractButton* pBox = (QAbstractButton*) m_pFactory->createWidgetElement(pChildNode).pElement;
             pBox->setText("");
             pButtonGroup->addButton(pBox, iElement);
 
@@ -177,7 +177,7 @@ public:
             {
 
                 QDomElement oChildElement = pChildNode->childNodes().at(i).toElement();
-                QWidget* pContent = createComponent(&oChildElement, pBoolean);
+                QWidget* pContent = m_pFactory->createWidgetElement(&oChildElement).pElement;
 
                 pContentTransporterLayout->addWidget(pContent);
 
@@ -194,12 +194,10 @@ public:
         };
 
 
-        QExclusiveGroupBox* pGroupBox = (QExclusiveGroupBox*) this->createGeneralGroup(pDOMElement, pChildrenFinished, oLayoutFunc, oPreProc, oPostProc);
+        oReturn = this->createGeneralGroup(pDOMElement, oLayoutFunc, oPreProc, oPostProc);
 
-        oReturn.pElement = pGroupBox;
-        oReturn.bHasRetriever = true;
-        oReturn.bHasChildrenFinished = true;
-        oReturn.oRetriever = [pButtonGroup, pGroupBox] () {
+        QExclusiveGroupBox* pGroupBox = (QExclusiveGroupBox*) oReturn.pElement;
+        oReturn.addRetriever( this->getDomID(pDOMElement), [pButtonGroup, pGroupBox] () {
 
 
             bool bEvaluate = true;
@@ -223,7 +221,7 @@ public:
 
             return std::string("");
 
-        };
+        });
 
         return oReturn;
 

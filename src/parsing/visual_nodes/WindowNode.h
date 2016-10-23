@@ -8,6 +8,7 @@
 #include <exception>
 #include <string>
 #include <QDomElement>
+#include <functional>
 
 class WindowNodeException : public std::exception
 {
@@ -30,11 +31,21 @@ protected:
 
 };
 
+struct Retriever {
+
+    std::string sElementID;
+    std::function<std::string()> oRetriever;
+
+};
+
+class WindowComponentFactory;
+
 template <class T>
 class WindowNode {
 public:
 
-    WindowNode()
+    WindowNode(WindowComponentFactory* pFactory)
+    : m_pFactory(pFactory)
     {
     }
 
@@ -45,8 +56,17 @@ public:
 
     struct CreatedElement {
         T* pElement = NULL;
-        std::function<std::string()> oRetriever = [] () {return "";};
-        bool bHasRetriever = false;
+        std::vector< Retriever > vRetriever;
+        bool hasRetriever()
+        {
+            return vRetriever.size() > 0;
+        }
+
+        void addRetriever(std::string sID,std::function<std::string()> oFunc )
+        {
+            vRetriever.push_back( {sID, oFunc} );
+        }
+
         bool bHasChildrenFinished = false;
     };
 
@@ -89,7 +109,7 @@ protected:
         return false;
     }
 
-    QString getAttribute(QDomElement* pElement, QString sAttribName, QString sDefault)
+    QString getQAttribute(QDomElement* pElement, QString sAttribName, QString sDefault)
     {
 
         if (pElement == NULL)
@@ -112,6 +132,21 @@ protected:
         return sDefault;
 
     }
+
+    std::string getAttribute(QDomElement* pElement, QString sAttribName, QString sDefault)
+    {
+
+        QString sQAttrib = this->getQAttribute(pElement, sAttribName, sDefault);
+
+        return sQAttrib.toStdString();
+    }
+
+    std::string getDomID(QDomElement* pDOMElement)
+    {
+        return this->getAttribute(pDOMElement, "id", "");
+    }
+
+    WindowComponentFactory* m_pFactory = NULL;
 
 };
 

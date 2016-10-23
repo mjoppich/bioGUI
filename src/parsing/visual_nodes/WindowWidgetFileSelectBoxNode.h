@@ -12,8 +12,8 @@ class WindowWidgetFileSelectBoxNode : public WindowWidgetNode {
 
 public:
 
-    WindowWidgetFileSelectBoxNode()
-            : WindowWidgetNode()
+    WindowWidgetFileSelectBoxNode(WindowComponentFactory* pFactory)
+            : WindowWidgetNode(pFactory)
     {
 
     }
@@ -29,17 +29,16 @@ public:
 
         CreatedElement oReturn;
 
-        QString sFileFilter = this->getAttribute(pDOMElement, "filter", "");
-        QString sFilePath = this->getAttribute(pDOMElement, "location", "");
-        QString sDelimeter = this->getAttribute(pDOMElement, "delim", " ");
+        QString sFileFilter = this->getQAttribute(pDOMElement, "filter", "");
+        QString sFilePath = this->getQAttribute(pDOMElement, "location", "");
+        QString sDelimeter = this->getQAttribute(pDOMElement, "delim", " ");
 
         QSortableFileList *pList = new QSortableFileList( sFilePath, sFileFilter, sDelimeter );
 
 
         oReturn.pElement = pList;
-        oReturn.oRetriever = [pList] () {return pList->evaluate().toStdString();};
-        oReturn.bHasRetriever = true;
 
+        oReturn.addRetriever( this->getDomID(pDOMElement), [pList] () {return pList->evaluate().toStdString();} );
 
         return oReturn;
 

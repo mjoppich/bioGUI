@@ -19,8 +19,8 @@ class WindowWidgetFileListNode : public WindowWidgetNode {
 
 public:
 
-    WindowWidgetFileListNode()
-            : WindowWidgetNode()
+    WindowWidgetFileListNode(WindowComponentFactory* pFactory)
+            : WindowWidgetNode(pFactory)
     {
 
     }
@@ -41,7 +41,7 @@ public:
         QComboBox *pComboBox = new QComboBox();
 
         QString sCurrentPath = QDir::current().absolutePath();
-        QString sSearchPath = this->getAttribute(pDOMElement, "path", sCurrentPath + "/install_templates/");
+        QString sSearchPath = this->getQAttribute(pDOMElement, "path", sCurrentPath + "/install_templates/");
 
         bool bHasPathSet = this->hasAttribute(pDOMElement, "path");
 
@@ -60,7 +60,7 @@ public:
 
         }
 
-        QStringList vFileEnding = this->getAttribute(pDOMElement, "ext", "*.igui").split(",");
+        QStringList vFileEnding = this->getQAttribute(pDOMElement, "ext", "*.igui").split(",");
 
         std::cerr << "starting in " << sCurrentPath.toStdString() << std::endl;
         std::cerr << "searching in " << sSearchPath.toStdString() << std::endl;
@@ -108,8 +108,8 @@ public:
         }
 
         oReturn.bHasChildrenFinished = true;
-        oReturn.bHasRetriever = true;
-        oReturn.oRetriever = [pComboBox] () {
+
+        oReturn.addRetriever(this->getDomID(pDOMElement) , [pComboBox] () {
 
 
             QVariant oSelected = pComboBox->currentData();
@@ -119,7 +119,7 @@ public:
 
             return oSelected.toString().toStdString();
 
-        };
+        });
 
         oReturn.pElement = pComboBox;
 

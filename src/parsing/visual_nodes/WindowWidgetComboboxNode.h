@@ -14,8 +14,8 @@ class WindowWidgetComboboxNode : public WindowWidgetNode {
 
 public:
 
-    WindowWidgetComboboxNode()
-            : WindowWidgetNode()
+    WindowWidgetComboboxNode(WindowComponentFactory* pFactory)
+            : WindowWidgetNode(pFactory)
     {
 
     }
@@ -33,7 +33,7 @@ public:
 
         CreatedElement oReturn;
 
-        QString sSelected = this->getAttribute(pDOMElement, "selected", "");
+        QString sSelected = this->getQAttribute(pDOMElement, "selected", "");
         QStringList vSelected;
 
         if (sSelected.length() > 0)
@@ -41,7 +41,7 @@ public:
             vSelected = sSelected.split(";");
         }
 
-        WindowWidgetComboitemNode oComboItemNode;
+        WindowWidgetComboitemNode oComboItemNode(m_pFactory);
 
         QComboBox *pComboBox = new QComboBox();
         QDomNodeList oChildren = pDOMElement->childNodes();
@@ -65,12 +65,12 @@ public:
 
         oReturn.pElement = pComboBox;
         oReturn.bHasChildrenFinished = true;
-        oReturn.bHasRetriever = true;
-        oReturn.oRetriever = [pComboBox] () {
+
+        oReturn.addRetriever(this->getDomID(pDOMElement) , [pComboBox] () {
 
             return pComboBox->currentData().toString().toStdString();
 
-        };
+        });
 
         return oReturn;
 

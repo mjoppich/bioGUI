@@ -14,8 +14,8 @@ class WindowLayoutVerticalNode : public WindowLayoutNode {
 
 public:
 
-    WindowLayoutVerticalNode()
-            : WindowLayoutNode()
+    WindowLayoutVerticalNode(WindowComponentFactory* pFactory)
+            : WindowLayoutNode(pFactory)
     {
 
     }

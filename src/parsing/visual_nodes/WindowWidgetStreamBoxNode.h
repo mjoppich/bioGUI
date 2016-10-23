@@ -17,8 +17,8 @@ class WindowWidgetStreamBoxNode : public WindowWidgetNode {
 
 public:
 
-    WindowWidgetStreamBoxNode()
-            : WindowWidgetNode()
+    WindowWidgetStreamBoxNode(WindowComponentFactory* pFactory)
+            : WindowWidgetNode(pFactory)
     {
 
     }
@@ -71,7 +71,7 @@ public:
 
         QDomNodeList oChildren = pDOMElement->childNodes();
 
-        WindowWidgetStreamNode oStreamNode;
+        WindowWidgetStreamNode oStreamNode(m_pFactory);
 
         for (size_t i = 0; i < oChildren.size(); ++i)
         {
@@ -85,12 +85,12 @@ public:
             {
                 pButton->setChecked(true);
 
-                QString sID = this->getAttribute(&oChildNode, "id", "");
+                std::string sID = this->getAttribute(&oChildNode, "id", "");
                 if (sID.length() > 0)
                 {
 
-                    m_pID2Widget->find(sID.toStdString())->second = pStreamOut;
-                    pStreamOut->addStream( sID.toStdString(), pButton );
+                    // TODO m_pID2Widget->find(sID)->second = pStreamOut;
+                    pStreamOut->addStream( sID, pButton );
                     pLayout->addWidget( pChildElement );
 
                 } else {
@@ -104,10 +104,10 @@ public:
         pGroupBox->setLayout(pLayout);
 
         // must be done here because otherwise the groupbox is the id widget ...
-        QString sID = this->getAttribute(pDOMElement, "id", "");
+        std::string sID = this->getAttribute(pDOMElement, "id", "");
         if (sID.length() > 0)
         {
-            m_pID2Widget->insert( std::pair<std::string, QWidget*>(sID.toStdString(), pStreamOut));
+            // TODO m_pID2Widget->insert( std::pair<std::string, QWidget*>(sID, pStreamOut));
         }
 
         return oReturn;

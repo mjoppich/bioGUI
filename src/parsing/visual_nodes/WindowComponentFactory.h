@@ -7,121 +7,138 @@
 
 
 #include <string>
-#include <src/bioGUIapp.h>
+#include <functional>
+#include <src/parsing/XMLParser.h>
 #include "WindowLayoutNode.h"
 #include "WindowWidgetNode.h"
 #include "WindowWidgetLabelNode.h"
+
+
+class bioGUIapp;
 
 class WindowComponentFactory {
 
 public:
 
-    WindowComponentFactory(bioGUIapp* pApp)
-    : m_pApp(pApp)
-    {
-
-        this->initializeLayouts();
-        this->initializeWidgets();
-
-    }
+    WindowComponentFactory(bioGUIapp* pApp);
 
 
-    WindowLayoutNode getCreatorForLayout(QString& sTag)
-    {
-
-        std::string sUpperTag = sTag.toUpper().toStdString();
-        std::map<std::string, std::function<WindowLayoutNode()>>::iterator oFind = m_mLayoutNodeMap.find(sUpperTag);
-        if (!(oFind != m_mLayoutNodeMap.end()))
-            throw XMLParserException("Invalid Layout Tag: " + sUpperTag);
-
-        return (oFind->second)();
-
-    }
-
-
-    WindowWidgetNode getCreatorForWidget(QString& sTag)
-    {
-
-        std::string sUpperTag = sTag.toUpper().toStdString();
-        std::map<std::string, std::function<WindowWidgetNode()>>::iterator oFind = m_mWidgetNodeMap.find(sUpperTag);
-        if (!(oFind != m_mWidgetNodeMap.end()))
-            throw XMLParserException("Invalid Widget Tag: " + sUpperTag);
-
-        return (oFind->second)();
-
-    }
+    WindowLayoutNode* getCreatorForLayout(QString& sTag);
+    WindowWidgetNode* getCreatorForWidget(QString& sTag);
 
     WindowNode<QLayout>::CreatedElement createLayoutElement(QDomElement* pElement)
     {
-        QString sTagName = pElement->tagName();
+        QString sTagName = pElement->tagName().toUpper();
         return this->createLayoutElement(sTagName, pElement);
     }
 
     WindowNode<QLayout>::CreatedElement createLayoutElement(QString& sTag, QDomElement* pElement)
     {
-        return this->getCreatorForLayout(sTag).getWindowElement(pElement);
+
+        WindowLayoutNode* pLayoutNode = this->getCreatorForLayout(sTag);
+        WindowNode<QLayout>::CreatedElement oReturn = pLayoutNode->getWindowElement(pElement);
+
+        delete pLayoutNode;
+        return oReturn;
+    }
+
+    WindowNode<QWidget>::CreatedElement createWidgetElement(QDomElement* pElement)
+    {
+        QString sTagName = pElement->tagName().toUpper();
+        return this->createWidgetElement(sTagName, pElement);
     }
 
     WindowNode<QWidget>::CreatedElement createWidgetElement(QString& sTag, QDomElement* pElement)
     {
-        return this->getCreatorForWidget(sTag).getWindowElement(pElement);
+        WindowWidgetNode* pLayoutNode = this->getCreatorForWidget(sTag);
+        WindowNode<QWidget>::CreatedElement oReturn = pLayoutNode->getWindowElement(pElement);
+
+        delete pLayoutNode;
+        return oReturn;    }
+
+    std::vector<std::string>* getKnownTags()
+    {
+        std::vector<std::string>* pTags = new std::vector<std::string>();
+
+        std::map<std::string, std::function< WindowLayoutNode* () > >::iterator oIt = m_mLayoutNodeMap.begin();
+        while (oIt != m_mLayoutNodeMap.end())
+        {
+            pTags->push_back( oIt->first );
+            ++oIt;
+        }
+        std::map<std::string, std::function< WindowWidgetNode*()> >::iterator oJt = m_mWidgetNodeMap.begin();
+        while (oJt != m_mWidgetNodeMap.end())
+        {
+            pTags->push_back( oJt->first );
+            ++oJt;
+        }
+
+        // manually add master node!
+        pTags->push_back("WINDOW");
+
+        return pTags;
+    }
+
+    bool isLayout(QString sTag)
+    {
+        std::string sStdTag = sTag.toUpper().toStdString();
+
+        std::map<std::string, std::function<WindowLayoutNode*()>>::iterator oFind = m_mLayoutNodeMap.find(sStdTag);
+
+        if (!(oFind != m_mLayoutNodeMap.end()))
+        {
+            return false;
+        }
+
+        return true;
+
+    }
+
+    bool isWidget(QString sTag)
+    {
+        std::string sStdTag = sTag.toUpper().toStdString();
+
+        std::map<std::string, std::function<WindowWidgetNode*()>>::iterator oFind = m_mWidgetNodeMap.find(sStdTag);
+
+        if (!(oFind != m_mWidgetNodeMap.end()))
+        {
+            return false;
+        }
+
+        return true;
+
     }
 
 protected:
 
-    void initializeWidgets()
+    void initializeWidgets();
+
+    void initializeLayouts();
+
+    void insertWidgetNode(std::string sType, std::function< WindowWidgetNode* ( ) > oFunc)
     {
-        this->insertWidgetNode("label", [] (QDomElement* pElement) {
-            return WindowWidgetLabelNode();
-        });
-    }
-
-    void initializeLayouts()
-    {
-
-        /**
-         * ADD LAYOUTS
-         */
-        this->insertLayoutNode("hgroup", [] () {
-            return WindowLayoutHorizontalNode();
-        });
-
-        this->insertLayoutNode("vgroup", [] () {
-            return WindowLayoutVerticalNode();
-        });
-
-        this->insertLayoutNode("grid", [] () {
-            return WindowLayoutGridNode();
-        });
-
-    }
-
-    void insertWidgetNode(std::string sType, std::function< WindowWidgetNode ( ) > oFunc)
-    {
-        std::pair<std::string, std::function< WindowWidgetNode( )> > oPair( sType, oFunc );
+        std::pair<std::string, std::function< WindowWidgetNode*( )> > oPair( sType, oFunc );
 
         m_mWidgetNodeMap.insert(oPair);
 
     }
 
-    void insertLayoutNode(std::string sType, std::function< WindowLayoutNode ( ) > oFunc)
+    void insertLayoutNode(std::string sType, std::function< WindowLayoutNode* ( ) > oFunc)
     {
-        std::pair<std::string, std::function< WindowLayoutNode( )> > oPair( sType, oFunc );
+        std::pair<std::string, std::function< WindowLayoutNode*( )> > oPair( sType, oFunc );
 
-        m_mWidgetNodeMap.insert(oPair);
+        m_mLayoutNodeMap.insert(oPair);
 
     }
 
-    std::map< std::string, std::function< WindowLayoutNode ( ) > > m_mLayoutNodeMap;
-    std::map< std::string, std::function< WindowWidgetNode ( ) > > m_mWidgetNodeMap;
-
-    std::map< std::string, std::function< WindowNode<QLayout>::CreatedElement( QDomElement*) > > m_mCreateLayoutMap;
-    std::map< std::string, std::function< WindowNode<QWidget>::CreatedElement( QDomElement*)> > m_mCreateWidgetMap;
-
+    std::map< std::string, std::function< WindowLayoutNode* ( ) > > m_mLayoutNodeMap;
+    std::map< std::string, std::function< WindowWidgetNode* ( ) > > m_mWidgetNodeMap;
 
     bioGUIapp* m_pApp;
 
 };
+
+
 
 
 #endif //BIOGUI_WINDOWLAYOUTCREATOR_H

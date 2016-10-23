@@ -14,8 +14,8 @@ class WindowWidgetImageNode : public WindowWidgetNode {
 
 public:
 
-    WindowWidgetImageNode()
-            : WindowWidgetNode()
+    WindowWidgetImageNode(WindowComponentFactory* pFactory)
+            : WindowWidgetNode(pFactory)
     {
 
     }
@@ -33,7 +33,7 @@ public:
 
         CreatedElement oReturn;
 
-        QString sFileName = this->getAttribute(pDOMElement, "src", "");
+        QString sFileName = this->getQAttribute(pDOMElement, "src", "");
 
         QGraphicsScene* pScene = new QGraphicsScene();
         QGraphicsView* pView = new QGraphicsView(pScene);
@@ -46,8 +46,8 @@ public:
          *
          */
 
-        QString sWidth =  this->getAttribute(pDOMElement, "width" , "");
-        QString sHeight = this->getAttribute(pDOMElement, "height", "");
+        QString sWidth =  this->getQAttribute(pDOMElement, "width" , "");
+        QString sHeight = this->getQAttribute(pDOMElement, "height", "");
 
         if ((sWidth.length() > 0) && (sHeight.length() > 0))
         {

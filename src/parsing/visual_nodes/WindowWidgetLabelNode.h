@@ -15,13 +15,13 @@ class WindowWidgetLabelNode : public WindowWidgetNode {
 
 public:
 
-    WindowWidgetLabelNode()
-            : WindowWidgetNode()
+    WindowWidgetLabelNode(WindowComponentFactory* pFactory)
+            : WindowWidgetNode(pFactory)
     {
 
     }
 
-    virtual ~WindowWidgetInputNode()
+    virtual ~WindowWidgetLabelNode()
     {
 
     }
@@ -43,10 +43,8 @@ public:
             });
         }
 
-
-        oReturn.bHasRetriever = true;
         oReturn.pElement = pLabel;
-        oReturn.oRetriever = [sValue] () {return sValue.toStdString();};
+        oReturn.vRetriever.push_back( {this->getAttribute(pDOMElement, "id", ""), [sValue] () {return sValue.toStdString();}} );
 
         return oReturn;
 

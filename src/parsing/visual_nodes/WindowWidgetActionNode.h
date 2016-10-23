@@ -13,8 +13,8 @@ class WindowWidgetActionNode : public WindowWidgetNode {
 
 public:
 
-    WindowWidgetActionNode(bioGUIapp* pApp, std::vector<QPushButton*>* pActionButtons)
-            : WindowWidgetNode()
+    WindowWidgetActionNode(WindowComponentFactory* pFactory, bioGUIapp* pApp, std::vector<QPushButton*>* pActionButtons)
+            : WindowWidgetNode(pFactory)
     {
         m_pApp = pApp;
         m_pActionButtons = pActionButtons;
@@ -35,8 +35,7 @@ public:
 
         QPushButton *pAction = new QPushButton( sValue );
 
-        QString sQProgramToRun = this->getAttribute(pDOMElement, "program", "");
-        std::string sProgramToRun = sQProgramToRun.toStdString();
+        std::string sProgramToRun = this->getAttribute(pDOMElement, "program", "");
 
         bioGUIapp* pApp = this->m_pApp;
 

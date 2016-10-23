@@ -11,8 +11,8 @@
 class WindowWidgetNode : public WindowNode<QWidget> {
 public:
 
-    WindowWidgetNode()
-    : WindowNode<QWidget>()
+    WindowWidgetNode(WindowComponentFactory* pFactory)
+    : WindowNode<QWidget>(pFactory)
     {
     }
 

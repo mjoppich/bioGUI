@@ -12,8 +12,8 @@ class WindowWidgetSlideritemNode : public WindowWidgetNode {
 
 public:
 
-    WindowWidgetSlideritemNode()
-            : WindowWidgetNode()
+    WindowWidgetSlideritemNode(WindowComponentFactory* pFactory)
+            : WindowWidgetNode(pFactory)
     {
 
     }
@@ -34,7 +34,7 @@ public:
         QComboItem* pItem =  new QComboItem("", "");
 
         pItem->setValue( sValue );
-        QString sData = this->getAttribute(pDOMElement, "value", sValue);
+        QString sData = this->getQAttribute(pDOMElement, "value", sValue);
         pItem->setData(sData);
 
         oReturn.pElement = pItem;

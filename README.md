@@ -50,7 +50,7 @@ _README to be continued_
 Templates are structued _XML_ files.
 
 Each template is defined as a root tag with the following structure:
-`<template description="a descriptive text" title="a title">`
+`\<template description="a descriptive text" title="a title"\>`
 
 Where the description is shown in the description line in bioGUI and the title is shown in the title line in bioGUI.
 
@@ -58,8 +58,8 @@ If the child element `window` does not have a title set, the template title is a
 
 Within the template tag two child elements are expected:
 
-	* `<window width="..." height="..." title="...">`
-	* `<execution>`
+	* `\<window width="..." height="..." title="..."\>`
+	* `\<execution\>`
 
 The window may have additional attributes such as _width_ and _height_ defining the minimal width/height of the window.
 The title is shown in the title of the window.
@@ -69,23 +69,23 @@ The _window_ tag (and its children) define the **visual** appearance of a templa
 Once starting a program, the _execution_ part can be used to assemble the command line arguments for the application to start.
 For this a _network_-like structure is used.
 Each element in the execution part can be seen as a node.
-A node can refer its value from another node, but it can also manipulate or extend values (e.g. by combining multiple nodes in an `<add>`-node).
+A node can refer its value from another node, but it can also manipulate or extend values (e.g. by combining multiple nodes in an `\<add\>`-node).
 
-For highest flexibility, `<script>` nodes can refer to or contain **LUA** code. For instance
+For highest flexibility, `\<script\>` nodes can refer to or contain **LUA** code. For instance
 
 ``` XML
-<const id="node1">some_file.tex</const>
+\<const id="node1"\>some_file.tex\</const\>
 
-<script argv="${node1},pdf">
-<![CDATA[
+\<script argv="${node1},pdf"\>
+\<![CDATA[
 
 function evaluate(arg1, arg2)
 	return(string.sub(arg1, 0, -3) .. arg2)
 end
 
 
-]]>
-</script>
+]]\>
+\</script\>
 ```
 
 would first split all supplied arguments from the script _argv_ attribute and resolve those, which refer to another node (indicated by `${nodeid}`).
@@ -104,50 +104,59 @@ If you want to share your template, feel free to upload to [our website](https:/
 ## Which visual elements exist?
 
 Visual elements including their possible attributes are given below.
-It is distinguished between Layouts and Widgets. Layouts tell how the widgets are rendered/displayed (e.g. in which order).
+It is distinguished between Layouts and Widgets.
+Layouts tell how the widgets are rendered/displayed (e.g. in which order).
+There currently exist 3 layouts (grid, horizontal and vertical).
 
 |node name|allowed attributes|
 |---|---|
-|<GRID>|	[cols, rows]|
-|<HGROUP>|	[]|
-|<VGROUP>|	[]|
-|<ACTION>|	[program]|
-|<CHECKBOX>|	[selected, selectonwindows, value]|
-|<COMBOBOX>|	[selected]|
-|<COMBOITEM>|	[value]|
-|<FILEDIALOG>|	[filter, folder, location, multiples, multiples_delim, output]|
-|<FILELIST>|	[height, title, width]|
-|<FILESELECTBOX>|	[delim, filter, location]|
-|<GROUP>|	[height, title, width]|
-|<GROUPBOX>|	[multi]|
-|<IMAGE>|	[height, src, width]|
-|<INPUT>|	[multi, type {string, int, float, password}]|
-|<LABEL>|	[link]|
-|<RADIOBUTTON>|	[value]|
-|<SLIDER>|	[max, min, step]|
-|<SLIDERITEM>|	[display, value]|
-|<STREAM>|	[height, title, width]|
-|<STREAMBOX>|	[]|
-|<WINDOW>|	[height, title, width]|
+|\<GRID\>|	[cols, rows]|
+|\<HGROUP\>|	[]|
+|\<VGROUP\>|	[]|
+|---|---|
+|\<ACTION\>|	[program]|
+|\<CHECKBOX\>|	[selected, selectonwindows, value]|
+|\<COMBOBOX\>|	[selected]|
+|\<COMBOITEM\>|	[value]|
+|\<FILEDIALOG\>|	[filter, folder, location, multiples, multiples_delim, output]|
+|\<FILELIST\>|	[height, title, width]|
+|\<FILESELECTBOX\>|	[delim, filter, location]|
+|\<GROUP\>|	[height, title, width]|
+|\<GROUPBOX\>|	[multi]|
+|\<IMAGE\>|	[height, src, width]|
+|\<INPUT\>|	[multi, type {string, int, float, password}]|
+|\<LABEL\>|	[link]|
+|\<RADIOBUTTON\>|	[value]|
+|\<SLIDER\>|	[max, min, step]|
+|\<SLIDERITEM\>|	[display, value]|
+|\<STREAM\>|	[height, title, width]|
+|\<STREAMBOX\>|	[]|
+|\<WINDOW\>|	[height, title, width]|
 
 
 ## Which execution nodes exist?
+
+Execution nodes define the logic and how the command line arguments are assembled.
+Most likely the most important nodes are the add, const, value and if (and else) nodes.
+
+However, it must be stressed, that the __script__ node is of high power as it enables the execution of _lua_ scripts (even inline written in the template).
+Program arguments are provided by the _argv_ attribute (see the above example).
+
 |node name|allowed attributes|
 |---|---|
-|<add>|	[ID, TYPE, sep]|
-|<const>|	[ID, TYPE]|
-|<else>|	[]|
-|<env>|	[GET, ID, TYPE]|
-|<execute>|	[EXEC, ID, PROGRAM, TYPE, location, param, program, wsl]|
-|<file>|	[FROM, ID, SEP, TO, TYPE]|
-|<httpexecute>|	[CL_TO_POST, DELIM, ID, PORT, PROGRAM, TYPE]|
-|<if>|	[COMP, ID, SEP, TYPE, VALUE1, VALUE2]|
-|<math>|	[ID, OP, TYPE]|
-|<orderedadd>|	[FROM, ID, SELECTED, TYPE]|
-|<output>|	[COLOR, DEFERRED, FROM, HOST, ID, LOCATION, PORT, TO, TYPE, TYPE]|
-|<relocate>|	[FROM, ID, PREPEND, TO, TYPE, UNIX, WSL]|
-|<replace>|	[ID, REPLACE, REPLACE_WITH, TYPE]|
-
-|<script>|	[ARGV, ID, SCRIPT, TYPE]|
-|<value>|	[FOR, FROM, ID, TYPE]|
+|\<add\>|	[ID, TYPE, sep]|
+|\<const\>|	[ID, TYPE]|
+|\<else\>|	[]|
+|\<env\>|	[GET, ID, TYPE]|
+|\<execute\>|	[EXEC, ID, PROGRAM, TYPE, location, param, program, wsl]|
+|\<file\>|	[FROM, ID, SEP, TO, TYPE]|
+|\<httpexecute\>|	[CL_TO_POST, DELIM, ID, PORT, PROGRAM, TYPE]|
+|\<if\>|	[COMP, ID, SEP, TYPE, VALUE1, VALUE2]|
+|\<math\>|	[ID, OP, TYPE]|
+|\<orderedadd\>|	[FROM, ID, SELECTED, TYPE]|
+|\<output\>|	[COLOR, DEFERRED, FROM, HOST, ID, LOCATION, PORT, TO, TYPE, TYPE]|
+|\<relocate\>|	[FROM, ID, PREPEND, TO, TYPE, UNIX, WSL]|
+|\<replace\>|	[ID, REPLACE, REPLACE_WITH, TYPE]|
+|\<script\>|	[ARGV, ID, SCRIPT, TYPE]|
+|\<value\>|	[FOR, FROM, ID, TYPE]|
 

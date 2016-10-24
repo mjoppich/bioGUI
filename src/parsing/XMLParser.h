@@ -82,6 +82,7 @@ public:
     {
 
     }
+
 protected:
 
     QDomDocument* loadFromFile(std::string sFileName)

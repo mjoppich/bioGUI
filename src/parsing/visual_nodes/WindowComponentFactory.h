@@ -10,6 +10,7 @@
 #include <functional>
 #include <src/parsing/XMLParser.h>
 #include <src/app/QOrderedLayout.h>
+#include <sstream>
 #include "WindowLayoutNode.h"
 #include "WindowWidgetNode.h"
 #include "WindowWidgetLabelNode.h"
@@ -74,9 +75,6 @@ public:
             ++oJt;
         }
 
-        // manually add master node!
-        pTags->push_back("WINDOW");
-
         return pTags;
     }
 
@@ -137,7 +135,57 @@ public:
         }
     }
 
+    void printAvailableNodes()
+    {
+
+
+        std::map<std::string, std::function< WindowLayoutNode* () > >::iterator oIt = m_mLayoutNodeMap.begin();
+        while (oIt != m_mLayoutNodeMap.end())
+        {
+            WindowLayoutNode* pNode = oIt->second();
+            std::string sTag = oIt->first;
+
+            this->handleAttributeNode(sTag, pNode);
+
+            delete pNode;
+            ++oIt;
+        }
+        std::map<std::string, std::function< WindowWidgetNode*()> >::iterator oJt = m_mWidgetNodeMap.begin();
+        while (oJt != m_mWidgetNodeMap.end())
+        {
+            WindowWidgetNode* pNode = oJt->second();
+            std::string sTag = oJt->first;
+
+            this->handleAttributeNode(sTag, pNode);
+
+            delete pNode;
+            ++oJt;
+        }
+
+    }
+
 protected:
+
+    void handleAttributeNode(std::string& sTag, WindowBaseNode* pNode)
+    {
+        if (pNode == NULL)
+            return;
+
+        std::vector<std::string> vAttributes = pNode->getAcceptedAttributes();
+
+        std::stringstream oSS;
+        for (size_t j = 0; j < vAttributes.size(); ++j)
+            oSS << ", " << vAttributes[j];
+
+        std::string sJoined = oSS.str();
+
+        if (sJoined.size() > 2)
+            sJoined = sJoined.substr(2, -1);
+
+        std::cout << "<" << sTag << ">" << "\t[" << sJoined << "]" << std::endl;
+
+
+    }
 
     void initializeWidgets();
 

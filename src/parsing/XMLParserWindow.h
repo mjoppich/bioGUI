@@ -66,6 +66,13 @@ public:
         m_pKnownTags = m_pWidgetNodeFactory->getKnownTags();
     }
 
+    virtual void printAvailableNodes()
+    {
+
+        m_pWidgetNodeFactory->printAvailableNodes();
+
+    }
+
     void addID2Widget(std::string& sID, QWidget* pWidget, bool bOverwrite=false)
     {
 

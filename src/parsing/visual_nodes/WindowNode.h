@@ -31,44 +31,23 @@ protected:
 
 };
 
-struct Retriever {
 
-    std::string sElementID;
-    std::function<std::string()> oRetriever;
-
-};
 
 class WindowComponentFactory;
 
-template <class T>
-class WindowNode {
-public:
 
-    WindowNode(WindowComponentFactory* pFactory)
+class WindowBaseNode
+{
+public:
+    WindowBaseNode(WindowComponentFactory* pFactory)
     : m_pFactory(pFactory)
     {
     }
 
-    virtual ~WindowNode()
+    virtual ~WindowBaseNode()
     {
 
     }
-
-    struct CreatedElement {
-        T* pElement = NULL;
-        std::vector< Retriever > vRetriever;
-        bool hasRetriever()
-        {
-            return vRetriever.size() > 0;
-        }
-
-        void addRetriever(std::string sID,std::function<std::string()> oFunc )
-        {
-            vRetriever.push_back( {sID, oFunc} );
-        }
-
-        bool bHasChildrenFinished = false;
-    };
 
     std::vector<std::string> getAcceptedAttributes()
     {
@@ -80,8 +59,6 @@ public:
 
         return vReturnAttribs;
     }
-
-    virtual typename WindowNode<T>::CreatedElement getWindowElement( QDomElement* pDOMElement ) = 0;
 
 protected:
 
@@ -147,6 +124,53 @@ protected:
     }
 
     WindowComponentFactory* m_pFactory = NULL;
+};
+
+
+struct Retriever {
+
+    std::string sElementID;
+    std::function<std::string()> oRetriever;
+
+};
+
+template <class T>
+class WindowNode : public WindowBaseNode {
+public:
+
+    WindowNode(WindowComponentFactory* pFactory)
+            : WindowBaseNode(pFactory)
+    {
+
+    }
+
+    virtual ~WindowNode()
+    {
+
+    }
+
+
+    struct CreatedElement {
+        T* pElement = NULL;
+        std::vector< Retriever > vRetriever;
+        bool hasRetriever()
+        {
+            return vRetriever.size() > 0;
+        }
+
+        void addRetriever(std::string sID,std::function<std::string()> oFunc )
+        {
+            vRetriever.push_back( {sID, oFunc} );
+        }
+
+        bool bHasChildrenFinished = false;
+    };
+
+
+
+    virtual typename WindowNode<T>::CreatedElement getWindowElement( QDomElement* pDOMElement ) = 0;
+
+
 
 };
 

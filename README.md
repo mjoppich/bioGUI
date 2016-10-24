@@ -103,4 +103,51 @@ If you want to share your template, feel free to upload to [our website](https:/
 
 ## Which visual elements exist?
 
+Visual elements including their possible attributes are given below.
+It is distinguished between Layouts and Widgets. Layouts tell how the widgets are rendered/displayed (e.g. in which order).
+
+|node name|allowed attributes|
+|---|---|
+|<GRID>|	[cols, rows]|
+|<HGROUP>|	[]|
+|<VGROUP>|	[]|
+|<ACTION>|	[program]|
+|<CHECKBOX>|	[selected, selectonwindows, value]|
+|<COMBOBOX>|	[selected]|
+|<COMBOITEM>|	[value]|
+|<FILEDIALOG>|	[filter, folder, location, multiples, multiples_delim, output]|
+|<FILELIST>|	[height, title, width]|
+|<FILESELECTBOX>|	[delim, filter, location]|
+|<GROUP>|	[height, title, width]|
+|<GROUPBOX>|	[multi]|
+|<IMAGE>|	[height, src, width]|
+|<INPUT>|	[multi, type {string, int, float, password}]|
+|<LABEL>|	[link]|
+|<RADIOBUTTON>|	[value]|
+|<SLIDER>|	[max, min, step]|
+|<SLIDERITEM>|	[display, value]|
+|<STREAM>|	[height, title, width]|
+|<STREAMBOX>|	[]|
+|<WINDOW>|	[height, title, width]|
+
+
 ## Which execution nodes exist?
+|node name|allowed attributes|
+|---|---|
+|<add>|	[ID, TYPE, sep]|
+|<const>|	[ID, TYPE]|
+|<else>|	[]|
+|<env>|	[GET, ID, TYPE]|
+|<execute>|	[EXEC, ID, PROGRAM, TYPE, location, param, program, wsl]|
+|<file>|	[FROM, ID, SEP, TO, TYPE]|
+|<httpexecute>|	[CL_TO_POST, DELIM, ID, PORT, PROGRAM, TYPE]|
+|<if>|	[COMP, ID, SEP, TYPE, VALUE1, VALUE2]|
+|<math>|	[ID, OP, TYPE]|
+|<orderedadd>|	[FROM, ID, SELECTED, TYPE]|
+|<output>|	[COLOR, DEFERRED, FROM, HOST, ID, LOCATION, PORT, TO, TYPE, TYPE]|
+|<relocate>|	[FROM, ID, PREPEND, TO, TYPE, UNIX, WSL]|
+|<replace>|	[ID, REPLACE, REPLACE_WITH, TYPE]|
+
+|<script>|	[ARGV, ID, SCRIPT, TYPE]|
+|<value>|	[FOR, FROM, ID, TYPE]|
+

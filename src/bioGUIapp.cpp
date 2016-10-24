@@ -22,9 +22,15 @@ bioGUIapp::bioGUIapp(int& argc, char** argv)
      *
      */
 
-    XMLParserExecution oXMLParser;
-    oXMLParser.printAvailableNodes();
+    std::cout << "Visual Elements" << std::endl;
 
+    XMLParserWindow oXMLParserWindow(this);
+    oXMLParserWindow.printAvailableNodes();
+
+    std::cout << "Execution Nodes" << std::endl;
+
+    XMLParserExecution oXMLParserExecution;
+    oXMLParserExecution.printAvailableNodes();
 
     /*
      *

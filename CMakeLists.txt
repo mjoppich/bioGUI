@@ -17,8 +17,6 @@
 cmake_minimum_required(VERSION 3.1)
 
 set(CMAKE_CXX_STANDARD 11)
-
-
 cmake_minimum_required(VERSION 3.1.0 FATAL_ERROR)
 
 project (bioGUI)
@@ -26,12 +24,14 @@ set(CMAKE_CXX_STANDARD 11)
 
 find_package(OpenMP REQUIRED)
 
+#set(ENV{CMAKE_PREFIX_PATH} "$ENV{CMAKE_PREFIX_PATH};D:/libraries/lua-5.3.3/;C:/lua53/src")
+
 if (OPENMP_FOUND)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
 #     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS} ")
 endif()
 
-set(ENV{LUA_DIR} "D:/libraries/lua-5.3.3/" "C:/lua53/src")
+set(ENV{LUA_DIR} "D:/libraries/lua-5.3.3/;C:/lua53/src")
 find_package(Lua REQUIRED)
 include_directories(${LUA_INCLUDE_DIR})
 
@@ -84,22 +84,17 @@ MESSAGE(WARNING "Qt5_DIR " ${Qt5_DIR})
 MESSAGE(WARNING "QT_QMAKE_EXECUTABLE " ${QT_QMAKE_EXECUTABLE})
 
 if (MINGW)
-    find_package(Qt5 5.6 COMPONENTS Core Gui Widgets Network Xml XmlPatterns PATHS "/home/users/joppich/progs/Qt/5.7/gcc_64/" REQUIRED)
+    find_package(Qt5 COMPONENTS Core Gui Widgets Network Xml XmlPatterns PATHS "/home/users/joppich/progs/Qt/5.7/gcc_64/" REQUIRED)
 else()
     find_package(Qt5 COMPONENTS Core Gui Widgets Network Xml XmlPatterns PATHS "/home/users/joppich/Qt/5.7/gcc_64/" "/usr/lib/qt5/x86_64-w64-mingw32/" REQUIRED )
 endif()
-
-
-#find_package(Qt5Core 5.5 PATHS "C:/Qt/5.5/msvc2013_64" "/home/users/joppich/progs/Qt/5.5/gcc_64/" REQUIRED NO_SYSTEM_ENVIRONMENT_PATH)
-#find_package(Qt5Gui 5.5 PATHS "C:/Qt/5.5/msvc2013_64" "/home/users/joppich/progs/Qt/5.5/gcc_64/" REQUIRED NO_SYSTEM_ENVIRONMENT_PATH)
-#find_package(Qt5Widgets 5.5 PATHS "C:/Qt/5.5/msvc2013_64" "/home/users/joppich/progs/Qt/5.5/gcc_64/" REQUIRED NO_SYSTEM_ENVIRONMENT_PATH)
-#find_package(Qt5Network 5.5 PATHS "C:/Qt/5.5/msvc2013_64" "/home/users/joppich/progs/Qt/5.5/gcc_64/" REQUIRED NO_SYSTEM_ENVIRONMENT_PATH)
-#find_package(Qt5XmlPatterns 5.5 PATHS "C:/Qt/5.5/msvc2013_64" "/home/users/joppich/progs/Qt/5.5/gcc_64/" REQUIRED NO_SYSTEM_ENVIRONMENT_PATH)
 
 MESSAGE(WARNING "LIBRARY PATH " ${CMAKE_LIBRARY_PATH})
 MESSAGE(WARNING "QT5 DIR " ${Qt5_DIR})
 
 set (CMAKE_AUTOMOC ON)
+
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -mwindows")
 
 file(GLOB parsinglib_H
         "src/parsing/*.h"
@@ -157,8 +152,48 @@ SET_TARGET_PROPERTIES(mylibeay PROPERTIES IMPORTED_LOCATION ${OPENSSL_SSL_LIBRAR
 ADD_LIBRARY(myssleay STATIC IMPORTED)
 SET_TARGET_PROPERTIES(myssleay PROPERTIES IMPORTED_LOCATION ${OPENSSL_CRYPTO_LIBRARY})
 
+set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+
 TARGET_LINK_LIBRARIES(bioGUI parsing mylibeay myssleay)
 TARGET_LINK_LIBRARIES(bioGUI ${LUA_LIBRARIES})
 
-install(TARGETS bioGUI DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/bin)
+install(TARGETS bioGUI DESTINATION ${CMAKE_CURRENT_SOURCE_DIR} )
 
+INCLUDE(CPack)
+
+add_custom_target(run_install COMMAND ${CMAKE_MAKE_PROGRAM} install)
+
+if( MINGW)
+    get_filename_component(MINGW_BUILD_BIN ${CMAKE_CXX_COMPILER} PATH)
+
+    # find the release *.dll file
+    get_target_property(Qt5_CoreLocation Qt5::Core LOCATION)
+    get_target_property(Qt5_WidgetsLocation Qt5::Widgets LOCATION)
+    get_target_property(Qt5_XmlLocation Qt5::Xml LOCATION)
+    get_target_property(Qt5_XmlPatternsLocation Qt5::XmlPatterns LOCATION)
+    get_target_property(Qt5_NetworkLocation Qt5::Network LOCATION)
+    get_target_property(Qt5_GuiLocation Qt5::Gui LOCATION)
+
+    get_target_property(Qt5_CoreLocationDebug Qt5::Core IMPORTED_LOCATION_DEBUG)
+    get_target_property(Qt5_WidgetsLocationDebug Qt5::Widgets IMPORTED_LOCATION_DEBUG)
+    get_target_property(Qt5_XmlLocationDebug Qt5::Xml IMPORTED_LOCATION_DEBUG)
+    get_target_property(Qt5_XmlPatternsLocationDebug Qt5::XmlPatterns IMPORTED_LOCATION_DEBUG)
+    get_target_property(Qt5_NetworkLocationDebug Qt5::Network IMPORTED_LOCATION_DEBUG)
+    get_target_property(Qt5_GuiLocationDebug Qt5::Gui IMPORTED_LOCATION_DEBUG)
+
+    # find the debug *d.dll file
+    #get_target_property(Qt5_CoreLocationDebug Qt5::Core IMPORTED_LOCATION_DEBUG)
+    add_custom_command(TARGET run_install POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<$<CONFIG:Debug>:${Qt5_CoreLocationDebug}> $<$<NOT:$<CONFIG:Debug>>:${Qt5_CoreLocation}> ${CMAKE_CURRENT_SOURCE_DIR})
+    add_custom_command(TARGET run_install POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<$<CONFIG:Debug>:${Qt5_WidgetsLocationDebug}> $<$<NOT:$<CONFIG:Debug>>:${Qt5_WidgetsLocation}> ${CMAKE_CURRENT_SOURCE_DIR})
+    add_custom_command(TARGET run_install POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<$<CONFIG:Debug>:${Qt5_XmlLocationDebug}> $<$<NOT:$<CONFIG:Debug>>:${Qt5_XmlLocation}> ${CMAKE_CURRENT_SOURCE_DIR})
+    add_custom_command(TARGET run_install POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<$<CONFIG:Debug>:${Qt5_XmlPatternsLocationDebug}> $<$<NOT:$<CONFIG:Debug>>:${Qt5_XmlPatternsLocation}> ${CMAKE_CURRENT_SOURCE_DIR})
+    add_custom_command(TARGET run_install POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<$<CONFIG:Debug>:${Qt5_NetworkLocationDebug}> $<$<NOT:$<CONFIG:Debug>>:${Qt5_NetworkLocation}> ${CMAKE_CURRENT_SOURCE_DIR})
+    add_custom_command(TARGET run_install POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<$<CONFIG:Debug>:${Qt5_GuiLocationDebug}> $<$<NOT:$<CONFIG:Debug>>:${Qt5_GuiLocation}> ${CMAKE_CURRENT_SOURCE_DIR})
+    add_custom_command(TARGET run_install POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<$<CONFIG:Debug>:${LUA_LIBRARIES}> $<$<NOT:$<CONFIG:Debug>>:${LUA_LIBRARIES}> ${CMAKE_CURRENT_SOURCE_DIR})
+
+    add_custom_command( TARGET run_install POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MINGW_BUILD_BIN}/libgcc_s_dw2-1.dll ${CMAKE_CURRENT_SOURCE_DIR})
+    add_custom_command( TARGET run_install POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MINGW_BUILD_BIN}/libstdc++-6.dll ${CMAKE_CURRENT_SOURCE_DIR})
+    add_custom_command( TARGET run_install POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MINGW_BUILD_BIN}/libwinpthread-1.dll ${CMAKE_CURRENT_SOURCE_DIR})
+    add_custom_command( TARGET run_install POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${LUA_LIBRARIES} ${CMAKE_CURRENT_SOURCE_DIR})
+
+endif()

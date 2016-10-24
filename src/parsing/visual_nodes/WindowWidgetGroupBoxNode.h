@@ -150,7 +150,6 @@ public:
             // default: only a simple radio/check
             if (!oSimpleTextNode.isNull())
             {
-                // TODO this must create a qlabel based widget for the simple case!
                 QAbstractButton* pBox = (QAbstractButton*) m_pFactory->createWidgetElement(pChildNode).pElement;
                 QString sText = pBox->text();
                 pBox->setText("");

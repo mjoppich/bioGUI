@@ -58,7 +58,7 @@ bioGUIapp::bioGUIapp(int& argc, char** argv)
     QLabel* pFilterLabel = new QLabel("Filter:");
     QLineEdit* pFilterLine = new QLineEdit();
 
-    m_pTemplates = new TemplateListWidget();
+    m_pTemplateListWidget = new TemplateListWidget();
 
     connect(pFilterLine, &QLineEdit::textChanged, [this] (const QString& text) {
 
@@ -77,11 +77,11 @@ bioGUIapp::bioGUIapp(int& argc, char** argv)
 
 
     // this listwidget shows all available items
-    //m_pTemplates->setMaximumWidth(220);
+    //m_pTemplateListWidget->setMaximumWidth(220);
 
-    this->connect(m_pTemplates, &QListWidget::itemSelectionChanged, [this] () {
+    this->connect(m_pTemplateListWidget, &QListWidget::itemSelectionChanged, [this] () {
 
-        QList<QListWidgetItem*> vSelected = m_pTemplates->selectedItems();
+        QList<QListWidgetItem*> vSelected = m_pTemplateListWidget->selectedItems();
 
         if (vSelected.size() == 1)
         {
@@ -96,7 +96,7 @@ bioGUIapp::bioGUIapp(int& argc, char** argv)
 
     });
 
-    pLeftLayout->addWidget(m_pTemplates);
+    pLeftLayout->addWidget(m_pTemplateListWidget);
 
 
     QGroupBox* pOptionsGroup = new QGroupBox("Options");

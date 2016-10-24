@@ -58,7 +58,7 @@ void WindowComponentFactory::initializeLayouts() {
 
 void WindowComponentFactory::initializeWidgets() {
     this->insertWidgetNode("ACTION", [this] () {
-        return new WindowWidgetActionNode(this, m_pApp, NULL);
+        return new WindowWidgetActionNode(this);
     });
 
     this->insertWidgetNode("CHECKBOX", [this] () {

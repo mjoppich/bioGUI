@@ -67,7 +67,8 @@ QWidget* XMLParserWindow::createComponent(QDomElement* pElement, bool* pChildren
         }
 
 
-        this->setID(pReturn, pElement, false);
+        std::string sID = this->getAttribute(pElement, "ID", "").toStdString();
+        this->addID2Widget(sID, pReturn, false);
 
     }
 

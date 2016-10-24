@@ -166,7 +166,7 @@ protected:
     bool isValidTag(QString sTagName)
     {
 
-        std::string sTag = sTagName.toStdString();
+        std::string sTag = sTagName.toUpper().toStdString();
 
         std::vector<std::string>::iterator oIt = std::find( m_pKnownTags->begin(), m_pKnownTags->end(), sTag );
 

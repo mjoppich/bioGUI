@@ -13,11 +13,10 @@ class WindowWidgetActionNode : public WindowWidgetNode {
 
 public:
 
-    WindowWidgetActionNode(WindowComponentFactory* pFactory, bioGUIapp* pApp, std::vector<QPushButton*>* pActionButtons)
+    WindowWidgetActionNode(WindowComponentFactory* pFactory)
             : WindowWidgetNode(pFactory)
     {
-        m_pApp = pApp;
-        m_pActionButtons = pActionButtons;
+
     }
 
     virtual ~WindowWidgetActionNode()
@@ -49,7 +48,7 @@ public:
 
         oReturn.pElement = pAction;
 
-        m_pActionButtons->push_back(pAction);
+        m_pFactory->getApp()->getWindowParser()->addAction(pAction);
 
         return oReturn;
 

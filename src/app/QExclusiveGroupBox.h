@@ -77,8 +77,6 @@ public:
             });
         }
 
-
-        // TODO add to layout
         m_vWidgets.push_back(pAddWidget);
         this->addChild(pAddWidget);
 

@@ -48,8 +48,6 @@ public:
                 {
 
                     pReturn = oFactory.createLayoutElement(&oChildNode).pElement;
-
-                    // TODO does this do the trick?
                     *pChildren = QDomNodeList(pChildren->at(0).childNodes());
 
                     return pReturn;

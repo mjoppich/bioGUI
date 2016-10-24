@@ -31,6 +31,11 @@ public:
 
     bioGUIapp(int& argc, char** argv);
 
+    XMLParserWindow* getWindowParser()
+    {
+        return m_pWindowParser;
+    }
+
     void reloadTemplates()
     {
         QDir oTemplatePath = QDir::currentPath() + "/templates/";
@@ -86,11 +91,14 @@ public:
     void addTemplates(QDir oDirectory)
     {
 
-        m_pTemplates->clear();
-        m_pTemplates->setItemDelegate(new TemplateListDelegate(m_pTemplates));
+        while( m_pTemplateListWidget->count() > 0)
+        {
+            QListWidgetItem* pItem = m_pTemplateListWidget->takeItem(0);
+            delete pItem;
+        }
 
-        // TODO do i have to delete them first?
-        m_vTemplateItems.clear();
+        m_pTemplateListWidget->clear();
+        m_pTemplateListWidget->setItemDelegate(new TemplateListDelegate(m_pTemplateListWidget));
 
         std::cout << "adding templates from " << oDirectory.path().toStdString() << std::endl;
 
@@ -138,8 +146,7 @@ public:
 
             }
 
-            m_vTemplateItems.append(pItem);
-            m_pTemplates->addItem(pItem);
+            m_pTemplateListWidget->addItem(pItem);
 
 
         }
@@ -167,7 +174,7 @@ public:
 
 
         m_pApplicationWindowArea->setMinimumSize(oWinSize);
-        m_pMainWindow->setMinimumSize( m_pApplicationWindowArea->minimumWidth() + m_pTemplates->width(), std::max(m_pApplicationWindowArea->minimumHeight()+20, m_pTemplates->height()) );
+        m_pMainWindow->setMinimumSize( m_pApplicationWindowArea->minimumWidth() + m_pTemplateListWidget->width(), std::max(m_pApplicationWindowArea->minimumHeight()+20, m_pTemplateListWidget->height()) );
 
         m_pApplicationWindowArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
         m_pApplicationWindowArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
@@ -239,7 +246,7 @@ protected:
             m_pWindowParser->setActionsEnabled(bState);
 
         this->m_pSaveTemplate->setEnabled(bState);
-        this->m_pTemplates->setEnabled(bState);
+        this->m_pTemplateListWidget->setEnabled(bState);
         this->m_pReloadTemplates->setEnabled(bState);
     }
 
@@ -259,17 +266,17 @@ protected:
     void filterTemplates(const QString& sText)
     {
 
-        if (m_pTemplates == NULL)
+        if (m_pTemplateListWidget == NULL)
             return;
 
-        if (m_pTemplates->count() == 0)
+        if (m_pTemplateListWidget->count() == 0)
             return;
 
 
-        for (int i = 0; i < m_vTemplateItems.size(); ++i)
+        for (int i = 0; i < m_pTemplateListWidget->count(); ++i)
         {
 
-            QListWidgetItem* pItem = m_vTemplateItems.at(i);
+            QListWidgetItem* pItem = m_pTemplateListWidget->item(i);
 
             QString sTitle = pItem->data(Qt::DisplayRole).toString();
             QString sDescription = pItem->data(Qt::UserRole + 1).toString();
@@ -306,7 +313,7 @@ protected:
     QMainWindow* m_pMainMainWindow = NULL;
 
     QWidget* m_pMainWindow = NULL;
-    QListWidget* m_pTemplates = NULL;
+    QListWidget* m_pTemplateListWidget = NULL;
     QAbstractButton* m_pSaveTemplate = NULL;
     QAbstractButton* m_pReloadTemplates = NULL;
     QAbstractButton* m_pDownloadTemplates = NULL;
@@ -316,9 +323,6 @@ protected:
 
     QWidget* m_pWindow = NULL;
     XMLParserWindow* m_pWindowParser = NULL;
-
-    QList<QListWidgetItem*> m_vTemplateItems;
-
 
     QString m_sDownloadServerLocation = "";
 

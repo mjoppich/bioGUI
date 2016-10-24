@@ -89,7 +89,7 @@ public:
                 if (sID.length() > 0)
                 {
 
-                    // TODO m_pID2Widget->find(sID)->second = pStreamOut;
+                    m_pFactory->getApp()->getWindowParser()->addID2Widget( sID, pStreamOut, true );
                     pStreamOut->addStream( sID, pButton );
                     pLayout->addWidget( pChildElement );
 
@@ -103,11 +103,14 @@ public:
 
         pGroupBox->setLayout(pLayout);
 
+        oReturn.pElement = pGroupBox;
+
         // must be done here because otherwise the groupbox is the id widget ...
         std::string sID = this->getAttribute(pDOMElement, "id", "");
         if (sID.length() > 0)
         {
-            // TODO m_pID2Widget->insert( std::pair<std::string, QWidget*>(sID, pStreamOut));
+            m_pFactory->getApp()->getWindowParser()->addID2Widget( sID, pStreamOut, true );
+
         }
 
         return oReturn;

@@ -66,7 +66,32 @@ public:
         m_pKnownTags = m_pWidgetNodeFactory->getKnownTags();
     }
 
+    void addID2Widget(std::string& sID, QWidget* pWidget, bool bOverwrite=false)
+    {
 
+        if (sID.length() > 0)
+        {
+
+            if (bOverwrite)
+            {
+
+                std::map<std::string, QWidget*>::iterator oIt = m_pID2Widget->find(sID);
+
+                if (oIt != m_pID2Widget->end())
+                {
+                    // overwrite
+                    oIt->second = pWidget;
+                    return;
+                }
+
+            }
+
+            // insert new
+            m_pID2Widget->insert( std::pair<std::string, QWidget*>(sID, pWidget));
+
+        }
+
+    }
 
     void loadFile(std::string& sFileName)
     {
@@ -86,6 +111,11 @@ public:
 
     }
 
+    void addAction(QWidget* pActionWidget)
+    {
+        m_vActions.push_back( pActionWidget );
+    }
+
     QWidget* getWindow()
     {
 
@@ -96,8 +126,7 @@ public:
         m_pID2Widget->clear();
         m_pID2Value->clear();
 
-        bool bUnimportant;
-        QWidget* pWindow = (QWidget*) createComponents(NULL, pWindowRoot, &bUnimportant);
+        QWidget* pWindow = (QWidget*) createComponents(NULL, pWindowRoot);
 
         return pWindow;
 
@@ -309,7 +338,7 @@ protected:
     QLayout* createLayout(QDomElement* pElement);
     QWidget* createComponent(QDomElement* pElement, bool* pChildrenFinished);
 
-    QWidget* createComponents(QWidget* pParentWidget, QDomElement* pElement, bool* pIsElement)
+    QWidget* createComponents(QWidget* pParentWidget, QDomElement* pElement)
     {
 
         if (pElement->isElement() == false)
@@ -318,9 +347,9 @@ protected:
             return NULL;
         }
 
-        (*pIsElement) = (ELEMENT_TYPE::ELEMENT == getElementType(pElement));
+        bool bIsWidget = m_pWidgetNodeFactory->isWidget( pElement );
 
-        if (*pIsElement)
+        if ( bIsWidget )
         {
             qDebug() << pElement->tagName() << " is an element";
         } else {
@@ -330,7 +359,7 @@ protected:
         void* pParent = NULL;
         bool bChildrenFinished = false;
 
-        if (*pIsElement)
+        if ( bIsWidget )
         {
 
             pParent = (void*) createComponent(pElement, &bChildrenFinished);
@@ -356,19 +385,19 @@ protected:
             for (size_t i = 0; i < oChildren.length(); ++i)
             {
 
+                // get next child of parent
                 QDomElement oChild = oChildren.item(i).toElement();
 
-                if (oChild.isElement() == false)
+                if (!oChild.isElement())
                 {
                     continue;
                 }
 
-                if (*pIsElement)
+                if (bIsWidget)
                 {
-                    bool bChildIsElement = false;
-                    QWidget* pReturn = createComponents((QWidget*)pParent, &oChild, &bChildIsElement);
+                    QWidget* pReturn = createComponents((QWidget*)pParent, &oChild);
 
-                    if (bChildIsElement)
+                    if (m_pWidgetNodeFactory->isWidget(&oChild))
                     {
                         // create a layout for current parent and add pReturn to this layout
                         QWidget* pWParent = (QWidget*) pParent;
@@ -387,8 +416,12 @@ protected:
 
                 } else {
 
-                    bool bChildIsElement = false;
-                    QWidget* pReturn = createComponents( NULL, &oChild, &bChildIsElement);
+                    std::cerr << oChild.tagName().toStdString() << std::endl;
+
+
+                    bool bChildIsElement = m_pWidgetNodeFactory->isWidget(&oChild);
+                    QWidget* pReturn = createComponents( NULL, &oChild);
+
 
                     if (bChildIsElement == false)
                     {
@@ -396,7 +429,8 @@ protected:
 
                     } else {
 
-                        this->addToLayout((QLayout*)pParent, pReturn);
+                        // indeed this is a sort of "factor it"
+                        m_pWidgetNodeFactory->addToLayout((QLayout*)pParent, pReturn);
 
                     }
 
@@ -408,45 +442,9 @@ protected:
 
     }
 
-    void addToLayout(QLayout* pLayout, QWidget* pWidget)
-    {
-        if (QOrderedLayout* pOrderedLayout = dynamic_cast<QOrderedLayout*>( pLayout ))
-        {
-            pOrderedLayout->addNextWidget(pWidget);
-        } else {
 
-            pLayout->addWidget( pWidget );
 
-        }
-    }
 
-    void setID(QWidget* pWidget, QDomElement* pElement, bool bOverwrite=false)
-    {
-
-        QString sID = this->getAttribute(pElement, "id", "");
-        if (sID.length() > 0)
-        {
-
-            if (bOverwrite)
-            {
-
-                std::map<std::string, QWidget*>::iterator oIt = m_pID2Widget->find(sID.toStdString());
-
-                if (oIt != m_pID2Widget->end())
-                {
-                    // overwrite
-                    oIt->second = pWidget;
-                    return;
-                }
-
-            }
-
-            // insert new
-            m_pID2Widget->insert( std::pair<std::string, QWidget*>(sID.toStdString(), pWidget));
-
-        }
-
-    }
 
     /*
 
@@ -877,7 +875,7 @@ protected:
     std::map<std::string, std::function< std::string() > >* m_pID2Value;
     std::map<std::string, QWidget*>* m_pID2Widget;
     std::vector<QWidget*> m_vWidgets;
-    std::vector<QPushButton*> m_vActions;
+    std::vector<QWidget*> m_vActions;
 
     WindowComponentFactory* m_pWidgetNodeFactory;
 

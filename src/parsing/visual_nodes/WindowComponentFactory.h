@@ -9,6 +9,7 @@
 #include <string>
 #include <functional>
 #include <src/parsing/XMLParser.h>
+#include <src/app/QOrderedLayout.h>
 #include "WindowLayoutNode.h"
 #include "WindowWidgetNode.h"
 #include "WindowWidgetLabelNode.h"
@@ -79,6 +80,21 @@ public:
         return pTags;
     }
 
+    bioGUIapp* getApp()
+    {
+        return m_pApp;
+    }
+
+    bool isLayout(QDomElement* pElement)
+    {
+        return isLayout(pElement->tagName());
+    }
+
+    bool isWidget(QDomElement* pElement)
+    {
+        return isWidget(pElement->tagName());
+    }
+
     bool isLayout(QString sTag)
     {
         std::string sStdTag = sTag.toUpper().toStdString();
@@ -107,6 +123,18 @@ public:
 
         return true;
 
+    }
+
+    void addToLayout(QLayout* pLayout, QWidget* pWidget)
+    {
+        if (QOrderedLayout* pOrderedLayout = dynamic_cast<QOrderedLayout*>( pLayout ))
+        {
+            pOrderedLayout->addNextWidget(pWidget);
+        } else {
+
+            pLayout->addWidget( pWidget );
+
+        }
     }
 
 protected:

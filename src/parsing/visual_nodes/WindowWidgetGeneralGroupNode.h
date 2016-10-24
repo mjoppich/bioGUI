@@ -186,12 +186,12 @@ protected:
             {
 
                 QWidget* pChildElement = vChildren.at(i);
-
-                // TODO this is not going to work with ordered radiobuttons ...
                 QWidget* pTransformedChildElement = pGroupBox->addNextWidget(pChildElement);
 
-                // TODO this->addToLayout(pLayout, pTransformedChildElement);
-                // TODO this->setID(pTransformedChildElement, &oChildNode, true);
+                m_pFactory->addToLayout(pLayout, pTransformedChildElement);
+
+                std::string sID = this->getDomID(&oChildNode);
+                m_pFactory->getApp()->getWindowParser()->addID2Widget(sID, pTransformedChildElement, true);
 
                 oPostProcFunc(pGroupBox, pLayout, pChildElement, pTransformedChildElement, &vSelected, iAdded);
             }
@@ -257,6 +257,8 @@ protected:
 
         return oReturn;
     }
+
+
 
 };
 

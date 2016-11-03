@@ -145,7 +145,8 @@ protected:
 
         if (bReturn == false)
         {
-            std::cerr << pElement->tagName().toStdString() << " is not a valid tag." << std::endl;
+            std::string sInvalidTag = pElement->tagName().toStdString();
+            std::cout << sInvalidTag << " is not a valid tag." << std::endl;
         }
 
         QDomNodeList oChildren = pElement->childNodes();
@@ -224,6 +225,9 @@ protected:
     QDomElement* getDocumentElementByName( QDomDocument* pDocument, QString sTagName )
     {
 
+        if (!pDocument)
+            return NULL;
+
         QDomNodeList oChildren = pDocument->elementsByTagName( sTagName );
 
         for (size_t i = 0; i < oChildren.length(); ++i)
@@ -295,7 +299,7 @@ protected:
 
     }
 
-    std::vector<std::string>* m_pKnownTags;
+    std::vector<std::string>* m_pKnownTags = NULL;
     QDomDocument* m_pDocument = NULL;
     std::string m_sCurrentDocument;
 

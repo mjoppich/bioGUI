@@ -36,7 +36,7 @@ public:
 
         std::string sProgramToRun = this->getAttribute(pDOMElement, "program", "");
 
-        bioGUIapp* pApp = this->m_pApp;
+        bioGUIapp* pApp = this->m_pFactory->getApp();
 
         pAction->connect(pAction,&QAbstractButton::clicked,[pApp, sProgramToRun] (bool bChecked){
 
@@ -64,8 +64,7 @@ protected:
 
     }
 
-    bioGUIapp* m_pApp;
-    std::vector<QPushButton*>* m_pActionButtons;
+    std::vector<QPushButton*>* m_pActionButtons = NULL;
 
 
 };

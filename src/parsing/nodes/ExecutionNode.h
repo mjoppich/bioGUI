@@ -151,7 +151,7 @@ public:
 
             if (i > 0)
             {
-                sReturn = sReturn + "\n";
+                sReturn = sReturn + m_sSeperator;
             }
 
             sReturn = sReturn + m_vChildren.at(i)->evaluate(pID2Node, pInputID2Value, pInputID2Widget);
@@ -169,6 +169,11 @@ public:
     virtual void finishedCreation()
     {
 
+    }
+
+    void setSeperator(std::string sNewSep)
+    {
+        m_sSeperator = sNewSep;
     }
 
 protected:
@@ -235,6 +240,8 @@ protected:
     NODE_TYPE m_eType;
     std::string m_sValue;
     std::string m_sTag;
+
+    std::string m_sSeperator = " ";
 
 
 };

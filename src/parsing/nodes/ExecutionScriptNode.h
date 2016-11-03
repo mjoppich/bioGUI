@@ -33,6 +33,8 @@ public:
 
         } else {
 
+            std::cout << "no inline script detected" << std::endl;
+
             //throw ExecutionNodeException("Script nodes may only have one CDATA child!");
         }
 
@@ -44,9 +46,13 @@ public:
         if (m_sScriptFile.size() > 0)
         {
             m_bScriptBased = true;
+
+            std::cout << "script location is set " << std::endl;
         }
 
-        std::cerr << m_sInlineLUA << std::endl;
+        std::cout << m_bScriptBased << std::endl;
+
+        std::cout << m_sInlineLUA << std::endl;
 
 
     }
@@ -57,7 +63,7 @@ public:
 
         bool bLUAFileExists = ExecutionFileNode::file_exists( m_sScriptFile );
 
-        if (!bLUAFileExists)
+        if ((m_bScriptBased) && (!bLUAFileExists))
             throw ExecutionNodeException("Script for node does not exist!");
 
         // parse arguments

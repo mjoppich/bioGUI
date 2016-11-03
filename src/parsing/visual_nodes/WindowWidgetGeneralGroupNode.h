@@ -168,6 +168,11 @@ protected:
             {
                 WindowNode<QWidget>::CreatedElement oCreated = m_pFactory->createWidgetElement(&oChildNode);
 
+                for (Retriever& oRet : oCreated.vRetriever)
+                {
+                    oReturn.vRetriever.push_back(oRet);
+                }
+
                 if (oCreated.pElement != NULL)
                     vChildren.append(oCreated.pElement);
             }

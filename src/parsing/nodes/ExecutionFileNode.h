@@ -23,7 +23,7 @@ public:
 
 
         m_sFrom = this->getDomElementAttribute(pElement, "FROM", "").toStdString();
-        m_sSep = this->getDomElementAttribute(pElement, "sep", "").toStdString();
+        m_sSeperator = this->getDomElementAttribute(pElement, "sep", "").toStdString();
         m_sTo = this->getDomElementAttribute(pElement, "to", "").toStdString();
 
     }
@@ -41,7 +41,7 @@ public:
                 throw "file does not exist: " + m_sFrom;
             }
 
-            return this->readFile(&m_sFrom, &m_sSep);
+            return this->readFile(&m_sFrom, &m_sSeperator);
 
         } else if ( QString("SAVE").compare(QString(m_sAction.c_str()), Qt::CaseInsensitive) == 0 )
         {
@@ -159,11 +159,8 @@ protected:
     }
 
 
-
     std::string m_sFrom;
-    std::string m_sSep;
     std::string m_sTo;
-
     std::string m_sAction;
 
 

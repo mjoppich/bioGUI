@@ -4,6 +4,7 @@
 
 #include "ExecutionIfNode.h"
 #include "ExecutionExecuteNode.h"
+#include "ExecutionPlaceholderNode.h"
 
 std::string ExecutionIfNode::evaluateChildren(std::map<std::string, ExecutionNode *> *pID2Node,
                                               std::map<std::string, std::string> *pInputID2Value,
@@ -41,6 +42,10 @@ std::string ExecutionIfNode::evaluateChildren(std::map<std::string, ExecutionNod
 
                 continue;
             }
+        }
+
+        if (ExecutionPlaceholderNode* pElseNode = dynamic_cast<ExecutionPlaceholderNode*>( pChild )) {
+            pElseNode->setSeperator(m_sSeperator);
         }
 
         std::string sReturn = pChild->evaluate(pID2Node, pInputID2Value, pInputID2Widget);

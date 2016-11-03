@@ -105,6 +105,7 @@ public:
 
         this->setResizeMode(QListWidget::Adjust);
         this->setSizeAdjustPolicy(QListWidget::AdjustToContents);
+        this->setMinimumHeight(150);
 
         this->clear();
     }
@@ -315,7 +316,7 @@ public:
     {
 
         QFile oFile( sFileName );
-        if ( oFile.open(QIODevice::ReadWrite) )
+        if ( oFile.open( QIODevice::ReadWrite | QIODevice::Truncate | QIODevice::Text ) )
         {
             QTextStream stream( &oFile );
 
@@ -329,9 +330,11 @@ public:
                 stream << pItem->text() << endl;
             }
 
+            stream.flush();
+            oFile.close();
+
         }
 
-        oFile.close();
 
     }
 

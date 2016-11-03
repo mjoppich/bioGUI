@@ -25,6 +25,9 @@
 #include "nodes/ExecutionNetwork.h"
 #include "XMLParser.h"
 
+
+#include <iostream>
+#include <ctype.h>
 #include <sstream>
 
 class XMLParserExecution : public XMLParser {
@@ -37,77 +40,77 @@ public:
     : XMLParser()
     {
 
-        this->insertNodeType("execute", [] (QDomElement* pElement) {
+        this->insertNodeType("EXECUTE", [] (QDomElement* pElement) {
             ExecutionExecuteNode* pNode = new ExecutionExecuteNode( pElement );
             return (ExecutionNode*) pNode;
         });
 
-        this->insertNodeType("httpexecute", [] (QDomElement* pElement) {
+        this->insertNodeType("HTTPEXECUTE", [] (QDomElement* pElement) {
             ExecutionHTTPExecuteNode* pNode = new ExecutionHTTPExecuteNode( pElement );
             return (ExecutionNode*) pNode;
         });
 
-        this->insertNodeType("file", [] (QDomElement* pElement) {
+        this->insertNodeType("FILE", [] (QDomElement* pElement) {
             ExecutionFileNode* pNode = new ExecutionFileNode( pElement );
             return (ExecutionNode*) pNode;
         });
 
-        this->insertNodeType("const", [] (QDomElement* pElement) {
+        this->insertNodeType("CONST", [] (QDomElement* pElement) {
             ExecutionConstNode* pNode = new ExecutionConstNode( pElement );
             return (ExecutionNode*) pNode;
         });
 
-        this->insertNodeType("value", [] (QDomElement* pElement) {
+        this->insertNodeType("VALUE", [] (QDomElement* pElement) {
             ExecutionValueNode* pNode = new ExecutionValueNode( pElement );
             return (ExecutionNode*) pNode;
         });
 
-        this->insertNodeType("add", [] (QDomElement* pElement) {
+        this->insertNodeType("ADD", [] (QDomElement* pElement) {
             ExecutionAddNode* pNode = new ExecutionAddNode( pElement );
             return (ExecutionNode*) pNode;
         });
 
-        this->insertNodeType("replace", [] (QDomElement* pElement) {
+        this->insertNodeType("REPLACE", [] (QDomElement* pElement) {
             ExecutionStringReplaceNode* pNode = new ExecutionStringReplaceNode( pElement );
             return (ExecutionNode*) pNode;
         });
 
-        this->insertNodeType("orderedadd", [] (QDomElement* pElement) {
+        this->insertNodeType("ORDEREDADD", [] (QDomElement* pElement) {
             ExecutionOrderedAddNode* pNode = new ExecutionOrderedAddNode( pElement );
             return (ExecutionNode*) pNode;
         });
 
-        this->insertNodeType("math", [] (QDomElement* pElement) {
+        this->insertNodeType("MATH", [] (QDomElement* pElement) {
             ExecutionMathNode* pNode = new ExecutionMathNode( pElement );
             return (ExecutionNode*) pNode;
         });
 
-        this->insertNodeType("output", [] (QDomElement* pElement) {
+        this->insertNodeType("OUTPUT", [] (QDomElement* pElement) {
             ExecutionOutputNode* pNode = new ExecutionOutputNode( pElement );
             return (ExecutionNode*) pNode;
         });
 
-        this->insertNodeType("if", [] (QDomElement* pElement) {
+        this->insertNodeType("IF", [] (QDomElement* pElement) {
             ExecutionIfNode* pNode = new ExecutionIfNode( pElement );
             return (ExecutionNode*) pNode;
         });
 
-        this->insertNodeType("else", [] (QDomElement* pElement) {
+        this->insertNodeType("ELSE", [] (QDomElement* pElement) {
             ExecutionPlaceholderNode* pNode = new ExecutionPlaceholderNode( pElement );
             return (ExecutionNode*) pNode;
         });
 
-        this->insertNodeType("relocate", [] (QDomElement* pElement) {
+        this->insertNodeType("RELOCATE", [] (QDomElement* pElement) {
             ExecutionPathRelocateNode* pNode = new ExecutionPathRelocateNode( pElement );
             return (ExecutionNode*) pNode;
         });
 
-        this->insertNodeType("env", [] (QDomElement* pElement) {
+        this->insertNodeType("ENV", [] (QDomElement* pElement) {
             ExecutionEnvNode* pNode = new ExecutionEnvNode( pElement );
             return (ExecutionNode*) pNode;
         });
 
-        this->insertNodeType("script", [] (QDomElement* pElement) {
+        this->insertNodeType("SCRIPT", [] (QDomElement* pElement) {
             ExecutionScriptNode* pNode = new ExecutionScriptNode( pElement );
             return (ExecutionNode*) pNode;
         });
@@ -200,19 +203,26 @@ protected:
 
         while (oIt != m_mCreateNodeMap.end())
         {
-            pTags->push_back( oIt->first );
+            std::string sTag = oIt->first;
+
+            for (size_t i = 0; i < sTag.size(); ++i)
+                sTag[i] = std::toupper((char) sTag[i]);
+
+            pTags->push_back( sTag );
             ++oIt;
         }
 
-
         // manually add master node!
-        pTags->push_back("execution");
+        pTags->push_back("EXECUTION");
 
         return pTags;
     }
 
     ExecutionNode* createNode(QDomElement* pElement, std::string sNodeType)
     {
+
+        for (size_t i = 0; i < sNodeType.size(); ++i)
+            sNodeType[i] = std::toupper(sNodeType[i]);
 
         std::map<std::string, std::function< ExecutionNode*( QDomElement*)> >::iterator oIt = m_mCreateNodeMap.find( sNodeType );
 

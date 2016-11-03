@@ -20,7 +20,7 @@ public:
 
 
         m_sFrom = this->getDomElementAttribute(pElement, "FROM", "").toStdString();
-        m_sSep = this->getDomElementAttribute(pElement, "sep", "").toStdString();
+        m_sSeperator = this->getDomElementAttribute(pElement, "sep", "").toStdString();
 
 
     }
@@ -35,10 +35,8 @@ public:
             throw "file does not exist: " + m_sFrom;
         }
 
-        return this->readFile(&m_sFrom, &m_sSep);
+        return this->readFile(&m_sFrom, &m_sSeperator);
 
-
-        return "";
     }
 
 protected:
@@ -85,7 +83,6 @@ protected:
 
 
     std::string m_sFrom;
-    std::string m_sSep;
 
 
 };

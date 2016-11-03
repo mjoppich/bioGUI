@@ -67,7 +67,7 @@ if ( CMAKE_SYSTEM_NAME STREQUAL "Windows" OR CYGWIN OR MINGW)
     set(QT_QMAKE_EXECUTABLE /usr/lib/qt5/bin/qmake.exe)
 
     if (MINGW)
-        set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -mwindows")
+        set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS}") # -mwindows
         SET(ENV{Qt5_DIR} "C:\\Qt\\5.7\\mingw53_32\\")
         #set(QT_QMAKE_EXECUTABLE G:\\Qt\\5.6\\mingw49_32\\bin\\qmake.exe)
     endif()

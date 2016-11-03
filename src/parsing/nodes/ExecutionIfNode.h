@@ -184,7 +184,6 @@ protected:
 */
     std::string m_sCompareMode;
     std::string m_sValue1, m_sValue2;
-    std::string m_sSeperator = "";
 
     std::vector<std::string> m_vValidCompareModes;
 

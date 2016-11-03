@@ -165,6 +165,23 @@ public:
 
         m_pWindow = m_pWindowParser->getWindow();
 
+        if (m_pWindow == NULL)
+        {
+            QMessageBox oMsgBox;
+            oMsgBox.setIcon( QMessageBox::Critical );
+
+            std::string sMessage = std::string("Error loading template: ") + sFileName;
+
+            oMsgBox.setText( QString(sMessage.c_str()) );
+            oMsgBox.exec();
+
+
+            return;
+        }
+
+        m_pWindow->setMinimumSize(m_pWindow->sizeHint());
+
+        /*
         QRect rec = QApplication::desktop()->availableGeometry(m_pWindow);
 
         QSize oWinSize(rec.width(),rec.height());
@@ -172,16 +189,18 @@ public:
         oWinSize.setWidth( std::min(oWinSize.width(), m_pWindow->minimumWidth()+10) );
         oWinSize.setHeight( std::min(oWinSize.height()-100, m_pWindow->minimumHeight()+10));
 
-
         m_pApplicationWindowArea->setMinimumSize(oWinSize);
-        m_pMainWindow->setMinimumSize( m_pApplicationWindowArea->minimumWidth() + m_pTemplateListWidget->width(), std::max(m_pApplicationWindowArea->minimumHeight()+20, m_pTemplateListWidget->height()) );
+         */
+
+
+        //m_pMainWindow->setMinimumSize( m_pApplicationWindowArea->minimumWidth() + m_pTemplateListWidget->width(), std::max(m_pApplicationWindowArea->minimumHeight()+20, m_pTemplateListWidget->height()) );
 
         m_pApplicationWindowArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
         m_pApplicationWindowArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
 
         // this also destroys the current window!
         m_pApplicationWindowArea->setWidget(m_pWindow);
-        m_pApplicationWindowArea->setWidgetResizable(true);
+        //m_pApplicationWindowArea->setWidgetResizable(true);
 
         m_pMainMainWindow->setWindowTitle("bioGUI - " + m_pWindow->windowTitle());
 

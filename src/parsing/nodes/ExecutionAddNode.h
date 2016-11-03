@@ -59,8 +59,6 @@ protected:
     }
 
 
-    std::string m_sSeperator;
-
 };
 
 

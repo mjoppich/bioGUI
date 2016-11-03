@@ -128,6 +128,9 @@ public:
 
         QDomElement* pWindowRoot = this->getRoot( m_pDocument );
 
+        if (pWindowRoot == NULL)
+            return NULL;
+
         m_vWidgets.clear();
         m_vActions.clear();
         m_pID2Widget->clear();
@@ -283,6 +286,18 @@ public:
 
     }
 
+    void printRetrieverIDs()
+    {
+        std::map<std::string, std::function<std::string()>>::iterator oIt = m_pID2Value->begin();
+
+        while (oIt != m_pID2Value->end())
+        {
+            std::cout << oIt->first << " has RETRIEVER" <<std::endl;
+
+            ++oIt;
+        }
+    }
+
     std::map<std::string, QWidget* >* getID2Widget()
     {
         return m_pID2Widget;
@@ -295,7 +310,6 @@ public:
 
     ~XMLParserWindow()
     {
-
     }
 
 protected:
@@ -879,12 +893,12 @@ protected:
 
     bioGUIapp* m_pApp;
 
-    std::map<std::string, std::function< std::string() > >* m_pID2Value;
-    std::map<std::string, QWidget*>* m_pID2Widget;
+    std::map<std::string, std::function< std::string() > >* m_pID2Value = NULL;
+    std::map<std::string, QWidget*>* m_pID2Widget = NULL;
     std::vector<QWidget*> m_vWidgets;
     std::vector<QWidget*> m_vActions;
 
-    WindowComponentFactory* m_pWidgetNodeFactory;
+    WindowComponentFactory* m_pWidgetNodeFactory = NULL;
 
 };
 

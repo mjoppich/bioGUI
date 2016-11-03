@@ -46,9 +46,13 @@ QWidget* XMLParserWindow::createComponent(QDomElement* pElement, bool* pChildren
     {
         for (Retriever& oRet : oWidget.vRetriever)
         {
+            std::cout << "Adding value fetcher for " << oRet.sElementID << std::endl;
+
             this->addValueFetcher(oRet.sElementID, oRet.oRetriever);
         }
 
+    } else {
+        std::cout << pElement->tagName().toStdString() << " has no retriever?" << std::endl;
     }
 
     *pChildrenFinished = oWidget.bHasChildrenFinished;

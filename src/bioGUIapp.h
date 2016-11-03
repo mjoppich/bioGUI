@@ -200,7 +200,7 @@ public:
 
         // this also destroys the current window!
         m_pApplicationWindowArea->setWidget(m_pWindow);
-        //m_pApplicationWindowArea->setWidgetResizable(true);
+        m_pApplicationWindowArea->setWidgetResizable(true);
 
         m_pMainMainWindow->setWindowTitle("bioGUI - " + m_pWindow->windowTitle());
 

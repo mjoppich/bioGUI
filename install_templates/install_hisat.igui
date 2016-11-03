@@ -1,0 +1,265 @@
+#! Install hisat2-2.0.4
+
+echo "progdir $1"
+echo "pw $2"
+echo "ip $3"
+echo "port $4"
+
+if [ ! -z "$2" ]; then
+	echo "Installing dependency: unzip"
+	echo $2 | sudo -S apt-get update
+	echo $2 | sudo -S apt-get -y install unzip
+fi
+
+## set all variables
+PROG=hisat2-2.0.4
+
+PROGDIR=$1
+if [ -z "${PROGDIR}" ]; then
+	PROGDIR=~/bioGUI/progs/
+	rm -rf $PROGDIR
+fi
+
+## create progdir
+mkdir -p $PROGDIR
+
+#download and unzip
+if [ ! -f $PROGDIR/$PROG.zip ]; then
+	wget ftp://ftp.ccb.jhu.edu/pub/infphilo/hisat2/downloads/hisat2-2.0.4-source.zip -O $PROGDIR/$PROG.zip
+fi
+
+
+if [ ! -d "$PROGDIR/$PROG" ]; then
+cd $PROGDIR
+
+
+unzip $PROG.zip -d $PROGDIR/
+fi
+
+#install prog
+cd $PROGDIR/$PROG
+
+make
+
+if [ $# -eq 4 ]; then
+
+IP=$3
+PORT=$4
+
+cat << EOF | netcat $IP $PORT
+
+<template description="hisat2 2.0.4 aligner" title="hisat2 2.0.4">
+<window title="hisat2 2.0.4 aligner">
+<vgroup>
+
+  <group title="Alignment Information">
+	<checkbox id="WSLsel" value="true" selectonwindows="true">run in WSL?</checkbox>
+	<label>hisat2 Index</label> <filedialog id="hisat_index" output="false" folder="false">Select hisat2 index</filedialog>
+	<label>output file</label> <filedialog id="hisat_output" output="true" folder="false">Select output file</filedialog>
+  </group>
+  
+   <group title="Input Data" exclusive="true">
+    <hgroup>
+     <group id="pairedend" selected="false" title="Paired End" checkable="true">
+      <filedialog id="hisat_paired_m1" location="1" multiple="true">Mate 1 files</filedialog>
+      <filedialog id="hisat_paired_m2" location="2" multiple="true">Mate 2 files</filedialog>
+     </group>
+     <group id="singleend" selected="true" title="Unpaired reads" checkable="true">
+      <filedialog id="hisat_unpaired_reads" location="">Input File 1</filedialog>
+     </group>
+    </hgroup>
+   </group>
+  
+  <group title="Input Options">
+	<checkbox id="hisat_input_f">Reads are FASTA files</checkbox>
+    <checkbox id="hisat_input_r">Reads are files with one input sequence per line</checkbox>
+	<checkbox id="hisat_input_trim5">Trim bases from 5p</checkbox><input id="hisat_input_trim5_bases" type="int"></input>
+	<checkbox id="hisat_input_trim3">Trim bases from 3p</checkbox><input id="hisat_input_trim3_bases" type="int"></input>
+	
+	<checkbox id="hisat_input_phred33">Qualities are phred+33</checkbox>
+	<checkbox id="hisat_input_phred64">Qualities are phred+64</checkbox>
+
+	<checkbox id="hisat_input_max_reports">Search at most x distinct, primary alignments for each read</checkbox><input id="hisat_input_max_reports_num" type="int"></input>
+
+
+  </group>
+  
+  <group title="Alignment Options">
+	  <checkbox id="hisat_align_nofw">Do not attempt to align unpaired reads to the forward reference strand</checkbox>
+	  <checkbox id="hisat_align_norc">Do not attempt to align unpaired reads to the reverse reference strand</checkbox>
+	  
+	  <checkbox id="hisat_align_no-softclip">Disable soft-clipping</checkbox>
+	  <checkbox id="hisat_align_no-spliced">Disable spliced alignment</checkbox>
+	  <checkbox id="hisat_align_no-mixed">Disable mixed alignments (if no conc/disc)</checkbox>
+	  <checkbox id="hisat_align_no-discordant">Do not look for discordant alignments if no concordant are available</checkbox>
+	  
+	  <combobox id="hisat_align_mate_orientations">
+	  <comboitem value="--fr">forward/reverse</comboitem>
+	  <comboitem value="--rf">reverse/forward</comboitem>
+	  <comboitem value="--ff">forward/forward</comboitem>
+	  </combobox>
+	  
+  </group>
+  
+  <group title="Output Options">
+  <checkbox id="hisat_align_no-unaligned">Disable output of unaligned reads</checkbox>
+  <checkbox id="hisat_align_reorder">Guarantees output to be in order of input</checkbox>
+  </group>
+  
+  <group title="Performance Options">
+  <label>Number of threads</label><input id="hisat_perf_threads" type="int">1</input>
+  <checkbox id="hisat_perf_reorder">Maintain order of reads</checkbox>
+  
+  </group>
+    
+  <group title="Advanced">
+	<label>Additional command-line flags</label><input id="hisat_adv_specific_options"></input>
+  </group>
+  
+  
+  
+    <action program="hisat2">Align!</action>
+
+	<group title="build index">
+		<label>Input Reference</label> <filedialog id="hisat_build_inref" output="false" folder="false">Select hisat2 index</filedialog>		
+		<label>hisat2 Index</label> <filedialog id="hisat_build__out" output="true" folder="false">Select hisat2 index</filedialog>
+		<action program="hisat2index">Build Index</action>
+	</group>
+  
+    <streambox id="output1">
+    <stream id="outputstream1">std out</stream>
+    <stream id="outputstream2">err out</stream>
+   </streambox>
+
+</vgroup>
+</window>
+
+<execution>
+<const id="bindir">${PROGDIR}/${PROG}/</const>
+
+
+<add id="cl_idx" sep=" ">
+<value from="hisat_build_inref"/>
+<value from="hisat_build__out"/>
+</add>
+
+  <execute program="hisat2index" param="\${bindir}/hisat2-build \${cl_idx} 2>&amp;1 | netcat \${ip} 55025" location="" exec="" wsl="WSLsel">
+    <output type="TCP" host="" port="55025" color="green" to="outputstream1" />
+    <output type="TCP" host="" port="55026" color="green" to="outputstream2" />
+  </execute>
+
+<if id="hisat_index_rel_raw" comp="EQUALS" value1="WSLsel" value2="true">
+<relocate from="hisat_index" wsl="true"/>
+<else>
+<value from="hisat_index"/>
+</else>
+</if>
+
+<script id="hisat_index_rel" argv="\${hisat_index_rel_raw}">
+<![CDATA[
+
+function evaluate(arg1)
+	
+	if (string.match(arg1, ".%d.ht2$")) then
+		return(string.sub(arg1, 0, arg1:find(".%d.ht2$")-1))
+	end
+
+    return(arg1)
+end
+
+
+]]>
+</script>
+
+<if id="hisat_paired_m1_rel" comp="EQUALS" value1="WSLsel" value2="true">
+<relocate from="hisat_paired_m1" wsl="true"/>
+<else>
+<value from="hisat_paired_m1"/>
+</else>
+</if>
+
+<if id="hisat_paired_m2_rel" comp="EQUALS" value1="WSLsel" value2="true">
+<relocate from="hisat_paired_m2" wsl="true"/>
+<else>
+<value from="hisat_paired_m2"/>
+</else>
+</if>
+
+<if id="hisat_unpaired_reads_rel" comp="EQUALS" value1="WSLsel" value2="true">
+<relocate from="hisat_unpaired_reads" wsl="true"/>
+<else>
+<value from="hisat_unpaired_reads"/>
+</else>
+</if>
+
+<if id="hisat_output_rel" comp="EQUALS" value1="WSLsel" value2="true">
+<relocate from="hisat_output" wsl="true"/>
+<else>
+<value from="hisat_output"/>
+</else>
+</if>
+
+<if id="input_files" sep=" " comp="EQUALS" value1="pairedend" value2="true">
+<const>-1</const>
+<value from="hisat_paired_m1_rel"/>
+<const>-2</const>
+<value from="hisat_paired_m2_rel"/>
+
+<else>
+
+<const>-U</const>
+<value from="hisat_unpaired_reads_rel"/>
+
+</else>
+</if>
+
+<env id="ip" get="IPv4"/>
+
+<const id="options"></const>
+
+<add id="cl" sep=" ">
+<value from="options"/>
+<value from="hisat_adv_specific_options"/>
+
+<value from="hisat_index_rel"/>
+
+<value from="input_files"/>
+<const>-S</const>
+<value from="hisat_output_rel"/>
+
+<if comp="EQUALS" value1="hisat_input_f" value2="true">-f</if>
+<if comp="EQUALS" value1="hisat_input_r" value2="true">-r</if>
+
+<if comp="EQUALS" value1="hisat_input_trim5" value2="true"><value from="hisat_input_trim5_bases"/></if>
+<if comp="EQUALS" value1="hisat_input_trim3" value2="true"><value from="hisat_input_trim3_bases"/></if>
+
+<if comp="EQUALS" value1="hisat_input_phred33" value2="true">--phred33</if>
+<if comp="EQUALS" value1="hisat_input_phred64" value2="true">--phred64</if>
+
+<if comp="EQUALS" value1="hisat_align_nofw" value2="true">--nofw</if>
+<if comp="EQUALS" value1="hisat_align_norc" value2="true">--norc</if>
+
+
+<if comp="EQUALS" value1="hisat_input_max_reports" value2="true"><value from="hisat_input_max_reports_num"/></if>
+
+<if comp="EQUALS" value1="hisat_align_no-softclip" value2="true">--no-softclip</if>
+<if comp="EQUALS" value1="hisat_align_no-spliced" value2="true">--no-spliced</if>
+<if comp="EQUALS" value1="hisat_align_no-mixed" value2="true">--no-mixed</if>
+<if comp="EQUALS" value1="hisat_align_no-discordant" value2="true">--no-discordant</if>
+
+<value from="hisat_align_mate_orientations"/>
+
+</add>
+	
+  <execute program="hisat2" param="\${bindir}/hisat2 \${cl} 2>&amp;1 | netcat \${ip} 55025" location="" exec="" wsl="WSLsel">
+    <output type="TCP" host="" port="55025" color="green" to="outputstream1" />
+    <output type="TCP" host="" port="55026" color="green" to="outputstream2" />
+  </execute>
+
+</execution>
+
+</template>
+
+EOF
+
+fi

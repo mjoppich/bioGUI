@@ -1,0 +1,151 @@
+#! Install hmmer-3.1b2
+
+## set all variables
+PROG=hmmer-3.1b2
+
+PROGDIR=$1
+
+if [ -z "${PROGDIR}" ]; then
+	PROGDIR=~/bioGUI/progs/
+fi
+
+rm -rf $PROGDIR
+
+## create progdir
+mkdir -p $PROGDIR
+
+#download and unzip
+wget http://eddylab.org/software/hmmer3/3.1b2/hmmer-3.1b2.tar.gz -O $PROGDIR/$PROG.tar.gz
+
+cd $PROGDIR
+tar -xzf $PROG.tar.gz -C $PROGDIR/
+
+#install prog
+cd $PROGDIR/$PROG
+
+./configure -prefix=$PROGDIR/$PROG
+make
+make check
+make install
+
+if [ $# -eq 4 ]; then
+
+IP=$3
+PORT=$4
+
+cat << EOF | netcat $IP $PORT
+<template rootid="hmmerroot" description="HMMER ($PROG)" title="HMMER">
+
+<window width="500" height="800" title="HMMER">
+  <vgroup>
+  
+     <label>Run Program in WSL?</label>
+   <checkbox id="WSLsel" value="true" selectonwindows="true">WSL</checkbox>
+  
+    <group title="Operation" exclusive="true">
+
+      <group id="sel_build" title="hmmbuild" checkable="true">
+	<grid cols="2">
+	  <label>Multiple Alignment File</label><filedialog id="build_msa" location="" multiple="true">Input Files</filedialog>
+	  <label>Model Output File</label><filedialog id="build_model" location="" output="true">Output</filedialog>
+	</grid>
+      </group>
+
+      <group id="sel_search" title="hmmsearch" checkable="true">
+	<grid cols="2">
+	  <label>Model File</label><filedialog id="search_model" location="" multiple="true">Input Files</filedialog>
+	  <label>Database File</label><filedialog id="search_db" location="" multiple="true">Input Files</filedialog>
+	  <label>Output File</label><filedialog id="search_output" location="" output="true">Output</filedialog>
+	</grid>
+      </group>
+
+      
+    </group>
+    <action id="runprog" hint="click here to run program">run program</action>  
+
+   <streambox id="output1">
+    <stream id="outputstream1">COUT</stream>
+    <stream id="outputstream2">CERR</stream>
+   </streambox>
+
+  </vgroup>
+</window>
+
+<execution>
+
+<if id="loc_build_msa" comp="EQUALS" value1="WSLsel" value2="true">
+	<relocate from="build_msa" wsl="true"/>
+<else>
+	<value from="build_msa"/>
+</else>
+</if>
+
+<if id="loc_build_model" comp="EQUALS" value1="WSLsel" value2="true">
+	<relocate from="build_model" wsl="true"/>
+<else>
+	<value from="build_model"/>
+</else>
+</if>
+
+<if id="loc_search_model" comp="EQUALS" value1="WSLsel" value2="true">
+	<relocate from="search_model" wsl="true"/>
+<else>
+	<value from="search_model"/>
+</else>
+</if>
+
+<if id="loc_search_db" comp="EQUALS" value1="WSLsel" value2="true">
+	<relocate from="search_db" wsl="true"/>
+<else>
+	<value from="search_db"/>
+</else>
+</if>
+
+<if id="loc_search_output" comp="EQUALS" value1="WSLsel" value2="true">
+	<relocate from="search_output" wsl="true"/>
+<else>
+	<value from="search_output"/>
+</else>
+</if>
+
+<const id="bindir">${PROGDIR}/${PROG}/bin/</const>
+
+<add id="cl_build" sep=" ">
+<add sep="">
+<value from="bindir"/>
+<const>hmmbuild</const>
+</add>
+<value from="loc_build_model"/>
+<value from="loc_build_msa"/>
+</add>
+
+<add id="cl_search" sep=" ">
+<add sep="">
+<value from="bindir"/>
+<const>hmmbuild</const>
+</add>
+<value from="loc_search_model"/>
+<value from="loc_search_db"/>
+<const>&gt;</const>
+<value from="loc_search_output"/>
+</add>
+
+<add id="cl">
+<if comp="EQUALS" value1="sel_build" value2="TRUE"><value from="cl_build"/></if>
+<if comp="EQUALS" value1="sel_search" value2="TRUE"><value from="cl_search"/></if>
+</add>
+
+
+<env id="ip" get="IPv4"/>
+
+<execute location="" exec="sh" wsl="WSLsel" param="-c &quot; \${cl} 2>&amp;1 | netcat \${ip} 55025 &quot;">
+    <output id="outcout" type="TCP" host="" port="55025" color="green" to="outputstream1" />
+  </execute>
+  
+  
+</execution>
+</template>
+EOF
+
+
+fi

@@ -61,10 +61,11 @@ protected:
         sBash = "bash";
 #endif
 
-        sBash.append( " -c '"+ m_sLinuxCMD +"'" );
+        //m_sLinuxCMD.replace(QString("\""), QString("\\\""));
+
+        sBash.append( " -c \" "+ m_sLinuxCMD + "\"" );
 
 #ifndef __linux
-
 
         STARTUPINFO sinfo = {sizeof(sinfo), 0};
         PROCESS_INFORMATION pinfo = {0};

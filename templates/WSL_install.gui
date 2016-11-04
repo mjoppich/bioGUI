@@ -51,9 +51,9 @@
 <value from="prog_wsl"/>
 <value from="instpath"/>
 <add sep="">
-<const>&quot;</const>
+<const>\&quot;</const>
 <value from="sudopw"/>
-<const>&quot;</const>
+<const>\&quot;</const>
 </add>
 <if comp="EQUALS" value1="templpath_sel" value2="true" sep=" ">
 <value from="localip"/>
@@ -67,11 +67,11 @@
 </if>
 </add>
   
-<execute location="" exec="sh" wsl="WSLsel" param="-c &quot; dos2unix ${prog_wsl} | netcat 127.0.0.1 55025&quot;">
+<execute location="" exec="sh" wsl="WSLsel" param="-c &quot; dos2unix ${prog_wsl} | netcat 127.0.0.1 55025 &quot;">
     <output type="TCP" host="" port="55025" color="green" to="outputstream1" />
 </execute>
   
-  <execute location="" exec="" wsl="WSLsel" param="sh ${cl} 2&gt;&amp;1 | netcat 127.0.0.1 55025">
+  <execute location="" exec="sh" wsl="WSLsel" param="-c $' sh ${cl} 2&gt;&amp;1 | netcat 127.0.0.1 55025 '">
     <output id="outcout" type="TCP" host="" port="55025" color="green" to="outputstream1" />
 	<output id="outcout2" type="TCP" host="" port="55026" color="red" to="outputstream2" />
 	<output type="TCP" host="" port="33333" color="blue" to="savetemplate" />

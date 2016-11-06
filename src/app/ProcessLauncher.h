@@ -164,7 +164,7 @@ public:
 
             QStringList oArgs;
             if (m_sParam.size() > 0)
-                oArgs = ProcessLauncher::stringToArguments(m_sParam, '\"');
+                oArgs = ProcessLauncher::stringToArguments(m_sParam.toStdString(), '\"');
 
             for (int i = 0; i < oArgs.size(); ++i)
                 std::cerr << oArgs.at(i).toStdString() << std::endl;
@@ -174,6 +174,9 @@ public:
 
             this->connect(m_pProcess, static_cast<void(QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished),
                                [pProcess, this](int exitCode, QProcess::ExitStatus exitStatus){
+
+                                   qDebug() << exitCode;
+                                   qDebug() << exitStatus;
 
                                    qDebug() << pProcess->error();
                                    qDebug() << pProcess->program();
@@ -207,24 +210,71 @@ public slots:
         emit finished();
     }
 
-    static QStringList stringToArguments(QString sString, char cQuoteChar)
+    static QStringList stringToArguments(std::string sString, char cQuoteChar)
     {
-        bool bContainsQuotes = (sString.at(0).toLatin1() == cQuoteChar); //true if the first character is "
+        bool bWithinQuote = false;
+        size_t iQuoteStart = 0;
+        size_t iLastArgPartStart = 0;
 
-        QString sTest("a");
-        sTest[0] = cQuoteChar;
-
-        QStringList vTmpList = sString.split(QRegExp(sTest), QString::SkipEmptyParts); // Split by " and make sure you don't have an empty string at the beginning
         QStringList vArgsList;
 
-                foreach (QString s, vTmpList) {
-                if (bContainsQuotes) { // If 's' is inside quotes ...
-                    vArgsList.append(s); // ... get the whole string
-                } else { // If 's' is outside quotes ...
-                    vArgsList.append(s.split(" ", QString::SkipEmptyParts)); // ... get the splitted string
+        // possible quotes are " or ' - one has to be careful with escaped quotes within the string
+        for (size_t i = 0; i < sString.size(); ++i)
+        {
+
+            if ((sString.at(i) == '\"') || (sString.at(i) == '\''))
+            {
+
+                // if escaped -> continue
+                if ((i > 0) && (sString.at(i-1) == '\\'))
+                    continue;
+
+                if (!bWithinQuote)
+                {
+                    bWithinQuote = true;
+                    iQuoteStart = i;
+
+                } else {
+
+                    if (sString.at(i) == sString.at(iQuoteStart))
+                        bWithinQuote = false;
                 }
-                bContainsQuotes = !bContainsQuotes;
+
             }
+
+            if (bWithinQuote)
+                continue;
+
+            if ((sString.at(i) == ' ') || (sString.size()-1 == i))
+            {
+                std::string sPart = sString.substr(iLastArgPartStart, i-iLastArgPartStart+1);
+                if (sPart[0] == sPart[sPart.size()-1])
+                    sPart = sPart.substr(1,sPart.size()-2);
+
+                QString sQPart(sPart.c_str());
+
+                sQPart.replace("\\\"", "\"");
+                sQPart.replace("\\\'", "\'");
+
+                std::cout << sQPart.toStdString() << std::endl;
+
+                if (sPart.size() > 0)
+                    vArgsList.append( sQPart );
+
+                iLastArgPartStart = i+1;
+            }
+
+        }
+
+        if (bWithinQuote)
+        {
+            std::string sPart = sString.substr(iLastArgPartStart, -1);
+            QString sQPart(sPart.c_str());
+
+            if (sPart.size() > 0)
+                vArgsList.append( sQPart );
+
+        }
 
         return vArgsList;
     }

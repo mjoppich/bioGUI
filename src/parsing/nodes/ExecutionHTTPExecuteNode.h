@@ -156,7 +156,7 @@ public:
 
         } else {
 
-            QStringList oArgs = ProcessLauncher::stringToArguments(qsCLArg, '\"');
+            QStringList oArgs = ProcessLauncher::stringToArguments(qsCLArg.toStdString(), '\"');
 
             for (int i = 0; i < oArgs.size(); ++i)
             {

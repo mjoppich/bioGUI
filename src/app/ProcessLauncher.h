@@ -252,6 +252,7 @@ public slots:
                     sPart = sPart.substr(1,sPart.size()-2);
 
                 QString sQPart(sPart.c_str());
+                sQPart = sQPart.trimmed();
 
                 sQPart.replace("\\\"", "\"");
                 sQPart.replace("\\\'", "\'");

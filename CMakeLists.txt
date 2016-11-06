@@ -73,7 +73,11 @@ if ( CMAKE_SYSTEM_NAME STREQUAL "Windows" OR CYGWIN OR MINGW)
     endif()
 
 else()
-    SET(ENV{Qt5_DIR} "/home/users/joppich/progs/Qt/5.5/gcc_64/" )
+
+    if (EXISTS "${/home/users/joppich/progs/Qt/5.5/gcc_64/}")
+        SET(ENV{Qt5_DIR} "/home/users/joppich/progs/Qt/5.5/gcc_64/" )
+    endif()
+
     set(QT_QMAKE_EXECUTABLE ${Qt5_DIR}/bin/qmake)
     set(QT_ROOT ${Qt5_DIR})
 

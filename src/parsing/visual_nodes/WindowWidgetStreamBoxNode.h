@@ -40,7 +40,6 @@ public:
         QGroupBox* pGroupBox = new QGroupBox();
 
         AdvancedStreamBox* pStreamOut = new AdvancedStreamBox();
-
         // this could also be a hboxlayout or a grid layout
         QLayout* pLayout = new QVBoxLayout();
 
@@ -104,6 +103,20 @@ public:
         pGroupBox->setLayout(pLayout);
 
         oReturn.pElement = pGroupBox;
+
+        bioGUIapp* pApp = m_pFactory->getApp();
+        pLayout->setSizeConstraint(QLayout::SetFixedSize);
+
+        QObject::connect(pStreamOut, &AdvancedStreamBox::sizeChanged, [pApp, pLayout] () {
+
+
+            pLayout->activate();
+            pLayout->update();
+
+            pApp->getMainWindow()->update();
+            pApp->reloadAppWindow();
+
+        });
 
         // must be done here because otherwise the groupbox is the id widget ...
         std::string sID = this->getAttribute(pDOMElement, "id", "");

@@ -15,14 +15,16 @@
 
 #include <iostream>
 #include <QtWidgets/qcheckbox.h>
+#include <QtWidgets/QSizeGrip>
+#include <QtWidgets/QGridLayout>
 
 #include "TCPExtendedBuffer.h"
 #include "ExtendedThreadBuffer.h"
 #include "ExtendedProcessBuffer.h"
 #include "ExtendedStdBuffer.h"
 
-
-
+#include <QMouseEvent>
+#include <QtGui/QPainter>
 
 
 class AdvancedListWidgetItem : public QListWidgetItem {
@@ -37,6 +39,8 @@ public:
 
         const QFont oFixedFont = QFontDatabase::systemFont(QFontDatabase::FixedFont);
         this->setFont(oFixedFont);
+
+
     }
 
     QString getStreamID()
@@ -92,6 +96,42 @@ protected:
 
 };
 
+class AdvancedStreamBox;
+
+class AdvancedCornerWidget : public QWidget {
+    Q_OBJECT
+
+public:
+
+    AdvancedCornerWidget(AdvancedStreamBox* pParentBox);
+
+    void updateWidgetGeometry();
+
+    void mousePressEvent(QMouseEvent* pEvent);
+
+    void mouseMoveEvent(QMouseEvent * pEvent)
+    {
+        m_oMouseEnd= pEvent->pos();
+        updateWidgetGeometry();
+    }
+
+    void mouseReleaseEvent(QMouseEvent * pEvent);
+
+
+signals:
+
+    void sizeChanged();
+
+protected:
+
+    QPoint m_oMouseStart;
+    QPoint m_oMouseEnd;
+    QSize m_oCurrentSize;
+
+    AdvancedStreamBox* m_pParentBox;
+
+};
+
 class AdvancedStreamBox : public QListWidget {
 Q_OBJECT
 
@@ -108,8 +148,27 @@ public:
         this->setMinimumHeight(150);
 
         this->clear();
+
+
+
+        this->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+        this->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+
+        AdvancedCornerWidget* pCornerWidget = new AdvancedCornerWidget(this);
+
+
+        this->connect(pCornerWidget, &AdvancedCornerWidget::sizeChanged, this, &AdvancedStreamBox::sizeChanged);
+
+        this->setCornerWidget( pCornerWidget );
+
     }
 
+
+
+    virtual QSize sizeHint()
+    {
+        return QSize( this->minimumWidth(), this->minimumHeight() );
+    }
 
     std::string getStreamContent(std::string* pStreamID)
     {
@@ -339,6 +398,10 @@ public:
     }
 
 
+signals:
+
+    void sizeChanged();
+
 protected slots:
 
     void filterText(bool bState)
@@ -473,6 +536,8 @@ protected:
     std::map<ExecuteThread*, std::vector<ExtendedThreadBuffer*>> m_mThreadToBuffer;
 
     std::map<std::string, QAbstractButton*> m_mStreamID2Button;
+
+
 };
 
 

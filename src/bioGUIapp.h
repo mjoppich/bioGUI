@@ -43,6 +43,25 @@ public:
         this->addTemplates( oTemplatePath );
     }
 
+    QMainWindow* getMainWindow()
+    {
+        return m_pMainMainWindow;
+    }
+
+    QWidget* getTemplateWindow()
+    {
+        return m_pMainWindow;
+    }
+
+    void reloadAppWindow()
+    {
+
+        m_pWindow->setMinimumSize(m_pWindow->sizeHint());
+
+
+        m_pApplicationWindowArea->update();
+    }
+
     void loadInitFile(QDir oPath)
     {
         QString sConfigFilePath = oPath.absolutePath() + "/config.ini";
@@ -322,7 +341,6 @@ protected:
             }
 
         }
-
 
 
     }

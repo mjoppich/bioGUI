@@ -36,6 +36,8 @@ public:
 
         bool bSelectOnWindows = (this->getQAttribute(pDOMElement, "selectonwindows", "FALSE").compare("TRUE", Qt::CaseInsensitive) == 0);
         bool bSelected = (this->getQAttribute(pDOMElement, "selected", "FALSE").compare("TRUE", Qt::CaseInsensitive) == 0);
+        std::string sValueUnselected = this->getAttribute(pDOMElement, "value-unselected", "");
+
 
         if ((!bSelected) && (bSelectOnWindows))
         {
@@ -48,12 +50,12 @@ public:
 
         pButtonItem->setChecked(bSelected);
 
-        oReturn.addRetriever(this->getDomID(pDOMElement) , [pButtonItem] () {
+        oReturn.addRetriever(this->getDomID(pDOMElement) , [pButtonItem, sValueUnselected] () {
 
             if (pButtonItem->isChecked())
                 return pButtonItem->getValue().toStdString();
 
-            return std::string("");
+            return sValueUnselected;
 
         });
 
@@ -75,6 +77,7 @@ protected:
         vAttributes.push_back( "selectonwindows" );
         vAttributes.push_back( "selected" );
         vAttributes.push_back( "value" );
+        vAttributes.push_back( "value-unselected" );
 
     }
 

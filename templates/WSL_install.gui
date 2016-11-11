@@ -17,6 +17,8 @@
     <input id="instpath">~/bioGUI/progs/</input>
     <label>sudo Password</label>
     <input id="sudopw" type="password"></input>
+
+	<checkbox id="addtopath" value="1" value-unselected="0" selected="true">Add program folder to PATH?</checkbox>
   </group>
 
   <group id="templpath_sel" checkable="true" title="Store template?">
@@ -55,6 +57,7 @@
 <value from="sudopw"/>
 <const>\&quot;</const>
 </add>
+<value from="addtopath"/>
 <if comp="EQUALS" value1="templpath_sel" value2="true" sep=" ">
 <value from="localip"/>
 <const>33333</const>
@@ -63,7 +66,18 @@
 
 <add id="template_path" sep="">
 <if comp="EQUALS" value1="templpath_sel" value2="true">
-<value from="templpath"/>
+<script argv="${templpath}">
+<![CDATA[
+function evaluate(arg1)
+	
+	if ( string.ends(arg1,".gui") ) then
+		return(arg1)
+	else
+		return(arg1..".gui")
+	end
+end
+]]>
+</script>
 </if>
 </add>
   
@@ -78,6 +92,6 @@
 	<output type="TCP" host="" port="33333" color="blue" to="savetemplate" />
 	<output deferred="true" type="FILE" from="template_path" to="savetemplate" />
   </execute>
-  
+   
 </execution>
 </template>

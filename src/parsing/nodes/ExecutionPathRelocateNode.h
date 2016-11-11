@@ -25,12 +25,8 @@ public:
         m_sTo = this->getDomElementAttribute(pElement, "to", "").toStdString();
         m_sPrepend = this->getDomElementAttribute(pElement, "prepend", "").toStdString();
         m_bMakeUnix = (this->getDomElementAttribute(pElement, "unix", "false").compare("TRUE", Qt::CaseInsensitive) == 0);
-        m_bToWSL = (this->getDomElementAttribute(pElement, "wsl", "false").compare("TRUE", Qt::CaseInsensitive) == 0);
 
-        if (m_bToWSL)
-            m_bMakeUnix = true;
-
-
+        m_sToWSL = this->getDomElementAttribute(pElement, "wsl", "false");
 
     }
 
@@ -46,57 +42,93 @@ public:
 
         std::string sChildren = "";
 
+        bool bMakeUnix = m_bMakeUnix;
+
         if (m_sFrom.size() == 0)
         {
-
             sChildren = this->evaluateChildren(pID2Node, pInputID2Value, pInputID2Widget);
-
         } else {
 
-            sChildren = ExecutionValueNode::getFromID(m_sFrom, pID2Node, pInputID2Value, pInputID2Widget);
-
+            if (m_sFrom[0] == '$' and m_sFrom[1] == '{' and m_sFrom[m_sFrom.size()-1] == '}')
+            {
+                sChildren = this->getNodeValue(m_sFrom.substr(2, m_sFrom.size()-3), pID2Node, pInputID2Value, pInputID2Widget);
+            } else {
+                sChildren = m_sFrom;
+            }
         }
 
         if (sChildren.size() == 0)
             return sChildren;
 
+        bool bWSL = false;
+
+        if (m_sToWSL.size() > 0)
+        {
+
+            std::string sValue = this->getNodeValueOrValue(m_sToWSL.toStdString(), "", pID2Node, pInputID2Value, pInputID2Widget );
+
+            if (QString(sValue.c_str()).compare("TRUE", Qt::CaseInsensitive) == 0)
+            {
+                bWSL = true;
+            }
+        }
+
+        if (bWSL)
+        {
+            bMakeUnix = true;
+        }
+
         std::string sStart = sChildren;
 
         QString qsChildren(sChildren.c_str());
 
-        // replace from with to
-        if (qsChildren.startsWith(QString(m_sFrom.c_str()), Qt::CaseInsensitive))
+        QStringList vChildren = qsChildren.split(',');
+        QStringList vOutput;
+
+        for (size_t i = 0; i < vChildren.size(); ++i)
         {
 
-            qsChildren.remove(0, m_sFrom.size());
-            qsChildren.prepend(QString(m_sTo.c_str()));
+            QString sChild = vChildren.at(i);
+
+            // replace from with to
+            if (sChild.startsWith(QString(m_sFrom.c_str()), Qt::CaseInsensitive))
+            {
+
+                sChild.remove(0, m_sFrom.size());
+                sChild.prepend(QString(m_sTo.c_str()));
+
+            }
+
+            // absolute path
+            if (sChild.at(1) != ':')
+            {
+                QDir oPath(sChild);
+                sChild = oPath.absolutePath();
+            }
+
+            if (bMakeUnix)
+            {
+                // assumes that we have a windows string
+                QChar cDrive = sChild.at(0);
+                sChild.remove(0,2);
+                sChild.prepend(QString("/") + cDrive.toLower());
+
+                sChild.replace("\\", "/");
+            }
+
+            if (bWSL)
+            {
+                sChild.prepend("/mnt/");
+            }
+
+            if (m_sPrepend.size() > 0)
+                sChild.prepend( QString(m_sPrepend.c_str()) );
+
+            vOutput.append(sChild);
 
         }
 
-        // absolute path
-        if (qsChildren.at(1) != ':')
-        {
-            QDir oPath(qsChildren);
-            qsChildren = oPath.absolutePath();
-        }
-
-        if (m_bMakeUnix)
-        {
-            // assumes that we have a windows string
-            QChar cDrive = qsChildren.at(0);
-            qsChildren.remove(0,2);
-            qsChildren.prepend(QString("/") + cDrive.toLower());
-
-            qsChildren.replace("\\", "/");
-        }
-
-        if (m_bToWSL)
-        {
-            qsChildren.prepend("/mnt/");
-        }
-
-        if (m_sPrepend.size() > 0)
-            qsChildren.prepend( QString(m_sPrepend.c_str()) );
+        std::string sReturn = vOutput.join( QString(m_sSeperator.c_str()) ).toStdString();
 
         std::cerr << "relocated from " << sChildren << " to " << qsChildren.toStdString() << std::endl;
 
@@ -121,7 +153,7 @@ protected:
     std::string m_sPrepend;
 
     bool m_bMakeUnix = true;
-    bool m_bToWSL = true;
+    QString m_sToWSL = "";
 
 
 };

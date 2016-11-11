@@ -1,0 +1,198 @@
+#! Install RSEM 1.3.0
+
+if [ ! -z "$2" ]; then
+	echo "Installing dependency: python"
+	echo $2 | sudo -S apt-get update
+	echo $2 | sudo apt-get -y install perl r-base python
+	
+	pip install numpy scipy pysam
+fi
+
+## set all variables
+PROG=RSEM-1.3.0
+PROGNICE=$PROG
+PROGDIR=$1
+
+APPBINARYDIR=$PROGDIR/$PROG/
+
+if [ -z "${PROGDIR}" ]; then
+	PROGDIR=~/bioGUI/progs/
+	rm -rf $PROGDIR
+fi
+
+## create progdir
+mkdir -p $PROGDIR
+
+#download and unzip
+if [ ! -f $PROGDIR/$PROG.zip ]; then
+	wget https://github.com/deweylab/RSEM/archive/v1.3.0.tar.gz -O $PROGDIR/$PROG.tgz
+fi
+
+
+if [ ! -d "$PROGDIR/$PROG" ]; then
+tar -xzf $PROGDIR/$PROG.tgz -C $PROGDIR/
+fi
+
+cd $PROGDIR/$PROG
+
+make install DESTDIR=$PROGDIR prefix=$PROG
+
+if $4 == "1"; then
+
+	if ! grep -q $APPBINARYDIR ~/.bashrc; then
+		echo "export PATH=\"$APPBINARYDIR:$PATH\" >> ~/.bashrc;
+	fi
+fi
+
+if [ $# -eq 5 ]; then
+
+IP=$4
+PORT=$5
+
+cat << EOF | netcat $IP $PORT
+
+
+<template description="RSEM: estimating gene/isoform expression levels" title="$PROGNICE">
+ <window title="$PROGNICE">
+  <vgroup>
+
+	<checkbox id="WSLsel" value="true" selectonwindows="true">Run in WSL?</checkbox>
+
+	<group title="Prepare Reference">
+	
+	<filedialog id="rsem_ref_fasta" multiple="true">Reference FASTA File(s)</filedialog>
+	<filedialog id="rsem_ref_path" folder="true" output="true" >Reference Location (and name)</filedialog>
+	<input id="rsem_ref_name"></input>
+	
+	<combobox id="rsem_ref_aligner">
+		<comboitem value="--bowtie2">bowtie2</comboitem>
+		<comboitem value="--bowtie">bowtie</comboitem>
+		<comboitem value="--star">star</comboitem>
+	</combobox>
+	
+			<action program="rsem_calc">Prepare $PROGNICE Reference</action>
+	
+	</group>
+	
+	<group title="Calculate Expression" exclusive="true">
+	
+		<group id="rsem_calc_unpaired" title="Unpaired Reads" checkable="true">
+			<filedialog id="rsem_calc_unpaired_reads" multiple="true">Upstream Read Files</filedialog>
+		</group>
+		
+		<group id="rsem_calc_paired" title="Paired End Reads" checkable="true">
+		
+			<filedialog id="rsem_calc_paired_up" multiple="true">Upstream Read Files</filedialog>
+			<filedialog id="rsem_calc_paired_down" multiple="true">Downstream Read Files</filedialog>
+		
+			<combobox id="rsem_calc_paired_strandedness">
+			<comboitem value="--strandedness none">None</comboitem>
+			<comboitem value="--strandedness forward">Forward</comboitem>
+			<comboitem value="--strandedness reverse">Reverse</comboitem>
+			</combobox>
+			
+		</group>
+		
+		<group id="rsem_calc_alignment" title="Alignments" checkable="true">
+
+			<filedialog id="rsem_calc_alignment_bam" multiple="true">Alignment Files</filedialog>		
+			<checkbox id="rsem_calc_alignment_paired">Paired End Alignment</checkbox>
+			<filedialog id="rsem_calc_alignment_fai" multiple="true">Alignment Reference Index</filedialog>		
+
+		</group>
+		
+		<group title="Do-Alignment Options">
+			<combobox id="rsem_ref_aligner">
+				<comboitem value="--bowtie">bowtie</comboitem>
+				<comboitem value="--bowtie2">bowtie2</comboitem>
+				<comboitem value="--star">star</comboitem>
+			</combobox>
+		</group>
+		
+		
+		
+	
+		<filedialog id="rsem_calc_ref_name" folder="false">Reference</filedialog>
+		<filedialog id="rsem_calc_sample_path" folder="true" output="true">Sample Path</filedialog>
+		<label>RSEM Output Sample name (prefix of all files)</label><input id="rsem_calc_sample_name"></input>
+		
+		<label>Number of threads</label><input id="rsem_calc_num_threads" type="int">1</input>
+		
+		<label>Further options:</label><input id="rsem_calc_add_options"></input>
+			
+		<action program="rsem_calc">Run $PROGNICE</action>
+		
+	
+	</group>
+
+  
+   <streambox id="output1">
+    <stream id="outputstream1">COUT</stream>
+    <stream id="outputstream2">CERR</stream>
+   </streambox>
+
+  </vgroup>
+ </window>
+ <execution>
+ 
+<relocate id="rsem_ref_fasta_rel" from="rsem_ref_fasta" wsl="${WSLsel}"/>
+<relocate id="rsem_ref_path_rel" from="rsem_ref_path" wsl="${WSLsel}"/>
+<relocate id="rsem_ref_fasta_rel" from="rsem_ref_fasta" wsl="${WSLsel}"/>
+ 
+<relocate id="rsem_calc_unpaired_reads_rel" from="rsem_calc_unpaired_reads" wsl="${WSLsel}"/>
+<relocate id="rsem_calc_paired_up_rel" from="rsem_calc_paired_up" wsl="${WSLsel}"/>
+<relocate id="rsem_calc_paired_down_rel" from="rsem_calc_paired_down" wsl="${WSLsel}"/>
+<relocate id="rsem_calc_alignment_bam_rel" from="rsem_calc_alignment_bam" wsl="${WSLsel}"/>
+
+<relocate id="rsem_calc_ref_name_rel" from="rsem_calc_ref_name" wsl="${WSLsel}"/>
+<relocate id="rsem_calc_sample_path" from="rsem_calc_sample_path" wsl="${WSLsel}"/>
+
+<add id="rsem_calc_arguments">
+<if comp="EQUAL" value1="rsem_calc_unpaired" value2="true">
+<value from="rsem_calc_unpaired_reads_rel"/>
+</if>
+
+<if comp="EQUAL" value1="rsem_calc_paired" value2="true">
+<const>--paired-end</const>
+<value from="rsem_calc_paired_up_rel"/>
+<value from="rsem_calc_paired_down_rel"/>
+</if>
+
+<if comp="EQUAL" value1="rsem_calc_alignment" value2="true">
+<const>--alignments</const>
+<value from="rsem_calc_alignment_paired"/>
+<value from="rsem_calc_paired_up_rel"/>
+</if>
+
+<value from="rsem_calc_ref_name_rel"/>
+
+<add sep="">
+<value from="rsem_calc_sample_path"/>
+<const>/</const>
+<value from="rsem_calc_sample_name"/>
+</add>
+
+</add>
+
+<add id="rsem_calc_options">
+<const>-p</const>
+<value from="rsem_calc_num_threads"/>
+
+<value from="rsem_calc_add_options"/>
+</add>
+
+ 
+  <const id="bindir">${APPBINARYDIR}/</const>
+
+  <execute program="rsem_calc" location="" exec="\${bindir}/rsem-calculate-expression" param="\${rsem_calc_options} \${rsem_calc_arguments}" >
+   <output id="outcout" type="cout" color="green" to="outputstream1"/>
+   <output id="outcerr" type="cerr" color="red" to="outputstream2"/>
+  </execute>
+
+ </execution>
+</template>
+
+
+EOF
+
+fi

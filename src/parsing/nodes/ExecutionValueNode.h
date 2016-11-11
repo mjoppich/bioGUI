@@ -29,30 +29,6 @@ public:
 
     }
 
-    static std::string getFromID(std::string sID, std::map< std::string, ExecutionNode*>* pID2Node,
-                                 std::map<std::string, std::string>* pInputID2Value,
-                                 std::map<std::string, QWidget*>* pInputID2Widget)
-    {
-        std::map<std::string, std::string>::iterator oIt = pInputID2Value->find( sID );
-
-        // either the id is an input field
-        if (oIt != pInputID2Value->end())
-        {
-            return oIt->second;
-        }
-
-        // or it also might be another node
-        std::map<std::string, ExecutionNode*>::iterator oJt = pID2Node->find( sID );
-
-        // either the id is an input field
-        if (oJt != pID2Node->end())
-        {
-            return oJt->second->evaluate(pID2Node, pInputID2Value, pInputID2Widget);
-        }
-
-        throw "id not found " + sID;
-    }
-
     std::string evaluate( std::map< std::string, ExecutionNode*>* pID2Node,
                           std::map<std::string, std::string>* pInputID2Value,
                           std::map<std::string, QWidget*>* pInputID2Widget)

@@ -65,6 +65,14 @@ public:
         std::cerr << "starting in " << sCurrentPath.toStdString() << std::endl;
         std::cerr << "searching in " << sSearchPath.toStdString() << std::endl;
 
+        bool bAllowEmpty = (this->getQAttribute(pDOMElement, "allowempty", "false").compare("True", Qt::CaseInsensitive) == 0);
+
+        if (bAllowEmpty)
+        {
+            QComboItem* pNewItem = new QComboItem( "", "" );
+            pComboBox->addItem( pNewItem->getValue(), pNewItem->getData() );
+        }
+
         QDirIterator oDirIterator( sSearchPath,
                                    vFileEnding,
                                    QDir::NoSymLinks | QDir::Files,
@@ -107,6 +115,7 @@ public:
 
         }
 
+
         oReturn.bHasChildrenFinished = true;
 
         oReturn.addRetriever(this->getDomID(pDOMElement) , [pComboBox] () {
@@ -133,9 +142,9 @@ protected:
     virtual void addNodeAttributes(std::vector<std::string>& vAttributes)
     {
 
-        vAttributes.push_back( "width" );
-        vAttributes.push_back( "height" );
-        vAttributes.push_back( "title" );
+        vAttributes.push_back( "path" );
+        vAttributes.push_back( "ext" );
+        vAttributes.push_back( "allowempty" );
 
     }
 

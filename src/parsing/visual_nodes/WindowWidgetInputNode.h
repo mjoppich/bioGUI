@@ -52,17 +52,38 @@ public:
                 if (sType.compare("password", Qt::CaseInsensitive) == 0)
                 {
                     pLineEdit->setEchoMode(QLineEdit::Password);
-
                 }
 
                 if (sType.compare("int", Qt::CaseInsensitive) == 0)
                 {
-                    pLineEdit->setValidator( new QIntValidator() );
+
+                    if (this->hasAttribute(pDOMElement, "min") && this->hasAttribute(pDOMElement, "max"))
+                    {
+                        int iMin = this->getQAttribute(pDOMElement, "min", "0").toInt();
+                        int iMax = this->getQAttribute(pDOMElement, "max", "0").toInt();
+
+                        pLineEdit->setValidator( new QIntValidator(iMin, iMax) );
+
+                    } else {
+
+                        pLineEdit->setValidator( new QIntValidator() );
+
+                    }
+
                 }
 
                 if (sType.compare("float", Qt::CaseInsensitive) == 0)
                 {
-                    pLineEdit->setValidator( new QDoubleValidator() );
+                    if (this->hasAttribute(pDOMElement, "min") && this->hasAttribute(pDOMElement, "max"))
+                    {
+                        double dMin = this->getQAttribute(pDOMElement, "min", "0").toDouble();
+                        double dMax = this->getQAttribute(pDOMElement, "max", "0").toDouble();
+
+                        pLineEdit->setValidator( new QDoubleValidator(dMin, dMax, 64) );
+
+                    } else {
+                        pLineEdit->setValidator(new QDoubleValidator());
+                    }
                 }
 
             }
@@ -90,6 +111,7 @@ protected:
     {
 
         vAttributes.push_back( "multi" );
+        vAttributes.push_back( "min && max" );
         vAttributes.push_back( "type {string, int, float, password}" );
 
     }

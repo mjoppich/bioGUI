@@ -20,16 +20,29 @@ void AdvancedCornerWidget::updateWidgetGeometry() {
         return;
     }
 
+    if (m_oMouseStart == m_oMouseEnd)
+        return;
+
     int w = m_oMouseEnd.x() - m_oMouseStart.x();
     int h = m_oMouseEnd.y() - m_oMouseStart.y();
 
-    m_pParentBox->setMinimumHeight( m_oCurrentSize.height() + h );
-    m_pParentBox->setMinimumWidth( m_oCurrentSize.width() + w );
+    //m_pParentBox->setMinimumHeight( m_oCurrentSize.height() + h );
+    //m_pParentBox->setMinimumWidth( m_oCurrentSize.width() + w );
 
     QSize oNewMin(m_oCurrentSize.width() + w, m_oCurrentSize.height() + h);
 
+    if ((oNewMin.height() < 0) || (oNewMin.width() < 0))
+    {
+        qDebug() << m_oMouseStart;
+        qDebug() << m_oMouseEnd;
+        qDebug() << m_oCurrentSize;
+        qDebug() << oNewMin;
+
+        return;
+    }
+
     m_pParentBox->setMinimumSize(oNewMin);
-    m_pParentBox->resize(oNewMin);
+    //m_pParentBox->resize(oNewMin);
 
     emit sizeChanged();
 
@@ -42,7 +55,7 @@ void AdvancedCornerWidget::mousePressEvent(QMouseEvent *pEvent) {
     m_oCurrentSize = m_pParentBox->size();
 
     updateWidgetGeometry();
-    m_pParentBox->show();
+    //m_pParentBox->show();
 }
 
 void AdvancedCornerWidget::mouseReleaseEvent(QMouseEvent *pEvent) {
@@ -50,4 +63,9 @@ void AdvancedCornerWidget::mouseReleaseEvent(QMouseEvent *pEvent) {
     m_oMouseStart = QPoint(-1,-1);
     m_oMouseEnd = QPoint(-1,-1);
 
+}
+
+void AdvancedCornerWidget::mouseMoveEvent(QMouseEvent *pEvent) {
+    m_oMouseEnd = pEvent->pos();
+    updateWidgetGeometry();
 }

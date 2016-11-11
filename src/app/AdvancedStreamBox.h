@@ -109,11 +109,7 @@ public:
 
     void mousePressEvent(QMouseEvent* pEvent);
 
-    void mouseMoveEvent(QMouseEvent * pEvent)
-    {
-        m_oMouseEnd= pEvent->pos();
-        updateWidgetGeometry();
-    }
+    void mouseMoveEvent(QMouseEvent * pEvent);
 
     void mouseReleaseEvent(QMouseEvent * pEvent);
 

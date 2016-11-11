@@ -1,10 +1,5 @@
 #! Install hisat2-2.0.4
 
-echo "progdir $1"
-echo "pw $2"
-echo "ip $3"
-echo "port $4"
-
 if [ ! -z "$2" ]; then
 	echo "Installing dependency: unzip"
 	echo $2 | sudo -S apt-get update

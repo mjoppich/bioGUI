@@ -1,0 +1,183 @@
+#! Install rMATS-3.2.5
+
+if [ ! -z "$2" ]; then
+	echo "Installing dependency: python"
+	echo $2 | sudo -S apt-get update
+	echo $2 | sudo apt-get -y install python2.7 python-pip zlib1g-dev
+	
+	pip install numpy scipy pysam
+fi
+
+## set all variables
+PROG=rMATS.3.2.5
+PROGNICE=rMATS-3.2.5
+
+PROGDIR=$1
+if [ -z "${PROGDIR}" ]; then
+	PROGDIR=~/bioGUI/progs/
+	rm -rf $PROGDIR
+fi
+
+## create progdir
+mkdir -p $PROGDIR
+
+#download and unzip
+if [ ! -f $PROGDIR/$PROG.zip ]; then
+	wget https://sourceforge.net/projects/rnaseq-mats/files/MATS/rMATS.3.2.5.tgz/download -O $PROGDIR/$PROG.tgz
+fi
+
+
+if [ ! -d "$PROGDIR/$PROG" ]; then
+cd $PROGDIR
+tar -xzf $PROG.tgz -C $PROGDIR/
+fi
+
+
+if [ $# -eq 4 ]; then
+
+IP=$3
+PORT=$4
+
+cat << EOF | netcat $IP $PORT
+
+
+<template description="rMATS replicate MATS" title="$PROGNICE">
+ <window title="$PROGNICE">
+  <vgroup>
+
+
+   <group title="Input Files">
+   
+	  <checkbox id="WSLsel" value="true" selectonwindows="true">Run in WSL?</checkbox>
+
+      <filedialog id="rmats_paired_m1" location="1" multiple="true" filter="bam">Mate 1 files</filedialog>
+      <filedialog id="rmats_paired_m2" location="1" multiple="true" filter="bam">Mate 2 files</filedialog>
+	  
+	  <filedialog id="rmats_annot_gtf" location="1" multiple="true" filter="gtf">Gene Annotation (GTF)</filedialog>
+	  
+	  <combobox id="rmats_read_type">
+	  <comboitem value="paired">Paired</comboitem>
+	  <comboitem value="single">Single</comboitem>
+	  </combobox>
+	  
+	  <label>Input length of each read</label><input id="rmats_read_length" type="int">100</input>
+	  
+	  <filedialog id="rmats_output" output="true" folder="true">Output Folder</output>
+
+   </group>
+   
+    <group id="rmats_optional" title="Input Files" checkable="true">
+	<label>Cutoff splicing difference</label><input id="rmats_cutoff" type="float" min="0" max="1">0.0001</input>
+	
+	<label>Analysis Type</label>
+	  <combobox id="rmats_analysis">
+	  <comboitem value="p">Paired Analysis</comboitem>
+	  <comboitem value="u">Unparied Analysis</comboitem>
+	  </combobox>
+	
+	<label>Library Type</label>
+	
+	<combobox id="rmats_read_type">
+	  <comboitem value="fr-unstranded">Unstranded</comboitem>
+	  <comboitem value="fr-firststrand">First Strand</comboitem>
+	  <comboitem value="fr-secondstrand">Second Strand</comboitem>
+	</combobox>
+	
+	<checkbox id="rmats_novel_SS">Detect novel splice sites?</checkbox>
+	
+	<checkbox id="rmats_keep_tmp">Keep temporary files?</checkbox>
+	
+	</group>
+   
+  
+   <streambox id="output1">
+    <stream id="outputstream1">COUT</stream>
+    <stream id="outputstream2">CERR</stream>
+   </streambox>
+   <group title="System Settings">
+    <label title="example 2">Threads</label>
+    <input id="threads_opt" hint="Amount of Threads">2</input>
+   </group>
+   <action id="runprog" hint="click here to run program">Run ${PROGNICE}</action>
+  </vgroup>
+ </window>
+ <execution>
+ 
+<if id="rmats_paired_m1_rel" comp="EQUALS" value1="WSLsel" value2="true">
+<relocate from="rmats_paired_m1" wsl="true"/>
+<else>
+<value from="rmats_paired_m1"/>
+</else>
+</if>
+ 
+<if id="rmats_paired_m2_rel" comp="EQUALS" value1="WSLsel" value2="true">
+<relocate from="rmats_paired_m2" wsl="true"/>
+<else>
+<value from="rmats_paired_m2"/>
+</else>
+</if>
+ 
+<if id="rmats_paired_m1_rel" comp="EQUALS" value1="WSLsel" value2="true">
+<relocate from="rmats_paired_m1" wsl="true"/>
+<else>
+<value from="rmats_paired_m1"/>
+</else>
+</if>
+
+<add sep=" " id="cl">
+<if comp="is_set" value1="rmats_paired_m1_rel">
+<const>-b1</const>
+<value from="rmats_paired_m1_rel"/>
+</if>
+
+<if comp="is_set" value1="rmats_paired_m2_rel">
+<const>-b2</const>
+<value from="rmats_paired_m2_rel"/>
+</if>
+
+<const>-gtf</const>
+<value from="rmats_annot_gtf"/>
+
+<const>-t</const>
+<value from="rmats_read_type"/>
+
+<const>-len</const>
+<value from="rmats_read_length"/>
+
+<const>-o</const>
+<value from="rmats_output"/>
+
+<if comp="EQUALS" value1="rmats_optional" value2="true">
+<const>-c</const>
+<value from="rmats_cutoff"/>
+
+<const>-analysis</const>
+<value from="rmats_analysis"/>
+
+<const>-libType</const>
+<value from="rmats_read_type"/>
+
+<const>-novelSS</const>
+<value from="rmats_novel_SS"/>
+
+<const>-keepTemp</const>
+<value from="rmats_keep_tmp"/>
+
+</if>
+</add> 
+
+ 
+  <const id="bindir">${PROGDIR}/${PROG}/</const>
+
+  <execute location="" exec="python" param="\${bindir}/RNASeq-MATS.py \${cl}" >
+   <output id="outcout" type="cout" color="green" to="outputstream1"/>
+   <output id="outcerr" type="cerr" color="red" to="outputstream2"/>
+  </execute>
+
+ </execution>
+</template>
+
+
+EOF
+
+fi

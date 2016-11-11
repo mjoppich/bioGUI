@@ -1,0 +1,225 @@
+#! Install StringTie 1.3.0
+
+if [ ! -z "$2" ]; then
+	echo "Installing dependency: python"
+	echo $2 | sudo -S apt-get update
+	echo $2 | sudo apt-get -y install perl r-base python
+	
+	pip install numpy scipy pysam
+fi
+
+## set all variables
+PROG=StringTie_1_3_0
+PROGNICE=StringTie1.3.0
+PROGDIR=$1
+
+APPBINARYDIR=${PROGDIR}/${PROG}/
+
+if [ -z "${PROGDIR}" ]; then
+	PROGDIR=~/bioGUI/progs/
+	rm -rf $PROGDIR
+fi
+
+## create progdir
+mkdir -p $PROGDIR
+
+#download and unzip
+if [ ! -f $PROGDIR/$PROG.zip ]; then
+	wget http://ccb.jhu.edu/software/stringtie/dl/stringtie-1.3.0.tar.gz -O $PROGDIR/$PROG.tar.gz
+fi
+
+
+if [ ! -d "$PROGDIR/$PROG" ]; then
+tar xvfz $PROGDIR/$PROG.tar.gz -C $PROGDIR/$PROG
+fi
+
+cd $PROGDIR/$PROG
+
+make release
+
+if $4 == "1"; then
+
+	if ! grep -q $APPBINARYDIR ~/.bashrc; then
+		echo "export PATH=\"$APPBINARYDIR:$PATH\" >> ~/.bashrc;
+	fi
+fi
+
+if [ $# -eq 5 ]; then
+
+IP=$4
+PORT=$5
+
+cat << EOF | netcat $IP $PORT
+
+<template description="StringTie Transcript Assembler" title="${PROGNICE}">
+<window title="StringTie 1.3.0">
+<vgroup>
+
+  <group title="Alignment Information">
+	<checkbox id="WSLsel" value="true" selectonwindows="true">run in WSL?</checkbox>
+  </group>
+    
+  <group title="Input Options">
+	<filedialog id="stringtie_aligned_bam">Aligned Reads</filedialog>
+	<filedialog id="stringtie_aligned_bam">Aligned Reads</filedialog>
+
+  </group>
+  
+  <group title="General Flags">
+  </group>
+  
+  <group title="Output">
+  </group>
+    
+  <group title="Advanced">
+	<label>Additional command-line flags</label><input id="bowtie2_adv_specific_options"></input>
+  </group>
+  
+  
+  
+    <action program="bowtie2">Align!</action>
+
+	<group title="build index">
+		<label>Input Reference</label> <filedialog id="bowtie2_build_inref" output="false" folder="false">Select bowtie2 index</filedialog>		
+		<label>bowtie2 Index</label> <filedialog id="bowtie2_build__out" output="true" folder="false">Select bowtie2 index</filedialog>
+		<action program="bowtie2index">Build Index</action>
+	</group>
+  
+    <streambox id="output1">
+    <stream id="outputstream1">std out</stream>
+    <stream id="outputstream2">err out</stream>
+   </streambox>
+
+</vgroup>
+</window>
+
+<execution>
+<const id="bindir">${APPBINARYDIR}</const>
+
+
+<add id="cl_idx" sep=" ">
+<value from="bowtie2_build_inref"/>
+<value from="bowtie2_build__out"/>
+</add>
+
+  <execute program="bowtie2index" param="\${bindir}/bowtie2-build \${cl_idx} 2>&amp;1 | netcat \${ip} 55025" location="" exec="" wsl="WSLsel">
+    <output type="TCP" host="" port="55025" color="green" to="outputstream1" />
+    <output type="TCP" host="" port="55026" color="green" to="outputstream2" />
+  </execute>
+
+<if id="bowtie2_index_rel_raw" comp="EQUALS" value1="WSLsel" value2="true">
+<relocate from="bowtie2_index" wsl="true"/>
+<else>
+<value from="bowtie2_index"/>
+</else>
+</if>
+
+<script id="bowtie2_index_rel" argv="\${bowtie2_index_rel_raw}">
+<![CDATA[
+
+function evaluate(arg1)
+	
+	if (string.match(arg1, ".%d.ht2$")) then
+		return(string.sub(arg1, 0, arg1:find(".%d.bt2$")-1))
+	end
+
+    return(arg1)
+end
+
+
+]]>
+</script>
+
+<if id="bowtie2_paired_m1_rel" comp="EQUALS" value1="WSLsel" value2="true">
+<relocate from="bowtie2_paired_m1" wsl="true"/>
+<else>
+<value from="bowtie2_paired_m1"/>
+</else>
+</if>
+
+<if id="bowtie2_paired_m2_rel" comp="EQUALS" value1="WSLsel" value2="true">
+<relocate from="bowtie2_paired_m2" wsl="true"/>
+<else>
+<value from="bowtie2_paired_m2"/>
+</else>
+</if>
+
+<if id="bowtie2_unpaired_reads_rel" comp="EQUALS" value1="WSLsel" value2="true">
+<relocate from="bowtie2_unpaired_reads" wsl="true"/>
+<else>
+<value from="bowtie2_unpaired_reads"/>
+</else>
+</if>
+
+<if id="bowtie2_output_rel" comp="EQUALS" value1="WSLsel" value2="true">
+<relocate from="bowtie2_output" wsl="true"/>
+<else>
+<value from="bowtie2_output"/>
+</else>
+</if>
+
+<if id="input_files" sep=" " comp="EQUALS" value1="pairedend" value2="true">
+<const>-1</const>
+<value from="bowtie2_paired_m1_rel"/>
+<const>-2</const>
+<value from="bowtie2_paired_m2_rel"/>
+
+<else>
+
+<const>-U</const>
+<value from="bowtie2_unpaired_reads_rel"/>
+
+</else>
+</if>
+
+<env id="ip" get="IPv4"/>
+
+<const id="options"></const>
+
+<add id="cl" sep=" ">
+<value from="options"/>
+<value from="bowtie2_adv_specific_options"/>
+
+<value from="bowtie2_index_rel"/>
+
+<value from="input_files"/>
+<const>-S</const>
+<value from="bowtie2_output_rel"/>
+
+<if comp="EQUALS" value1="bowtie2_input_f" value2="true">-f</if>
+<if comp="EQUALS" value1="bowtie2_input_r" value2="true">-r</if>
+
+<if comp="EQUALS" value1="bowtie2_input_trim5" value2="true"><value from="bowtie2_input_trim5_bases"/></if>
+<if comp="EQUALS" value1="bowtie2_input_trim3" value2="true"><value from="bowtie2_input_trim3_bases"/></if>
+
+<if comp="EQUALS" value1="bowtie2_input_phred33" value2="true">--phred33</if>
+<if comp="EQUALS" value1="bowtie2_input_phred64" value2="true">--phred64</if>
+
+<if comp="EQUALS" value1="bowtie2_align_nofw" value2="true">--nofw</if>
+<if comp="EQUALS" value1="bowtie2_align_norc" value2="true">--norc</if>
+
+
+<if comp="EQUALS" value1="bowtie2_input_max_reports" value2="true"><value from="bowtie2_input_max_reports_num"/></if>
+
+<if comp="EQUALS" value1="bowtie2_align_no-softclip" value2="true">--no-softclip</if>
+<if comp="EQUALS" value1="bowtie2_align_no-spliced" value2="true">--no-spliced</if>
+<if comp="EQUALS" value1="bowtie2_align_no-mixed" value2="true">--no-mixed</if>
+<if comp="EQUALS" value1="bowtie2_align_no-discordant" value2="true">--no-discordant</if>
+
+<value from="bowtie2_align_mate_orientations"/>
+
+</add>
+	
+  <execute program="bowtie2" param="\${bindir}/bowtie2 \${cl} 2>&amp;1 | netcat \${ip} 55025" location="" exec="" wsl="WSLsel">
+    <output type="TCP" host="" port="55025" color="green" to="outputstream1" />
+    <output type="TCP" host="" port="55026" color="green" to="outputstream2" />
+  </execute>
+
+</execution>
+
+</template>
+
+
+EOF
+
+fi

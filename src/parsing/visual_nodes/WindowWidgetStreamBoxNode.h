@@ -113,7 +113,7 @@ public:
             pLayout->activate();
             pLayout->update();
 
-            pApp->getMainWindow()->update();
+            //pApp->getMainWindow()->update();
             pApp->reloadAppWindow();
 
         });

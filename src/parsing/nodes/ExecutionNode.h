@@ -206,6 +206,29 @@ protected:
 
     }
 
+    std::string getNodeValue(std::string sID, std::map< std::string, ExecutionNode*>* pID2Node,
+                          std::map<std::string, std::string>* pInputID2Value,
+                          std::map<std::string, QWidget*>* pInputID2Widget)
+    {
+        std::map<std::string, std::string>::iterator oIt = pInputID2Value->find( sID );
+
+        // either the id is an input field
+        if (oIt != pInputID2Value->end())
+        {
+            return oIt->second;
+        }
+
+        // or it also might be another node
+        std::map<std::string, ExecutionNode*>::iterator oJt = pID2Node->find( sID );
+
+        if (oJt != pID2Node->end())
+        {
+            return oJt->second->evaluate(pID2Node, pInputID2Value, pInputID2Widget);
+        }
+
+        throw ExecutionNodeException("id not found " + sID);
+    }
+
     std::string getNodeValueOrValue(std::string sValue, std::string sDefaultValue,
                                 std::map< std::string, ExecutionNode*>* pID2Node,
                                 std::map<std::string, std::string>* pInputID2Value,
@@ -216,8 +239,18 @@ protected:
 
         try
         {
+
+            std::string sSearchValue = sValue;
+
+            if (sValue.size() > 3 and sValue[0] == '$' and sValue[1] == '{' and sValue[sValue.size()-1] == '}') {
+                sSearchValue = sValue.substr(2, sValue.size() - 3);
+            }
+
             // if it is a node value, fetch it here!
-            sReturn = this->evaluateID(sValue, pID2Node, pInputID2Value, pInputID2Widget);
+            sReturn = this->evaluateID(sSearchValue, pID2Node, pInputID2Value, pInputID2Widget);
+
+
+
         } catch (...)
         {
             sReturn = sDefaultValue;
@@ -241,7 +274,7 @@ protected:
     std::string m_sValue;
     std::string m_sTag;
 
-    std::string m_sSeperator = " ";
+    std::string m_sSeperator = ",";
 
 
 };

@@ -123,7 +123,8 @@ public:
                 pCommand->clear();
                 pCommand->append(sPrefix);
 
-                std::string sValue = this->evaluateID(sID, pID2Node, pInputID2Value, pInputID2Widget);
+                //std::string sValue = this->evaluateID(sID, pID2Node, pInputID2Value, pInputID2Widget);
+                std::string sValue = this->getNodeValueOrValue(sID, sID, pID2Node, pInputID2Value, pInputID2Widget);
 
                 std::cout << "id " << sID << " value " << sValue << std::endl;
                 pCommand->append(sValue);

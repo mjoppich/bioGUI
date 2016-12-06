@@ -9,6 +9,7 @@
 #include <QObject>
 #include <QColor>
 #include <iostream>
+#include <src/Logging.h>
 #include "ExtendedStdBuffer.h"
 
 class ExtendedProcessBuffer : public ExtendedStdBuffer {
@@ -45,7 +46,11 @@ public slots:
     {
 
         if (this->m_pParentProcess == NULL)
-            throw "no parent process given";
+        {
+            LOGLVL("No parent process given!", Logging::ERROR)
+            return;
+        }
+
 
         QByteArray oArray;
 

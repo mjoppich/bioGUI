@@ -9,9 +9,13 @@
 #include <QWidget>
 #include <vector>
 #include <map>
+#include <iostream>
+#include <src/Logging.h>
+#include <src/Validable.h>
 
 class QBufferTcpServer;
 
+/*
 class ExecutionNodeException : public std::exception
 {
 public:
@@ -32,6 +36,7 @@ protected:
     const std::string m_sMessage;
 
 };
+*/
 
 class ExecutionNode {
 
@@ -126,7 +131,9 @@ public:
             std::map< std::string, ExecutionNode*>::iterator oIt = pID2Node->find( m_sID );
 
             if (oIt != pID2Node->end())
-                throw "duplicate node ids : " + m_sID;
+            {
+                LOGLVL("Duplicate node ids: " + m_sID, Logging::ERROR);
+            }
 
             pID2Node->insert( std::pair<std::string, ExecutionNode*>(m_sID, this) );
         }
@@ -180,17 +187,19 @@ protected:
 
     virtual void addNodeAttributes(std::vector<std::string>& vAttributes) = 0;
 
-    std::string evaluateID( std::string sID, std::map< std::string, ExecutionNode*>* pID2Node,
+    Validable<std::string> evaluateID( std::string sID, std::map< std::string, ExecutionNode*>* pID2Node,
                           std::map<std::string, std::string>* pInputID2Value,
                           std::map<std::string, QWidget*>* pInputID2Widget)
     {
+
+        Validable<std::string> oReturn("", false);
 
         std::map<std::string, std::string>::iterator oIt = pInputID2Value->find( sID );
 
         // either the id is an input field
         if (oIt != pInputID2Value->end())
         {
-            return oIt->second;
+            oReturn.setValue(oIt->second);
         }
 
         // or it also might be another node
@@ -199,23 +208,30 @@ protected:
         // either the id is an input field
         if (oJt != pID2Node->end())
         {
-            return oJt->second->evaluate(pID2Node, pInputID2Value, pInputID2Widget);
+
+            std::string sValue = oJt->second->evaluate(pID2Node, pInputID2Value, pInputID2Widget);
+            oReturn.setValue(sValue);
         }
 
-        throw "Node ID not found: " + sID;
+        if (!oReturn.valid())
+            LOGLVL("Duplicate node ids: " + m_sID, Logging::ERROR);
+
+        return oReturn;
 
     }
 
-    std::string getNodeValue(std::string sID, std::map< std::string, ExecutionNode*>* pID2Node,
+    Validable<std::string> getNodeValue(std::string sID, std::map< std::string, ExecutionNode*>* pID2Node,
                           std::map<std::string, std::string>* pInputID2Value,
                           std::map<std::string, QWidget*>* pInputID2Widget)
     {
+        Validable<std::string> oReturn("", false);
+
         std::map<std::string, std::string>::iterator oIt = pInputID2Value->find( sID );
 
         // either the id is an input field
         if (oIt != pInputID2Value->end())
         {
-            return oIt->second;
+            oReturn.setValue(oIt->second);
         }
 
         // or it also might be another node
@@ -223,10 +239,14 @@ protected:
 
         if (oJt != pID2Node->end())
         {
-            return oJt->second->evaluate(pID2Node, pInputID2Value, pInputID2Widget);
+            std::string sValue = oJt->second->evaluate(pID2Node, pInputID2Value, pInputID2Widget);
+            oReturn.setValue(sValue);
         }
 
-        throw ExecutionNodeException("id not found " + sID);
+        if (!oReturn.valid())
+            LOGLVL("id not found: " + m_sID, Logging::ERROR);
+
+        return oReturn;
     }
 
     std::string getNodeValueOrValue(std::string sValue, std::string sDefaultValue,
@@ -235,28 +255,21 @@ protected:
                                 std::map<std::string, QWidget*>* pInputID2Widget)
     {
 
-        std::string sReturn;
+        std::string sSearchValue = sValue;
 
-        try
-        {
-
-            std::string sSearchValue = sValue;
-
-            if (sValue.size() > 3 and sValue[0] == '$' and sValue[1] == '{' and sValue[sValue.size()-1] == '}') {
-                sSearchValue = sValue.substr(2, sValue.size() - 3);
-            }
-
-            // if it is a node value, fetch it here!
-            sReturn = this->evaluateID(sSearchValue, pID2Node, pInputID2Value, pInputID2Widget);
-
-
-
-        } catch (...)
-        {
-            sReturn = sDefaultValue;
+        if ((sValue.size() > 3) &&  (sValue[0] == '$') && (sValue[1] == '{') && (sValue[sValue.size()-1] == '}')) {
+            sSearchValue = sValue.substr(2, sValue.size() - 3);
         }
 
-        return sReturn;
+        // if it is a node value, fetch it here!
+        Validable<std::string> oRetValue = this->evaluateID(sSearchValue, pID2Node, pInputID2Value, pInputID2Widget);
+
+        if (oRetValue.valid())
+        {
+            return oRetValue.value();
+        } else {
+            return sDefaultValue;
+        }
 
     }
 

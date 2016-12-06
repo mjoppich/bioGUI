@@ -39,7 +39,8 @@ public:
 
             if (!m_vChildren.at(i)->getType() == NODE_TYPE::NUMBER)
             {
-                throw "incompatible node types";
+                LOGLVL("Incompatible node types for child nodes in : " + m_sID, Logging::ERROR);
+                continue;
             }
 
             std::string sChild = m_vChildren.at(i)->evaluate(pID2Node, pInputID2Value, pInputID2Widget);
@@ -80,7 +81,7 @@ public:
                     continue;
                 }
 
-                throw "unimplemented operation";
+                LOGLVL("Unimplemented math node operation: " + m_sOperation, Logging::ERROR);
 
             }
 

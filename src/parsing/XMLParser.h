@@ -13,7 +13,9 @@
 #include <algorithm>
 #include <string>
 #include <iostream>
+#include <src/Logging.h>
 
+/*
 class XMLParserException : public std::exception
 {
 
@@ -35,6 +37,7 @@ protected:
     const std::string m_sMessage;
 
 };
+ */
 
 class XMLParser : public QObject {
 
@@ -83,6 +86,11 @@ public:
 
     }
 
+    QDomDocument* getDocument()
+    {
+        return m_pDocument;
+    }
+
 protected:
 
     QDomDocument* loadFromFile(std::string sFileName)
@@ -98,7 +106,8 @@ protected:
 
         if(!pFile->open(QIODevice::ReadOnly | QIODevice::Text))
         {
-            throw "Failed to open the file for reading.";
+            LOGLVL("Error opening file: " + sFileName.toStdString(), Logging::ERROR)
+            return NULL;
         }
 
         QDomDocument* pDocument = new QDomDocument();

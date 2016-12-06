@@ -67,7 +67,12 @@ public:
         }
 
         if (pFromElem == NULL)
-            throw "invalid from";
+        {
+            LOGLVL("from element is null", Logging::ERROR);
+
+            return "";
+        }
+
 
         std::map<QWidget*, std::string> mWidgetToString;
 

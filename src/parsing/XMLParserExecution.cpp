@@ -15,7 +15,8 @@ ExecutionNode *XMLParserExecution::getExecutionNodes(QDomElement* pElement ) {
 
     if (pNode == NULL)
     {
-        throw ExecutionNodeException("node not created exception " + pElement->tagName().toStdString());
+        LOGLVL("node not created exception " + pElement->tagName().toStdString(), Logging::ERROR);
+        return NULL;
     }
 
     QDomNodeList oChildren = pElement->childNodes();
@@ -50,6 +51,11 @@ ExecutionNetwork *XMLParserExecution::createNetwork(QDomElement* pElement) {
 
         ExecutionNode* pNode = this->getExecutionNodes(&oElement);
 
+        if (pNode == NULL)
+        {
+            LOGLVL("Failed to create execution node for element: " + oElement.tagName().toStdString(), Logging::ERROR);
+        }
+
         if (pNode != NULL)
             pNetwork->setNodes( pNode );
     }
@@ -65,16 +71,15 @@ ExecutionNetwork *XMLParserExecution::getExecutionNetwork() {
 
     QDomElement* pExecutionRoot = this->getRoot( m_pDocument );
 
-    try {
-        ExecutionNetwork* pNetwork = createNetwork(pExecutionRoot);
-        return pNetwork;
+    ExecutionNetwork* pNetwork = createNetwork(pExecutionRoot);
 
-    } catch (ExecutionNodeException oException)
+    if (pNetwork == NULL)
     {
-        std::cout << oException.what() << std::endl;
-
-        return NULL;
+        LOGLVL("Failed to create the execution network", Logging::ERROR);
     }
+
+
+    return pNetwork;
 
 
 }

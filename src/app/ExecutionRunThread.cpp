@@ -30,48 +30,39 @@ ExecutionRunThread::~ExecutionRunThread()
 void ExecutionRunThread::startExecution()
 {
 
-    try
+    std::cerr << "Executing program: " << m_sProgramToRun << std::endl;
+
+    if (m_pNetwork == NULL)
     {
-
-        std::cerr << "Executing program: " << m_sProgramToRun << std::endl;
-
-        if (m_pNetwork == NULL)
-        {
-            throw std::string("Error in execution program! Unable to execute.");
-        }
-
-        QObject::connect(m_pNetwork, &ExecutionNetwork::executionFinished, this, &ExecutionRunThread::executionFinished);
-
-        m_pWindowParser->printRetrieverIDs();
-
-        m_pNetwork->setMaps( m_pWindowParser->getID2Value(), m_pWindowParser->getID2Widget() );
-        m_pNetwork->execute( m_sProgramToRun );
-
-    } catch (const char* e)
-    {
-
-        std::cout << e << std::endl;
-
-        QMessageBox oMsgBox;
-        oMsgBox.setIcon( QMessageBox::Critical );
-        oMsgBox.setText( QString(e) );
-        oMsgBox.exec();
-
-    } catch (const std::string& e)
-    {
-        std::cout << e << std::endl;
-
-        QMessageBox oMsgBox;
-        oMsgBox.setIcon( QMessageBox::Critical );
-        oMsgBox.setText( QString(e.c_str()) );
-        oMsgBox.exec();
-    } catch (ExecutionNodeException& oException)
-    {
-        std::cout << oException.what() << std::endl;
-
-        QMessageBox oMsgBox;
-        oMsgBox.setIcon( QMessageBox::Critical );
-        oMsgBox.setText( QString( oException.what() ) );
-        oMsgBox.exec();
+        LOGERROR("Error in execution program "+m_sProgramToRun+"! Unable to execute.");
     }
+
+    QObject::connect(m_pNetwork, &ExecutionNetwork::executionFinished, this, &ExecutionRunThread::executionFinished);
+
+    m_pWindowParser->printRetrieverIDs();
+
+    m_pNetwork->setMaps( m_pWindowParser->getID2Value(), m_pWindowParser->getID2Widget() );
+    int iExitCode = m_pNetwork->execute( m_sProgramToRun );
+
+    switch (iExitCode)
+    {
+
+        case -1:
+        {
+            std::string sMessage = "No Program with Name " + m_sProgramToRun + " found!";
+
+            QMessageBox oMsgBox;
+            oMsgBox.setIcon( QMessageBox::Critical );
+            oMsgBox.setText( QString(sMessage.c_str())  );
+            oMsgBox.exec();
+        }
+            break;
+
+        default:
+
+            break;
+
+    }
+
+
 }

@@ -15,6 +15,8 @@ public:
 
     virtual void incomingConnection(qintptr socketDescripter);
 
+    void startListening();
+
     ~QBufferTcpServer()
     {
         std::cerr << "no more listening on port " << m_iPort << " " << this->hasPendingConnections() << std::endl;
@@ -27,6 +29,7 @@ signals:
 protected:
 
     QString m_sHost;
+    QHostAddress m_oHostAddress;
     int m_iPort;
     TCPExtendedBuffer* m_pParent;
     QTcpSocket* m_pCurrentSocket;
@@ -70,6 +73,8 @@ public:
         if (m_pServer->isListening())
             m_pServer->close();
     }
+
+
 
 
     virtual void receiveProcData(QTcpSocket* pSocket)

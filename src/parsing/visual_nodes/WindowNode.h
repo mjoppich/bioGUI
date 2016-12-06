@@ -10,6 +10,7 @@
 #include <QDomElement>
 #include <functional>
 
+/*
 class WindowNodeException : public std::exception
 {
 public:
@@ -30,7 +31,7 @@ protected:
     const std::string m_sMessage;
 
 };
-
+*/
 
 
 class WindowComponentFactory;

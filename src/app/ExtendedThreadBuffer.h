@@ -7,6 +7,7 @@
 
 
 #include <QProcess>
+#include <src/Logging.h>
 #include "ExtendedStdBuffer.h"
 #include "ExecuteThread.h"
 
@@ -40,7 +41,10 @@ public slots:
     {
 
         if (this->m_pParentThread == NULL)
-            throw "no parent process given";
+        {
+            LOGLVL("No parent thread given!", Logging::ERROR);
+            return;
+        }
 
         QByteArray oArray;
 

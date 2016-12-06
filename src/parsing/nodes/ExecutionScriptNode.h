@@ -64,7 +64,12 @@ public:
         bool bLUAFileExists = ExecutionFileNode::file_exists( m_sScriptFile );
 
         if ((m_bScriptBased) && (!bLUAFileExists))
-            throw ExecutionNodeException("Script for node does not exist!");
+        {
+            LOGLVL("LUA script does not exist at " + m_sScriptFile, Logging::ERROR);
+
+            return "";
+        }
+
 
         // parse arguments
         std::vector<std::string> vArguments;

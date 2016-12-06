@@ -9,6 +9,7 @@
 #include <QTextStream>
 #include "ExecutionNode.h"
 
+/*
 class ExecutionSaveFileNode : public ExecutionNode {
 
 public:
@@ -77,6 +78,6 @@ protected:
     std::string m_sTo;
 
 };
-
+*/
 
 #endif //BIOGUI_EXECUTIONSAVEFILENODE_H

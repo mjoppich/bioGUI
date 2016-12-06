@@ -16,12 +16,9 @@ QBufferTcpServer::QBufferTcpServer(QString sHost, int iPort, TCPExtendedBuffer* 
     if ((sHost.size() == 0) || (oHostAddr.isNull()))
         oHostAddr = QHostAddress::Any;
 
-    if (!this->listen(oHostAddr, iPort))
-    {
-        std::cerr << "Error listening on port " <<  std::to_string(iPort) << std::endl;
+    m_oHostAddress = oHostAddr;
 
-        throw "no listen possible";
-    }
+    this->startListening();
 
     std::cerr << "listening on port " << iPort << " " << this->isListening() <<  std::endl;
 
@@ -41,4 +38,13 @@ void QBufferTcpServer::incomingConnection(qintptr socketDescripter)
         emit socketReady(pSocket);
     });
 
+}
+
+void QBufferTcpServer::startListening() {
+    if (!this->listen(m_oHostAddress, m_iPort))
+    {
+        std::cerr << "Error listening on port " <<  std::to_string(m_iPort) << std::endl;
+
+        LOGERROR("TRYING TO LISTEN ON OCCUPIED PORT: " + std::to_string(m_iPort));
+    }
 }

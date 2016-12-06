@@ -139,31 +139,27 @@ public:
             QString sDocumentPath = oFile.absoluteFilePath();
 
 
-            try {
-                XMLParserInfo oInfoParser(sDocumentPath.toStdString());
+            XMLParserInfo oInfoParser(sDocumentPath.toStdString());
 
-                QString sIconPath = oInfoParser.getIcon();
-
-                if ((sIconPath.length() > 0))
-                {
-                    //QIcon oIcon(sIconPath);
-                    QIcon oIcon = QIcon(sIconPath);
-                    pItem->setData(Qt::DecorationRole, oIcon.pixmap(QSize(200,200)));
-                }
-
-                pItem->setData(Qt::DisplayRole, oInfoParser.getTitle());
-                pItem->setData(Qt::UserRole + 1, oInfoParser.getDescription());
-                pItem->setData(Qt::UserRole + 2, sDocumentPath);
-
-            } catch (...) {
-
-                std::cerr << "Error loading template: " << sDocumentPath.toStdString() << std::endl;
+            if (oInfoParser.getDocument() == NULL)
+            {
 
                 delete pItem;
-
                 continue;
-
             }
+
+            QString sIconPath = oInfoParser.getIcon();
+
+            if ((sIconPath.length() > 0))
+            {
+                //QIcon oIcon(sIconPath);
+                QIcon oIcon = QIcon(sIconPath);
+                pItem->setData(Qt::DecorationRole, oIcon.pixmap(QSize(200,200)));
+            }
+
+            pItem->setData(Qt::DisplayRole, oInfoParser.getTitle());
+            pItem->setData(Qt::UserRole + 1, oInfoParser.getDescription());
+            pItem->setData(Qt::UserRole + 2, sDocumentPath);
 
             m_pTemplateListWidget->addItem(pItem);
 

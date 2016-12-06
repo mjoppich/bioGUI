@@ -59,7 +59,8 @@ public:
 
                 if (oChildNode.tagName().compare("slideritem", Qt::CaseInsensitive) != 0)
                 {
-                    throw WindowNodeException("Within slider only slideritem is allowed, but found: " + oChildNode.tagName().toStdString());
+                    LOGERROR("Within slider only slideritem is allowed, but found: " + oChildNode.tagName().toStdString());
+                    continue;
                 }
 
                 QString sValue = this->getQAttribute(&oChildNode, "value", "");

@@ -9,7 +9,7 @@
 #include <QTextStream>
 #include <fstream>
 #include "ExecutionNode.h"
-
+/*
 class ExecutionParseFileNode : public ExecutionNode {
 
 public:
@@ -87,6 +87,6 @@ protected:
 
 };
 
-
+*/
 
 #endif //BIOGUI_EXECUTIONPARSEFILENODE_H

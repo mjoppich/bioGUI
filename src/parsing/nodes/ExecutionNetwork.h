@@ -90,10 +90,13 @@ public:
 
         if (m_vExecNodes.size() == 0)
         {
-            throw "No Execution Nodes found!";
+
+            return -1;
+
+        } else {
+            return this->performExecution();
         }
 
-        this->performExecution();
     }
 
     void setNodes(ExecutionNode* pNode)
@@ -106,7 +109,7 @@ public:
         m_vNodes.insert(m_vNodes.end(), vNodes.begin(), vNodes.end());
     }
 
-    void performExecution()
+    int performExecution()
     {
 
         std::vector<ExecutionNode*>::iterator oIt = m_vExecNodes.begin();
@@ -114,7 +117,7 @@ public:
         if (oIt == m_vExecNodes.end())
         {
             emit executionFinished();
-            return;
+            return 0;
         }
 
         ExecutionNode* pNode = *oIt;
@@ -133,6 +136,8 @@ public:
             pExecNode->evaluate( &mID2Node, &mInputID2Value, m_pInputID2Widget, true );
 
         }
+
+        return 0;
 
     }
 

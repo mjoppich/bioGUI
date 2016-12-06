@@ -51,7 +51,11 @@ public:
 
             QComboItem* pComboItem = dynamic_cast<QComboItem *>(oComboItemNode.getWindowElement(&oChildNode).pElement);
             if (pComboItem == NULL)
-                throw WindowNodeException( "Not a valid ComboItem: " + oChildNode.toCDATASection().data().toStdString() );
+            {
+                LOGLVL( "Not a valid ComboItem: " + oChildNode.toCDATASection().data().toStdString(), Logging::ERROR);
+                continue;
+            }
+
 
             pComboBox->addItem( pComboItem->getValue(), pComboItem->getData() );
 

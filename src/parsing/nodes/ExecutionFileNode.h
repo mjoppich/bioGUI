@@ -38,7 +38,8 @@ public:
 
             if (!file_exists(m_sFrom))
             {
-                throw "file does not exist: " + m_sFrom;
+                LOGLVL("File " + m_sFrom + " does not exist.", Logging::ERROR);
+                return "";
             }
 
             return this->readFile(&m_sFrom, &m_sSeperator);
@@ -48,7 +49,8 @@ public:
 
             if (m_sTo.size() == 0)
             {
-                throw ExecutionNodeException("file save node without to ");
+                LOGLVL("File Node with no given to attribute", Logging::ERROR);
+                return "";
             }
 
             std::map<std::string, std::string>::iterator oIt = pInputID2Value->find( m_sFrom );

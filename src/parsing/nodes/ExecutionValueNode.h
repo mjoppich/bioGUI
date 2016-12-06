@@ -36,10 +36,16 @@ public:
 
         if (m_sFrom.size() == 0)
         {
-            throw ExecutionNodeException("value node without from");
+            LOGLVL("from attribute must be set!", Logging::ERROR)
+            return "";
         }
 
-        return this->getNodeValue(m_sFrom, pID2Node, pInputID2Value, pInputID2Widget);
+        Validable<std::string> oRet = this->getNodeValue(m_sFrom, pID2Node, pInputID2Value, pInputID2Widget);
+
+        if (!oRet.valid())
+            return "";
+
+        return oRet.value();
 
     }
 

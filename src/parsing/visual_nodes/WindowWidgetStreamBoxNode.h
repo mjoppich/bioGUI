@@ -78,7 +78,11 @@ public:
             QWidget* pChildElement = oStreamNode.getWindowElement(&oChildNode).pElement;
 
             if (pChildElement == NULL)
-                throw "error in creating streambox components";
+            {
+                LOGERROR("error in creating streambox components");
+                continue;
+            }
+
 
             if (QCheckBox* pButton = dynamic_cast<QCheckBox*>(pChildElement))
             {

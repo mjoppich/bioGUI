@@ -133,15 +133,11 @@ public:
 
             ExecutionNode* pNode = NULL;
 
-            try
+            pNode = this->createExecutionNode(&oElement);
+
+            if (pNode == NULL)
             {
-                pNode = this->createExecutionNode(&oElement);
-
-            } catch(ExecutionNodeException oException)
-            {
-
-                std::cerr << oException.what() << std::endl;
-
+                LOGLVL("Failed to create Execution Node for: " + oElement.tagName().toStdString() + " in: " + m_sCurrentDocument, Logging::ERROR);
             }
 
             this->handleAttributeNode(m_pKnownTags->at(i), pNode);

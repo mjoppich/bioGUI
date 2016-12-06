@@ -75,7 +75,7 @@ public:
 
                     if (bMultiples)
                     {
-                        throw "unsupported option: output and mutliples";
+                        LOGLVL("Unsupported: output and multiples", Logging::ERROR);
 
                     } else {
 

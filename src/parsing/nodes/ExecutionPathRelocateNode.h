@@ -51,7 +51,7 @@ public:
 
             if (m_sFrom[0] == '$' and m_sFrom[1] == '{' and m_sFrom[m_sFrom.size()-1] == '}')
             {
-                sChildren = this->getNodeValue(m_sFrom.substr(2, m_sFrom.size()-3), pID2Node, pInputID2Value, pInputID2Widget);
+                sChildren = this->getNodeValueOrValue(m_sFrom.substr(2, m_sFrom.size()-3), "", pID2Node, pInputID2Value, pInputID2Widget);
             } else {
                 sChildren = m_sFrom;
             }

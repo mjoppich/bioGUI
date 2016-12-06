@@ -177,7 +177,8 @@ public:
                         ++i;
                     }
                 } else {
-                    throw "error parsing post data";
+                    LOGLVL("Error parsing POST data!", Logging::ERROR);
+                    continue;
                 }
 
             }

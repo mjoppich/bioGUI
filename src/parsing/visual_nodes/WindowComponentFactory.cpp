@@ -136,7 +136,10 @@ WindowLayoutNode* WindowComponentFactory::getCreatorForLayout(QString &sTag) {
     std::string sUpperTag = sTag.toUpper().toStdString();
     std::map<std::string, std::function<WindowLayoutNode*()>>::iterator oFind = m_mLayoutNodeMap.find(sUpperTag);
     if (!(oFind != m_mLayoutNodeMap.end()))
-        throw XMLParserException("Invalid Layout Tag: " + sUpperTag);
+    {
+        LOGERROR("Invalid Layout Tag: " + sUpperTag);
+        return NULL;
+    }
 
     return (oFind->second)();
 
@@ -147,7 +150,10 @@ WindowWidgetNode* WindowComponentFactory::getCreatorForWidget(QString &sTag) {
     std::string sUpperTag = sTag.toUpper().toStdString();
     std::map<std::string, std::function<WindowWidgetNode*()>>::iterator oFind = m_mWidgetNodeMap.find(sUpperTag);
     if (!(oFind != m_mWidgetNodeMap.end()))
-        throw XMLParserException("Invalid Widget Tag: " + sUpperTag);
+    {
+        LOGERROR("Invalid Layout Tag: " + sUpperTag);
+        return NULL;
+    }
 
     return (oFind->second)();
 

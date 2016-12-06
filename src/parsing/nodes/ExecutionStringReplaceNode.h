@@ -41,7 +41,10 @@ class ExecutionStringReplaceNode : public ExecutionNode {
 
             } else {
 
-                sChildren = this->getNodeValue(m_sFrom, pID2Node, pInputID2Value, pInputID2Widget);
+                Validable<std::string> oRet = this->getNodeValue(m_sFrom, pID2Node, pInputID2Value, pInputID2Widget);
+
+                if (!oRet.valid())
+                    return "";
 
             }
 

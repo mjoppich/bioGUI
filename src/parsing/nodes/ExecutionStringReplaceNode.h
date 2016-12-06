@@ -41,7 +41,7 @@ class ExecutionStringReplaceNode : public ExecutionNode {
 
             } else {
 
-                sChildren = ExecutionValueNode::getFromID(m_sFrom, pID2Node, pInputID2Value, pInputID2Widget);
+                sChildren = this->getNodeValue(m_sFrom, pID2Node, pInputID2Value, pInputID2Widget);
 
             }
 

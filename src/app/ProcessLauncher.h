@@ -175,12 +175,21 @@ public:
             this->connect(m_pProcess, static_cast<void(QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished),
                                [pProcess, this](int exitCode, QProcess::ExitStatus exitStatus){
 
-                                   qDebug() << exitCode;
-                                   qDebug() << exitStatus;
+                                   std::cerr << "Exit Code: " << exitCode << std::endl;
+                                   std::cerr << "Exit Status: " << exitStatus << std::endl;
 
-                                   qDebug() << pProcess->error();
-                                   qDebug() << pProcess->program();
-                                   qDebug() << pProcess->arguments();
+                                   std::string sError = pProcess->errorString().toStdString();
+                                   std::cerr << "Error: " << sError << std::endl;
+
+                                   std::string sProgram = pProcess->program().toStdString();
+                                   std::cerr << "Program: " << sProgram << std::endl;
+
+                                   for (int i = 0; i < pProcess->arguments().size(); ++i)
+                                   {
+                                       std::string sArgument = pProcess->arguments().at(i).toStdString();
+
+                                       std::cerr << "Argument " << i << " : " << sArgument << std::endl;
+                                   }
 
                                    std::cout << "finished: " << pProcess << std::endl;
 

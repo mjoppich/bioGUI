@@ -69,11 +69,13 @@
 <script argv="${templpath}">
 <![CDATA[
 function evaluate(arg1)
+
+        ext=".gui"
 	
-	if ( string.ends(arg1,".gui") ) then
+	if ( string.sub(arg1,-string.len(ext))==ext ) then
 		return(arg1)
 	else
-		return(arg1..".gui")
+		return(arg1 .. ".gui")
 	end
 end
 ]]>

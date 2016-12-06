@@ -9,8 +9,10 @@ fi
 ## set all variables
 PROG=trimmomatic_0_36
 PROGNICE=Trimmomatic-0.36
-
 PROGDIR=$1
+
+APPBINARYDIR=${PROGDIR}/${PROG}/
+
 if [ -z "${PROGDIR}" ]; then
 	PROGDIR=~/bioGUI/progs/
 	rm -rf $PROGDIR
@@ -26,15 +28,21 @@ fi
 
 
 if [ ! -d "$PROGDIR/$PROG" ]; then
-cd $PROGDIR
-unzip $PROG.zip -d $PROGDIR/
+unzip -o $PROGDIR/$PROG.zip -d $PROGDIR/$PROG
+mv $PROGDIR/$PROG/*/* $PROGDIR/$PROG
 fi
 
+if [ $4 == "1" ]; then
 
-if [ $# -eq 4 ]; then
+	if ! grep -q $APPBINARYDIR ~/.bashrc; then
+		echo "export PATH=\"$APPBINARYDIR:$PATH\" " >> ~/.bashrc;
+	fi
+fi
 
-IP=$3
-PORT=$4
+if [ $# -eq 5 ]; then
+
+IP=$4
+PORT=$5
 
 cat << EOF | netcat $IP $PORT
 
@@ -64,9 +72,9 @@ cat << EOF | netcat $IP $PORT
    </group>
    <group ordered="true" id="orderedgroup" title="Step options">
     <grid rows="3" cols="3">
-     <group id="adapters_sel" title="Adapters" exclusive="true">
-	   <filelist id="illuminaclip_auto_file" allowempty="true" path="${PROGDIR}/adapters/" ext="*.fa"/>
-       <filedialog id="illuminaclip_man_file" location="">Adapter Sequence<filedialog>
+     <group id="adapters_sel" title="Adapters" checkable="true">
+	   <filelist id="illuminaclip_auto_file" allowempty="true" path="${APPBINARYDIR}/adapters/" ext="*.fa"/>
+       	   <filedialog id="illuminaclip_man_file" location="">Adapter Sequence</filedialog>
 
 	   <label>Seed Mismatches</label><input type="int" id="illuminaclip_seed">2</input>
 	   <label>Palindrome Clip Threshold</label><input type="int" id="illuminaclip_palin">30</input>

@@ -39,7 +39,7 @@ public:
             throw ExecutionNodeException("value node without from");
         }
 
-        return ExecutionValueNode::getFromID(m_sFrom, pID2Node, pInputID2Value, pInputID2Widget);
+        return this->getNodeValue(m_sFrom, pID2Node, pInputID2Value, pInputID2Widget);
 
     }
 

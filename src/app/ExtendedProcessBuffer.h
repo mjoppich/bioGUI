@@ -47,7 +47,7 @@ public slots:
 
         if (this->m_pParentProcess == NULL)
         {
-            LOGLVL("No parent process given!", Logging::ERROR)
+            LOGERROR("No parent process given!")
             return;
         }
 

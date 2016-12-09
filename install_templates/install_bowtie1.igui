@@ -1,4 +1,4 @@
-#! Install Bowtie1 
+#! Install Bowtie1
 
 if [ ! -z "$2" ]; then
 	echo "Installing dependency: python"
@@ -38,11 +38,15 @@ cd $PROGDIR/$PROG
 
 make
 
-if [ $4 == "1" ]; then
+if [ $# -gt 3 ]; then
 
-	if ! grep -q $APPBINARYDIR ~/.bashrc; then
-		echo "export PATH=\"$APPBINARYDIR:$PATH\" " >> ~/.bashrc;
+	if [ $4 == "1" ]; then
+
+		if ! grep -q $APPBINARYDIR ~/.bashrc; then
+			echo "export PATH=\"$APPBINARYDIR:$PATH\" " >> ~/.bashrc;
+		fi
 	fi
+
 fi
 
 if [ $# -eq 5 ]; then
@@ -128,7 +132,7 @@ cat << EOF | netcat $IP $PORT
 
 	<group title="build index">
 		<label>Input Reference</label> <filedialog id="bowtie2_build_inref" output="false" folder="false">Select bowtie2 index</filedialog>		
-		<label>bowtie2 Index</label> <filedialog id="bowtie2_build__out" output="true" folder="false">Select bowtie2 index</filedialog>
+		<label>bowtie2 Index</label> <filedialog id="bowtie2_build_idx_out" output="true" folder="false">Select bowtie2 index</filedialog>
 		<action program="bowtie2index">Build Index</action>
 	</group>
   
@@ -143,19 +147,32 @@ cat << EOF | netcat $IP $PORT
 <execution>
 <const id="bindir">${APPBINARYDIR}</const>
 
+<if id="bowtie2_build_inref_rel" comp="EQUALS" value1="WSLsel" value2="true">
+<relocate from="\${bowtie2_build_inref}" wsl="true"/>
+<else>
+<value from="bowtie2_build_inref"/>
+</else>
+</if>
+
+<if id="bowtie2_build_idx_out_rel" comp="EQUALS" value1="WSLsel" value2="true">
+<relocate from="\${bowtie2_build_idx_out}" wsl="true"/>
+<else>
+<value from="bowtie2_build_idx_out"/>
+</else>
+</if>
 
 <add id="cl_idx" sep=" ">
-<value from="bowtie2_build_inref"/>
-<value from="bowtie2_build__out"/>
+<value from="bowtie2_build_inref_rel"/>
+<value from="bowtie2_build_idx_out_rel"/>
 </add>
 
-  <execute program="bowtie2index" param="\${bindir}/bowtie2-build \${cl_idx} 2>&amp;1 | netcat \${ip} 55025" location="" exec="" wsl="WSLsel">
-    <output type="TCP" host="" port="55025" color="green" to="outputstream1" />
-    <output type="TCP" host="" port="55026" color="green" to="outputstream2" />
+  <execute program="bowtie2index" param="\${cl_idx}" location="\${bindir}" exec="bowtie-build" wsl="WSLsel">
+    <output type="COUT" color="green" to="outputstream1" />
+    <output type="CERR" color="red" to="outputstream2" />
   </execute>
 
 <if id="bowtie2_index_rel_raw" comp="EQUALS" value1="WSLsel" value2="true">
-<relocate from="bowtie2_index" wsl="true"/>
+<relocate from="\${bowtie2_index}" wsl="true"/>
 <else>
 <value from="bowtie2_index"/>
 </else>
@@ -172,34 +189,32 @@ function evaluate(arg1)
 
     return(arg1)
 end
-
-
 ]]>
 </script>
 
 <if id="bowtie2_paired_m1_rel" comp="EQUALS" value1="WSLsel" value2="true">
-<relocate from="bowtie2_paired_m1" wsl="true"/>
+<relocate from="\${bowtie2_paired_m1}" wsl="true"/>
 <else>
 <value from="bowtie2_paired_m1"/>
 </else>
 </if>
 
 <if id="bowtie2_paired_m2_rel" comp="EQUALS" value1="WSLsel" value2="true">
-<relocate from="bowtie2_paired_m2" wsl="true"/>
+<relocate from="\${bowtie2_paired_m2}" wsl="true"/>
 <else>
 <value from="bowtie2_paired_m2"/>
 </else>
 </if>
 
 <if id="bowtie2_unpaired_reads_rel" comp="EQUALS" value1="WSLsel" value2="true">
-<relocate from="bowtie2_unpaired_reads" wsl="true"/>
+<relocate from="\${bowtie2_unpaired_reads}" wsl="true"/>
 <else>
 <value from="bowtie2_unpaired_reads"/>
 </else>
 </if>
 
 <if id="bowtie2_output_rel" comp="EQUALS" value1="WSLsel" value2="true">
-<relocate from="bowtie2_output" wsl="true"/>
+<relocate from="\${bowtie2_output}" wsl="true"/>
 <else>
 <value from="bowtie2_output"/>
 </else>
@@ -257,9 +272,9 @@ end
 
 </add>
 	
-  <execute program="bowtie2" param="\${bindir}/bowtie \${cl} 2>&amp;1 | netcat \${ip} 55025" location="" exec="" wsl="WSLsel">
-    <output type="TCP" host="" port="55025" color="green" to="outputstream1" />
-    <output type="TCP" host="" port="55026" color="green" to="outputstream2" />
+  <execute program="bowtie2" param="\${cl}" location="\${bindir}" exec="bowtie" wsl="WSLsel">
+    <output type="COUT" color="green" to="outputstream1" />
+    <output type="CERR" color="red" to="outputstream2" />
   </execute>
 
 </execution>

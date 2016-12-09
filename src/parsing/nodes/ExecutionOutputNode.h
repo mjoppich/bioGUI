@@ -139,7 +139,7 @@ public:
             pWidget = oIt->second;
 
         } else {
-            LOGLVL("invalid TO id given for node id " + m_sID, Logging::ERROR);
+            LOGERROR("invalid TO id given for node id " + m_sID);
             return "";
         }
 

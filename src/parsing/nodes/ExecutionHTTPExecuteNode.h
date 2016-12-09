@@ -124,7 +124,7 @@ public:
         QString qsURL( sURL.c_str() );
 
         QUrlQuery* pPostData = new QUrlQuery();
-        std::string sCLArg = this->getCLArgs(pID2Node, pInputID2Value, pInputID2Widget);
+        std::string sCLArg = this->parseArgs(m_sCLArg, pID2Node, pInputID2Value, pInputID2Widget);
         QString qsCLArg(sCLArg.c_str());
 
         if (!m_bPortCLtoPOST)
@@ -177,7 +177,7 @@ public:
                         ++i;
                     }
                 } else {
-                    LOGLVL("Error parsing POST data!", Logging::ERROR);
+                    LOGERROR("Error parsing POST data!"", Logging::ERROR);");
                     continue;
                 }
 

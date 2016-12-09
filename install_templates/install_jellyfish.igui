@@ -27,6 +27,17 @@ make
 #make check
 make install
 
+if [ $# -gt 3 ]; then
+
+	if [ $4 == "1" ]; then
+
+		if ! grep -q $PROGDIR/$PROG ~/.bashrc; then
+			echo "export PATH=\"$PROGDIR/$PROG:$PATH\" " >> ~/.bashrc;
+		fi
+	fi
+
+fi
+
 if [ $# -eq 4 ]; then
 
 IP=$3
@@ -247,17 +258,11 @@ cat << EOF | netcat $IP $PORT
 <env id="ip" get="IPv4"/>
 <const id="bindir">${PROGDIR}/${PROG}/bin/</const>
     
-	<if comp="EQUALS" value1="WSLsel" value2="true">
-		<execute wsl="WSLsel" exec="sh" location="" param="-c &quot;\${bindir}/jellyfish \${cl} | netcat \${ip} 55025 &quot;">
-			<output type="TCP" host="" port="55025" color="green" to="outputstream1" />
+		<execute wsl="WSLsel" exec="\${bindir}/jellyfish" location="" param="\${cl}">
+			<output type="CERR" color="red" to="outputstream2" />
+			<output type="COUT" color="green" to="outputstream1" />
 		</execute>
-	<else>
-		<execute exec="sh" location="" param="-c &quot;\${bindir}/jellyfish cl&quot;">
-			<output id="outcout" type="cout" color="green" to="outputstream1"/>
-			<output id="outcerr" type="cerr" color="red" to="outputstream2"/>
-		</execute>
-	</else>
-	</if>
+
 </execution>
 
 </template>

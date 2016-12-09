@@ -106,7 +106,7 @@ protected:
 
         if(!pFile->open(QIODevice::ReadOnly | QIODevice::Text))
         {
-            LOGLVL("Error opening file: " + sFileName.toStdString(), Logging::ERROR)
+            LOGERROR("Error opening file: " + sFileName.toStdString());
             return NULL;
         }
 

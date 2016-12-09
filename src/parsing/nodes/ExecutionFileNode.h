@@ -38,7 +38,7 @@ public:
 
             if (!file_exists(m_sFrom))
             {
-                LOGLVL("File " + m_sFrom + " does not exist.", Logging::ERROR);
+                LOGERROR("File " + m_sFrom + " does not exist."", Logging::ERROR);");
                 return "";
             }
 
@@ -49,7 +49,7 @@ public:
 
             if (m_sTo.size() == 0)
             {
-                LOGLVL("File Node with no given to attribute", Logging::ERROR);
+                LOGERROR("File Node with no given to attribute");
                 return "";
             }
 

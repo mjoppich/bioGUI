@@ -39,7 +39,7 @@ public:
 
             if (!m_vChildren.at(i)->getType() == NODE_TYPE::NUMBER)
             {
-                LOGLVL("Incompatible node types for child nodes in : " + m_sID, Logging::ERROR);
+                LOGERROR("Incompatible node types for child nodes in : " + m_sID);
                 continue;
             }
 
@@ -81,7 +81,7 @@ public:
                     continue;
                 }
 
-                LOGLVL("Unimplemented math node operation: " + m_sOperation, Logging::ERROR);
+                LOGERROR("Unimplemented math node operation: " + m_sOperation);
 
             }
 

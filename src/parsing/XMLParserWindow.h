@@ -278,7 +278,7 @@ public:
         if( !file.open( QIODevice::WriteOnly | QIODevice::Text ) )
         {
 
-            LOGLVL("Failed to open file for writing: " + sFileName.toStdString(), Logging::ERROR);
+            LOGERROR("Failed to open file for writing: " + sFileName.toStdString());
         }
         QTextStream stream( &file );
         stream << oSaveDocument.toString();

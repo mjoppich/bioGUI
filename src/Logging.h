@@ -8,19 +8,9 @@
 #include <string>
 #include <iostream>
 
-#ifndef LOGDEF
-
-#define LOGDEF
-
-#define LOG(msg) Logging::log(std::string("") + " " + __FILE__ + "[" + std::to_string(__LINE__) + "]" + "\t" + std::string(msg));
-#define LOGLVL(msg, lvl) Logging::log(std::string("") + " " + __FILE__ + "[" + std::to_string(__LINE__) + "]" + "\t" + std::string(msg), lvl);
-#define LOGERROR(msg) LOGLVL(msg, Logging::ERROR)
-
-#endif
-
 class Logging {
 public:
-    enum LEVEL {ERROR, INFO, DEBUG};
+    enum LEVEL {ERR=0, INFO, DEBUG};
 
 
     static void setLoggingLevel(LEVEL eLevel)
@@ -28,20 +18,34 @@ public:
         m_eCurrentLoggingLevel = eLevel;
     }
 
-    static void log( std::string sMessage, LEVEL eLevel = DEBUG)
+    static void log( std::string sMessage)
+    {
+
+        Logging::log(sMessage, m_eCurrentLoggingLevel);
+
+    }
+
+    static void log( std::string sMessage, int iLevel)
+    {
+        Logging::log(sMessage, (LEVEL) iLevel);
+    }
+
+    static void log( std::string sMessage, LEVEL eLevel)
     {
 
         std::string sLevel = "ERROR";
 
         switch (eLevel)
         {
+            ERR: sLevel = "ERROR"; break;
             DEBUG: sLevel = "DEBUG"; break;
             INFO: sLevel = "INFO"; break;
             default:
                 sLevel = "Unknown";
+            break;
         }
 
-        if (eLevel == ERROR)
+        if (eLevel == ERR)
         {
 
             if (eLevel <= Logging::m_eCurrentLoggingLevel)
@@ -68,5 +72,13 @@ protected:
     static LEVEL m_eCurrentLoggingLevel;
 
 };
+
+#ifndef LOGLVL
+
+//#define LOG(msg) Logging::log(std::string("") + " " + __FILE__ + "[" + std::to_string(__LINE__) + "]" + "\t" + std::string(msg));
+#define LOGLVL(msg, lvl) Logging::log(std::string("") + " " + __FILE__ + "[" + std::to_string(__LINE__) + "]" + "\t" + std::string(msg), lvl);
+#define LOGERROR(msg) Logging::log(std::string("") + " " + __FILE__ + "[" + std::to_string(__LINE__) + "]" + "\t" + std::string(msg), 0);
+
+#endif
 
 #endif //BIOGUI_LOGGING_H

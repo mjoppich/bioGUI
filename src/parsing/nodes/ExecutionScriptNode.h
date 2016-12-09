@@ -65,7 +65,7 @@ public:
 
         if ((m_bScriptBased) && (!bLUAFileExists))
         {
-            LOGLVL("LUA script does not exist at " + m_sScriptFile, Logging::ERROR);
+            LOGERROR("LUA script does not exist at " + m_sScriptFile);
 
             return "";
         }

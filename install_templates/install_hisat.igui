@@ -36,6 +36,17 @@ cd $PROGDIR/$PROG
 
 make
 
+if [ $# -gt 3 ]; then
+
+	if [ $4 == "1" ]; then
+
+		if ! grep -q $PROGDIR/$PROG ~/.bashrc; then
+			echo "export PATH=\"$PROGDIR/$PROG:$PATH\" " >> ~/.bashrc;
+		fi
+	fi
+
+fi
+
 if [ $# -eq 5 ]; then
 
 IP=$4
@@ -246,9 +257,9 @@ end
 
 </add>
 	
-  <execute program="hisat2" param="\${bindir}/hisat2 \${cl} 2>&amp;1 | netcat \${ip} 55025" location="" exec="" wsl="WSLsel">
-    <output type="TCP" host="" port="55025" color="green" to="outputstream1" />
-    <output type="TCP" host="" port="55026" color="green" to="outputstream2" />
+  <execute program="hisat2" param="${cl}" location="" exec="\${bindir}/hisat" wsl="WSLsel">
+    <output type="COUT" color="green" to="outputstream1" />
+    <output type="CERR" color="red" to="outputstream2" />
   </execute>
 
 </execution>

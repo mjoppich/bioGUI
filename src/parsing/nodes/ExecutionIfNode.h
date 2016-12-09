@@ -67,7 +67,7 @@ public:
 
         if (!(std::find(m_vValidCompareModes.begin(), m_vValidCompareModes.end(), m_sCompareMode) != m_vValidCompareModes.end() ))
         {
-            LOGLVL("unknown compare method " + m_sCompareMode, Logging::ERROR)
+            LOGERROR("unknown compare method " + m_sCompareMode);
         }
 
 
@@ -76,7 +76,7 @@ public:
 
             if (m_sValue2.compare(m_sNotSet) == 0)
             {
-                LOGLVL("value2 attribute must be set!", Logging::ERROR)
+                LOGERROR("value2 attribute must be set!");
                 return "";
             }
 
@@ -85,7 +85,7 @@ public:
 
         if (m_sValue1.compare(m_sNotSet) == 0)
         {
-            LOGLVL("value1 attribute must be set!", Logging::ERROR)
+            LOGERROR("value1 attribute must be set!");
             return "";
         }
 

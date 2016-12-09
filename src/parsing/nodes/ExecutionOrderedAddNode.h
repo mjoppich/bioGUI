@@ -68,7 +68,7 @@ public:
 
         if (pFromElem == NULL)
         {
-            LOGLVL("from element is null", Logging::ERROR);
+            LOGERROR("from element is null");
 
             return "";
         }

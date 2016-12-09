@@ -5,12 +5,14 @@
 #ifndef BIOGUI_EXECUTIONNODE_H
 #define BIOGUI_EXECUTIONNODE_H
 
+#include <src/Logging.h>
+
+
 #include <QDomElement>
 #include <QWidget>
 #include <vector>
 #include <map>
 #include <iostream>
-#include <src/Logging.h>
 #include <src/Validable.h>
 
 class QBufferTcpServer;
@@ -132,7 +134,7 @@ public:
 
             if (oIt != pID2Node->end())
             {
-                LOGLVL("Duplicate node ids: " + m_sID, Logging::ERROR);
+                LOGERROR("Duplicate node ids: " + m_sID);
             }
 
             pID2Node->insert( std::pair<std::string, ExecutionNode*>(m_sID, this) );
@@ -214,7 +216,7 @@ protected:
         }
 
         if (!oReturn.valid())
-            LOGLVL("Duplicate node ids: " + m_sID, Logging::ERROR);
+            LOGERROR("In node: "+ m_sID + " : Neither node nor node value: " + sID);
 
         return oReturn;
 
@@ -244,7 +246,7 @@ protected:
         }
 
         if (!oReturn.valid())
-            LOGLVL("id not found: " + m_sID, Logging::ERROR);
+            LOGERROR("In node: "+ m_sID + " : id not found: " + sID);
 
         return oReturn;
     }

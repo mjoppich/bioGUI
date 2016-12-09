@@ -32,6 +32,16 @@ cd $PROGDIR
 tar -xzf $PROG.tgz -C $PROGDIR/
 fi
 
+if [ $# -gt 3 ]; then
+
+	if [ $4 == "1" ]; then
+
+		if ! grep -q $PROGDIR/$PROG ~/.bashrc; then
+			echo "export PATH=\"$PROGDIR/$PROG:$PATH\" " >> ~/.bashrc;
+		fi
+	fi
+
+fi
 
 if [ $# -eq 4 ]; then
 
@@ -170,8 +180,8 @@ cat << EOF | netcat $IP $PORT
   <const id="bindir">${PROGDIR}/${PROG}/</const>
 
   <execute location="" exec="python" param="\${bindir}/RNASeq-MATS.py \${cl}" >
-   <output id="outcout" type="cout" color="green" to="outputstream1"/>
-   <output id="outcerr" type="cerr" color="red" to="outputstream2"/>
+    <output type="COUT" color="green" to="outputstream1" />
+    <output type="CERR" color="red" to="outputstream2" />
   </execute>
 
  </execution>

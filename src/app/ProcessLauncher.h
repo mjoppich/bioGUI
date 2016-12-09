@@ -7,6 +7,7 @@
 #include <iostream>
 #include <QDebug>
 #include "ExecuteThread.h"
+#include <src/Logging.h>
 
 #ifndef __linux
     #include <windows.h>
@@ -109,7 +110,8 @@ public:
         {
             m_pProcess = new QProcess();
         } else {
-            m_pThread = new ProcessThread(m_sProgram + " " + m_sParam);
+            m_pThread = NULL;//new ProcessThread(m_sProgram + " " + m_sParam);
+            m_pProcess = new QProcess();
         }
     }
 
@@ -130,6 +132,8 @@ public:
      */
     QProcess* getProcess()
     {
+        return m_pProcess;
+
         if (m_bWindowsProcNoHandle)
             return NULL;
 
@@ -138,6 +142,8 @@ public:
 
     ExecuteThread* getThread()
     {
+        return NULL;
+
         if (m_bWindowsProcNoHandle)
             return m_pThread;
 
@@ -147,9 +153,9 @@ public:
     bool start()
     {
 
+        /*
         if (m_bWindowsProcNoHandle)
         {
-            std::cout << "Running WSL: " << m_sProgram.toStdString() << " " << m_sParam.toStdString() << std::endl;
 
             m_pThread->setCMD(m_sProgram + " " + m_sParam);
 
@@ -157,47 +163,61 @@ public:
 
             m_pThread->start();
 
+        }
+        */
+        QIODevice::OpenMode eMode = QIODevice::ReadWrite;
+
+        std::cout << "Running QProcess for: " << m_sProgram.toStdString() << " " << m_sParam.toStdString() << std::endl;
+        std::cerr << "Running in WSL mode? " << m_bWindowsProcNoHandle << std::endl;
+
+        QString sProgram;
+        QStringList oArgs;
+
+        if (m_bWindowsProcNoHandle)
+        {
+            sProgram = "C:\\Windows\\sysnative\\bash";
+            oArgs << "-ic" << m_sProgram + " " + m_sParam;
+
+
         } else {
-
-            QIODevice::OpenMode eMode = QIODevice::ReadWrite;
-            std::cout << "Running QProcess for: " << m_sProgram.toStdString() << " " << m_sParam.toStdString() << std::endl;
-
-            QStringList oArgs;
             if (m_sParam.size() > 0)
                 oArgs = ProcessLauncher::stringToArguments(m_sParam.toStdString(), '\"');
 
             for (int i = 0; i < oArgs.size(); ++i)
                 std::cerr << oArgs.at(i).toStdString() << std::endl;
-
-            m_pProcess->start( m_sProgram, oArgs, eMode );
-            QProcess* pProcess = m_pProcess;
-
-            this->connect(m_pProcess, static_cast<void(QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished),
-                               [pProcess, this](int exitCode, QProcess::ExitStatus exitStatus){
-
-                                   std::cerr << "Exit Code: " << exitCode << std::endl;
-                                   std::cerr << "Exit Status: " << exitStatus << std::endl;
-
-                                   std::string sError = pProcess->errorString().toStdString();
-                                   std::cerr << "Error: " << sError << std::endl;
-
-                                   std::string sProgram = pProcess->program().toStdString();
-                                   std::cerr << "Program: " << sProgram << std::endl;
-
-                                   for (int i = 0; i < pProcess->arguments().size(); ++i)
-                                   {
-                                       std::string sArgument = pProcess->arguments().at(i).toStdString();
-
-                                       std::cerr << "Argument " << i << " : " << sArgument << std::endl;
-                                   }
-
-                                   std::cout << "finished: " << pProcess << std::endl;
-
-                                   emit this->finished();
-                               });
-
         }
 
+        LOGLVL( sProgram.toStdString(), Logging::ERR );
+        LOGLVL( oArgs.join(',').toStdString(), Logging::ERR);
+
+        m_pProcess->start( sProgram, oArgs, eMode );
+        QProcess* pProcess = m_pProcess;
+
+        this->connect(m_pProcess, static_cast<void(QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished),
+                           [pProcess, this](int exitCode, QProcess::ExitStatus exitStatus){
+
+                               std::cerr << "Exit Code: " << exitCode << std::endl;
+                               std::cerr << "Exit Status: " << exitStatus << std::endl;
+
+                               std::string sError = pProcess->errorString().toStdString();
+                               std::cerr << "Error: " << sError << std::endl;
+
+                               std::string sProgram = pProcess->program().toStdString();
+                               std::cerr << "Program: " << sProgram << std::endl;
+
+                               for (int i = 0; i < pProcess->arguments().size(); ++i)
+                               {
+                                   std::string sArgument = pProcess->arguments().at(i).toStdString();
+
+                                   std::cerr << "Argument " << i << " : " << sArgument << std::endl;
+                               }
+
+                               std::cout << "finished: " << pProcess << std::endl;
+
+                               emit this->finished();
+                           });
+
+        return true;
 
     }
 

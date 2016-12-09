@@ -75,7 +75,7 @@ public:
 
                     if (bMultiples)
                     {
-                        LOGLVL("Unsupported: output and multiples", Logging::ERROR);
+                        LOGERROR("Unsupported: output and multiples");
 
                     } else {
 

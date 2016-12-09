@@ -41,7 +41,7 @@
 <execution>
 
 <if id="prog_wsl" comp="is_set" value1="WSLsel" value2="true">
-<relocate from="prog" wsl="true"/>
+<relocate from="${prog}" wsl="true"/>
 <else>
 <value from="prog"/>
 </else>
@@ -53,9 +53,9 @@
 <value from="prog_wsl"/>
 <value from="instpath"/>
 <add sep="">
-<const>\&quot;</const>
+<const>&quot;</const>
 <value from="sudopw"/>
-<const>\&quot;</const>
+<const>&quot;</const>
 </add>
 <value from="addtopath"/>
 <if comp="EQUALS" value1="templpath_sel" value2="true" sep=" ">
@@ -83,14 +83,13 @@ end
 </if>
 </add>
   
-<execute location="" exec="sh" wsl="WSLsel" param="-c 'dos2unix ${prog_wsl} | netcat 127.0.0.1 55025 '">
-    <output type="STD" id="stdout" to="outputstream1" />
-    <output type="TCP" host="" port="55025" color="green" to="outputstream1" />
+<execute location="" exec="dos2unix" param="${prog_wsl}" wsl="WSLsel">
+    <output type="STD" id="stdout" color="red" to="outputstream1" />
 </execute>
 
-  <execute location="" exec="sh" wsl="WSLsel" param="-c 'sh ${cl} 2&gt;&amp;1 | netcat 127.0.0.1 55025'">
-    <output id="outcout" type="TCP" host="" port="55025" color="green" to="outputstream1" />
-	<output id="outcout2" type="TCP" host="" port="55026" color="red" to="outputstream2" />
+  <execute location="" exec="sh" wsl="WSLsel" param="${cl}">
+    <output id="outcout" type="COUT" color="green" to="outputstream1" />
+	<output id="outcout2" type="CERR" color="red" to="outputstream2" />
 	<output type="TCP" host="" port="33333" color="blue" to="savetemplate" />
 	<output deferred="true" type="FILE" from="template_path" to="savetemplate" />
   </execute>

@@ -148,31 +148,31 @@ public:
 
     }
 
-    std::string getCLArgs( std::map< std::string, ExecutionNode*>* pID2Node,
+    std::string parseArgs( std::string& sArgs, std::map< std::string, ExecutionNode*>* pID2Node,
                            std::map<std::string, std::string>* pInputID2Value,
                            std::map<std::string, QWidget*>* pInputID2Widget )
     {
         std::string sCLArg = "";
 
-        if (m_sCLArg.size() > 0)
+        if (sArgs.size() > 0)
         {
 
-            if (m_sCLArg.find("${") == std::string::npos)
+            if (sArgs.find("${") == std::string::npos)
             {
 
-                std::map< std::string, ExecutionNode*>::iterator oCLNode = pID2Node->find(m_sCLArg);
+                std::map< std::string, ExecutionNode*>::iterator oCLNode = pID2Node->find(sArgs);
 
                 if (oCLNode != pID2Node->end())
                 {
                     ExecutionNode* pParamNode = oCLNode->second;
                     sCLArg = pParamNode->evaluate(pID2Node, pInputID2Value, pInputID2Widget);
                 } else {
-                    sCLArg = m_sCLArg;
+                    sCLArg = sArgs;
                 }
 
             } else {
 
-                sCLArg = std::string(m_sCLArg);
+                sCLArg = std::string(sArgs);
                 this->parseCommand(&sCLArg, 0, pID2Node, pInputID2Value, pInputID2Widget);
 
             }
@@ -187,16 +187,12 @@ public:
                           std::map<std::string, QWidget*>* pInputID2Widget, bool bEmitSignal = false)
     {
 
-        std::string sCLArg = this->getCLArgs(pID2Node, pInputID2Value, pInputID2Widget);
-        std::string sProgram = m_sExecLocation + m_sExecutable;
+        std::string sCLArg = this->parseArgs(m_sCLArg, pID2Node, pInputID2Value, pInputID2Widget);
+        std::string sLocation = this->parseArgs(m_sExecLocation, pID2Node, pInputID2Value, pInputID2Widget);
 
-        bool bTest = this->asBool(this->getNodeValueOrValue(m_sTest, "false", pID2Node, pInputID2Value, pInputID2Widget));
+        std::string sProgram = sLocation + m_sExecutable;
+
         bool bWSL = this->asBool(this->getNodeValueOrValue(m_sWSL, m_sWSL, pID2Node, pInputID2Value, pInputID2Widget));
-
-        if (bTest)
-        {
-            sProgram = "/usr/bin/echo " + sProgram;
-        }
 
         ProcessLauncher* pLauncher = new ProcessLauncher(QString(sProgram.c_str()), QString(sCLArg.c_str()), bWSL);
 

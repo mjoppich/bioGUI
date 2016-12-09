@@ -42,7 +42,7 @@ public slots:
 
         if (this->m_pParentThread == NULL)
         {
-            LOGLVL("No parent thread given!", Logging::ERROR);
+            LOGERROR("No parent thread given!")
             return;
         }
 

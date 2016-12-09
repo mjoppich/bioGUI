@@ -139,7 +139,8 @@ cat << EOF | netcat $IP $PORT
 <env id="ip" get="IPv4"/>
 
 <execute location="" exec="sh" wsl="WSLsel" param="-c &quot; \${cl} 2>&amp;1 | netcat \${ip} 55025 &quot;">
-    <output id="outcout" type="TCP" host="" port="55025" color="green" to="outputstream1" />
+    <output type="COUT" color="green" to="outputstream1" />
+    <output type="CERR" color="red" to="outputstream2" />
   </execute>
   
   

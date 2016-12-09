@@ -36,7 +36,7 @@ public:
 
         if (m_sFrom.size() == 0)
         {
-            LOGLVL("from attribute must be set!", Logging::ERROR)
+            LOGERROR("from attribute must be set!");
             return "";
         }
 

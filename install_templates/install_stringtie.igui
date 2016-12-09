@@ -37,11 +37,15 @@ cd $PROGDIR/$PROG
 
 make release
 
-if $4 == "1"; then
+if [ $# -gt 3 ]; then
 
-	if ! grep -q $APPBINARYDIR ~/.bashrc; then
-		echo "export PATH=\"$APPBINARYDIR:$PATH\" >> ~/.bashrc;
+	if [ $4 == "1" ]; then
+
+		if ! grep -q $PROGDIR/$PROG ~/.bashrc; then
+			echo "export PATH=\"$PROGDIR/$PROG:$PATH\" " >> ~/.bashrc;
+		fi
 	fi
+
 fi
 
 if [ $# -eq 5 ]; then
@@ -211,8 +215,8 @@ end
 </add>
 	
   <execute program="bowtie2" param="\${bindir}/bowtie2 \${cl} 2>&amp;1 | netcat \${ip} 55025" location="" exec="" wsl="WSLsel">
-    <output type="TCP" host="" port="55025" color="green" to="outputstream1" />
-    <output type="TCP" host="" port="55026" color="green" to="outputstream2" />
+    <output type="COUT" color="green" to="outputstream1" />
+    <output type="CERR" color="red" to="outputstream2" />
   </execute>
 
 </execution>

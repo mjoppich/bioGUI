@@ -32,11 +32,15 @@ unzip -o $PROGDIR/$PROG.zip -d $PROGDIR/$PROG
 mv $PROGDIR/$PROG/*/* $PROGDIR/$PROG
 fi
 
-if [ $4 == "1" ]; then
+if [ $# -gt 3 ]; then
 
-	if ! grep -q $APPBINARYDIR ~/.bashrc; then
-		echo "export PATH=\"$APPBINARYDIR:$PATH\" " >> ~/.bashrc;
+	if [ $4 == "1" ]; then
+
+		if ! grep -q $PROGDIR/$PROG ~/.bashrc; then
+			echo "export PATH=\"$PROGDIR/$PROG:$PATH\" " >> ~/.bashrc;
+		fi
 	fi
+
 fi
 
 if [ $# -eq 5 ]; then
@@ -238,8 +242,8 @@ cat << EOF | netcat $IP $PORT
   <const id="bindir">${PROGDIR}/${PROG}/</const>
 
   <execute location="" exec="java" param="-jar \${bindir}/trimmomatic-0.36.jar \${cl}" >
-   <output id="outcout" type="cout" color="green" to="outputstream1"/>
-   <output id="outcerr" type="cerr" color="red" to="outputstream2"/>
+    <output type="COUT" color="green" to="outputstream1" />
+    <output type="CERR" color="red" to="outputstream2" />
   </execute>
 
  </execution>

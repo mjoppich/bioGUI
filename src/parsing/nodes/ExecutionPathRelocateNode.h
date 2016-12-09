@@ -44,6 +44,26 @@ public:
 
         bool bMakeUnix = m_bMakeUnix;
 
+        /*
+         * Are we relocating for WSL?
+         *
+         * */
+        bool bWSL = false;
+
+        if (m_sToWSL.size() > 0)
+        {
+
+            std::string sValue = this->getNodeValueOrValue(m_sToWSL.toStdString(), m_sToWSL.toStdString(), pID2Node, pInputID2Value, pInputID2Widget );
+
+            if (QString(sValue.c_str()).compare("TRUE", Qt::CaseInsensitive) == 0)
+            {
+                bWSL = true;
+            }
+        }
+
+
+        /*What should be relocated?
+         * */
         if (m_sFrom.size() == 0)
         {
             sChildren = this->evaluateChildren(pID2Node, pInputID2Value, pInputID2Widget);
@@ -51,7 +71,16 @@ public:
 
             if (m_sFrom[0] == '$' and m_sFrom[1] == '{' and m_sFrom[m_sFrom.size()-1] == '}')
             {
-                sChildren = this->getNodeValueOrValue(m_sFrom.substr(2, m_sFrom.size()-3), "", pID2Node, pInputID2Value, pInputID2Widget);
+                std::string sDynID = "";
+
+                if (bWSL)
+                {
+                    sDynID = m_sFrom;
+                } else {
+                    sDynID = m_sFrom.substr(2, m_sFrom.size()-3);
+                }
+
+                sChildren = this->getNodeValueOrValue(sDynID, sDynID, pID2Node, pInputID2Value, pInputID2Widget);
             } else {
                 sChildren = m_sFrom;
             }
@@ -59,19 +88,6 @@ public:
 
         if (sChildren.size() == 0)
             return sChildren;
-
-        bool bWSL = false;
-
-        if (m_sToWSL.size() > 0)
-        {
-
-            std::string sValue = this->getNodeValueOrValue(m_sToWSL.toStdString(), "", pID2Node, pInputID2Value, pInputID2Widget );
-
-            if (QString(sValue.c_str()).compare("TRUE", Qt::CaseInsensitive) == 0)
-            {
-                bWSL = true;
-            }
-        }
 
         if (bWSL)
         {
@@ -90,20 +106,23 @@ public:
 
             QString sChild = vChildren.at(i);
 
-            // replace from with to
-            if (sChild.startsWith(QString(m_sFrom.c_str()), Qt::CaseInsensitive))
+            if (m_sTo.size() > 0)
             {
+                // replace from with to
+                if (sChild.startsWith(QString(m_sFrom.c_str()), Qt::CaseInsensitive))
+                {
 
-                sChild.remove(0, m_sFrom.size());
-                sChild.prepend(QString(m_sTo.c_str()));
+                    sChild.remove(0, m_sFrom.size());
+                    sChild.prepend(QString(m_sTo.c_str()));
 
-            }
+                }
 
-            // absolute path
-            if (sChild.at(1) != ':')
-            {
-                QDir oPath(sChild);
-                sChild = oPath.absolutePath();
+                // absolute path
+                if ((sChild.size() > 1) && (sChild.at(1) != ':'))
+                {
+                    QDir oPath(sChild);
+                    sChild = oPath.absolutePath();
+                }
             }
 
             if (bMakeUnix)
@@ -130,9 +149,9 @@ public:
 
         std::string sReturn = vOutput.join( QString(m_sSeperator.c_str()) ).toStdString();
 
-        std::cerr << "relocated from " << sChildren << " to " << qsChildren.toStdString() << std::endl;
+        std::cerr << "relocated from " << sChildren << " to " << sReturn << std::endl;
 
-        return qsChildren.toStdString();
+        return sReturn;
 
     }
 

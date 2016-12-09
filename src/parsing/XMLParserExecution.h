@@ -137,7 +137,7 @@ public:
 
             if (pNode == NULL)
             {
-                LOGLVL("Failed to create Execution Node for: " + oElement.tagName().toStdString() + " in: " + m_sCurrentDocument, Logging::ERROR);
+                LOGERROR("Failed to create Execution Node for: " + oElement.tagName().toStdString() + " in: " + m_sCurrentDocument);
             }
 
             this->handleAttributeNode(m_pKnownTags->at(i), pNode);

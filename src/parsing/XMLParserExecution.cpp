@@ -15,7 +15,8 @@ ExecutionNode *XMLParserExecution::getExecutionNodes(QDomElement* pElement ) {
 
     if (pNode == NULL)
     {
-        LOGLVL("node not created exception " + pElement->tagName().toStdString(), Logging::ERROR);
+        LOGERROR("node not created exception " + pElement->tagName().toStdString())
+
         return NULL;
     }
 
@@ -53,7 +54,7 @@ ExecutionNetwork *XMLParserExecution::createNetwork(QDomElement* pElement) {
 
         if (pNode == NULL)
         {
-            LOGLVL("Failed to create execution node for element: " + oElement.tagName().toStdString(), Logging::ERROR);
+            LOGERROR("Failed to create execution node for element: " + oElement.tagName().toStdString());
         }
 
         if (pNode != NULL)
@@ -75,7 +76,7 @@ ExecutionNetwork *XMLParserExecution::getExecutionNetwork() {
 
     if (pNetwork == NULL)
     {
-        LOGLVL("Failed to create the execution network", Logging::ERROR);
+        LOGERROR("Failed to create the execution network");
     }
 
 

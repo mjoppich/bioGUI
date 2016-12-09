@@ -34,7 +34,7 @@ fi
 
 if [ $# -gt 3 ]; then
 
-	if [ $4 == "1" ]; then
+	if [ $3 == "1" ]; then
 
 		if ! grep -q $PROGDIR/$PROG ~/.bashrc; then
 			echo "export PATH=\"$PROGDIR/$PROG:$PATH\" " >> ~/.bashrc;
@@ -49,7 +49,6 @@ IP=$4
 PORT=$5
 
 cat << EOF | netcat $IP $PORT
-
 
 <template description="Trimming short RNA-Seq Reads" title="$PROGNICE">
  <window title="$PROGNICE">
@@ -78,7 +77,7 @@ cat << EOF | netcat $IP $PORT
     <grid rows="3" cols="3">
      <group id="adapters_sel" title="Adapters" checkable="true">
 	   <filelist id="illuminaclip_auto_file" allowempty="true" path="${APPBINARYDIR}/adapters/" ext="*.fa"/>
-       	   <filedialog id="illuminaclip_man_file" location="">Adapter Sequence</filedialog>
+       <filedialog id="illuminaclip_man_file" location="">Adapter Sequence</filedialog>
 
 	   <label>Seed Mismatches</label><input type="int" id="illuminaclip_seed">2</input>
 	   <label>Palindrome Clip Threshold</label><input type="int" id="illuminaclip_palin">30</input>
@@ -152,9 +151,66 @@ cat << EOF | netcat $IP $PORT
    </if>
    
    <if id="illuminaclip_file" comp="EQUALS" value1="WSLsel" value2="true">
-<relocate from="illuminaclip_file_tmp" wsl="true"/>
+<relocate from="\${illuminaclip_file_tmp}" wsl="true"/>
 <else>
 <value from="illuminaclip_file_tmp"/>
+</else>
+</if>
+
+<if id="paired_if1_rel" comp="EQUALS" value1="WSLsel" value2="true">
+<relocate from="\${paired_if1}" wsl="true"/>
+<else>
+<value from="paired_if1"/>
+</else>
+</if>
+
+<if id="paired_if2_rel" comp="EQUALS" value1="WSLsel" value2="true">
+<relocate from="\${paired_if2}" wsl="true"/>
+<else>
+<value from="paired_if2"/>
+</else>
+</if>
+
+<if id="paired_of1p_rel" comp="EQUALS" value1="WSLsel" value2="true">
+<relocate from="\${paired_of1p}" wsl="true"/>
+<else>
+<value from="paired_of1p"/>
+</else>
+</if>
+
+<if id="paired_of1u_rel" comp="EQUALS" value1="WSLsel" value2="true">
+<relocate from="\${paired_of1u}" wsl="true"/>
+<else>
+<value from="paired_of1u"/>
+</else>
+</if>
+
+<if id="paired_of2p_rel" comp="EQUALS" value1="WSLsel" value2="true">
+<relocate from="\${paired_of2p}" wsl="true"/>
+<else>
+<value from="paired_of2p"/>
+</else>
+</if>
+
+<if id="paired_of2u_rel" comp="EQUALS" value1="WSLsel" value2="true">
+<relocate from="\${paired_of2u}" wsl="true"/>
+<else>
+<value from="paired_of2u"/>
+</else>
+</if>
+
+
+<if id="single_if1_rel" comp="EQUALS" value1="WSLsel" value2="true">
+<relocate from="\${single_if1}" wsl="true"/>
+<else>
+<value from="single_if1"/>
+</else>
+</if>
+
+<if id="single_of1_rel" comp="EQUALS" value1="WSLsel" value2="true">
+<relocate from="\${single_of1}" wsl="true"/>
+<else>
+<value from="single_of1"/>
 </else>
 </if>
  
@@ -202,17 +258,17 @@ cat << EOF | netcat $IP $PORT
   </orderedadd>
   <add sep=" " id="files_pe">
    <const>PE</const>
-   <value from="paired_if1"/>
-   <value from="paired_if2"/>
-   <value from="paired_of1p"/>
-   <value from="paired_of1u"/>
-   <value from="paired_of2p"/>
-   <value from="paired_of2u"/>
+   <value from="paired_if1_rel"/>
+   <value from="paired_if2_rel"/>
+   <value from="paired_of1p_rel"/>
+   <value from="paired_of1u_rel"/>
+   <value from="paired_of2p_rel"/>
+   <value from="paired_of2u_rel"/>
   </add>
   <add sep=" " id="files_se">
    <const>SE</const>
-   <value from="single_if1"/>
-   <value from="single_of1"/>
+   <value from="single_if1_rel"/>
+   <value from="single_of1_rel"/>
   </add>
   <if id="files" value1="pairedend" comp="EQUALS" value2="true">
    <value from="files_pe"/>
@@ -241,7 +297,7 @@ cat << EOF | netcat $IP $PORT
   
   <const id="bindir">${PROGDIR}/${PROG}/</const>
 
-  <execute location="" exec="java" param="-jar \${bindir}/trimmomatic-0.36.jar \${cl}" >
+  <execute location="" exec="java" param="-jar \${bindir}/trimmomatic-0.36.jar \${cl}" wsl="WSLsel">
     <output type="COUT" color="green" to="outputstream1" />
     <output type="CERR" color="red" to="outputstream2" />
   </execute>

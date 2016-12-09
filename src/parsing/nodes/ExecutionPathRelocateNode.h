@@ -128,16 +128,20 @@ public:
             if (bMakeUnix)
             {
                 // assumes that we have a windows string
-                QChar cDrive = sChild.at(0);
-                sChild.remove(0,2);
-                sChild.prepend(QString("/") + cDrive.toLower());
-
+                if (sChild.size() > 2)
+                {
+                    QChar cDrive = sChild.at(0);
+                    sChild.remove(0,2);
+                    sChild.prepend(QString("/") + cDrive.toLower());
+                    }
                 sChild.replace("\\", "/");
+
             }
 
             if (bWSL)
             {
-                sChild.prepend("/mnt/");
+                if (sChild.size() > 0)
+                    sChild.prepend("/mnt/");
             }
 
             if (m_sPrepend.size() > 0)

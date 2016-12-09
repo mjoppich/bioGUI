@@ -13,8 +13,10 @@ rm -rf $PROGDIR
 ## create progdir
 mkdir -p $PROGDIR
 
-#download and unzip
-wget https://github.com/gmarcais/Jellyfish/releases/download/v2.2.6/$PROG.tar.gz -O $PROGDIR/$PROG.tar.gz
+	#download and unzip
+if [ ! -f $PROGDIR/$PROG.tar.gz ]; then
+	wget https://github.com/gmarcais/Jellyfish/releases/download/v2.2.6/$PROG.tar.gz -O $PROGDIR/$PROG.tar.gz
+fi
 
 cd $PROGDIR
 tar -xzf $PROG.tar.gz -C $PROGDIR/
@@ -27,9 +29,9 @@ make
 #make check
 make install
 
-if [ $# -gt 3 ]; then
+if [ $# -gt 2 ]; then
 
-	if [ $4 == "1" ]; then
+	if [ "$3" == "1" ]; then
 
 		if ! grep -q $PROGDIR/$PROG ~/.bashrc; then
 			echo "export PATH=\"$PROGDIR/$PROG:$PATH\" " >> ~/.bashrc;
@@ -38,10 +40,10 @@ if [ $# -gt 3 ]; then
 
 fi
 
-if [ $# -eq 4 ]; then
+if [ $# -eq 5 ]; then
 
-IP=$3
-PORT=$4
+IP=$4
+PORT=$5
 
 cat << EOF | netcat $IP $PORT
 <template rootid="blubb" intatt="111" description="Jellyfish ($PROG)" title="Jellyfish">
@@ -106,7 +108,7 @@ cat << EOF | netcat $IP $PORT
       </group>
 
       <group id="sel_cite" title="cite" checkable="true">
-	<label>How to cite jellyfish</label><link>http://www.genome.umd.edu/jellyfish.html</link>
+	<label>How to cite jellyfish</label><label link="true">http://www.genome.umd.edu/jellyfish.html</label>
       </group>
   
     </group>
@@ -123,32 +125,32 @@ cat << EOF | netcat $IP $PORT
 <execution>
 
 <if id="loc_count_output_path" comp="EQUALS" value1="WSLsel" value2="true">
-<relocate wsl="true"><value from="count_output_path"/></relocate>
+<relocate wsl="true" from="\${count_output_path}"/>
 <else>
 <value from="count_output_path"/>
 </else>
 </if>
 <if id="loc_count_input_fasta1" comp="EQUALS" value1="WSLsel" value2="true">
-<relocate wsl="true"><value from="count_input_fasta1"/></relocate>
+<relocate wsl="true" from="\${count_input_fasta1}"/>
 <else>
 <value from="count_input_fasta1"/>
 </else>
 </if>
 <if id="loc_count_input_fasta2" comp="EQUALS" value1="WSLsel" value2="true">
-<relocate wsl="true"><value from="count_input_fasta2"/></relocate>
+<relocate wsl="true" from="\${count_input_fasta2}"/>
 <else>
 <value from="count_input_fasta2"/>
 </else>
 </if>
 
 <if id="loc_merge_output" comp="EQUALS" value1="WSLsel" value2="true">
-<relocate wsl="true"><value from="merge_output"/></relocate>
+<relocate wsl="true" from="\${merge_output}"/>
 <else>
 <value from="merge_output"/>
 </else>
 </if>
 <if id="loc_merge_input" comp="EQUALS" value1="WSLsel" value2="true">
-<relocate wsl="true"><value from="merge_input"/></relocate>
+<relocate wsl="true" from="\${merge_input}"/>
 <else>
 <value from="merge_input"/>
 </else>
@@ -156,39 +158,39 @@ cat << EOF | netcat $IP $PORT
 
 
 <if id="loc_dump_output_file" comp="EQUALS" value1="WSLsel" value2="true">
-<relocate wsl="true"><value from="dump_output_file"/></relocate>
+<relocate wsl="true" from="\${dump_output_file}"/>
 <else>
 <value from="dump_output_file"/>
 </else>
 </if>
 <if id="loc_dump_input_folder" comp="EQUALS" value1="WSLsel" value2="true">
-<relocate wsl="true"><value from="dump_input_folder"/></relocate>
+<relocate wsl="true" from="\${dump_input_folder}"/>
 <else>
 <value from="dump_input_folder"/>
 </else>
 </if>
 
 <if id="loc_stats_input_path" comp="EQUALS" value1="WSLsel" value2="true">
-<relocate wsl="true"><value from="stats_input_path"/></relocate>
+<relocate wsl="true" from="\${stats_input_path}"/>
 <else>
 <value from="stats_input_path"/>
 </else>
 </if>
 <if id="loc_stats_output_file" comp="EQUALS" value1="WSLsel" value2="true">
-<relocate wsl="true"><value from="stats_output_file"/></relocate>
+<relocate wsl="true" from="\${stats_output_file}"/>
 <else>
 <value from="stats_output_file"/>
 </else>
 </if>
 
 <if id="loc_histo_input_path" comp="EQUALS" value1="WSLsel" value2="true">
-<relocate wsl="true"><value from="histo_input_path"/></relocate>
+<relocate wsl="true" from="\${histo_input_path}"/>
 <else>
 <value from="histo_input_path"/>
 </else>
 </if>
 <if id="loc_histo_output_file" comp="EQUALS" value1="WSLsel" value2="true">
-<relocate wsl="true"><value from="histo_output_file"/></relocate>
+<relocate wsl="true" from="\${histo_output_file}"/>
 <else>
 <value from="histo_output_file"/>
 </else>
@@ -258,7 +260,7 @@ cat << EOF | netcat $IP $PORT
 <env id="ip" get="IPv4"/>
 <const id="bindir">${PROGDIR}/${PROG}/bin/</const>
     
-		<execute wsl="WSLsel" exec="\${bindir}/jellyfish" location="" param="\${cl}">
+		<execute wsl="WSLsel" exec="jellyfish" location="\${bindir}" param="\${cl}">
 			<output type="CERR" color="red" to="outputstream2" />
 			<output type="COUT" color="green" to="outputstream1" />
 		</execute>

@@ -36,9 +36,9 @@ cd $PROGDIR/$PROG
 
 make
 
-if [ $# -gt 3 ]; then
+if [ $# -gt 2 ]; then
 
-	if [ $4 == "1" ]; then
+	if [ "$3" == "1" ]; then
 
 		if ! grep -q $PROGDIR/$PROG ~/.bashrc; then
 			echo "export PATH=\"$PROGDIR/$PROG:$PATH\" " >> ~/.bashrc;
@@ -128,7 +128,7 @@ cat << EOF | netcat $IP $PORT
 
 	<group title="build index">
 		<label>Input Reference</label> <filedialog id="hisat_build_inref" output="false" folder="false">Select hisat2 index</filedialog>		
-		<label>hisat2 Index</label> <filedialog id="hisat_build__out" output="true" folder="false">Select hisat2 index</filedialog>
+		<label>hisat2 Index</label> <filedialog id="hisat_build_idx_out" output="true" folder="false">Select hisat2 index</filedialog>
 		<action program="hisat2index">Build Index</action>
 	</group>
   
@@ -143,19 +143,33 @@ cat << EOF | netcat $IP $PORT
 <execution>
 <const id="bindir">${PROGDIR}/${PROG}/</const>
 
+<if id="hisat_build_inref_rel" comp="EQUALS" value1="WSLsel" value2="true">
+<relocate from="\${hisat_build_inref}" wsl="true"/>
+<else>
+<value from="hisat_build_inref"/>
+</else>
+</if>
+
+<if id="hisat_build_idx_out_rel" comp="EQUALS" value1="WSLsel" value2="true">
+<relocate from="\${hisat_build_idx_out}" wsl="true"/>
+<else>
+<value from="hisat_build_idx_out"/>
+</else>
+</if>
+
 
 <add id="cl_idx" sep=" ">
-<value from="hisat_build_inref"/>
-<value from="hisat_build__out"/>
+<value from="hisat_build_inref_rel"/>
+<value from="hisat_build_idx_out_rel"/>
 </add>
 
-  <execute program="hisat2index" param="\${bindir}/hisat2-build \${cl_idx} 2>&amp;1 | netcat \${ip} 55025" location="" exec="" wsl="WSLsel">
-    <output type="TCP" host="" port="55025" color="green" to="outputstream1" />
-    <output type="TCP" host="" port="55026" color="green" to="outputstream2" />
+  <execute program="hisat2index" param="\${cl_idx}" location="\${bindir}" exec="hisat2-build" wsl="WSLsel">
+    <output type="COUT" color="green" to="outputstream1" />
+    <output type="CERR" color="red" to="outputstream2" />
   </execute>
 
 <if id="hisat_index_rel_raw" comp="EQUALS" value1="WSLsel" value2="true">
-<relocate from="hisat_index" wsl="true"/>
+<relocate from="\${hisat_index}" wsl="true"/>
 <else>
 <value from="hisat_index"/>
 </else>
@@ -178,28 +192,28 @@ end
 </script>
 
 <if id="hisat_paired_m1_rel" comp="EQUALS" value1="WSLsel" value2="true">
-<relocate from="hisat_paired_m1" wsl="true"/>
+<relocate from="\${hisat_paired_m1}" wsl="true"/>
 <else>
 <value from="hisat_paired_m1"/>
 </else>
 </if>
 
 <if id="hisat_paired_m2_rel" comp="EQUALS" value1="WSLsel" value2="true">
-<relocate from="hisat_paired_m2" wsl="true"/>
+<relocate from="\${hisat_paired_m2}" wsl="true"/>
 <else>
 <value from="hisat_paired_m2"/>
 </else>
 </if>
 
 <if id="hisat_unpaired_reads_rel" comp="EQUALS" value1="WSLsel" value2="true">
-<relocate from="hisat_unpaired_reads" wsl="true"/>
+<relocate from="\${hisat_unpaired_reads}" wsl="true"/>
 <else>
 <value from="hisat_unpaired_reads"/>
 </else>
 </if>
 
 <if id="hisat_output_rel" comp="EQUALS" value1="WSLsel" value2="true">
-<relocate from="hisat_output" wsl="true"/>
+<relocate from="\${hisat_output}" wsl="true"/>
 <else>
 <value from="hisat_output"/>
 </else>
@@ -257,7 +271,7 @@ end
 
 </add>
 	
-  <execute program="hisat2" param="${cl}" location="" exec="\${bindir}/hisat" wsl="WSLsel">
+  <execute program="hisat2" param="\${cl}" location="\${bindir}" exec="hisat2" wsl="WSLsel">
     <output type="COUT" color="green" to="outputstream1" />
     <output type="CERR" color="red" to="outputstream2" />
   </execute>

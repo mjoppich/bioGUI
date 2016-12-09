@@ -102,14 +102,14 @@ cat << EOF | netcat $IP $PORT
     
 <!-- scratch -->
 <if id="scr_output_folder_rel" comp="EQUALS" value1="WSLsel" value2="true">
-<relocate from="scr_output_folder" wsl="true"/>
+<<relocate from="\${scr_output_folder}" wsl="true"/>
 <else>
 <value from="scr_output_folder"/>
 </else>
 </if>
 
 <if id="scr_input_gen_rel" comp="EQUALS" value1="WSLsel" value2="true">
-<relocate from="scr_input_gen" wsl="true"/>
+<<relocate from="\${scr_input_gen}" wsl="true"/>
 <else>
 <value from="scr_input_gen"/>
 </else>
@@ -118,21 +118,21 @@ cat << EOF | netcat $IP $PORT
 
 <!-- training -->
 <if id="tra_output_folder_rel" comp="EQUALS" value1="WSLsel" value2="true">
-<relocate from="tra_output_folder" wsl="true"/>
+<<relocate from="\${tra_output_folder}" wsl="true"/>
 <else>
 <value from="tra_output_folder"/>
 </else>
 </if>
 
 <if id="tra_input_gen_rel" comp="EQUALS" value1="WSLsel" value2="true">
-<relocate from="tra_input_gen" wsl="true"/>
+<<relocate from="\${tra_input_gen}" wsl="true"/>
 <else>
 <value from="tra_input_gen"/>
 </else>
 </if>
 
 <if id="tra_input_train_rel" comp="EQUALS" value1="WSLsel" value2="true">
-<relocate from="tra_input_train" wsl="true"/>
+<<relocate from="\${tra_input_train}" wsl="true"/>
 <else>
 <value from="tra_input_train"/>
 </else>

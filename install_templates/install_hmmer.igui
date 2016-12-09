@@ -74,35 +74,35 @@ cat << EOF | netcat $IP $PORT
 <execution>
 
 <if id="loc_build_msa" comp="EQUALS" value1="WSLsel" value2="true">
-	<relocate from="build_msa" wsl="true"/>
+	<<relocate from="\${build_msa}" wsl="true"/>
 <else>
 	<value from="build_msa"/>
 </else>
 </if>
 
 <if id="loc_build_model" comp="EQUALS" value1="WSLsel" value2="true">
-	<relocate from="build_model" wsl="true"/>
+	<<relocate from="\${build_model}" wsl="true"/>
 <else>
 	<value from="build_model"/>
 </else>
 </if>
 
 <if id="loc_search_model" comp="EQUALS" value1="WSLsel" value2="true">
-	<relocate from="search_model" wsl="true"/>
+	<<relocate from="\${search_model}" wsl="true"/>
 <else>
 	<value from="search_model"/>
 </else>
 </if>
 
 <if id="loc_search_db" comp="EQUALS" value1="WSLsel" value2="true">
-	<relocate from="search_db" wsl="true"/>
+	<<relocate from="\${search_db}" wsl="true"/>
 <else>
 	<value from="search_db"/>
 </else>
 </if>
 
 <if id="loc_search_output" comp="EQUALS" value1="WSLsel" value2="true">
-	<relocate from="search_output" wsl="true"/>
+	<<relocate from="\${search_output}" wsl="true"/>
 <else>
 	<value from="search_output"/>
 </else>

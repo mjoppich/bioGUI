@@ -105,6 +105,8 @@ void WindowComponentFactory::initializeWidgets() {
         return new WindowWidgetLabelNode(this);
     });
 
+
+
     this->insertWidgetNode("RADIOBUTTON", [this] () {
         return new WindowWidgetRadioButtonNode(this);
     });

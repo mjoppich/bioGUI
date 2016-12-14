@@ -31,7 +31,7 @@ make install
 
 if [ $# -gt 2 ]; then
 
-	if [ "$3" == "1" ]; then
+	if [ "$3" = "1" ]; then
 
 		if ! grep -q $PROGDIR/$PROG ~/.bashrc; then
 			echo "export PATH=\"$PROGDIR/$PROG:$PATH\" " >> ~/.bashrc;
@@ -124,77 +124,19 @@ cat << EOF | netcat $IP $PORT
 
 <execution>
 
-<if id="loc_count_output_path" comp="EQUALS" value1="WSLsel" value2="true">
-<relocate wsl="true" from="\${count_output_path}"/>
-<else>
-<value from="count_output_path"/>
-</else>
-</if>
-<if id="loc_count_input_fasta1" comp="EQUALS" value1="WSLsel" value2="true">
-<relocate wsl="true" from="\${count_input_fasta1}"/>
-<else>
-<value from="count_input_fasta1"/>
-</else>
-</if>
-<if id="loc_count_input_fasta2" comp="EQUALS" value1="WSLsel" value2="true">
-<relocate wsl="true" from="\${count_input_fasta2}"/>
-<else>
-<value from="count_input_fasta2"/>
-</else>
-</if>
 
-<if id="loc_merge_output" comp="EQUALS" value1="WSLsel" value2="true">
-<relocate wsl="true" from="\${merge_output}"/>
-<else>
-<value from="merge_output"/>
-</else>
-</if>
-<if id="loc_merge_input" comp="EQUALS" value1="WSLsel" value2="true">
-<relocate wsl="true" from="\${merge_input}"/>
-<else>
-<value from="merge_input"/>
-</else>
-</if>
+<relocate id="loc_count_output_path" wsl="\${WSLsel}" from="\${count_output_path}"/>
+<relocate id="loc_count_input_fasta1" wsl="\${WSLsel}" from="\${count_input_fasta1}"/>
+<relocate id="loc_count_input_fasta2" wsl="\${WSLsel}" from="\${count_input_fasta2}"/>
+<relocate id="loc_merge_output" wsl="\${WSLsel}" from="\${merge_output}"/>
+<relocate id="loc_merge_input" wsl="\${WSLsel}" from="\${merge_input}"/>
+<relocate id="loc_dump_output_file" wsl="\${WSLsel}" from="\${dump_output_file}"/>
+<relocate id="loc_dump_input_folder" wsl="\${WSLsel}" from="\${dump_input_folder}"/>
+<relocate id="loc_stats_input_path" wsl="\${WSLsel}" from="\${stats_input_path}"/>
+<relocate id="loc_stats_output_file" wsl="\${WSLsel}" from="\${stats_output_file}"/>
+<relocate id="loc_histo_input_path" wsl="\${WSLsel}" from="\${histo_input_path}"/>
+<relocate id="loc_histo_output_file" wsl="\${WSLsel}" from="\${histo_output_file}"/>
 
-
-<if id="loc_dump_output_file" comp="EQUALS" value1="WSLsel" value2="true">
-<relocate wsl="true" from="\${dump_output_file}"/>
-<else>
-<value from="dump_output_file"/>
-</else>
-</if>
-<if id="loc_dump_input_folder" comp="EQUALS" value1="WSLsel" value2="true">
-<relocate wsl="true" from="\${dump_input_folder}"/>
-<else>
-<value from="dump_input_folder"/>
-</else>
-</if>
-
-<if id="loc_stats_input_path" comp="EQUALS" value1="WSLsel" value2="true">
-<relocate wsl="true" from="\${stats_input_path}"/>
-<else>
-<value from="stats_input_path"/>
-</else>
-</if>
-<if id="loc_stats_output_file" comp="EQUALS" value1="WSLsel" value2="true">
-<relocate wsl="true" from="\${stats_output_file}"/>
-<else>
-<value from="stats_output_file"/>
-</else>
-</if>
-
-<if id="loc_histo_input_path" comp="EQUALS" value1="WSLsel" value2="true">
-<relocate wsl="true" from="\${histo_input_path}"/>
-<else>
-<value from="histo_input_path"/>
-</else>
-</if>
-<if id="loc_histo_output_file" comp="EQUALS" value1="WSLsel" value2="true">
-<relocate wsl="true" from="\${histo_output_file}"/>
-<else>
-<value from="histo_output_file"/>
-</else>
-</if>
 
 <add id="cl_cite" sep=" ">
 <const>cite</const>

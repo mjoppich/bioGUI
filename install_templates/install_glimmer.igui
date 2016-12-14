@@ -26,7 +26,7 @@ make
 
 if [ $# -gt 3 ]; then
 
-	if [ $4 == "1" ]; then
+	if [ "$3" = "1" ]; then
 
 		if ! grep -q $PROGDIR/$PROG ~/.bashrc; then
 			echo "export PATH=\"$PROGDIR/$PROG:$PATH\" " >> ~/.bashrc;
@@ -99,44 +99,13 @@ cat << EOF | netcat $IP $PORT
 
 <env id="ip" get="IPv4"/>
 <const id="progdir">${PROGDIR}/${PROG}</const>
-    
-<!-- scratch -->
-<if id="scr_output_folder_rel" comp="EQUALS" value1="WSLsel" value2="true">
-<<relocate from="\${scr_output_folder}" wsl="true"/>
-<else>
-<value from="scr_output_folder"/>
-</else>
-</if>
 
-<if id="scr_input_gen_rel" comp="EQUALS" value1="WSLsel" value2="true">
-<<relocate from="\${scr_input_gen}" wsl="true"/>
-<else>
-<value from="scr_input_gen"/>
-</else>
-</if>
+<relocate id="scr_output_folder_rel" wsl="\${WSLsel}" from="\${scr_output_folder}"/>
+<relocate id="scr_input_gen_rel" wsl="\${WSLsel}" from="\${scr_input_gen}"/>
+<relocate id="tra_output_folder_rel" wsl="\${WSLsel}" from="\${tra_output_folder}"/>
+<relocate id="tra_input_gen_rel" wsl="\${WSLsel}" from="\${tra_input_gen}"/>
+<relocate id="tra_input_train_rel" wsl="\${WSLsel}" from="\${tra_input_train}"/>
 
-
-<!-- training -->
-<if id="tra_output_folder_rel" comp="EQUALS" value1="WSLsel" value2="true">
-<<relocate from="\${tra_output_folder}" wsl="true"/>
-<else>
-<value from="tra_output_folder"/>
-</else>
-</if>
-
-<if id="tra_input_gen_rel" comp="EQUALS" value1="WSLsel" value2="true">
-<<relocate from="\${tra_input_gen}" wsl="true"/>
-<else>
-<value from="tra_input_gen"/>
-</else>
-</if>
-
-<if id="tra_input_train_rel" comp="EQUALS" value1="WSLsel" value2="true">
-<<relocate from="\${tra_input_train}" wsl="true"/>
-<else>
-<value from="tra_input_train"/>
-</else>
-</if>
 
 <if comp="EQUALS" value1="fromscratch" value2="true">
 <execute exec="sh" wsl="WSLsel" location="" param="-c &quot;cd \${scr_output_folder_rel}; csh \${progdir}/scripts/g3-from-scratch.csh \${scr_input_gen_rel} \${scr_run_prefix} &quot;">

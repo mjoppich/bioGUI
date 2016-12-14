@@ -27,6 +27,7 @@ public:
         m_bMakeUnix = (this->getDomElementAttribute(pElement, "unix", "false").compare("TRUE", Qt::CaseInsensitive) == 0);
 
         m_sToWSL = this->getDomElementAttribute(pElement, "wsl", "false");
+        m_bHasWSLAttrib = this->hasDomElementAttribute(pElement, "wsl");
 
     }
 
@@ -49,7 +50,6 @@ public:
          *
          * */
         bool bWSL = false;
-
         if (m_sToWSL.size() > 0)
         {
 
@@ -60,7 +60,6 @@ public:
                 bWSL = true;
             }
         }
-
 
         /*What should be relocated?
          * */
@@ -88,6 +87,11 @@ public:
 
         if (sChildren.size() == 0)
             return sChildren;
+
+        if ((m_bHasWSLAttrib) && (bWSL == false))
+        {
+            return sChildren;
+        }
 
         if (bWSL)
         {
@@ -176,6 +180,7 @@ protected:
     std::string m_sPrepend;
 
     bool m_bMakeUnix = true;
+    bool m_bHasWSLAttrib = true;
     QString m_sToWSL = "";
 
 

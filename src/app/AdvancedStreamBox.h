@@ -145,7 +145,7 @@ public:
 
         this->clear();
 
-
+        this->setSelectionMode(QAbstractItemView::MultiSelection);
 
         this->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
         this->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
@@ -455,6 +455,10 @@ protected slots:
 
         AdvancedListWidgetItem* pLastStream = this->getLastItemForStream(&sStreamID);
 
+        bool bLastIsFinished = false;
+        if ((sString.size() > 0) && (sString[sString.size()-1] == '\n'))
+            bLastIsFinished = true;
+
         QStringList vList = sString.split("\n");
 
         if ((vList.size() == 0) || (vList.at(0).length() == 0))
@@ -492,7 +496,12 @@ protected slots:
 
             }
 
+            if (pLastStream != NULL)
+                if ((i < vList.size()-1) || (( i == vList.size()-1 ) && (bLastIsFinished)))
+                    pLastStream->setFinished(true);
+
         }
+
 
         this->filterText(true);
 

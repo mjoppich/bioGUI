@@ -28,6 +28,17 @@ make
 make check
 make install
 
+if [ $# -gt 2 ]; then
+
+	if [ "$3" = "1" ]; then
+
+		if ! grep -q $PROGDIR/$PROG ~/.bashrc; then
+			echo "export PATH=\"$PROGDIR/$PROG:$PATH\" " >> ~/.bashrc;
+		fi
+	fi
+
+fi
+
 if [ $# -eq 4 ]; then
 
 IP=$3
@@ -73,40 +84,11 @@ cat << EOF | netcat $IP $PORT
 
 <execution>
 
-<if id="loc_build_msa" comp="EQUALS" value1="WSLsel" value2="true">
-	<<relocate from="\${build_msa}" wsl="true"/>
-<else>
-	<value from="build_msa"/>
-</else>
-</if>
-
-<if id="loc_build_model" comp="EQUALS" value1="WSLsel" value2="true">
-	<<relocate from="\${build_model}" wsl="true"/>
-<else>
-	<value from="build_model"/>
-</else>
-</if>
-
-<if id="loc_search_model" comp="EQUALS" value1="WSLsel" value2="true">
-	<<relocate from="\${search_model}" wsl="true"/>
-<else>
-	<value from="search_model"/>
-</else>
-</if>
-
-<if id="loc_search_db" comp="EQUALS" value1="WSLsel" value2="true">
-	<<relocate from="\${search_db}" wsl="true"/>
-<else>
-	<value from="search_db"/>
-</else>
-</if>
-
-<if id="loc_search_output" comp="EQUALS" value1="WSLsel" value2="true">
-	<<relocate from="\${search_output}" wsl="true"/>
-<else>
-	<value from="search_output"/>
-</else>
-</if>
+<relocate id="loc_build_msa" wsl="\${WSLsel}" from="\${build_msa}"/>
+<relocate id="loc_build_model" wsl="\${WSLsel}" from="\${build_model}"/>
+<relocate id="loc_search_model" wsl="\${WSLsel}" from="\${search_model}"/>
+<relocate id="loc_search_db" wsl="\${WSLsel}" from="\${search_db}"/>
+<relocate id="loc_search_output" wsl="\${WSLsel}" from="\${search_output}"/>
 
 <const id="bindir">${PROGDIR}/${PROG}/bin/</const>
 

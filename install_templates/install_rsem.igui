@@ -39,7 +39,7 @@ make install DESTDIR=$PROGDIR prefix=$PROG
 
 if [ $# -gt 3 ]; then
 
-	if [ $3 == "1" ]; then
+	if [ $3 = "1" ]; then
 
 		if ! grep -q $PROGDIR/$PROG ~/.bashrc; then
 			echo "export PATH=\"$PROGDIR/$PROG:$PATH\" " >> ~/.bashrc;

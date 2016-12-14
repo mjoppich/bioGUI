@@ -15,7 +15,10 @@ public:
     : ExecutionNode(pElement)
     {
 
-        m_sValue = pElement->text().toStdString();
+        m_sValue = "";
+
+        if (pElement != NULL)
+            m_sValue = pElement->text().toStdString();
 
     }
 
@@ -29,6 +32,11 @@ public:
                           std::map<std::string, QWidget*>* pInputID2Widget)
     {
         return m_sValue;
+    }
+
+    void setValue(std::string sValue)
+    {
+        m_sValue = sValue;
     }
 
 protected:

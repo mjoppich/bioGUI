@@ -27,6 +27,9 @@ void ExecutionNode::addChildren(std::vector<ExecutionNode*>::iterator oItStart, 
 
 QString ExecutionNode::getDomElementAttribute(QDomElement* pElement, QString sAttribName, QString sDefault) {
 
+    if (pElement == NULL)
+        return sDefault;
+
     QDomNamedNodeMap mAttributes = pElement->attributes();
 
     for (size_t i = 0; i < mAttributes.length(); ++i)
@@ -42,5 +45,25 @@ QString ExecutionNode::getDomElementAttribute(QDomElement* pElement, QString sAt
     }
 
     return sDefault;
+
+}
+
+bool ExecutionNode::hasDomElementAttribute(QDomElement* pElement, QString sAttribName) {
+
+    QDomNamedNodeMap mAttributes = pElement->attributes();
+
+    for (size_t i = 0; i < mAttributes.length(); ++i)
+    {
+
+        QDomAttr oItem = mAttributes.item(i).toAttr();
+
+        if (oItem.name().compare( sAttribName, Qt::CaseInsensitive ) == 0)
+        {
+            return true;
+        }
+
+    }
+
+    return false;
 
 }

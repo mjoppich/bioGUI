@@ -40,7 +40,7 @@ make
 
 if [ $# -gt 2 ]; then
 
-	if [ "$3" == "1" ]; then
+	if [ "$3" = "1" ]; then
 
 		if ! grep -q $APPBINARYDIR ~/.bashrc; then
 			echo "export PATH=\"$APPBINARYDIR:$PATH\" " >> ~/.bashrc;

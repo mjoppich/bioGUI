@@ -281,6 +281,8 @@ protected:
     }
 
     QString getDomElementAttribute(QDomElement* pElement, QString sAttribName, QString sDefault);
+    bool hasDomElementAttribute(QDomElement* pElement, QString sAttribName);
+
 
     std::vector<ExecutionNode*> m_vChildren;
 

@@ -60,6 +60,8 @@ void AdvancedCornerWidget::mousePressEvent(QMouseEvent *pEvent) {
 
 void AdvancedCornerWidget::mouseReleaseEvent(QMouseEvent *pEvent) {
 
+    updateWidgetGeometry();
+
     m_oMouseStart = QPoint(-1,-1);
     m_oMouseEnd = QPoint(-1,-1);
 
@@ -67,5 +69,5 @@ void AdvancedCornerWidget::mouseReleaseEvent(QMouseEvent *pEvent) {
 
 void AdvancedCornerWidget::mouseMoveEvent(QMouseEvent *pEvent) {
     m_oMouseEnd = pEvent->pos();
-    updateWidgetGeometry();
+    //updateWidgetGeometry();
 }

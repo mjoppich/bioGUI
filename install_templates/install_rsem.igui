@@ -24,7 +24,7 @@ fi
 mkdir -p $PROGDIR
 
 #download and unzip
-if [ ! -f $PROGDIR/$PROG.zip ]; then
+if [ ! -f $PROGDIR/$PROG.tgz ]; then
 	wget https://github.com/deweylab/RSEM/archive/v1.3.0.tar.gz -O $PROGDIR/$PROG.tgz
 fi
 
@@ -39,7 +39,7 @@ make install DESTDIR=$PROGDIR prefix=$PROG
 
 if [ $# -gt 3 ]; then
 
-	if [ $4 == "1" ]; then
+	if [ $3 = "1" ]; then
 
 		if ! grep -q $PROGDIR/$PROG ~/.bashrc; then
 			echo "export PATH=\"$PROGDIR/$PROG:$PATH\" " >> ~/.bashrc;
@@ -139,17 +139,17 @@ cat << EOF | netcat $IP $PORT
  </window>
  <execution>
  
-<relocate id="rsem_ref_fasta_rel" from="rsem_ref_fasta" wsl="${WSLsel}"/>
-<relocate id="rsem_ref_path_rel" from="rsem_ref_path" wsl="${WSLsel}"/>
-<relocate id="rsem_ref_fasta_rel" from="rsem_ref_fasta" wsl="${WSLsel}"/>
+<relocate id="rsem_ref_fasta_rel" from="\${rsem_ref_fasta}" wsl="${WSLsel}"/>
+<relocate id="rsem_ref_path_rel" from="\${rsem_ref_path}" wsl="${WSLsel}"/>
+<relocate id="rsem_ref_fasta_rel" from="\${rsem_ref_fasta}" wsl="${WSLsel}"/>
  
-<relocate id="rsem_calc_unpaired_reads_rel" from="rsem_calc_unpaired_reads" wsl="${WSLsel}"/>
-<relocate id="rsem_calc_paired_up_rel" from="rsem_calc_paired_up" wsl="${WSLsel}"/>
-<relocate id="rsem_calc_paired_down_rel" from="rsem_calc_paired_down" wsl="${WSLsel}"/>
-<relocate id="rsem_calc_alignment_bam_rel" from="rsem_calc_alignment_bam" wsl="${WSLsel}"/>
+<relocate id="rsem_calc_unpaired_reads_rel" from="\${rsem_calc_unpaired_reads}" wsl="${WSLsel}"/>
+<relocate id="rsem_calc_paired_up_rel" from="\${rsem_calc_paired_up}" wsl="${WSLsel}"/>
+<relocate id="rsem_calc_paired_down_rel" from="\${rsem_calc_paired_down}" wsl="${WSLsel}"/>
+<relocate id="rsem_calc_alignment_bam_rel" from="\${rsem_calc_alignment_bam}" wsl="${WSLsel}"/>
 
-<relocate id="rsem_calc_ref_name_rel" from="rsem_calc_ref_name" wsl="${WSLsel}"/>
-<relocate id="rsem_calc_sample_path" from="rsem_calc_sample_path" wsl="${WSLsel}"/>
+<relocate id="rsem_calc_ref_name_rel" from="\${rsem_calc_ref_name}" wsl="${WSLsel}"/>
+<relocate id="rsem_calc_sample_path_rel" from="\${rsem_calc_sample_path}" wsl="${WSLsel}"/>
 
 <add id="rsem_calc_arguments">
 <if comp="EQUAL" value1="rsem_calc_unpaired" value2="true">
@@ -171,7 +171,7 @@ cat << EOF | netcat $IP $PORT
 <value from="rsem_calc_ref_name_rel"/>
 
 <add sep="">
-<value from="rsem_calc_sample_path"/>
+<value from="rsem_calc_sample_path_rel"/>
 <const>/</const>
 <value from="rsem_calc_sample_name"/>
 </add>
@@ -188,7 +188,7 @@ cat << EOF | netcat $IP $PORT
  
   <const id="bindir">${APPBINARYDIR}/</const>
 
-  <execute program="rsem_calc" location="" exec="\${bindir}/rsem-calculate-expression" param="\${rsem_calc_options} \${rsem_calc_arguments}" >
+  <execute program="rsem_calc" location="\${bindir}" exec="rsem-calculate-expression" param="\${rsem_calc_options} \${rsem_calc_arguments}" wsl="WSLsel">
     <output type="COUT" color="green" to="outputstream1" />
     <output type="CERR" color="red" to="outputstream2" />
   </execute>

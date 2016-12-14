@@ -20,19 +20,42 @@ ExecutionNode *XMLParserExecution::getExecutionNodes(QDomElement* pElement ) {
         return NULL;
     }
 
+    if (pElement->tagName().compare("if", Qt::CaseInsensitive) == 0)
+    {
+        LOGERROR("if node: " + pElement->text().toStdString());
+    }
+
     QDomNodeList oChildren = pElement->childNodes();
 
-    for (size_t i = 0; i < oChildren.length(); ++i)
+    if (oChildren.size() > 0)
     {
+        for (size_t i = 0; i < oChildren.length(); ++i)
+        {
 
-        QDomElement oChild = oChildren.item(i).toElement();
+            QDomElement oChild = oChildren.item(i).toElement();
 
-        ExecutionNode* pChild = this->getExecutionNodes(&oChild);
+            ExecutionNode* pChild = this->getExecutionNodes(&oChild);
 
-        if (pChild != NULL)
-            pNode->addChild( pChild );
+            if (pChild != NULL)
+                pNode->addChild( pChild );
+
+        }
+    } else {
+
+        QString sText = pElement->text();
+
+        if (sText.size() > 0)
+        {
+
+            ExecutionConstNode* pConstNode = new ExecutionConstNode(NULL);
+            pConstNode->setValue( sText.toStdString() );
+            pNode->addChild( pConstNode );
+
+        }
 
     }
+
+
 
     pNode->finishedCreation();
 

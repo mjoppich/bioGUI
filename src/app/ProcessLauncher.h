@@ -180,6 +180,9 @@ public:
 
 
         } else {
+
+            sProgram = m_sProgram;
+
             if (m_sParam.size() > 0)
                 oArgs = ProcessLauncher::stringToArguments(m_sParam.toStdString(), '\"');
 
@@ -190,8 +193,31 @@ public:
         LOGLVL( sProgram.toStdString(), Logging::ERR );
         LOGLVL( oArgs.join(',').toStdString(), Logging::ERR);
 
-        m_pProcess->start( sProgram, oArgs, eMode );
         QProcess* pProcess = m_pProcess;
+
+        this->connect(m_pProcess, static_cast<void(QProcess::*)(QProcess::ProcessError)>(&QProcess::errorOccurred),
+                           [pProcess, this](QProcess::ProcessError errorCode){
+
+                               std::cerr << "Process Errored !" << std::endl;
+                               std::cerr << "Process Error Code: " << errorCode << std::endl;
+
+                               std::string sError = pProcess->errorString().toStdString();
+                               std::cerr << "Error: " << sError << std::endl;
+
+                               std::string sProgram = pProcess->program().toStdString();
+                               std::cerr << "Program: " << sProgram << std::endl;
+
+                               for (int i = 0; i < pProcess->arguments().size(); ++i)
+                               {
+                                   std::string sArgument = pProcess->arguments().at(i).toStdString();
+
+                                   std::cerr << "Argument " << i << " : " << sArgument << std::endl;
+                               }
+
+                               std::cout << "errored: " << pProcess << std::endl;
+
+                               emit this->finished();
+                           });
 
         this->connect(m_pProcess, static_cast<void(QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished),
                            [pProcess, this](int exitCode, QProcess::ExitStatus exitStatus){
@@ -216,6 +242,8 @@ public:
 
                                emit this->finished();
                            });
+
+        m_pProcess->start( sProgram, oArgs, eMode );
 
         return true;
 

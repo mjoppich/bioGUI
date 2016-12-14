@@ -38,9 +38,9 @@ cd $PROGDIR/$PROG
 
 make
 
-if [ $# -gt 3 ]; then
+if [ $# -gt 2 ]; then
 
-	if [ $4 == "1" ]; then
+	if [ "$3" = "1" ]; then
 
 		if ! grep -q $APPBINARYDIR ~/.bashrc; then
 			echo "export PATH=\"$APPBINARYDIR:$PATH\" " >> ~/.bashrc;
@@ -145,20 +145,8 @@ cat << EOF | netcat $IP $PORT
 <execution>
 <const id="bindir">${APPBINARYDIR}</const>
 
-
-<if id="bowtie2_build_inref_rel" comp="EQUALS" value1="WSLsel" value2="true">
-<relocate from="\${bowtie2_build_inref}" wsl="true"/>
-<else>
-<value from="bowtie2_build_inref"/>
-</else>
-</if>
-
-<if id="bowtie2_build_idx_out_rel" comp="EQUALS" value1="WSLsel" value2="true">
-<relocate from="\${bowtie2_build_idx_out}" wsl="true"/>
-<else>
-<value from="bowtie2_build_idx_out"/>
-</else>
-</if>
+<relocate id="bowtie2_build_inref_rel" wsl="\${WSLsel}" from="\${bowtie2_build_inref}"/>
+<relocate id="bowtie2_build_idx_out_rel" wsl="\${WSLsel}" from="\${bowtie2_build_idx_out}"/>
 
 <add id="cl_idx" sep=" ">
 <value from="bowtie2_build_inref_rel"/>
@@ -193,33 +181,10 @@ end
 ]]>
 </script>
 
-<if id="bowtie2_paired_m1_rel" comp="EQUALS" value1="WSLsel" value2="true">
-<relocate from="\${bowtie2_paired_m1}" wsl="true"/>
-<else>
-<value from="bowtie2_paired_m1"/>
-</else>
-</if>
-
-<if id="bowtie2_paired_m2_rel" comp="EQUALS" value1="WSLsel" value2="true">
-<relocate from="\${bowtie2_paired_m2}" wsl="true"/>
-<else>
-<value from="bowtie2_paired_m2"/>
-</else>
-</if>
-
-<if id="bowtie2_unpaired_reads_rel" comp="EQUALS" value1="WSLsel" value2="true">
-<relocate from="\${bowtie2_unpaired_reads}" wsl="true"/>
-<else>
-<value from="bowtie2_unpaired_reads"/>
-</else>
-</if>
-
-<if id="bowtie2_output_rel" comp="EQUALS" value1="WSLsel" value2="true">
-<relocate from="\${bowtie2_output}" wsl="true"/>
-<else>
-<value from="bowtie2_output"/>
-</else>
-</if>
+<relocate id="bowtie2_paired_m1_rel" wsl="\${WSLsel}" from="\${bowtie2_paired_m1}"/>
+<relocate id="bowtie2_paired_m2_rel" wsl="\${WSLsel}" from="\${bowtie2_paired_m2}"/>
+<relocate id="bowtie2_unpaired_reads_rel" wsl="\${WSLsel}" from="\${bowtie2_unpaired_reads}"/>
+<relocate id="bowtie2_output_rel" wsl="\${WSLsel}" from="\${bowtie2_output}"/>
 
 <if id="input_files" sep=" " comp="EQUALS" value1="pairedend" value2="true">
 <const>-1</const>

@@ -29,29 +29,43 @@ ExecutionNode *XMLParserExecution::getExecutionNodes(QDomElement* pElement ) {
 
     if (oChildren.size() > 0)
     {
-        for (size_t i = 0; i < oChildren.length(); ++i)
+
+        if ((oChildren.size() == 1) && (oChildren.at(0).isText() == true))
         {
 
-            QDomElement oChild = oChildren.item(i).toElement();
+            QString sText = pElement->text();
 
-            ExecutionNode* pChild = this->getExecutionNodes(&oChild);
+            if (sText.size() > 0)
+            {
 
-            if (pChild != NULL)
-                pNode->addChild( pChild );
+                ExecutionConstNode* pConstNode = new ExecutionConstNode(NULL);
+                pConstNode->setValue( sText.toStdString() );
+                pNode->addChild( pConstNode );
+
+            }
+
+        } else {
+
+            for (size_t i = 0; i < oChildren.length(); ++i)
+            {
+
+                QDomNode oChildNode = oChildren.item(i);
+                //std::cerr << oChildNode.isText() << std::endl;
+                //std::cerr << oChildNode.isElement() << std::endl;
+
+                QDomElement oChild = oChildren.item(i).toElement();
+
+
+
+                ExecutionNode* pChild = this->getExecutionNodes(&oChild);
+
+                if (pChild != NULL)
+                    pNode->addChild( pChild );
+
+            }
 
         }
-    } else {
 
-        QString sText = pElement->text();
-
-        if (sText.size() > 0)
-        {
-
-            ExecutionConstNode* pConstNode = new ExecutionConstNode(NULL);
-            pConstNode->setValue( sText.toStdString() );
-            pNode->addChild( pConstNode );
-
-        }
 
     }
 

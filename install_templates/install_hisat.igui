@@ -240,7 +240,7 @@ end
 <if comp="EQUALS" value1="hisat_align_nofw" value2="true">--nofw</if>
 <if comp="EQUALS" value1="hisat_align_norc" value2="true">--norc</if>
 
-<if comp="EQUALS" value1="hisat_transcriptome_assembly_stringtie" value2="true">--downstream-transcriptome-assembly</if>
+<if comp="IS_SET" value1="hisat_transcriptome_assembly_stringtie">--downstream-transcriptome-assembly</if>
 <if comp="EQUALS" value1="hisat_transcriptome_assembly_cufflinks" value2="true">--dta-cufflinks</if>
 
 

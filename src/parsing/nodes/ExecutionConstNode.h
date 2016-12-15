@@ -16,6 +16,7 @@ public:
     {
 
         m_sValue = "";
+        m_sTag = "const";
 
         if (pElement != NULL)
             m_sValue = pElement->text().toStdString();

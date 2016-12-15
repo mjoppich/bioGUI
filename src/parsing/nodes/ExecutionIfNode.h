@@ -70,8 +70,9 @@ public:
             LOGERROR("unknown compare method " + m_sCompareMode);
         }
 
+        QString sQCompareMode(m_sCompareMode.c_str());
 
-        if (m_sCompareMode.compare("is_set") != 0)
+        if (sQCompareMode.compare("is_set", Qt::CaseInsensitive) != 0)
         {
 
             if (m_sValue2.compare(m_sNotSet) == 0)
@@ -92,6 +93,7 @@ public:
         std::string sReturn = "";
 
         std::string sValue1 = this->getNodeValueOrValue( m_sValue1, m_sValue1, pID2Node, pInputID2Value, pInputID2Widget);
+        std::string sValue2 = "N/A";
 
         // by default do not evaluate else part
         m_bEvaluateElse = false;
@@ -101,17 +103,35 @@ public:
          * Any method that only needs value1
          *
          */
-
-        if (m_sID.compare("illuminaclip") == 0)
-        {
-            std::cout << m_sID << std::endl;
-        }
-
-        if (m_sCompareMode.compare("is_set") == 0)
+        if (sQCompareMode.compare("is_set", Qt::CaseInsensitive) == 0)
         {
 
             if (sValue1.size() == 0)
                 m_bEvaluateElse = true;
+
+        } else {
+
+            sValue2 = this->getNodeValueOrValue( m_sValue2, m_sValue2, pID2Node, pInputID2Value, pInputID2Widget);
+
+            if (sQCompareMode.compare("EQUALS", Qt::CaseInsensitive) == 0)
+            {
+                Qt::CaseSensitivity eCaseSensitivity = Qt::CaseInsensitive;
+                if (sQCompareMode.compare("equals", Qt::CaseSensitive) == 0)
+                {
+                    eCaseSensitivity = Qt::CaseSensitive;
+                }
+
+
+                if ( QString(sValue1.c_str()).compare( QString(sValue2.c_str()), eCaseSensitivity ) == 0 )
+                {
+                    m_bEvaluateElse = false;
+
+                } else {
+
+                    m_bEvaluateElse = true;
+                }
+
+            }
 
         }
 
@@ -120,32 +140,8 @@ public:
          * Any method that needs value2
          *
          */
-
-        std::string sValue2 = this->getNodeValueOrValue( m_sValue2, m_sValue2, pID2Node, pInputID2Value, pInputID2Widget);
-
         std::cerr << "Val 1: " << sValue1 << std::endl;
         std::cerr << "Val 2: " << sValue2 << std::endl;
-
-        if (QString(m_sCompareMode.c_str()).compare("EQUALS", Qt::CaseInsensitive) == 0)
-        {
-            Qt::CaseSensitivity eCaseSensitivity = Qt::CaseInsensitive;
-            if (m_sCompareMode.compare("equals") == 0)
-            {
-                eCaseSensitivity = Qt::CaseSensitive;
-            }
-
-
-            if ( QString(sValue1.c_str()).compare( QString(sValue2.c_str()), eCaseSensitivity ) == 0 )
-            {
-                m_bEvaluateElse = false;
-
-            } else {
-
-                m_bEvaluateElse = true;
-            }
-
-        }
-
         std::cerr << "Evaluating else node: " << m_bEvaluateElse << std::endl;
 
         sReturn = this->evaluateChildren(pID2Node, pInputID2Value, pInputID2Widget, bEmitSignal);

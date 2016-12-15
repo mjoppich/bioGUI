@@ -76,7 +76,13 @@ public:
         QString qsType = this->getDomElementAttribute(pElement, "TYPE", "STRING");
         this->m_eType = ExecutionNode::cstring2nodetype( qsType.toUpper().toStdString() );
 
-        this->m_sTag = pElement->tagName().toStdString();
+
+        this->m_sTag = "";
+
+        if (pElement != NULL)
+        {
+            m_sTag = pElement->tagName().toStdString();
+        }
 
     }
 

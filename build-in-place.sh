@@ -8,7 +8,7 @@ apt-get -y install libglu1-mesa-dev
 wget http://download.qt.io/official_releases/qt/5.7/5.7.0/qt-opensource-linux-x64-5.7.0.run
 
 chmod u+x qt-opensource-linux-x64-5.7.0.run
-./qt-opensource-linux-x64-5.7.0.run -platform minimal
+./qt-opensource-linux-x64-5.7.0.run --verbose -platform minimal --script ./silent_qt_install.qs
 
 mkdir build
 

@@ -1,6 +1,6 @@
 apt-get update
 
-apt-get -y install build-essential git cmake libssl-dev liblua5.3-dev libgl1-mesa-dev wget libfontconfig1
+apt-get -y install build-essential git cmake libssl-dev liblua5.3-dev libgl1-mesa-dev wget libfontconfig1 libdbus-1-dev
 apt-get -y install libglu1-mesa-dev
 
 #apt-get -y install qtbase5-dev libqt5xmlpatterns5-dev

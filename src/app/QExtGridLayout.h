@@ -20,7 +20,7 @@ class QExtGridLayout : public QGridLayout, public QOrderedLayout {
 public:
 
     QExtGridLayout(int iRows, int iCols)
-            :QGridLayout()
+            :QGridLayout(), QOrderedLayout()
     {
 
 

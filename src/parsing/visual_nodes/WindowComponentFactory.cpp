@@ -85,9 +85,11 @@ void WindowComponentFactory::initializeWidgets() {
         return new WindowWidgetFileSelectBoxNode(this);
     });
 
+
     this->insertWidgetNode("GROUPBOX", [this] () {
         return new WindowWidgetGroupBoxNode(this);
     });
+
 
     this->insertWidgetNode("GROUP", [this] () {
         return new WindowWidgetGroupNode(this);
@@ -153,7 +155,7 @@ WindowWidgetNode* WindowComponentFactory::getCreatorForWidget(QString &sTag) {
     std::map<std::string, std::function<WindowWidgetNode*()>>::iterator oFind = m_mWidgetNodeMap.find(sUpperTag);
     if (!(oFind != m_mWidgetNodeMap.end()))
     {
-        LOGERROR("Invalid Layout Tag: " + sUpperTag);
+        LOGERROR("Invalid Widget Tag: " + sUpperTag);
         return NULL;
     }
 

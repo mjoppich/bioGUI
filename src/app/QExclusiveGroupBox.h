@@ -11,6 +11,7 @@
 #include <QLabel>
 #include <QGridLayout>
 #include "QOrderedLayout.h"
+#include "QExtGridLayout.h"
 
 class QExclusiveGroupBox : public QGroupBox {
 
@@ -285,7 +286,7 @@ protected:
     {
         QLayout* pLayout = this->layout();
 
-        if (QOrderedLayout* pOrdered = dynamic_cast<QOrderedLayout*>(pLayout))
+        if (QExtGridLayout* pOrdered = dynamic_cast<QExtGridLayout*>(pLayout))
         {
             pOrdered->updateWidgets(&m_vWidgets);
         }

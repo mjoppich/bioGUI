@@ -27,6 +27,8 @@ protected:
     {
         QLayout* pLayout = m_pFactory->createLayoutElement(pElement).pElement;
 
+        std::cerr << pLayout << std::endl;
+
         if (pLayout == NULL)
             return LAYOUT_TYPE::NONE;
 
@@ -49,7 +51,7 @@ protected:
     }
 
     WindowNode<QWidget>::CreatedElement createGeneralGroup(QDomElement* pElement,
-                                std::function<QLayout* (QDomElement*, QDomNodeList*)> oLayoutFunc,
+                                std::function<QLayout* (QDomElement*, QDomNodeList*, bool*)> oLayoutFunc,
                                 std::function<QList<QWidget*> (QDomElement*, bool*, int)> oPreProcFunc = [] (QDomElement* pChildNode, bool* pBoolean, int iElement) {return QList<QWidget*>();},
                                 std::function<void (QExclusiveGroupBox*, QLayout*, QWidget*, QWidget*, QStringList*, int)> oPostProcFunc = [] (QExclusiveGroupBox* pBox, QLayout* pLay, QWidget* pWid1, QWidget* pWid2, QStringList* pList, int iElement) {})
     {
@@ -64,6 +66,11 @@ protected:
          */
         QString sTitle = this->getQAttribute(pElement, "title", "");
         pGroupBox->setTitle( sTitle );
+
+        if (sTitle.compare("Step options") == 0)
+        {
+            std::cout << "Sliding Window";
+        }
 
         /*
          * checkable?
@@ -145,8 +152,17 @@ protected:
          * LAYOUT
          */
 
+        bool bHadLayout = false;
+
         QDomNodeList oChildren = pElement->childNodes();
-        QLayout* pLayout = oLayoutFunc(pElement, &oChildren);
+        QLayout* pLayout = oLayoutFunc(pElement, &oChildren, &bHadLayout);
+
+        if (bHadLayout)
+        {
+            // oChildren[0] is a layout node
+
+            std::cerr << oChildren.size() << std::endl;
+        }
 
         /*
          *
@@ -167,6 +183,11 @@ protected:
             if (vChildren.size() == 0)
             {
                 WindowNode<QWidget>::CreatedElement oCreated = m_pFactory->createWidgetElement(&oChildNode);
+
+                if (oCreated.pElement == NULL)
+                {
+                    continue;
+                }
 
                 for (Retriever& oRet : oCreated.vRetriever)
                 {
@@ -206,15 +227,15 @@ protected:
 
         }
 
+        pGroupBox->setLayout(pLayout);
+
+
         // Finally set Layout
         QWidget* pComponentWidget = new QWidget();
 
-        pComponentWidget->setLayout(pLayout);
-
         QLayout* pComponentLayout = new QHBoxLayout();
-        pComponentLayout->addWidget(pComponentWidget);
-
-        pGroupBox->setLayout(pComponentLayout);
+        pComponentLayout->addWidget(pGroupBox);
+        pComponentWidget->setLayout(pComponentLayout);
 
         /*
          * AFTER SETTING LAYOUT CARE FOR VISIBILITY

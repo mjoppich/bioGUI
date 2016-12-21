@@ -34,7 +34,7 @@ public:
         CreatedElement oReturn;
 
 
-        std::function<QLayout* (QDomElement*, QDomNodeList*)> oLayoutFunc = [this] (QDomElement* pDElement, QDomNodeList* pChildren) {
+        std::function<QLayout* (QDomElement*, QDomNodeList*, bool*)> oLayoutFunc = [this] (QDomElement* pDElement, QDomNodeList* pChildren, bool* bHadLayout) {
 
             QLayout* pReturn = NULL;
 
@@ -42,20 +42,71 @@ public:
             {
                 QDomElement oChildNode = pChildren->at(0).toElement();
 
-                WindowComponentFactory oFactory(NULL);
+                LAYOUT_TYPE eLayoutType = this->getLayoutType(&oChildNode);
 
-                if ( oFactory.isLayout( oChildNode.tagName() ) )
+                std::cout << eLayoutType << std::endl;
+
+                if (LAYOUT_TYPE::NONE != eLayoutType)
                 {
 
-                    pReturn = oFactory.createLayoutElement(&oChildNode).pElement;
+                    *bHadLayout = true;
+
+
                     *pChildren = QDomNodeList(pChildren->at(0).childNodes());
+
+                    int iRows = 0;
+                    int iCols = 0;
+
+                    QExtGridLayout* pTestLayout = NULL;
+                    if (eLayoutType == LAYOUT_TYPE::GRID)
+                        pTestLayout = (QExtGridLayout*) m_pFactory->createLayoutElement(&oChildNode).pElement;
+
+
+                    switch ( eLayoutType )
+                    {
+                        case LAYOUT_TYPE::HORIZONTAL:
+
+                            iRows = 1;
+                            iCols = pChildren->size();
+
+                            break;
+
+                        case LAYOUT_TYPE::VERTICAL:
+
+                            iRows = pChildren->size();
+                            iCols = 2;
+
+                            break;
+
+                        case LAYOUT_TYPE::GRID:
+
+
+                            iRows = pTestLayout->getRows();
+                            iCols = pTestLayout->getCols();
+
+                            delete pTestLayout;
+
+                            break;
+
+                        default:
+
+                            std::cout << "default to vertical layout" << std::endl;
+
+                            eLayoutType = LAYOUT_TYPE::VERTICAL;
+                            iRows = pChildren->size();
+                            iCols = 1;
+
+                    }
+
+                    pReturn = new QExtGridLayout(iRows, iCols);
 
                     return pReturn;
                 }
             }
 
-
-            return (QLayout*) new QVBoxLayout();
+            // defaults a vertical layout
+            int iRows = pChildren->size();
+            return (QLayout*) new QExtGridLayout(iRows, 1);
         };
 
         oReturn = this->createGeneralGroup(pDOMElement, oLayoutFunc);

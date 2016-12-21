@@ -38,9 +38,14 @@ public:
     {
 
         WindowLayoutNode* pLayoutNode = this->getCreatorForLayout(sTag);
-        WindowNode<QLayout>::CreatedElement oReturn = pLayoutNode->getWindowElement(pElement);
+        WindowNode<QLayout>::CreatedElement oReturn;
 
-        delete pLayoutNode;
+        if (pLayoutNode != NULL)
+        {
+            oReturn = pLayoutNode->getWindowElement(pElement);
+            delete pLayoutNode;
+        }
+
         return oReturn;
     }
 
@@ -52,11 +57,17 @@ public:
 
     WindowNode<QWidget>::CreatedElement createWidgetElement(QString& sTag, QDomElement* pElement)
     {
-        WindowWidgetNode* pLayoutNode = this->getCreatorForWidget(sTag);
-        WindowNode<QWidget>::CreatedElement oReturn = pLayoutNode->getWindowElement(pElement);
+        WindowWidgetNode* pWidgetNode = this->getCreatorForWidget(sTag);
 
-        delete pLayoutNode;
-        return oReturn;    }
+        WindowNode<QWidget>::CreatedElement oReturn;
+
+        if (pWidgetNode != NULL)
+        {
+            oReturn = pWidgetNode->getWindowElement(pElement);
+            delete pWidgetNode;
+        }
+        return oReturn;
+    }
 
     std::vector<std::string>* getKnownTags()
     {

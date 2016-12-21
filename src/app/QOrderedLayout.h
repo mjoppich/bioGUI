@@ -11,54 +11,6 @@
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 
-class QOrderedHBoxLayout : public QHBoxLayout {
-public:
-    void addNextWidget(QWidget* pWidget)
-    {
-        QWidget* pAddWidget = pWidget;
-
-        this->addWidget(pWidget);
-
-    }
-
-    void removeWidget(QWidget* pWidget)
-    {
-        QHBoxLayout::removeWidget(pWidget);
-    }
-
-protected:
-
-    void addWidgetAtPosition(QWidget* pWidget, size_t iPosition)
-    {
-        pWidget->setParent(this->parentWidget());
-        this->insertWidget(iPosition, pWidget);
-    }
-};
-
-class QOrderedVBoxLayout : public QVBoxLayout {
-public:
-    void addNextWidget(QWidget* pWidget)
-    {
-        QWidget* pAddWidget = pWidget;
-
-        this->addWidget(pWidget);
-
-    }
-
-    void removeWidget(QWidget* pWidget)
-    {
-        QVBoxLayout::removeWidget(pWidget);
-    }
-
-protected:
-
-    void addWidgetAtPosition(QWidget* pWidget, size_t iPosition)
-    {
-        pWidget->setParent(this->parentWidget());
-        this->insertWidget(iPosition, pWidget);
-    }
-};
-
 class QOrderedLayout {
 
 public:
@@ -89,11 +41,66 @@ public:
 
     }
 
+    virtual ~QOrderedLayout()
+    {
+
+    }
+
 
     virtual void addNextWidget(QWidget* pWidget) = 0;
     virtual void addWidgetAtPosition(QWidget* pWidget, size_t iPosition) = 0;
     virtual void removeWidget(QWidget* pWidget) = 0;
 };
+
+class QOrderedHBoxLayout : public QHBoxLayout, public QOrderedLayout {
+public:
+    void addNextWidget(QWidget* pWidget)
+    {
+        QWidget* pAddWidget = pWidget;
+
+        this->addWidget(pWidget);
+
+    }
+
+    void removeWidget(QWidget* pWidget)
+    {
+        QHBoxLayout::removeWidget(pWidget);
+    }
+
+protected:
+
+    void addWidgetAtPosition(QWidget* pWidget, size_t iPosition)
+    {
+        pWidget->setParent(this->parentWidget());
+        this->insertWidget(iPosition, pWidget);
+    }
+};
+
+class QOrderedVBoxLayout : public QVBoxLayout, public QOrderedLayout {
+public:
+    void addNextWidget(QWidget* pWidget)
+    {
+        QWidget* pAddWidget = pWidget;
+
+        this->addWidget(pWidget);
+
+    }
+
+    void removeWidget(QWidget* pWidget)
+    {
+        QVBoxLayout::removeWidget(pWidget);
+    }
+
+protected:
+
+    void addWidgetAtPosition(QWidget* pWidget, size_t iPosition)
+    {
+        pWidget->setParent(this->parentWidget());
+        this->insertWidget(iPosition, pWidget);
+    }
+};
+
+
 
 
 #endif //BIOGUI_QORDEREDLAYOUT_H

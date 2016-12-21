@@ -41,10 +41,6 @@ public:
         QLineEdit* pLineEdit = new QLineEdit();
         QString sPathHint = QDir::currentPath();
 
-        pLineEdit->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
-        pLineButton->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
-
-
         QString sLineEditLocation = this->getQAttribute(pDOMElement, "location", "");
         if (sLineEditLocation.length() > 0)
         {
@@ -151,8 +147,17 @@ public:
 
         });
 
-        pLayout->addWidget( pLineEdit, 0, Qt::AlignLeft );
-        pLayout->addWidget( pFileButton, 0, Qt::AlignLeft );
+        /*
+        pLineEdit->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+        pFileButton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+        //pLineButton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+
+        pLayout->addWidget( pLineEdit, 2, Qt::AlignLeft );
+        pLayout->addWidget( pFileButton, 1, Qt::AlignRight );
+*/
+        pLayout->addWidget( pLineEdit);
+        pLayout->addWidget( pFileButton);
+
         pLineButton->setLayout( pLayout );
 
         oReturn.addRetriever(this->getDomID(pDOMElement) , [pLineEdit] () {return pLineEdit->text().toStdString();});

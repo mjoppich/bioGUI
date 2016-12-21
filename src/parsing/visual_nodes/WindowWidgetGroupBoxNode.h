@@ -33,7 +33,7 @@ public:
 
         CreatedElement oReturn;
 
-        std::function<QLayout* (QDomElement*, QDomNodeList*)> oLayoutFunc = [this] (QDomElement* pDElement, QDomNodeList* pChildren) {
+        std::function<QLayout* (QDomElement*, QDomNodeList*, bool*)> oLayoutFunc = [this] (QDomElement* pDElement, QDomNodeList* pChildren, bool* bHadLayout) {
 
             QLayout* pReturn = NULL;
 
@@ -57,6 +57,7 @@ public:
                 if (LAYOUT_TYPE::NONE != eLayoutType)
                 {
 
+                    *bHadLayout = true;
 
                     *pChildren = QDomNodeList(pChildren->at(0).childNodes());
 

@@ -41,6 +41,10 @@ public:
         QLineEdit* pLineEdit = new QLineEdit();
         QString sPathHint = QDir::currentPath();
 
+        pLineEdit->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
+        pLineButton->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
+
+
         QString sLineEditLocation = this->getQAttribute(pDOMElement, "location", "");
         if (sLineEditLocation.length() > 0)
         {
@@ -61,11 +65,44 @@ public:
 
         pFileButton->connect(pFileButton,&QAbstractButton::clicked,[pLineEdit, bMultiples, bOutput, bFolder, sFileDelim, sFileFilter, sPathHint] (bool bChecked){
 
+
+            QString sLocalPathHint = sPathHint;
+
+            QString sLineContent = "";
+
+            if (pLineEdit != NULL)
+            {
+                sLineContent = pLineEdit->text();
+
+                if (sLineContent.contains(','))
+                {
+                    QStringList vLines = sLineContent.split(',');
+                    sLineContent = vLines[0];
+                }
+
+                QFileInfo oLineEditInfo(sLineContent);
+
+                if (oLineEditInfo.isDir())
+                {
+                    sLocalPathHint = sLineContent;
+                } else {
+
+                    if (oLineEditInfo.isFile())
+                    {
+                        sLocalPathHint = oLineEditInfo.dir().absolutePath();
+                    }
+
+                }
+
+            }
+
             if (bFolder)
             {
 
-                QString sFolder = QFileDialog::getExistingDirectory(0, ("Select Output Folder"), sPathHint);
-                pLineEdit->setText(sFolder);
+                QString sFolder = QFileDialog::getExistingDirectory(0, ("Select Output Folder"), sLocalPathHint);
+
+                if (sFolder.size() != 0)
+                    pLineEdit->setText(sFolder);
 
             } else {
 
@@ -79,8 +116,10 @@ public:
 
                     } else {
 
-                        QString sFileName = QFileDialog::getSaveFileName(0, "Select Input File", sPathHint, sFileFilter);
-                        pLineEdit->setText(sFileName);
+                        QString sFileName = QFileDialog::getSaveFileName(0, "Select Input File", sLocalPathHint, sFileFilter);
+
+                        if (sFileName.size() != 0)
+                            pLineEdit->setText(sFileName);
 
                     }
 
@@ -89,14 +128,18 @@ public:
 
                     if (bMultiples)
                     {
-                        QStringList vSelectedFiles = QFileDialog::getOpenFileNames(0, "Select Input Files", sPathHint, sFileFilter);
+                        QStringList vSelectedFiles = QFileDialog::getOpenFileNames(0, "Select Input Files", sLocalPathHint, sFileFilter);
                         QString sFiles = vSelectedFiles.join(sFileDelim);
-                        pLineEdit->setText(sFiles);
+
+                        if (sFiles.size() != 0)
+                            pLineEdit->setText(sFiles);
 
                     } else {
 
-                        QString sFileName = QFileDialog::getOpenFileName(0, "Select Input File", sPathHint, sFileFilter);
-                        pLineEdit->setText(sFileName);
+                        QString sFileName = QFileDialog::getOpenFileName(0, "Select Input File", sLocalPathHint, sFileFilter);
+
+                        if (sFileName.size() != 0)
+                            pLineEdit->setText(sFileName);
 
                     }
 

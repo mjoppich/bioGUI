@@ -228,28 +228,28 @@ end
 <const>-S</const>
 <value from="hisat_output_rel"/>
 
-<if comp="EQUALS" value1="hisat_input_f" value2="true">-f</if>
-<if comp="EQUALS" value1="hisat_input_r" value2="true">-r</if>
+<if comp="IS_SET" value1="hisat_input_f" >-f</if>
+<if comp="IS_SET" value1="hisat_input_r" >-r</if>
 
-<if comp="EQUALS" value1="hisat_input_trim5" value2="true"><value from="hisat_input_trim5_bases"/></if>
-<if comp="EQUALS" value1="hisat_input_trim3" value2="true"><value from="hisat_input_trim3_bases"/></if>
+<if comp="IS_SET" value1="hisat_input_trim5" ><value from="hisat_input_trim5_bases"/></if>
+<if comp="IS_SET" value1="hisat_input_trim3" ><value from="hisat_input_trim3_bases"/></if>
 
-<if comp="EQUALS" value1="hisat_input_phred33" value2="true">--phred33</if>
-<if comp="EQUALS" value1="hisat_input_phred64" value2="true">--phred64</if>
+<if comp="IS_SET" value1="hisat_input_phred33" >--phred33</if>
+<if comp="IS_SET" value1="hisat_input_phred64" >--phred64</if>
 
-<if comp="EQUALS" value1="hisat_align_nofw" value2="true">--nofw</if>
-<if comp="EQUALS" value1="hisat_align_norc" value2="true">--norc</if>
+<if comp="IS_SET" value1="hisat_align_nofw" >--nofw</if>
+<if comp="IS_SET" value1="hisat_align_norc" >--norc</if>
 
 <if comp="IS_SET" value1="hisat_transcriptome_assembly_stringtie">--downstream-transcriptome-assembly</if>
-<if comp="EQUALS" value1="hisat_transcriptome_assembly_cufflinks" value2="true">--dta-cufflinks</if>
+<if comp="IS_SET" value1="hisat_transcriptome_assembly_cufflinks" >--dta-cufflinks</if>
 
 
-<if comp="EQUALS" value1="hisat_input_max_reports" value2="true"><value from="hisat_input_max_reports_num"/></if>
+<if comp="IS_SET" value1="hisat_input_max_reports" ><value from="hisat_input_max_reports_num"/></if>
 
-<if comp="EQUALS" value1="hisat_align_no-softclip" value2="true">--no-softclip</if>
-<if comp="EQUALS" value1="hisat_align_no-spliced" value2="true">--no-spliced</if>
-<if comp="EQUALS" value1="hisat_align_no-mixed" value2="true">--no-mixed</if>
-<if comp="EQUALS" value1="hisat_align_no-discordant" value2="true">--no-discordant</if>
+<if comp="IS_SET" value1="hisat_align_no-softclip" >--no-softclip</if>
+<if comp="IS_SET" value1="hisat_align_no-spliced" >--no-spliced</if>
+<if comp="IS_SET" value1="hisat_align_no-mixed" >--no-mixed</if>
+<if comp="IS_SET" value1="hisat_align_no-discordant" >--no-discordant</if>
 
 <value from="hisat_align_mate_orientations"/>
 

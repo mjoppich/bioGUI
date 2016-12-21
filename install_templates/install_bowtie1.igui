@@ -241,28 +241,28 @@ end
 <value from="options"/>
 <value from="bowtie2_adv_specific_options"/>
 
-<if comp="EQUALS" value1="bowtie2_input_f" value2="true">-f</if>
-<if comp="EQUALS" value1="bowtie2_input_r" value2="true">-r</if>
+<if comp="IS_SET" value1="bowtie2_input_f" >-f</if>
+<if comp="IS_SET" value1="bowtie2_input_r" >-r</if>
 
-<if comp="EQUALS" value1="bowtie2_input_trim5" value2="true"><value from="bowtie2_input_trim5_bases"/></if>
-<if comp="EQUALS" value1="bowtie2_input_trim3" value2="true"><value from="bowtie2_input_trim3_bases"/></if>
+<if comp="IS_SET" value1="bowtie2_input_trim5" ><value from="bowtie2_input_trim5_bases"/></if>
+<if comp="IS_SET" value1="bowtie2_input_trim3" ><value from="bowtie2_input_trim3_bases"/></if>
 
-<if comp="EQUALS" value1="bowtie2_input_phred33" value2="true">--phred33</if>
-<if comp="EQUALS" value1="bowtie2_input_phred64" value2="true">--phred64</if>
+<if comp="IS_SET" value1="bowtie2_input_phred33" >--phred33</if>
+<if comp="IS_SET" value1="bowtie2_input_phred64" >--phred64</if>
 
-<if comp="EQUALS" value1="bowtie2_align_nofw" value2="true">--nofw</if>
-<if comp="EQUALS" value1="bowtie2_align_norc" value2="true">--norc</if>
+<if comp="IS_SET" value1="bowtie2_align_nofw" >--nofw</if>
+<if comp="IS_SET" value1="bowtie2_align_norc" >--norc</if>
 
 
-<if comp="EQUALS" value1="bowtie2_input_max_reports" value2="true"><value from="bowtie2_input_max_reports_num"/></if>
+<if comp="IS_SET" value1="bowtie2_input_max_reports" ><value from="bowtie2_input_max_reports_num"/></if>
 
-<if comp="EQUALS" value1="bowtie2_align_no-softclip" value2="true">--no-softclip</if>
-<if comp="EQUALS" value1="bowtie2_align_no-spliced" value2="true">--no-spliced</if>
-<if comp="EQUALS" value1="bowtie2_align_no-mixed" value2="true">--no-mixed</if>
-<if comp="EQUALS" value1="bowtie2_align_no-discordant" value2="true">--no-discordant</if>
+<if comp="IS_SET" value1="bowtie2_align_no-softclip" >--no-softclip</if>
+<if comp="IS_SET" value1="bowtie2_align_no-spliced" >--no-spliced</if>
+<if comp="IS_SET" value1="bowtie2_align_no-mixed" >--no-mixed</if>
+<if comp="IS_SET" value1="bowtie2_align_no-discordant" >--no-discordant</if>
 
-<if sep=" " comp="EQUALS" value1="pairedend" value2="true">
-	<if comp="EQUALS" value1="bowtie2_align_no-discordant" value2="true">--no-discordant</if>
+<if sep=" " comp="IS_SET" value1="pairedend">
+	<if comp="IS_SET" value1="bowtie2_align_no-discordant">--no-discordant</if>
 	<value from="bowtie2_align_mate_orientations"/>
 </if>
 

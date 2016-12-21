@@ -77,9 +77,13 @@ cat << EOF | netcat $IP $PORT
   </group>
   
   <group title="Output">
-	<filedialog id="stringtie_output_gtf">Assembled GTF File</filedialog>
+	<filedialog id="stringtie_output_gtf" output="true">Assembled GTF File</filedialog>
 	<label>Name Prefix for GTF Entries</label><input id="stringtie_prefix_entries"></input>
 	<filedialog id="stringtie_ballgown_path" output="true" folder="true">Ballgown ctab path</filedialog>
+  </group>
+  
+  <group id="stringtie_merge_sel" title="Merge" checkable="true">
+  	<filedialog id="stringtie_merge_list">Merge list</filedialog>
   </group>
     
   <group title="Advanced">
@@ -105,9 +109,16 @@ cat << EOF | netcat $IP $PORT
 <relocate id="stringtie_input_reference_rel" wsl="\${WSLsel}" from="\${stringtie_input_reference}"/>
 <relocate id="stringtie_aligned_bam_rel" wsl="\${WSLsel}" from="\${stringtie_aligned_bam}"/>
 <relocate id="stringtie_ballgown_path_rel" wsl="\${WSLsel}" from="\${stringtie_ballgown_path}"/>
+<relocate id="stringtie_output_gtf_rel" wsl="\${WSLsel}" from="\${stringtie_output_gtf}"/>
+<relocate id="stringtie_merge_list_rel" wsl="\${WSLsel}" from="\${stringtie_merge_list}"/>
+
+
 
 <add id="cl" sep=" ">
-<value from="stringtie_aligned_bam_rel"/>
+<if value1="stringtie_merge_sel" value2="true" comp="equals">--merge</if>
+
+<const>-o</const>
+<value from="stringtie_output_gtf_rel"/>
 
 <if value1="stringtie_input_reference_rel" comp="IS_SET" sep=" ">
 	<const>-G</const>
@@ -131,6 +142,10 @@ cat << EOF | netcat $IP $PORT
 <value from="stringtie_only_ref_transcripts"/>
 
 <value from="stringtie_advanced_options"/>
+
+<value from="stringtie_aligned_bam_rel"/>
+
+<if value1="stringtie_merge_sel" value="true" comp="equals"><value from="stringtie_merge_list_rel"/></if>
 
 </add>
 

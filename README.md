@@ -69,9 +69,9 @@ The _window_ tag (and its children) define the **visual** appearance of a templa
 Once starting a program, the _execution_ part can be used to assemble the command line arguments for the application to start.
 For this a _network_-like structure is used.
 Each element in the execution part can be seen as a node.
-A node can refer its value from another node, but it can also manipulate or extend values (e.g. by combining multiple nodes in an `&lt;add>`-node).
+A node can refer its value from another node, but it can also manipulate or extend values (e.g. by combining multiple nodes in an `<add>`-node).
 
-For highest flexibility, `&lt;script>` nodes can refer to or contain **LUA** code. For instance
+For highest flexibility, `<script>` nodes can refer to or contain **LUA** code. For instance
 
 ``` XML
 <const id="node1">some_file.tex</const>

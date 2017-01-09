@@ -1,4 +1,4 @@
-# &lt;bioGUI: a universal GUI for CLI applications
+# bioGUI: a universal GUI for CLI applications
 
 With bioGUI developers can easily build a graphical-user-interface (GUI) for their command-line only application.
 Such a GUI then enables many more people to use their software.
@@ -50,7 +50,7 @@ _README to be continued_
 Templates are structued _XML_ files.
 
 Each template is defined as a root tag with the following structure:
-`&lt;template description="a descriptive text" title="a title">`
+`<template description="a descriptive text" title="a title">`
 
 Where the description is shown in the description line in bioGUI and the title is shown in the title line in bioGUI.
 
@@ -58,8 +58,8 @@ If the child element `window` does not have a title set, the template title is a
 
 Within the template tag two child elements are expected:
 
-	* `&lt;window width="..." height="..." title="...">`
-	* `&lt;execution>`
+	* `<window width="..." height="..." title="...">`
+	* `<execution>`
 
 The window may have additional attributes such as _width_ and _height_ defining the minimal width/height of the window.
 The title is shown in the title of the window.
@@ -74,10 +74,10 @@ A node can refer its value from another node, but it can also manipulate or exte
 For highest flexibility, `&lt;script>` nodes can refer to or contain **LUA** code. For instance
 
 ``` XML
-&lt;const id="node1">some_file.tex&lt;/const>
+<const id="node1">some_file.tex</const>
 
-&lt;script argv="${node1},pdf">
-&lt;![CDATA[
+<script argv="${node1},pdf">
+<![CDATA[
 
 function evaluate(arg1, arg2)
 	return(string.sub(arg1, 0, -3) .. arg2)
@@ -85,7 +85,7 @@ end
 
 
 ]]>
-&lt;/script>
+</script>
 ```
 
 would first split all supplied arguments from the script _argv_ attribute and resolve those, which refer to another node (indicated by `${nodeid}`).

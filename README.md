@@ -170,6 +170,7 @@ Program arguments are provided by the _argv_ attribute (see the above example).
 This project requires a static LUA library to build.
 For the release of this software, LuaBinaries static liblua53.a was used and requires the following copyright notice to be included:
 
+```
 Copyright © 2005-2016 Tecgraf/PUC-Rio and the Kepler Project.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
@@ -177,6 +178,7 @@ Permission is hereby granted, free of charge, to any person obtaining a copy of 
 The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+```
 
 ## OpenSSL
 This project also requires a static OpenSSL library to build.
@@ -186,6 +188,7 @@ This product includes software developed by the OpenSSL Project for use in the O
 This product includes cryptographic software written by Eric Young (eay@cryptsoft.com).
 This product includes software written by Tim Hudson (tjh@cryptsoft.com).
 
+```
 LICENSE ISSUES
 ==============
 
@@ -306,3 +309,4 @@ Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  derivative of this code cannot be changed.  i.e. this code cannot simply be
  copied and put under another distribution licence
  [including the GNU Public Licence.]
+ ```

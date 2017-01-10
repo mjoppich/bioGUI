@@ -160,7 +160,11 @@ Program arguments are provided by the _argv_ attribute (see the above example).
 |&lt;script>|	[ARGV, ID, SCRIPT, TYPE]|
 |&lt;value>|	[FOR, FROM, ID, TYPE]|
 
-# Dependencies of Releases
+# Licenses
+
+## bioGUI
+
+
 
 ## LUA
 This project requires a static LUA library to build.
@@ -178,18 +182,22 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 This project also requires a static OpenSSL library to build.
 For the release of this software, OpenSSL static libraries were used and require the following copyright notice to be included:
 
-  LICENSE ISSUES
-  ==============
+This product includes software developed by the OpenSSL Project for use in the OpenSSL Toolkit (http://www.openssl.org/)
+This product includes cryptographic software written by Eric Young (eay@cryptsoft.com).
+This product includes software written by Tim Hudson (tjh@cryptsoft.com).
 
-  The OpenSSL toolkit stays under a dual license, i.e. both the conditions of
-  the OpenSSL License and the original SSLeay license apply to the toolkit.
-  See below for the actual license texts.
+LICENSE ISSUES
+==============
 
-  OpenSSL License
-  ---------------
+The OpenSSL toolkit stays under a dual license, i.e. both the conditions of
+the OpenSSL License and the original SSLeay license apply to the toolkit.
+See below for the actual license texts.
+
+OpenSSL License
+---------------
 
 ====================================================================
- Copyright (c) 1998-2016 The OpenSSL Project.  All rights reserved.
+Copyright (c) 1998-2016 The OpenSSL Project.  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
  modification, are permitted provided that the following conditions

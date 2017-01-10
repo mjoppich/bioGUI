@@ -17,6 +17,8 @@
  *
  */
 
+#include "TCPExtendedBuffer.h"
+
 QBufferTcpServer::QBufferTcpServer(QString sHost, int iPort, TCPExtendedBuffer* pParent)
 : QTcpServer()
 {

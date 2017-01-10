@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="CPP_MODULE" version="4">
+  <component name="NewModuleRootManager">
+    <content url="file://$USER_HOME$/.CLion2016.2/system/cmake/generated/bioGUI-88542f02/88542f02/Debug/bioGUI_automoc.cpp">
+      <sourceFolder url="file://$USER_HOME$/.CLion2016.2/system/cmake/generated/bioGUI-88542f02/88542f02/Debug/bioGUI_automoc.cpp" isTestSource="false" />
+    </content>
+    <content url="file://$USER_HOME$/.CLion2016.2/system/cmake/generated/bioGUI-88542f02/88542f02/Debug/parsing_automoc.cpp">
+      <sourceFolder url="file://$USER_HOME$/.CLion2016.2/system/cmake/generated/bioGUI-88542f02/88542f02/Debug/parsing_automoc.cpp" isTestSource="false" />
+    </content>
+    <content url="file://$USER_HOME$/.CLion2016.2/system/cmake/generated/bioGUI-88542f02/88542f02/MinSizeRel/bioGUI_automoc.cpp">
+      <sourceFolder url="file://$USER_HOME$/.CLion2016.2/system/cmake/generated/bioGUI-88542f02/88542f02/MinSizeRel/bioGUI_automoc.cpp" isTestSource="false" />
+    </content>
+    <content url="file://$USER_HOME$/.CLion2016.2/system/cmake/generated/bioGUI-88542f02/88542f02/MinSizeRel/parsing_automoc.cpp">
+      <sourceFolder url="file://$USER_HOME$/.CLion2016.2/system/cmake/generated/bioGUI-88542f02/88542f02/MinSizeRel/parsing_automoc.cpp" isTestSource="false" />
+    </content>
+    <content url="file://$USER_HOME$/.CLion2016.2/system/cmake/generated/bioGUI-88542f02/88542f02/RelWithDebInfo/bioGUI_automoc.cpp">
+      <sourceFolder url="file://$USER_HOME$/.CLion2016.2/system/cmake/generated/bioGUI-88542f02/88542f02/RelWithDebInfo/bioGUI_automoc.cpp" isTestSource="false" />
+    </content>
+    <content url="file://$USER_HOME$/.CLion2016.2/system/cmake/generated/bioGUI-88542f02/88542f02/RelWithDebInfo/parsing_automoc.cpp">
+      <sourceFolder url="file://$USER_HOME$/.CLion2016.2/system/cmake/generated/bioGUI-88542f02/88542f02/RelWithDebInfo/parsing_automoc.cpp" isTestSource="false" />
+    </content>
+    <content url="file://$USER_HOME$/.CLion2016.2/system/cmake/generated/bioGUI-88542f02/88542f02/Release/bioGUI_automoc.cpp">
+      <sourceFolder url="file://$USER_HOME$/.CLion2016.2/system/cmake/generated/bioGUI-88542f02/88542f02/Release/bioGUI_automoc.cpp" isTestSource="false" />
+    </content>
+    <content url="file://$USER_HOME$/.CLion2016.2/system/cmake/generated/bioGUI-88542f02/88542f02/Release/parsing_automoc.cpp">
+      <sourceFolder url="file://$USER_HOME$/.CLion2016.2/system/cmake/generated/bioGUI-88542f02/88542f02/Release/parsing_automoc.cpp" isTestSource="false" />
+    </content>
+    <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/src/Logging.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/bioGUI.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/parsing/XMLParserWindow.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/parsing/visual_nodes/WindowWidgetStreamBoxNode.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/parsing/visual_nodes/WindowWidgetRadioButtonNode.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/parsing/visual_nodes/WindowWidgetFileSelectBoxNode.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/parsing/visual_nodes/WindowWidgetInputNode.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/parsing/visual_nodes/WindowWidgetFileDialogNode.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/parsing/visual_nodes/WindowLayoutHorizontalNode.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/parsing/visual_nodes/WindowNode.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/parsing/visual_nodes/WindowLayoutVerticalNode.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/parsing/visual_nodes/WindowWidgetStreamNode.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/parsing/visual_nodes/WindowWidgetNode.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/parsing/visual_nodes/WindowWidgetSliderNode.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/parsing/visual_nodes/WindowWidgetCheckBoxNode.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/parsing/visual_nodes/WindowLayoutGridNode.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/parsing/visual_nodes/WindowWidgetImageNode.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/parsing/visual_nodes/WindowComponentFactory.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/parsing/visual_nodes/WindowWidgetInputNode.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/parsing/visual_nodes/WindowWidgetFileListNode.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/parsing/visual_nodes/WindowWidgetComboboxNode.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/parsing/visual_nodes/WindowComponentFactory.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/parsing/visual_nodes/WindowWidgetGroupBoxNode.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/parsing/visual_nodes/WindowWidgetComboitemNode.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/parsing/visual_nodes/WindowWidgetGeneralGroupNode.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/parsing/visual_nodes/WindowWidgetWindowNode.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/parsing/visual_nodes/WindowWidgetGroupNode.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/parsing/visual_nodes/WindowWidgetActionNode.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/parsing/visual_nodes/WindowWidgetSlideritemNode.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/parsing/visual_nodes/WindowLayoutNode.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/parsing/visual_nodes/WindowWidgetLabelNode.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/parsing/XMLParserInfo.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/parsing/nodes/ExecutionScriptNode.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/parsing/nodes/ExecutionConstNode.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/parsing/nodes/ExecutionParseFileNode.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/parsing/nodes/ExecutionNode.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/parsing/nodes/ExecutionNetwork.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/parsing/nodes/ExecutionPlaceholderNode.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/parsing/nodes/ExecutionAddNode.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/parsing/nodes/ExecutionHTTPExecuteNode.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/parsing/nodes/ExecutionPlaceholderNode.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/parsing/nodes/ExecutionValueNode.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/parsing/nodes/ExecutionPathRelocateNode.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/parsing/nodes/ExecutionSaveFileNode.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/parsing/nodes/ExecutionEnvNode.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/parsing/nodes/ExecutionSaveFileNode.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/parsing/nodes/ExecutionOrderedAddNode.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/parsing/nodes/ExecutionValueNode.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/parsing/nodes/ExecutionStringReplaceNode.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/parsing/nodes/ExecutionEnvNode.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/parsing/nodes/ExecutionIfNode.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/parsing/nodes/ExecutionOutputNode.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/parsing/nodes/ExecutionExecuteNode.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/parsing/nodes/ExecutionHTTPExecuteNode.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/parsing/nodes/ExecutionExecuteNode.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/parsing/nodes/ExecutionFileNode.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/parsing/nodes/ExecutionPathRelocateNode.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/parsing/nodes/ExecutionFileNode.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/parsing/nodes/ExecutionConstNode.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/parsing/nodes/ExecutionOrderedAddNode.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/parsing/nodes/ExecutionNode.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/parsing/nodes/ExecutionStringReplaceNode.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/parsing/nodes/ExecutionExecutableNode.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/parsing/nodes/ExecutionScriptNode.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/parsing/nodes/ExecutionParseFileNode.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/parsing/nodes/ExecutionNetwork.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/parsing/nodes/ExecutionMathNode.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/parsing/nodes/ExecutionOutputNode.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/parsing/nodes/ExecutionIfNode.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/parsing/nodes/ExecutionAddNode.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/parsing/XMLParser.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/parsing/XMLParserInfo.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/parsing/XMLParserWindow.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/parsing/XMLParserExecution.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/parsing/XMLParser.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/parsing/XMLParserExecution.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/main.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/Maths.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/Logging.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/bioGUIapp.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/bioGUI.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/Validable.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/bioGUIapp.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/app/QExtGridLayout.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/app/ExtendedProcessBuffer.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/app/QAbstractButtonItem.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/app/ExecuteThread.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/app/QComboItem.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/app/TCPExtendedBuffer.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/app/ExtendedThreadBuffer.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/app/QExclusiveGroupBox.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/app/ExtendedProcessBuffer.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/app/QStringTableWidgetItem.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/app/TCPExtendedBuffer.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/app/QComboItem.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/app/AdvancedStreamBox.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/app/QOrderedLayout.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/app/QNetworkReplyTimer.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/app/TemplateListDelegate.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/app/QDownloadTemplatesWindow.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/app/QClickableLabel.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/app/QSortableFileList.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/app/ExecutionRunThread.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/app/TemplateListDelegate.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/app/QClickableLabel.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/app/QExtendedCheckBox.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/app/QExtGridLayout.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/app/QOrderedLayout.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/app/TemplateListWidget.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/app/QExclusiveGroupBox.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/app/ExtendedStdBuffer.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/app/QDownloadTemplatesWindow.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/app/ExecutionRunThread.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/app/QAbstractButtonItem.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/app/QSortableFileList.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/app/ExtendedThreadBuffer.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/app/ExtendedStdBuffer.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/app/ExecuteThread.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/app/TemplateListWidget.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/app/ProcessLauncher.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/app/QStringTableWidgetItem.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/app/QExtendedRadioButton.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/app/AdvancedStreamBox.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/app/ProcessLauncher.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/CMakeLists.txt" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/res/icon.rc" isTestSource="false" />
+    </content>
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module-library">
+      <library name="Header Search Paths">
+        <CLASSES>
+          <root url="file://C:/lua53/include" />
+          <root url="file://C:/Qt/Qt5.7.0/Tools/mingw530_32/lib/gcc/i686-w64-mingw32/5.3.0/include-fixed" />
+          <root url="file://C:/Qt/Qt5.7.0/Tools/mingw530_32/lib/gcc/i686-w64-mingw32/5.3.0/include" />
+          <root url="file://C:/Qt/Qt5.7.0/Tools/mingw530_32/i686-w64-mingw32/include" />
+          <root url="file://C:/Qt/Qt5.7.0/5.7/mingw53_32/include" />
+          <root url="file://C:/Qt/Qt5.7.0/5.7/mingw53_32/mkspecs/win32-g++" />
+        </CLASSES>
+        <SOURCES>
+          <root url="file://C:/lua53/include" />
+          <root url="file://C:/Qt/Qt5.7.0/Tools/mingw530_32/lib/gcc/i686-w64-mingw32/5.3.0/include-fixed" />
+          <root url="file://C:/Qt/Qt5.7.0/Tools/mingw530_32/lib/gcc/i686-w64-mingw32/5.3.0/include" />
+          <root url="file://C:/Qt/Qt5.7.0/Tools/mingw530_32/i686-w64-mingw32/include" />
+          <root url="file://C:/Qt/Qt5.7.0/5.7/mingw53_32/include" />
+          <root url="file://C:/Qt/Qt5.7.0/5.7/mingw53_32/mkspecs/win32-g++" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+  </component>
+</module>

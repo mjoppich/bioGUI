@@ -1,0 +1,98 @@
+<!--<?xml version="1.0" encoding="UTF-8"?>-->
+<template description="Install Template Module" title="Install Template Module">
+
+<window width="500" height="900" title="Install Modules">
+
+  <vgroup>
+
+  <group>
+	<label>Install Program:</label>
+  <filelist id="prog" ext="*.igui"/>
+  </group>
+
+  <group title="Install Options">
+  <label>Install Program to WSL?</label>
+    <checkbox id="WSLsel" value="true" selectonwindows="true">Use WSL?</checkbox>
+    <label>Install Location:</label>
+    <input id="instpath">~/bioGUI/progs/</input>
+    <label>sudo Password</label>
+    <input id="sudopw" type="password"></input>
+
+	<checkbox id="addtopath" value="1" value-unselected="0" selected="true">Add program folder to PATH?</checkbox>
+  </group>
+
+  <group id="templpath_sel" checkable="true" title="Store template?">
+    <filedialog id="templpath" output="true" filter="*.gui" location="./templates/">Save Template to</filedialog>
+  </group>
+
+
+	<action id="runprog" hint="Click here to install program into install location">Install Program</action>  
+  
+    <streambox id="output1">
+    <stream id="outputstream1">Normal Log</stream>
+	<stream id="outputstream2">Error Log</stream>
+	<stream id="savetemplate">Template</stream>
+    </streambox>
+
+  </vgroup>
+
+</window>
+
+<execution>
+
+<if id="prog_wsl" comp="is_set" value1="WSLsel" value2="true">
+<relocate from="${prog}" wsl="true"/>
+<else>
+<value from="prog"/>
+</else>
+</if>
+
+<env id="localip" get="IPv4"/>
+
+<add id="cl" sep=" ">
+<value from="prog_wsl"/>
+<value from="instpath"/>
+<add sep="">
+<const>&quot;</const>
+<value from="sudopw"/>
+<const>&quot;</const>
+</add>
+<value from="addtopath"/>
+<if comp="EQUALS" value1="templpath_sel" value2="true" sep=" ">
+<value from="localip"/>
+<const>33333</const>
+</if>
+</add>
+
+<add id="template_path" sep="">
+<if comp="EQUALS" value1="templpath_sel" value2="true">
+<script argv="${templpath}">
+<![CDATA[
+function evaluate(arg1)
+
+        ext=".gui"
+	
+	if ( string.sub(arg1,-string.len(ext))==ext ) then
+		return(arg1)
+	else
+		return(arg1 .. ".gui")
+	end
+end
+]]>
+</script>
+</if>
+</add>
+  
+<execute location="" exec="dos2unix" param="${prog_wsl}" wsl="WSLsel">
+    <output type="STD" id="stdout" color="red" to="outputstream1" />
+</execute>
+
+  <execute location="" exec="sh" wsl="WSLsel" param="${cl}">
+    <output id="outcout" type="COUT" color="green" to="outputstream1" />
+	<output id="outcout2" type="CERR" color="red" to="outputstream2" />
+	<output type="TCP" host="" port="33333" color="blue" to="savetemplate" />
+	<output deferred="true" type="FILE" from="template_path" to="savetemplate" />
+  </execute>
+   
+</execution>
+</template>

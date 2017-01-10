@@ -1,18 +1,19 @@
-#Splitter Application Package - some toolkit to work with gtf/gff files
-#Copyright (C) 2015  Markus Joppich
+
+#  bioGUI - a new universal GUI for bioinformatic applications
+#  Copyright (C) 2016  Markus Joppich
 #
-#The Splitter Application Package is free software: you can redistribute it and/or modify
-#it under the terms of the GNU General Public License as published by
-#the Free Software Foundation, either version 3 of the License, or
-#(at your option) any later version.
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
 #
-#The Splitter Application Package is distributed in the hope that it will be useful,
-#but WITHOUT ANY WARRANTY; without even the implied warranty of
-#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#GNU General Public License for more details.
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
 #
-#You should have received a copy of the GNU General Public License
-#along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 cmake_minimum_required(VERSION 3.1)
 
@@ -32,12 +33,13 @@ if (OPENMP_FOUND)
 #     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS} ")
 endif()
 
-set(ENV{LUA_DIR} "D:/libraries/lua-5.3.3/;C:/lua53/src")
+set(ENV{LUA_DIR} "D:/libraries/lua-5.3.3/;C:/lua53/")
 find_package(Lua REQUIRED)
 include_directories(${LUA_INCLUDE_DIR})
 
 message(WARNING "   *** Lua include: ${LUA_INCLUDE_DIR}")
 message(WARNING "   *** Lua lib: ${LUA_LIBRARIES}")
+message(WARNING "   *** Lua DLL dir: ${LUA_DLL_DIR}")
 
 # Search OpenSSL
 #set(OPENSSL_USE_STATIC_LIBS TRUE)
@@ -53,10 +55,6 @@ if( OPENSSL_FOUND )
     message(WARNING ${OPENSSL_SSL_LIBRARY})
     message(WARNING ${OPENSSL_CRYPTO_LIBRARY})
 
-    set(MYOPENSSL_LIBS ${OPENSSL_LIBRARIES})
-    message(WARNING ${MYOPENSSL_LIBS})
-
-
 else()
     # Error; with REQUIRED, pkg_search_module() will throw an error by it's own
 endif()
@@ -68,8 +66,8 @@ if ( CMAKE_SYSTEM_NAME STREQUAL "Windows" OR CYGWIN OR MINGW)
     set(QT_QMAKE_EXECUTABLE /usr/lib/qt5/bin/qmake.exe)
 
     if (MINGW)
-        set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS}") # -mwindows
-        SET(ENV{Qt5_DIR} "C:\\Qt\\5.7\\mingw53_32\\")
+        set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -mwindows")
+        SET(ENV{Qt5_DIR} "C:\\Qt\\Qt5.7.0\\5.7\\mingw53_32")
         #set(QT_QMAKE_EXECUTABLE G:\\Qt\\5.6\\mingw49_32\\bin\\qmake.exe)
     endif()
 
@@ -117,14 +115,14 @@ file(GLOB parsinglib_SRC
 add_library(parsing ${parsinglib_SRC} ${parsinglib_H} ${parsinglib_nodes_H} )
 target_include_directories (parsing PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
-install(TARGETS parsing DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/lib)
-install(FILES ${parsinglib_H} DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/include/parsing)
-install(FILES ${parsinglib_nodes_H} DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/include/parsing/nodes)
+#install(TARGETS parsing DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/lib)
+#install(FILES ${parsinglib_H} DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/include/parsing)
+#install(FILES ${parsinglib_nodes_H} DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/include/parsing/nodes)
 
 qt5_use_modules(parsing Core Widgets Gui Xml XmlPatterns Network)
 
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../splitter/include)
+#include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../splitter/include)
 
 #ADD_LIBRARY(splitutils STATIC IMPORTED)
 #SET_TARGET_PROPERTIES(splitutils PROPERTIES IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/../splitter/lib/libsplitutils.a)
@@ -147,7 +145,7 @@ file(GLOB bioGUI_SRC
 
 #set(CMAKE_VERBOSE_MAKEFILE "TRUE")
 
-ADD_EXECUTABLE(bioGUI ${bioGUI_SRC} ${bioGUI_H} ${bioGUIapp_H} )
+ADD_EXECUTABLE(bioGUI ${bioGUI_SRC} ${bioGUI_H} ${bioGUIapp_H} ${CMAKE_CURRENT_SOURCE_DIR}/res/icon.rc)
 target_include_directories(bioGUI PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
 ADD_LIBRARY(mylibeay STATIC IMPORTED)
@@ -156,19 +154,36 @@ SET_TARGET_PROPERTIES(mylibeay PROPERTIES IMPORTED_LOCATION ${OPENSSL_SSL_LIBRAR
 ADD_LIBRARY(myssleay STATIC IMPORTED)
 SET_TARGET_PROPERTIES(myssleay PROPERTIES IMPORTED_LOCATION ${OPENSSL_CRYPTO_LIBRARY})
 
-set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+ADD_LIBRARY(lualib STATIC IMPORTED)
+SET_TARGET_PROPERTIES(lualib PROPERTIES IMPORTED_LOCATION ${LUA_LIBRARIES})
 
-TARGET_LINK_LIBRARIES(bioGUI parsing mylibeay myssleay)
-TARGET_LINK_LIBRARIES(bioGUI ${LUA_LIBRARIES})
+#set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 
-install(TARGETS bioGUI DESTINATION ${CMAKE_CURRENT_SOURCE_DIR} )
+TARGET_LINK_LIBRARIES(bioGUI parsing mylibeay myssleay lualib)
 
-INCLUDE(CPack)
+add_custom_target(deploy COMMAND ${CMAKE_MAKE_PROGRAM} install)
 
-add_custom_target(run_install COMMAND ${CMAKE_MAKE_PROGRAM} install)
+if( TRUE )
+    #get_filename_component(MINGW_BUILD_BIN ${CMAKE_CXX_COMPILER} PATH)
+        set(BIOGUI_INSTALL_PATH ${CMAKE_CURRENT_SOURCE_DIR}/deploy)
 
-if( MINGW)
-    get_filename_component(MINGW_BUILD_BIN ${CMAKE_CXX_COMPILER} PATH)
+    install(TARGETS bioGUI DESTINATION ${BIOGUI_INSTALL_PATH} )
+
+
+    #install(TARGETS bioGUI DESTINATION ${BIOGUI_INSTALL_PATH} )
+    #add_custom_command( TARGET deploy PRE_BUILD COMMAND ${CMAKE_COMMAND} -E remove_directory  ${BIOGUI_INSTALL_PATH})
+
+
+    add_custom_command( TARGET deploy POST_BUILD COMMAND ${CMAKE_COMMAND} -E make_directory ${BIOGUI_INSTALL_PATH})
+    add_custom_command( TARGET deploy POST_BUILD COMMAND ${CMAKE_COMMAND} -E make_directory ${BIOGUI_INSTALL_PATH}/templates)
+    add_custom_command( TARGET deploy POST_BUILD COMMAND ${CMAKE_COMMAND} -E make_directory ${BIOGUI_INSTALL_PATH}/install_templates)
+
+    add_custom_command( TARGET deploy POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/config.ini ${BIOGUI_INSTALL_PATH})
+    add_custom_command( TARGET deploy POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/LICENSE ${BIOGUI_INSTALL_PATH})
+    add_custom_command( TARGET deploy POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/README.md ${BIOGUI_INSTALL_PATH})
+    add_custom_command( TARGET deploy POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/templates/WSL_install.gui ${BIOGUI_INSTALL_PATH}/templates)
+
+
 
     # find the release *.dll file
     get_target_property(Qt5_CoreLocation Qt5::Core LOCATION)
@@ -187,17 +202,23 @@ if( MINGW)
 
     # find the debug *d.dll file
     #get_target_property(Qt5_CoreLocationDebug Qt5::Core IMPORTED_LOCATION_DEBUG)
-    add_custom_command(TARGET run_install POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<$<CONFIG:Debug>:${Qt5_CoreLocationDebug}> $<$<NOT:$<CONFIG:Debug>>:${Qt5_CoreLocation}> ${CMAKE_CURRENT_SOURCE_DIR})
-    add_custom_command(TARGET run_install POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<$<CONFIG:Debug>:${Qt5_WidgetsLocationDebug}> $<$<NOT:$<CONFIG:Debug>>:${Qt5_WidgetsLocation}> ${CMAKE_CURRENT_SOURCE_DIR})
-    add_custom_command(TARGET run_install POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<$<CONFIG:Debug>:${Qt5_XmlLocationDebug}> $<$<NOT:$<CONFIG:Debug>>:${Qt5_XmlLocation}> ${CMAKE_CURRENT_SOURCE_DIR})
-    add_custom_command(TARGET run_install POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<$<CONFIG:Debug>:${Qt5_XmlPatternsLocationDebug}> $<$<NOT:$<CONFIG:Debug>>:${Qt5_XmlPatternsLocation}> ${CMAKE_CURRENT_SOURCE_DIR})
-    add_custom_command(TARGET run_install POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<$<CONFIG:Debug>:${Qt5_NetworkLocationDebug}> $<$<NOT:$<CONFIG:Debug>>:${Qt5_NetworkLocation}> ${CMAKE_CURRENT_SOURCE_DIR})
-    add_custom_command(TARGET run_install POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<$<CONFIG:Debug>:${Qt5_GuiLocationDebug}> $<$<NOT:$<CONFIG:Debug>>:${Qt5_GuiLocation}> ${CMAKE_CURRENT_SOURCE_DIR})
-    add_custom_command(TARGET run_install POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<$<CONFIG:Debug>:${LUA_LIBRARIES}> $<$<NOT:$<CONFIG:Debug>>:${LUA_LIBRARIES}> ${CMAKE_CURRENT_SOURCE_DIR})
+    add_custom_command(TARGET deploy POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<$<CONFIG:Debug>:${Qt5_CoreLocationDebug}> $<$<NOT:$<CONFIG:Debug>>:${Qt5_CoreLocation}> ${BIOGUI_INSTALL_PATH})
+    add_custom_command(TARGET deploy POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<$<CONFIG:Debug>:${Qt5_WidgetsLocationDebug}> $<$<NOT:$<CONFIG:Debug>>:${Qt5_WidgetsLocation}> ${BIOGUI_INSTALL_PATH})
+    add_custom_command(TARGET deploy POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<$<CONFIG:Debug>:${Qt5_XmlLocationDebug}> $<$<NOT:$<CONFIG:Debug>>:${Qt5_XmlLocation}> ${BIOGUI_INSTALL_PATH})
+    add_custom_command(TARGET deploy POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<$<CONFIG:Debug>:${Qt5_XmlPatternsLocationDebug}> $<$<NOT:$<CONFIG:Debug>>:${Qt5_XmlPatternsLocation}> ${BIOGUI_INSTALL_PATH})
+    add_custom_command(TARGET deploy POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<$<CONFIG:Debug>:${Qt5_NetworkLocationDebug}> $<$<NOT:$<CONFIG:Debug>>:${Qt5_NetworkLocation}> ${BIOGUI_INSTALL_PATH})
+    add_custom_command(TARGET deploy POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<$<CONFIG:Debug>:${Qt5_GuiLocationDebug}> $<$<NOT:$<CONFIG:Debug>>:${Qt5_GuiLocation}> ${BIOGUI_INSTALL_PATH})
+    #add_custom_command(TARGET deploy POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<$<CONFIG:Debug>:${LUA_LIBRARIES}> $<$<NOT:$<CONFIG:Debug>>:${LUA_LIBRARIES}> ${BIOGUI_INSTALL_PATH})
 
-    add_custom_command( TARGET run_install POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MINGW_BUILD_BIN}/libgcc_s_dw2-1.dll ${CMAKE_CURRENT_SOURCE_DIR})
-    add_custom_command( TARGET run_install POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MINGW_BUILD_BIN}/libstdc++-6.dll ${CMAKE_CURRENT_SOURCE_DIR})
-    add_custom_command( TARGET run_install POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MINGW_BUILD_BIN}/libwinpthread-1.dll ${CMAKE_CURRENT_SOURCE_DIR})
-    add_custom_command( TARGET run_install POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${LUA_LIBRARIES} ${CMAKE_CURRENT_SOURCE_DIR})
+
+        if (MINGW)
+
+            get_filename_component(MINGW_BUILD_BIN ${CMAKE_CXX_COMPILER} PATH)
+
+            add_custom_command( TARGET deploy POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MINGW_BUILD_BIN}/libgcc_s_dw2-1.dll ${BIOGUI_INSTALL_PATH})
+            add_custom_command( TARGET deploy POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MINGW_BUILD_BIN}/libstdc++-6.dll ${BIOGUI_INSTALL_PATH})
+            add_custom_command( TARGET deploy POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MINGW_BUILD_BIN}/libwinpthread-1.dll ${BIOGUI_INSTALL_PATH})
+        endif()
+    #add_custom_command( TARGET deploy POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${LUA_LIBRARIES} ${BIOGUI_INSTALL_PATH})
 
 endif()

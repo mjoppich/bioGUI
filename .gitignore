@@ -1,3 +1,5 @@
 deploy/*
 bioGUI.exe
 .idea/*
+doc/_build/*
+doc/_static/*

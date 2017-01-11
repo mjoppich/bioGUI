@@ -1,22 +1,24 @@
-bioGUI
-~~~~~~~~~~~	
-Studieren Sie die Java-Sprachbeschreibung und geben Sie Java-Fragmente an, die den Produktionsregeln aus Abschnitt 18.1. für
+.. bioGUI documentation master file, created by
+   sphinx-quickstart on Wed Jan 11 11:08:00 2017.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
 
-* list1
-* list2
+********************
+bioGUI documentation
+********************
 
-entsprechen. Erklären Sie jeweils die Bedeutung (Semantik) dieses Konstrukts in der Sprache Java. Reichen Sie diesen Teil Ihrer Lösung als Text- oder PDF-Datei ein.
+.. toctree::
+   :maxdepth: 2
+   :caption: Contents:
 
+   build_wsl.rst
+   download_template.rst
 
-Some Header
-===========
+Tutorials:
+==================
 
-.. code-block:: c++
+* :ref:`build_wsl_intro`
+* :ref:`download_templates`
+* :ref:`install_download_templates`
 
-  Loop:
-	for (int x = 0; x < i; ++x)
-	     --x
-
-Bedeutung
----------
-Ein ``Loop`` ist eine tolle `infinite`-`while`-Schleife. Ein ``Loop`` ist zu vermeiden.
+bla

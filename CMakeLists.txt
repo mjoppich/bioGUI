@@ -249,6 +249,30 @@ if( TRUE )
     get_target_property(Qt5_GuiConfig Qt5::Gui IMPORTED_CONFIGURATIONS)
     get_target_property(Qt5_GuiSOName Qt5::Gui "IMPORTED_SONAME_${Qt5_CoreConfig}")
 
+    if (NOT ${Qt5_CoreSOName})
+        set(Qt5_CoreSOName "")
+    endif()
+
+    if (NOT ${Qt5_WidgetsSOName})
+        set(Qt5_WidgetsSOName "")
+    endif()
+
+    if (NOT ${Qt5_XmlSOName})
+        set(Qt5_XmlSOName "")
+    endif()
+
+    if (NOT ${Qt5_XmlPatternsSOName})
+        set(Qt5_XmlPatternsSOName "")
+    endif()
+
+    if (NOT ${Qt5_NetworkSOName})
+        set(Qt5_NetworkSOName "")
+    endif()
+
+    if (NOT ${Qt5_GuiSOName})
+        set(Qt5_GuiSOName "")
+    endif()
+
     message(WARNING "Found Qt5 Core ${Qt5_CoreSOName}")
     message(WARNING "Found Qt5 Widgets ${Qt5_WidgetsLocation}")
     message(WARNING "Found Qt5 Xml ${Qt5_XmlLocation}")

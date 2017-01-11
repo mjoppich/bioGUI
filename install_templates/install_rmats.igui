@@ -1,11 +1,15 @@
 #! Install rMATS-3.2.5
 
-if [ ! -z "$2" ]; then
-	echo "Installing dependency: python"
+echo "Dependencies: python2.7 python-pip zlib1g-dev numpy scipy pysam"
+if [ ! "$2" = "" ]; then
+	echo "Installing dependencies"
 	echo $2 | sudo -S apt-get update
-	echo $2 | sudo apt-get -y install python2.7 python-pip zlib1g-dev
+	echo $2 | sudo -S apt-get -y install python2.7 python-pip zlib1g-dev
 	
 	pip install numpy scipy pysam
+	
+else
+	echo "No sudo password, not installing dependencies"
 fi
 
 ## set all variables
@@ -37,7 +41,7 @@ if [ $# -gt 2 ]; then
 	if [ "$3" = "1" ]; then
 
 		if ! grep -q $PROGDIR/$PROG ~/.bashrc; then
-			echo "export PATH=\"$PROGDIR/$PROG:$PATH\" " >> ~/.bashrc;
+			echo "export PATH=\"$PROGDIR/$PROG:\$PATH\" " >> ~/.bashrc;
 		fi
 	fi
 

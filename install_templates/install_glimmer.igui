@@ -24,18 +24,18 @@ cd $PROGDIR/$PROG/src
 
 make
 
-if [ $# -gt 3 ]; then
+if [ $# -gt 2 ]; then
 
 	if [ "$3" = "1" ]; then
 
 		if ! grep -q $PROGDIR/$PROG ~/.bashrc; then
-			echo "export PATH=\"$PROGDIR/$PROG:$PATH\" " >> ~/.bashrc;
+			echo "export PATH=\"$PROGDIR/$PROG:\$PATH\" " >> ~/.bashrc;
 		fi
 	fi
 
 fi
 
-if [ $# -eq 4 ]; then
+if [ $# -eq 5 ]; then
 
 # fix scripts
 
@@ -49,8 +49,8 @@ done
 
 echo "sending template"
 
-IP=$3
-PORT=$4
+IP=$4
+PORT=$5
 
 cat << EOF | netcat $IP $PORT
 <!--<?xml version="1.0" encoding="UTF-8")>-->

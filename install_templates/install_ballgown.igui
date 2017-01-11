@@ -1,0 +1,190 @@
+#! Install Ballgown 1.0.1
+
+echo "Dependencies: R zlibc zlib1g zlib1g-dev libxml2-dev libcurl4-openssl-dev R: devtools, RSkittleBrewer, ballgown"
+if [ ! "$2" = "" ]; then
+
+	echo $2 | sudo -S apt-get update
+	echo $2 | sudo -S apt-get install R zlibc zlib1g zlib1g-dev libxml2-dev libcurl4-openssl-dev
+	
+	RLIBSUSER=`Rscript -e "cat(Sys.getenv('R_LIBS_USER'))"`
+	mkdir -p $RLIBUSER
+	
+	Rscript -e "source(\"http://bioconductor.org/biocLite.R\"); install.packages(\"devtools\"); devtools::install_github('alyssafrazee/RSkittleBrewer'); biocLite(\"ballgown\", lib.loc=Sys.getenv('R_LIBS_USER'), lib=Sys.getenv('R_LIBS_USER'));"
+
+else
+	echo "No sudo password, not installing dependencies"
+	echo "Did not install ballgown. Hoping for the best!"
+
+fi
+
+RSCRIPT=`which Rscript`
+
+## set all variables
+PROG=ballgown_1.0.1
+PROGNICE=Ballgown_1.0.1
+PROGDIR=$1
+
+APPBINARYDIR=${PROGDIR}/${PROG}/
+
+if [ -z "${PROGDIR}" ]; then
+	PROGDIR=~/bioGUI/progs/
+	rm -rf $PROGDIR
+fi
+
+## create progdir
+mkdir -p $PROGDIR/$PROG
+
+cd $PROGDIR/$PROG
+
+cat << BALLGOWNRLOAD > loadData.R
+
+args <- commandArgs(trailingOnly = TRUE)
+
+argc = length(args)
+
+dataFolder = args[1]
+outputFile = args[2]
+samplePattern=args[3]
+
+phenotypeData = NULL
+
+if ( argc >= 4 )
+{
+
+phenotypeData = args[4]
+
+pheno_data_file <- paste0(phenotypeData)
+phenotypeData <- read.csv(pheno_data_file)
+
+}
+
+print("Running ballgown")
+print(paste("dataDir=", dataFolder))
+print(paste("samplePattern=", samplePattern))
+print(paste("pData=", phenotypeData))
+
+library(ballgown)
+bg = ballgown(dataDir=dataFolder, samplePattern=samplePattern, meas='all', pData=phenotypeData)
+saveRDS(bg, file=outputFile)
+
+BALLGOWNRLOAD
+
+cat << BALLGOWNSTATTEST > statTest.R
+
+library(ballgown)
+library(RSkittleBrewer)
+library(genefilter)
+library(dplyr)
+library(devtools)
+
+args <- commandArgs(trailingOnly = TRUE)
+bgFile = args[1]
+covariateName = args[2]
+adjustVars = strsplit(args[3], ",")[[1]]
+
+outFileDir = args[4]
+
+print("Running ballgown: stattest")
+print(paste("bg file:", bgFile))
+print(paste("Covariate Name:", covariateName))
+print(paste("Adjust Variables:", adjustVars))
+print(paste("Output Directory:", outFileDir))
+
+
+bg = readRDS(bgFile)
+
+bg_filt <- subset(bg , "rowVars(texpr(bg)) > 1", genomesubset=TRUE)
+
+## DE
+results_transcripts <-  stattest(bg_filt, feature='transcript', covariate=covariateName, adjustvars=adjustVars, getFC=TRUE, meas='FPKM')
+results_genes <-  stattest(bg_filt, feature='gene', covariate=covariateName, adjustvars=adjustVars, getFC=TRUE, meas='FPKM')
+
+## Add gene name
+results_transcripts <- data.frame(geneNames=ballgown::geneNames(bg_filt), geneIDs=ballgown::geneIDs(bg_filt), results_transcripts)
+
+## Sort results from smallest p-value
+results_transcripts <- arrange(results_transcripts, pval)
+results_genes <-  arrange(results_genes, pval)
+
+## Write results to CSV
+write.csv(results_transcripts, paste(outFileDir, "/transcripts_results.csv", sep=""), row.names=FALSE)
+write.csv(results_genes, paste(outFileDir, "/genes_results.csv", sep=""), row.names=FALSE)
+
+print("Finished")
+
+BALLGOWNSTATTEST
+
+
+if [ $# -eq 5 ]; then
+
+IP=$4
+PORT=$5
+
+cat << EOF | netcat $IP $PORT
+
+<template description="Ballgown: Isoform-level differential expression analysis in R." title="${PROGNICE}">
+<window title="${PROGNICE}">
+<vgroup>
+
+  <group title="General Options">
+	<checkbox id="WSLsel" value="true" selectonwindows="true">run in WSL?</checkbox>
+  </group>
+    
+  <group title="Run Ballgown">
+
+	
+	<filedialog id="ballgown_bg_folder_in" folder="true">Ballgown Input Folder</filedialog>
+	<input id="ballgown_files_input_pattern"/><label>Sample pattern</label>
+	<filedialog id="ballgown_pdata_file">Ballgown phenotype information</filedialog>
+
+	<filedialog id="ballgown_bg_out" output="true">Ballgown output object</filedialog>
+
+	<action program="ballgown_make_bg">Create Ballgown File</action>
+  </group>
+  
+	<group title="Analysis: stattest">
+	<filedialog id="ballgown_stattest_bg_in">Ballgown input object</filedialog>
+	<filedialog id="ballgown_stattest_out" folder="true">Stattest output file</filedialog>
+	
+	<label>Covariate</label> <input id="ballgown_stattest_covariate"></input>
+	<label>Adjust Variables</label> <input id="ballgown_stattest_adjustvar"></input>
+
+	
+	<action program="ballgown_stattest">Run stattest on bg file</action>
+	</group>
+   
+    <streambox id="output1">
+    <stream id="outputstream1">std out</stream>
+    <stream id="outputstream2">err out</stream>
+   </streambox>
+
+</vgroup>
+</window>
+
+<execution>
+<const id="bindir">${APPBINARYDIR}</const>
+
+<relocate id="ballgown_bg_folder_in_rel" wsl="\${WSLsel}" from="\${ballgown_bg_folder_in}"/>
+<relocate id="ballgown_pdata_file_rel" wsl="\${WSLsel}" from="\${ballgown_pdata_file}"/>
+
+<relocate id="ballgown_bg_out_rel" wsl="\${WSLsel}" from="\${ballgown_bg_out}"/>
+<relocate id="ballgown_stattest_bg_in_rel" wsl="\${WSLsel}" from="\${ballgown_stattest_bg_in}"/>
+<relocate id="ballgown_stattest_out_rel" wsl="\${WSLsel}" from="\${ballgown_stattest_out}"/>
+
+  <execute program="ballgown_make_bg" param="\${bindir}/loadData.R \${ballgown_bg_folder_in_rel} \${ballgown_bg_out_rel} \${ballgown_files_input_pattern} \${ballgown_pdata_file_rel}" location="" exec="${RSCRIPT}" wsl="WSLsel">
+    <output type="COUT" color="green" to="outputstream1" />
+    <output type="CERR" color="red" to="outputstream2" />
+  </execute>
+  
+  <execute program="ballgown_stattest" param="\${bindir}/statTest.R \${ballgown_stattest_bg_in_rel} \${ballgown_stattest_covariate} \${ballgown_stattest_adjustvar} \${ballgown_stattest_out_rel}" location="" exec="${RSCRIPT}" wsl="WSLsel">
+    <output type="COUT" color="green" to="outputstream1" />
+    <output type="CERR" color="red" to="outputstream2" />
+  </execute>
+  
+</execution>  
+</template>
+
+
+EOF
+
+fi

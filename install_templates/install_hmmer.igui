@@ -39,10 +39,10 @@ if [ $# -gt 2 ]; then
 
 fi
 
-if [ $# -eq 4 ]; then
+if [ $# -eq 5 ]; then
 
-IP=$3
-PORT=$4
+IP=$4
+PORT=$5
 
 cat << EOF | netcat $IP $PORT
 <template rootid="hmmerroot" description="HMMER ($PROG)" title="HMMER">

@@ -82,11 +82,6 @@ protected:
         QString sTitle = this->getQAttribute(pElement, "title", "");
         pGroupBox->setTitle( sTitle );
 
-        if (sTitle.compare("Step options") == 0)
-        {
-            std::cout << "Sliding Window";
-        }
-
         /*
          * checkable?
          */

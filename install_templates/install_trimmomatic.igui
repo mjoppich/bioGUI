@@ -1,6 +1,12 @@
 #! Install Trimmomatic 0.36
 
-if [ ! -z "$2" ]; then
+echo "1 $1"
+echo "2 $2"
+echo "3 $3"
+echo "4 $4"
+echo "5 $5"
+
+if [[ -z `echo $2` ]]; then
 	echo "Installing dependency: java (openjdk)"
 	echo $2 | sudo -S apt-get update
 	echo $2 | sudo apt-get -y install openjdk-9-jre
@@ -34,7 +40,7 @@ fi
 
 if [ $# -gt 3 ]; then
 
-	if [ $3 == "1" ]; then
+	if [ $3 = "1" ]; then
 
 		if ! grep -q $PROGDIR/$PROG ~/.bashrc; then
 			echo "export PATH=\"$PROGDIR/$PROG:$PATH\" " >> ~/.bashrc;

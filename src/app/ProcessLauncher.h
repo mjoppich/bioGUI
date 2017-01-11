@@ -323,9 +323,11 @@ public slots:
 
             if ((sString.at(i) == ' ') || (sString.size()-1 == i))
             {
-                std::string sPart = sString.substr(iLastArgPartStart, i-iLastArgPartStart+1);
-                if (sPart[0] == sPart[sPart.size()-1])
-                    sPart = sPart.substr(1,sPart.size()-2);
+                size_t iOffSet = (sString.at(i) == ' ') ? 0 : 1;
+
+                std::string sPart = sString.substr(iLastArgPartStart, i-iLastArgPartStart+iOffSet);
+                //if (sPart[0] == sPart[sPart.size()-1])
+                //    sPart = sPart.substr(1,sPart.size()-2);
 
                 QString sQPart(sPart.c_str());
                 sQPart = sQPart.trimmed();

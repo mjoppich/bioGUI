@@ -25,8 +25,14 @@ bioGUIapp::bioGUIapp(int& argc, char** argv)
         : QApplication(argc, (char**)argv)
 {
 
+    QCoreApplication::setApplicationName("bioGUI");
+    std::cerr << "Launching " << QCoreApplication::applicationName().toStdString() << std::endl;
+
+
     std::cerr << "Main Application currently in dir: " << std::endl;
     std::cerr << QDir::currentPath().toStdString() << std::endl;
+
+
 
     this->loadInitFile(QDir::currentPath());
 

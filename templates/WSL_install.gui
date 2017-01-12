@@ -13,8 +13,15 @@
   <group title="Install Options">
   <label>Install Program to WSL?</label>
     <checkbox id="WSLsel" value="true" selectonwindows="true">Use WSL?</checkbox>
-    <label>Install Location:</label>
-    <input id="instpath">~/bioGUI/progs/</input>
+
+    <groupbox id="user_sel_instpath" title="Install Location" exclusive="true">
+
+        <checkbox id="loc_datadir" value="data" selected="true">Install programs in User Data Dir</checkbox>
+        <checkbox id="loc_spec" value="spec"> <input id="loc_spec_user">/usr/local/</input></checkbox>
+
+    </groupbox>
+
+
     <label>sudo Password</label>
     <input id="sudopw" type="password"></input>
 
@@ -48,10 +55,19 @@
 </if>
 
 <env id="localip" get="IPv4"/>
+<env id="loc_appdata" get="DATADIR" wsl="WSLsel"/>
+
+<if id="user_instpath" comp="EQUALS" value1="user_sel_instpath" value2="data">
+<value from="loc_appdata"/>
+<else>
+<value from="loc_spec_user"/>
+</else>
+</if>
+
 
 <add id="cl" sep=" ">
 <value from="prog_wsl"/>
-<value from="instpath"/>
+<value from="user_instpath"/>
 <add sep="">
 <const>&quot;</const>
 <value from="sudopw"/>

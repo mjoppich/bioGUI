@@ -101,6 +101,30 @@ public:
 
     }
 
+    bool checkWSL(QString& sWSLStr,
+                  std::map< std::string, ExecutionNode*>* pID2Node,
+                  std::map<std::string, std::string>* pInputID2Value,
+                  std::map<std::string, QWidget*>* pInputID2Widget )
+    {
+        /*
+         * Are we relocating for WSL?
+         *
+         * */
+        bool bWSL = false;
+        if (sWSLStr.size() > 0)
+        {
+
+            std::string sValue = this->getNodeValueOrValue(sWSLStr.toStdString(), sWSLStr.toStdString(), pID2Node, pInputID2Value, pInputID2Widget );
+
+            if (QString(sValue.c_str()).compare("TRUE", Qt::CaseInsensitive) == 0)
+            {
+                bWSL = true;
+            }
+        }
+
+        return bWSL;
+    }
+
     std::vector<std::string> getAcceptedAttributes()
     {
         std::vector<std::string> vReturnAttribs;

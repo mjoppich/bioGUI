@@ -169,6 +169,17 @@ public:
         return NULL;
     }
 
+    QString startBlocking(uint32_t iWaitMSec = 10000)
+    {
+        this->start();
+
+        m_pProcess->waitForFinished( iWaitMSec );
+
+        QString sOut( m_pProcess->readAllStandardOutput() );
+
+        return sOut;
+    }
+
     bool start()
     {
 
@@ -326,8 +337,8 @@ public slots:
                 size_t iOffSet = (sString.at(i) == ' ') ? 0 : 1;
 
                 std::string sPart = sString.substr(iLastArgPartStart, i-iLastArgPartStart+iOffSet);
-                //if (sPart[0] == sPart[sPart.size()-1])
-                //    sPart = sPart.substr(1,sPart.size()-2);
+                if ((sPart[0] == sPart[sPart.size()-1]) && ( (sPart[0] == '\"' ) || ( sPart[0] == '\'')))
+                    sPart = sPart.substr(1,sPart.size()-2);
 
                 QString sQPart(sPart.c_str());
                 sQPart = sQPart.trimmed();
@@ -337,8 +348,8 @@ public slots:
 
                 std::cout << sQPart.toStdString() << std::endl;
 
-                if (sPart.size() > 0)
-                    vArgsList.append( sQPart );
+                //if (sPart.size() > 0)
+                vArgsList.append( sQPart );
 
                 iLastArgPartStart = i+1;
             }

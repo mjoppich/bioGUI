@@ -60,21 +60,7 @@ public:
 
         bool bMakeUnix = m_bMakeUnix;
 
-        /*
-         * Are we relocating for WSL?
-         *
-         * */
-        bool bWSL = false;
-        if (m_sToWSL.size() > 0)
-        {
-
-            std::string sValue = this->getNodeValueOrValue(m_sToWSL.toStdString(), m_sToWSL.toStdString(), pID2Node, pInputID2Value, pInputID2Widget );
-
-            if (QString(sValue.c_str()).compare("TRUE", Qt::CaseInsensitive) == 0)
-            {
-                bWSL = true;
-            }
-        }
+        bool bWSL = this->checkWSL(m_sToWSL, pID2Node, pInputID2Value, pInputID2Widget);
 
         /*What should be relocated?
          * */

@@ -22,6 +22,9 @@
 
 #include <QNetworkInterface>
 #include <QAbstractSocket>
+#include <QtCore/QStandardPaths>
+#include <src/app/ProcessLauncher.h>
+#include <QtCore/QCoreApplication>
 #include "ExecutionNode.h"
 
 class ExecutionEnvNode : public ExecutionNode {
@@ -33,6 +36,7 @@ public:
     {
 
         m_sGet = this->getDomElementAttribute(pElement, "GET", "");
+        m_sToWSL = this->getDomElementAttribute(pElement, "wsl", "false");
 
 
     }
@@ -83,8 +87,24 @@ public:
 
     }
 
-    std::string getOS()
+    std::string getOS(std::map< std::string, ExecutionNode*>* pID2Node = NULL,
+                      std::map<std::string, std::string>* pInputID2Value = NULL,
+                      std::map<std::string, QWidget*>* pInputID2Widget = NULL)
     {
+
+
+        bool bWSL = false;
+
+        if ((pID2Node != NULL) && (pInputID2Value != NULL) && (pInputID2Widget != NULL))
+        {
+            bWSL = this->checkWSL(m_sToWSL, pID2Node, pInputID2Value, pInputID2Widget);
+        }
+
+        if (bWSL)
+        {
+            // TODO make this return WSL?
+            return "LINUX";
+        }
 
         if (QSysInfo::windowsVersion() != QSysInfo::WV_None)
             return "WINDOWS";
@@ -101,6 +121,8 @@ public:
                           std::map<std::string, std::string>* pInputID2Value,
                           std::map<std::string, QWidget*>* pInputID2Widget) {
 
+
+        bool bWSL = this->checkWSL(m_sToWSL, pID2Node, pInputID2Value, pInputID2Widget);
 
         std::string sResult;
 
@@ -151,6 +173,25 @@ public:
             return this->getOS();
         }
 
+        if (m_sGet.compare("DATADIR", Qt::CaseInsensitive) == 0)
+        {
+
+            if (!bWSL)
+                return QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation).toStdString();
+
+            // we are on WSL
+            ProcessLauncher* pLauncher = new ProcessLauncher("echo", "~", true);
+            QString sQHome = pLauncher->startBlocking();
+
+            // exec in WSL "echo ~"
+            std::string sHome = sQHome.toStdString() + "/";
+
+            sHome += ".local/share/" + QCoreApplication::applicationName().toStdString();
+
+            return sHome;
+
+        }
+
         return sResult;
 
     }
@@ -163,6 +204,7 @@ protected:
     }
 
     QString m_sGet;
+    QString m_sToWSL;
 
 };
 

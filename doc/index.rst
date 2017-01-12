@@ -11,8 +11,9 @@ bioGUI documentation
    :maxdepth: 2
    :caption: Contents:
 
+   user_guide.rst
    build_wsl.rst
-   download_template.rst
+   developer_guide.rst
 
 Tutorials:
 ==================

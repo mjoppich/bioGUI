@@ -1,4 +1,9 @@
 
+
+********************
+User Guide
+********************
+
 .. _download_templates:
 
 Download Template

@@ -1,0 +1,15 @@
+#! First Time WSL Setup
+
+echo "First Time WSL Setup"
+
+echo "Dependencies: build-essential dos2unix"
+if [ ! "$2" = "" ]; then
+	echo "Installing dependencies"
+	echo $2 | sudo -S apt-get update
+	echo $2 | sudo -S apt-get -y install build-essential dos2unix
+	
+	echo "Enjoy bioGUI!"
+else
+	echo "No sudo password, not installing dependencies"
+	echo "bioGUI is not operational!"
+fi

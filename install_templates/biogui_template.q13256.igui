@@ -1,5 +1,0 @@
-#! First Time WSL Setup
-
-echo $2 | sudo -S apt-get update
-echo $2 | sudo -S apt-get -y install build-essential
-echo $2 | sudo -S apt-get -y install dos2unix

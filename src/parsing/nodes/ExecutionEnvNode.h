@@ -181,7 +181,7 @@ public:
 
             // we are on WSL
             ProcessLauncher* pLauncher = new ProcessLauncher("echo", "~", true);
-            QString sQHome = pLauncher->startBlocking();
+            QString sQHome = pLauncher->startBlocking().trimmed();
 
             // exec in WSL "echo ~"
             std::string sHome = sQHome.toStdString() + "/";

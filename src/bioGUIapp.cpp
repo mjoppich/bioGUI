@@ -30,6 +30,15 @@ bioGUIapp::bioGUIapp(int& argc, char** argv)
 
 
     std::cerr << "Main Application currently in dir: " << std::endl;
+
+    QString sApplicationDir = QCoreApplication::applicationDirPath() + QDir::separator();
+    QDir::setCurrent(sApplicationDir);
+
+    QString sCurrentDir = QDir::currentPath();
+
+    //QMessageBox::warning(NULL, sApplicationDir, sApplicationDir); 
+    //QMessageBox::warning(NULL, sCurrentDir, sCurrentDir);
+
     std::cerr << QDir::currentPath().toStdString() << std::endl;
 
 

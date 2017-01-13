@@ -14,6 +14,8 @@ PROG=trimmomatic_0_36
 PROGNICE=Trimmomatic-0.36
 PROGDIR=$1
 
+PROGDIRESC=$(echo $PROGDIR | sed 's/ /\\ /g')
+
 APPBINARYDIR=${PROGDIR}/${PROG}/
 
 if [ -z "${PROGDIR}" ]; then
@@ -21,25 +23,31 @@ if [ -z "${PROGDIR}" ]; then
 	rm -rf $PROGDIR
 fi
 
+echo "Creating $PROGDIR"
+
 ## create progdir
-mkdir -p $PROGDIR
+mkdir -p "$PROGDIR"
+
+echo "exists PROGDIR PROG $PROGDIR/$PROG"
 
 #download and unzip
-if [ ! -f $PROGDIR/$PROG.zip ]; then
-	wget http://www.usadellab.org/cms/uploads/supplementary/Trimmomatic/$PROGNICE.zip -O $PROGDIR/$PROG.zip
+if [ ! -f "$PROGDIR/$PROG.zip" ]; then
+echo "Downloading program"
+	wget http://www.usadellab.org/cms/uploads/supplementary/Trimmomatic/$PROGNICE.zip -O "$PROGDIR/$PROG.zip"
 fi
 
+echo "exists $PROGDIR/$PROG"
 
 if [ ! -d "$PROGDIR/$PROG" ]; then
-unzip -o $PROGDIR/$PROG.zip -d $PROGDIR/$PROG
-mv $PROGDIR/$PROG/*/* $PROGDIR/$PROG
+unzip -o "$PROGDIR/$PROG.zip" -d "$PROGDIR/$PROG"
+mv "$PROGDIR/$PROG/"*/* "$PROGDIR/$PROG"
 fi
 
 if [ $# -gt 2 ]; then
 
 	if [ "$3" = "1" ]; then
 
-		if ! grep -q $PROGDIR/$PROG ~/.bashrc; then
+		if ! grep -q "$PROGDIR/$PROG" ~/.bashrc; then
 			echo "export PATH=\"$PROGDIR/$PROG:\$PATH\" " >> ~/.bashrc;
 		fi
 	fi

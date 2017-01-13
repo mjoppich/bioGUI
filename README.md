@@ -19,7 +19,17 @@ It is not about generating a GUI by its own.
 ## How to obtain bioGUI?
 
 Currently the only way is to clone this repository and build bioGUI.
-It is planned to also distribute full installers/archives to download with binaries built for Windows.
+It is planned to also distribute full installers/archives to download with binaries.
+
+### Use releases from GitHub
+
+There are releases built for bioGUI for Linux, Mac OS and Windows.
+For Windows (and especially WSL) these are stand-alone.
+Under Linux and Mac OS make sure that `wget`and `nectar`are installed.
+We recommend to use brew on Mac OS:
+
+`brew install wget`
+`brew install netcat`
 
 ### How to build bioGUI?
 

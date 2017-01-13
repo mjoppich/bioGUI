@@ -392,7 +392,20 @@ protected:
         }
 
         QDir oCurrentWorkDir = QDir::current();
-        QDir::setCurrent( sDownloadDir );
+        if (!QDir::setCurrent( sDownloadDir ))
+        {
+            QMessageBox::warning(NULL, "Warning: creating dir " + sDownloadDir, "The download directory " + sDownloadDir + " is not existing.\n\n Creating it.");
+
+            QDir::current().mkdir(sDownloadDir);
+            if (! QDir::setCurrent( sDownloadDir) )
+            {
+                QMessageBox::critical(NULL, "Error: Failed creating dir " + sDownloadDir, "The download directory " + sDownloadDir + " is not existing or can not be created.\n\n Downloading templates failed.");
+        
+                QDir::setCurrent(oCurrentWorkDir.absolutePath());
+                return;                    
+
+            }
+        }
 
         QTemporaryFile oUniqueFileName("biogui_template.XXXXXX" + sFileExtension);
         oUniqueFileName.open();

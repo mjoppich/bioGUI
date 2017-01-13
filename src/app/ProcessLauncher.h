@@ -29,7 +29,9 @@
 #include <src/Logging.h>
 
 #ifndef __linux
+#ifndef __APPLE__
     #include <windows.h>
+#endif
 #endif
 
 #include <cstdint>
@@ -86,6 +88,7 @@ protected:
         sBash.append( " -c \" "+ m_sLinuxCMD + "\"" );
 
 #ifndef __linux
+#ifndef __APPLE__
 
         STARTUPINFO sinfo = {sizeof(sinfo), 0};
         PROCESS_INFORMATION pinfo = {0};
@@ -101,7 +104,7 @@ protected:
 
 
         }
-
+#endif
 #endif
 
 

@@ -1,0 +1,6 @@
+<RCC version="1.0">
+	<qresource prefix="/Icons">
+		<file alias="icon32">res/biogui32.png</file>
+		<file alias="icon128">res/biogui128.png</file>
+	</qresource>
+</RCC>

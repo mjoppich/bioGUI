@@ -27,13 +27,25 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 include(QtCommon)
 
 if (APPLE)
-set(Qt5_DIR "/Users/joppich/Qt/5.7/clang_64/")
+    set(Qt5_DIR "/Users/joppich/Qt/5.7/clang_64/")
+endif()
+
+if (WIN32)
+
+    set(ENV{LUA_DIR} "D:/libraries/lua-5.3.3/;C:/lua53/")
+    message(WARNING "IN MINGW")
+    set(Qt5_DIR "C:/Qt/Qt5.7.0/5.7/mingw53_32")
+    set(ENV{OPENSSL_ROOT_DIR} "C:/OpenSSL-Win32/lib/")
+
+
+endif()
+
+message(WARNING "QT PATH: ${Qt5_DIR}")
+
 LIST(APPEND CMAKE_PREFIX_PATH "${Qt5_DIR}/lib/cmake/")
 LIST(APPEND CMAKE_MODULE_PATH "${Qt5_DIR}/lib/cmake/Qt5")
-set(ENV{OPENSSL_ROOT_DIR} "/usr/local/opt/openssl/")
 set(QT_QMAKE_EXECUTABLE "${Qt5_DIR}/bin/qmake")
 set(CMAKE_FRAMEWORK_PATH "${Qt5_DIR}/lib/cmake")
-endif()
 
 # Basic information about project
 project(bioGUI VERSION 1.0)
@@ -121,13 +133,16 @@ find_package(Qt5Xml REQUIRED)
 find_package(Qt5XmlPatterns REQUIRED)
 
 
-set(BIOGUI_NETOWRK_INI "${CMAKE_CURRENT_SOURCE_DIR}/config.ini")
-set_source_files_properties(${BIOGUI_NETOWRK_INI} PROPERTIES MACOSX_PACKAGE_LOCATION MacOS)
-LIST(APPEND META_FILES_TO_INCLUDE "${BIOGUI_NETOWRK_INI}")
+if (APPLE)
+    set(BIOGUI_NETOWRK_INI "${CMAKE_CURRENT_SOURCE_DIR}/config.ini")
+    set_source_files_properties(${BIOGUI_NETOWRK_INI} PROPERTIES MACOSX_PACKAGE_LOCATION MacOS)
+    LIST(APPEND META_FILES_TO_INCLUDE "${BIOGUI_NETOWRK_INI}")
 
-set(BIOGUI_INSTALL_TEMPLATES_GUI "${CMAKE_CURRENT_SOURCE_DIR}/templates/WSL_install.gui")
-set_source_files_properties(${BIOGUI_INSTALL_TEMPLATES_GUI} PROPERTIES MACOSX_PACKAGE_LOCATION MacOS/templates/)
-LIST(APPEND META_FILES_TO_INCLUDE "${BIOGUI_INSTALL_TEMPLATES_GUI}")
+    set(BIOGUI_INSTALL_TEMPLATES_GUI "${CMAKE_CURRENT_SOURCE_DIR}/templates/WSL_install.gui")
+    set_source_files_properties(${BIOGUI_INSTALL_TEMPLATES_GUI} PROPERTIES MACOSX_PACKAGE_LOCATION MacOS/templates/)
+    LIST(APPEND META_FILES_TO_INCLUDE "${BIOGUI_INSTALL_TEMPLATES_GUI}")
+
+endif()
 
 
 # source_group("UI Files" FILES ${UI_FILES})
@@ -151,59 +166,83 @@ TARGET_LINK_LIBRARIES(${PROJECT_NAME} mylibeay myssleay lualib)
 
 qt5_use_modules(${PROJECT_NAME} Core Gui Widgets Network Xml XmlPatterns)
 
-add_custom_target(deploy COMMAND ${CMAKE_MAKE_PROGRAM} install)
 set(BIOGUI_INSTALL_PATH ${CMAKE_CURRENT_SOURCE_DIR}/deploy)
+install(TARGETS ${PROJECT_NAME} DESTINATION ${CMAKE_INSTALL_PREFIX} )
 
-install(TARGETS ${PROJECT_NAME} DESTINATION ${BIOGUI_INSTALL_PATH} )
+file(GLOB biogui_files
+        "config.ini"
+        "LICENSE"
+        "README.md"
+        "./templates/WSL_install.gui"
+        )
+
+install(FILES ${biogui_files} DESTINATION ${CMAKE_INSTALL_PREFIX})
 
 message(WARNING "files to copy ${META_FILES_TO_INCLUDE}")
+message(WARNING "exe location ${PROJECT_BINARY_DIR}")
+message(WARNING "installing to: ${PROJECT_BINARY_DIR}")
 
-if( FALSE )
+if( TRUE )
     #get_filename_component(MINGW_BUILD_BIN ${CMAKE_CXX_COMPILER} PATH)
-        set(BIOGUI_INSTALL_PATH ${CMAKE_CURRENT_SOURCE_DIR}/deploy)
-
-    install(TARGETS bioGUI DESTINATION ${BIOGUI_INSTALL_PATH} )
+    install(TARGETS bioGUI DESTINATION ${PROJECT_BINARY_DIR} )
 
 
     #install(TARGETS bioGUI DESTINATION ${BIOGUI_INSTALL_PATH} )
     #add_custom_command( TARGET deploy PRE_BUILD COMMAND ${CMAKE_COMMAND} -E remove_directory  ${BIOGUI_INSTALL_PATH})
 
 
-    add_custom_command( TARGET deploy POST_BUILD COMMAND ${CMAKE_COMMAND} -E make_directory ${BIOGUI_INSTALL_PATH})
-    add_custom_command( TARGET deploy POST_BUILD COMMAND ${CMAKE_COMMAND} -E make_directory ${BIOGUI_INSTALL_PATH}/templates)
-    add_custom_command( TARGET deploy POST_BUILD COMMAND ${CMAKE_COMMAND} -E make_directory ${BIOGUI_INSTALL_PATH}/install_templates)
+    add_custom_command( TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E make_directory ${PROJECT_BINARY_DIR})
+    add_custom_command( TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E make_directory ${PROJECT_BINARY_DIR}/templates)
+    add_custom_command( TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E make_directory ${PROJECT_BINARY_DIR}/install_templates)
 
-    add_custom_command( TARGET deploy POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/config.ini ${BIOGUI_INSTALL_PATH})
-    add_custom_command( TARGET deploy POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/LICENSE ${BIOGUI_INSTALL_PATH})
-    add_custom_command( TARGET deploy POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/README.md ${BIOGUI_INSTALL_PATH})
-    add_custom_command( TARGET deploy POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/templates/WSL_install.gui ${BIOGUI_INSTALL_PATH}/templates)
+    add_custom_command( TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/config.ini ${PROJECT_BINARY_DIR})
+    add_custom_command( TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/LICENSE ${PROJECT_BINARY_DIR})
+    add_custom_command( TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/README.md ${PROJECT_BINARY_DIR})
+    add_custom_command( TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/templates/WSL_install.gui ${PROJECT_BINARY_DIR}/templates)
 
 
 
     # find the release *.dll file
-    get_target_property(Qt5_CoreLocation Qt5::Core LOCATION)
-    get_target_property(Qt5_CoreConfig Qt5::Core IMPORTED_CONFIGURATIONS)
-    get_target_property(Qt5_CoreSOName Qt5::Core "IMPORTED_SONAME_${Qt5_CoreConfig}")
+    get_target_property(Qt5_CoreLocation Qt5::Core LOCATION_RELEASE)
+    get_target_property(Qt5_CoreSOName Qt5::Core "IMPORTED_SONAME_RELEASE")
 
-    get_target_property(Qt5_WidgetsLocation Qt5::Widgets LOCATION)
-    get_target_property(Qt5_WidgetsConfig Qt5::Widgets IMPORTED_CONFIGURATIONS)
-    get_target_property(Qt5_WidgetsSOName Qt5::Widgets "IMPORTED_SONAME_${Qt5_CoreConfig}")
+    get_target_property(Qt5_WidgetsLocation Qt5::Widgets LOCATION_RELEASE)
+    get_target_property(Qt5_WidgetsSOName Qt5::Widgets "IMPORTED_SONAME_RELEASE")
 
-    get_target_property(Qt5_XmlLocation Qt5::Xml LOCATION)
-    get_target_property(Qt5_XmlConfig Qt5::Xml IMPORTED_CONFIGURATIONS)
-    get_target_property(Qt5_XmlSOName Qt5::Xml "IMPORTED_SONAME_${Qt5_CoreConfig}")
+    get_target_property(Qt5_XmlLocation Qt5::Xml LOCATION_RELEASE)
+    get_target_property(Qt5_XmlSOName Qt5::Xml "IMPORTED_SONAME_RELEASE")
 
-    get_target_property(Qt5_XmlPatternsLocation Qt5::XmlPatterns LOCATION)
-    get_target_property(Qt5_XmlPatternsConfig Qt5::XmlPatterns IMPORTED_CONFIGURATIONS)
-    get_target_property(Qt5_XmlPatternsSOName Qt5::XmlPatterns "IMPORTED_SONAME_${Qt5_CoreConfig}")
+    get_target_property(Qt5_XmlPatternsLocation Qt5::XmlPatterns LOCATION_RELEASE)
+    get_target_property(Qt5_XmlPatternsSOName Qt5::XmlPatterns "IMPORTED_SONAME_RELEASE")
 
-    get_target_property(Qt5_NetworkLocation Qt5::Network LOCATION)
-    get_target_property(Qt5_NetworkConfig Qt5::Network IMPORTED_CONFIGURATIONS)
-    get_target_property(Qt5_NetworkSOName Qt5::Network "IMPORTED_SONAME_${Qt5_CoreConfig}")
+    get_target_property(Qt5_NetworkLocation Qt5::Network LOCATION_RELEASE)
+    get_target_property(Qt5_NetworkSOName Qt5::Network "IMPORTED_SONAME_RELEASE")
 
-    get_target_property(Qt5_GuiLocation Qt5::Gui LOCATION)
-    get_target_property(Qt5_GuiConfig Qt5::Gui IMPORTED_CONFIGURATIONS)
-    get_target_property(Qt5_GuiSOName Qt5::Gui "IMPORTED_SONAME_${Qt5_CoreConfig}")
+    get_target_property(Qt5_GuiLocation Qt5::Gui LOCATION_RELEASE)
+    get_target_property(Qt5_GuiSOName Qt5::Gui "IMPORTED_SONAME_RELEASE")
+
+
+
+    get_target_property(Qt5_CoreLocation_Debug Qt5::Core LOCATION_DEBUG)
+    get_target_property(Qt5_CoreSOName_Debug Qt5::Core "IMPORTED_SONAME_DEBUG")
+
+    get_target_property(Qt5_WidgetsLocation_Debug Qt5::Widgets LOCATION_DEBUG)
+    get_target_property(Qt5_WidgetsSOName_Debug Qt5::Widgets "IMPORTED_SONAME_DEBUG")
+
+    get_target_property(Qt5_XmlLocation_Debug Qt5::Xml LOCATION_DEBUG)
+    get_target_property(Qt5_XmlSOName_Debug Qt5::Xml "IMPORTED_SONAME_DEBUG")
+
+    get_target_property(Qt5_XmlPatternsLocation_Debug Qt5::XmlPatterns LOCATION_DEBUG)
+    get_target_property(Qt5_XmlPatternsSOName_Debug Qt5::XmlPatterns "IMPORTED_SONAME_DEBUG")
+
+    get_target_property(Qt5_NetworkLocation_Debug Qt5::Network LOCATION_DEBUG)
+    get_target_property(Qt5_NetworkSOName_Debug Qt5::Network "IMPORTED_SONAME_DEBUG")
+
+    get_target_property(Qt5_GuiLocation_Debug Qt5::Gui LOCATION_DEBUG)
+    get_target_property(Qt5_GuiSOName_Debug Qt5::Gui "IMPORTED_SONAME_DEBUG")
+
+
+
 
     if (NOT ${Qt5_CoreSOName})
         set(Qt5_CoreSOName "")
@@ -229,6 +268,31 @@ if( FALSE )
         set(Qt5_GuiSOName "")
     endif()
 
+    if (NOT ${Qt5_CoreSOName_Debug})
+        set(Qt5_CoreSOName_Debug "")
+    endif()
+
+    if (NOT ${Qt5_WidgetsSOName_Debug})
+        set(Qt5_WidgetsSOName_Debug "")
+    endif()
+
+    if (NOT ${Qt5_XmlSOName_Debug})
+        set(Qt5_XmlSOName_Debug "")
+    endif()
+
+    if (NOT ${Qt5_XmlPatternsSOName_Debug})
+        set(Qt5_XmlPatternsSOName_Debug "")
+    endif()
+
+    if (NOT ${Qt5_NetworkSOName_Debug})
+        set(Qt5_NetworkSOName_Debug "")
+    endif()
+
+    if (NOT ${Qt5_GuiSOName_Debug})
+        set(Qt5_GuiSOName_Debug "")
+    endif()
+
+        message(WARNING "Qt5 Config: ${Qt5_CoreConfig}")
     message(WARNING "Found Qt5 Core ${Qt5_CoreSOName}")
     message(WARNING "Found Qt5 Widgets ${Qt5_WidgetsLocation}")
     message(WARNING "Found Qt5 Xml ${Qt5_XmlLocation}")
@@ -238,30 +302,42 @@ if( FALSE )
 
     # find the debug *d.dll file
     #get_target_property(Qt5_CoreLocationDebug Qt5::Core IMPORTED_LOCATION_DEBUG)
-    add_custom_command(TARGET deploy POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${Qt5_CoreLocation} ${BIOGUI_INSTALL_PATH}/${Qt5_CoreSOName})
-    add_custom_command(TARGET deploy POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${Qt5_WidgetsLocation} ${BIOGUI_INSTALL_PATH}/${Qt5_WidgetsSOName})
-    add_custom_command(TARGET deploy POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${Qt5_XmlLocation} ${BIOGUI_INSTALL_PATH}/${Qt5_XmlSOName})
-    add_custom_command(TARGET deploy POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${Qt5_XmlPatternsLocation} ${BIOGUI_INSTALL_PATH}/${Qt5_XmlPatternsSOName})
-    add_custom_command(TARGET deploy POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${Qt5_NetworkLocation} ${BIOGUI_INSTALL_PATH}/${Qt5_NetworkSOName})
-    add_custom_command(TARGET deploy POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${Qt5_GuiLocation} ${BIOGUI_INSTALL_PATH}/${Qt5_GuiSOName})
-    #add_custom_command(TARGET deploy POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<$<CONFIG:Debug>:${LUA_LIBRARIES}> $<$<NOT:$<CONFIG:Debug>>:${LUA_LIBRARIES}> ${BIOGUI_INSTALL_PATH})
+
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<$<CONFIG:Debug>:${Qt5_CoreLocation_Debug}> $<$<NOT:$<CONFIG:Debug>>:${Qt5_CoreLocation}> $<$<CONFIG:Debug>:${PROJECT_BINARY_DIR}/${Qt5_CoreSOName_Debug}> $<$<NOT:$<CONFIG:Debug>>:${PROJECT_BINARY_DIR}/${Qt5_CoreSOName}>)
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<$<CONFIG:Debug>:${Qt5_WidgetsLocation_Debug}> $<$<NOT:$<CONFIG:Debug>>:${Qt5_WidgetsLocation}> $<$<CONFIG:Debug>:${PROJECT_BINARY_DIR}/${Qt5_WidgetSOName_Debug}> $<$<NOT:$<CONFIG:Debug>>:${PROJECT_BINARY_DIR}/${Qt5_WidgetSOName}>)
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<$<CONFIG:Debug>:${Qt5_XmlLocation_Debug}> $<$<NOT:$<CONFIG:Debug>>:${Qt5_XmlLocation}> $<$<CONFIG:Debug>:${PROJECT_BINARY_DIR}/${Qt5_XmlSOName_Debug}> $<$<NOT:$<CONFIG:Debug>>:${PROJECT_BINARY_DIR}/${Qt5_XmlSOName}>)
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<$<CONFIG:Debug>:${Qt5_XmlPatternsLocation_Debug}> $<$<NOT:$<CONFIG:Debug>>:${Qt5_XmlPatternsLocation}> $<$<CONFIG:Debug>:${PROJECT_BINARY_DIR}/${Qt5_XmlPatternsSOName_Debug}> $<$<NOT:$<CONFIG:Debug>>:${PROJECT_BINARY_DIR}/${Qt5_XmlPatternsSOName}>)
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<$<CONFIG:Debug>:${Qt5_NetworkLocation_Debug}> $<$<NOT:$<CONFIG:Debug>>:${Qt5_NetworkLocation}> $<$<CONFIG:Debug>:${PROJECT_BINARY_DIR}/${Qt5_NetworkSOName_Debug}> $<$<NOT:$<CONFIG:Debug>>:${PROJECT_BINARY_DIR}/${Qt5_NetworkSOName}>)
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<$<CONFIG:Debug>:${Qt5_GuiLocation_Debug}> $<$<NOT:$<CONFIG:Debug>>:${Qt5_GuiLocation}> $<$<CONFIG:Debug>:${PROJECT_BINARY_DIR}/${Qt5_GuiSOName_Debug}> $<$<NOT:$<CONFIG:Debug>>:${PROJECT_BINARY_DIR}/${Qt5_GuiSOName}>)
 
 
-        if (MINGW)
+    file(GLOB biogui_libs
+            "${Qt5_CoreLocation}"
+            "${Qt5_WidgetsLocation}"
+            "${Qt5_XmlLocation}"
+            "${Qt5_XmlPatternsLocation}"
+            "${Qt5_NetworkLocation}"
+            "${Qt5_GuiLocation}"
+
+            )
+    install(FILES ${biogui_libs} DESTINATION ${CMAKE_INSTALL_PREFIX})
+
+
+    if (MINGW)
 
             get_filename_component(MINGW_BUILD_BIN ${CMAKE_CXX_COMPILER} PATH)
 
-            add_custom_command( TARGET deploy POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MINGW_BUILD_BIN}/libgcc_s_dw2-1.dll ${BIOGUI_INSTALL_PATH})
-            add_custom_command( TARGET deploy POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MINGW_BUILD_BIN}/libstdc++-6.dll ${BIOGUI_INSTALL_PATH})
-            add_custom_command( TARGET deploy POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MINGW_BUILD_BIN}/libwinpthread-1.dll ${BIOGUI_INSTALL_PATH})
+            add_custom_command( TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MINGW_BUILD_BIN}/libgcc_s_dw2-1.dll ${PROJECT_BINARY_DIR})
+            add_custom_command( TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MINGW_BUILD_BIN}/libstdc++-6.dll ${PROJECT_BINARY_DIR})
+            add_custom_command( TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MINGW_BUILD_BIN}/libwinpthread-1.dll ${PROJECT_BINARY_DIR})
         endif()
 
         if (UNIX)
             get_filename_component(QT5GUI_DIR ${Qt5_GuiLocation} DIRECTORY)
 
-            add_custom_command( TARGET deploy POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${QT5GUI_DIR}/libicudata.so.56 ${BIOGUI_INSTALL_PATH})
-            add_custom_command( TARGET deploy POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${QT5GUI_DIR}/libicui18n.so.56 ${BIOGUI_INSTALL_PATH})
-            add_custom_command( TARGET deploy POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${QT5GUI_DIR}/libicuuc.so.56 ${BIOGUI_INSTALL_PATH})
+            add_custom_command( TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${QT5GUI_DIR}/libicudata.so.56 ${PROJECT_BINARY_DIR})
+            add_custom_command( TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${QT5GUI_DIR}/libicui18n.so.56 ${PROJECT_BINARY_DIR})
+            add_custom_command( TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${QT5GUI_DIR}/libicuuc.so.56 ${PROJECT_BINARY_DIR})
 
         endif()
     #add_custom_command( TARGET deploy POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${LUA_LIBRARIES} ${BIOGUI_INSTALL_PATH})

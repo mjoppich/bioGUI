@@ -198,6 +198,9 @@ bioGUIapp::bioGUIapp(int& argc, char** argv)
     m_pMainMainWindow->setCentralWidget(pSplitter);
     m_pMainMainWindow->show();
 
+    pLeft->setFixedWidth(250);
+    m_pMainMainWindow->setMinimumSize(700, 500);
+
     // For testing purposes only
     //this->runProgram();
 

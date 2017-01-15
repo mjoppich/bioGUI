@@ -22,6 +22,8 @@ cmake_minimum_required(VERSION 3.0)
 LIST(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
+set (CMAKE_CXX_STANDARD 11)
+
 
 # Include Qt basic functions
 include(QtCommon)
@@ -34,7 +36,7 @@ if (WIN32)
 
     set(ENV{LUA_DIR} "D:/libraries/lua-5.3.3/;C:/lua53/")
     message(WARNING "IN MINGW")
-    set(Qt5_DIR "C:/Qt/Qt5.7.0/5.7/mingw53_32")
+    set(Qt5_DIR "C:/Qt/Qt5.7.0/5.7/mingw53_32;C:/Qt/5.7/mingw53_32")
     set(ENV{OPENSSL_ROOT_DIR} "C:/OpenSSL-Win32/lib/")
 
 
@@ -173,10 +175,14 @@ file(GLOB biogui_files
         "config.ini"
         "LICENSE"
         "README.md"
-        "./templates/WSL_install.gui"
         )
 
 install(FILES ${biogui_files} DESTINATION ${CMAKE_INSTALL_PREFIX})
+
+file(GLOB biogui_templates
+        "${CMAKE_CURRENT_SOURCE_DIR}/templates/WSL_install.gui"
+)
+install(FILES ${biogui_templates} DESTINATION ${CMAKE_INSTALL_PREFIX}/templates)
 
 message(WARNING "files to copy ${META_FILES_TO_INCLUDE}")
 message(WARNING "exe location ${PROJECT_BINARY_DIR}")
@@ -292,13 +298,19 @@ if( TRUE )
         set(Qt5_GuiSOName_Debug "")
     endif()
 
-        message(WARNING "Qt5 Config: ${Qt5_CoreConfig}")
-    message(WARNING "Found Qt5 Core ${Qt5_CoreSOName}")
+    message(WARNING "Found Qt5 Core ${Qt5_CoreLocation}")
     message(WARNING "Found Qt5 Widgets ${Qt5_WidgetsLocation}")
     message(WARNING "Found Qt5 Xml ${Qt5_XmlLocation}")
     message(WARNING "Found Qt5 XmlPatterns ${Qt5_XmlPatternsLocation}")
     message(WARNING "Found Qt5 Network ${Qt5_NetworkLocation}")
     message(WARNING "Found Qt5 Gui ${Qt5_GuiLocation}")
+
+    message(WARNING "Found Qt5 Core Debug ${Qt5_CoreLocation_Debug}")
+    message(WARNING "Found Qt5 Widgets Debug ${Qt5_WidgetsLocation_Debug}")
+    message(WARNING "Found Qt5 Xml Debug ${Qt5_XmlLocation_Debug}")
+    message(WARNING "Found Qt5 XmlPatterns Debug ${Qt5_XmlPatternsLocation_Debug}")
+    message(WARNING "Found Qt5 Network Debug ${Qt5_NetworkLocation_Debug}")
+    message(WARNING "Found Qt5 Gui Debug ${Qt5_GuiLocation_Debug}")
 
     # find the debug *d.dll file
     #get_target_property(Qt5_CoreLocationDebug Qt5::Core IMPORTED_LOCATION_DEBUG)
@@ -330,6 +342,13 @@ if( TRUE )
             add_custom_command( TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MINGW_BUILD_BIN}/libgcc_s_dw2-1.dll ${PROJECT_BINARY_DIR})
             add_custom_command( TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MINGW_BUILD_BIN}/libstdc++-6.dll ${PROJECT_BINARY_DIR})
             add_custom_command( TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MINGW_BUILD_BIN}/libwinpthread-1.dll ${PROJECT_BINARY_DIR})
+			
+			    file(GLOB biogui_win_libs
+					${MINGW_BUILD_BIN}/libgcc_s_dw2-1.dll
+					${MINGW_BUILD_BIN}/libstdc++-6.dll
+					${MINGW_BUILD_BIN}/libwinpthread-1.dll
+					)
+			install(FILES ${biogui_win_libs} DESTINATION ${CMAKE_INSTALL_PREFIX})
         endif()
 
         if (UNIX)
@@ -338,6 +357,13 @@ if( TRUE )
             add_custom_command( TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${QT5GUI_DIR}/libicudata.so.56 ${PROJECT_BINARY_DIR})
             add_custom_command( TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${QT5GUI_DIR}/libicui18n.so.56 ${PROJECT_BINARY_DIR})
             add_custom_command( TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${QT5GUI_DIR}/libicuuc.so.56 ${PROJECT_BINARY_DIR})
+			
+			file(GLOB biogui_linux_libs
+					${QT5GUI_DIR}/libicudata.so.56
+					${QT5GUI_DIR}/libicui18n.so.56
+					${QT5GUI_DIR}/libicuuc.so.56
+					)
+			install(FILES ${biogui_linux_libs} DESTINATION ${CMAKE_INSTALL_PREFIX})
 
         endif()
     #add_custom_command( TARGET deploy POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${LUA_LIBRARIES} ${BIOGUI_INSTALL_PATH})

@@ -70,6 +70,10 @@ if (APPLE)
 
     message(STATUS ">>> Apple")
     set(Qt5_DIR "/Users/joppich/Qt/5.7/clang_64/")
+    set(ENV{OPENSSL_ROOT_DIR} "/usr/local/opt/openssl")
+    set(ENV{LUA_DIR} "/usr/local/opt/lua")
+
+
 endif()
 
 if (WIN32)
@@ -86,6 +90,9 @@ if (UNIX AND NOT APPLE)
 
     message(STATUS ">>> Linux")
     set(Qt5_DIR "/home/users/joppich//Qt/5.7/gcc_64/")
+
+set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+set(CMAKE_INSTALL_RPATH "./")
 
 endif()
 
@@ -181,10 +188,6 @@ find_package(Qt5Network REQUIRED)
 find_package(Qt5Xml REQUIRED)
 find_package(Qt5XmlPatterns REQUIRED)
 
-set(CMAKE_INSTALL_RPATH_USE_LINK_PATH FALSE)
-set(CMAKE_INSTALL_RPATH "./")
-
-
 
 if (APPLE)
     set(BIOGUI_NETOWRK_INI "${CMAKE_CURRENT_SOURCE_DIR}/config.ini")
@@ -221,29 +224,29 @@ qt5_use_modules(${PROJECT_NAME} Core Gui Widgets Network Xml XmlPatterns)
 
 install(TARGETS ${PROJECT_NAME} DESTINATION ${CMAKE_INSTALL_PREFIX} )
 
+message(STATUS "files to copy ${META_FILES_TO_INCLUDE}")
+message(STATUS "exe location ${PROJECT_BINARY_DIR}")
+message(STATUS "installing to: ${PROJECT_BINARY_DIR}")
+
 file(GLOB biogui_files
-        "config.ini"
         "LICENSE"
         "README.md"
         )
 
 install(FILES ${biogui_files} DESTINATION ${CMAKE_INSTALL_PREFIX})
 
+if (NOT APPLE)
+
+file(GLOB biogui_ini_files
+        "config.ini"
+        )
+
+install(FILES ${biogui_ini_files} DESTINATION ${CMAKE_INSTALL_PREFIX})
+
 file(GLOB biogui_templates
         "${CMAKE_CURRENT_SOURCE_DIR}/templates/WSL_install.gui"
 )
 install(FILES ${biogui_templates} DESTINATION ${CMAKE_INSTALL_PREFIX}/templates)
-
-message(STATUS "files to copy ${META_FILES_TO_INCLUDE}")
-message(STATUS "exe location ${PROJECT_BINARY_DIR}")
-message(STATUS "installing to: ${PROJECT_BINARY_DIR}")
-
-if( TRUE )
-    #get_filename_component(MINGW_BUILD_BIN ${CMAKE_CXX_COMPILER} PATH)
-
-    #install(TARGETS bioGUI DESTINATION ${BIOGUI_INSTALL_PATH} )
-    #add_custom_command( TARGET deploy PRE_BUILD COMMAND ${CMAKE_COMMAND} -E remove_directory  ${BIOGUI_INSTALL_PATH})
-
 
     add_custom_command( TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E make_directory ${PROJECT_BINARY_DIR})
     add_custom_command( TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E make_directory ${PROJECT_BINARY_DIR}/templates)
@@ -394,15 +397,6 @@ if( TRUE )
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<$<CONFIG:Debug>:${Qt5_GuiLocation_Debug}> $<$<NOT:$<CONFIG:Debug>>:${Qt5_GuiLocation}> $<$<CONFIG:Debug>:${PROJECT_BINARY_DIR}/${Qt5_GuiSOName_Debug}> $<$<NOT:$<CONFIG:Debug>>:${PROJECT_BINARY_DIR}/${Qt5_GuiSOName}>)
 
 
-    file(GLOB biogui_libs
-            "${Qt5_CoreLocation}"
-            "${Qt5_WidgetsLocation}"
-            "${Qt5_XmlLocation}"
-            "${Qt5_XmlPatternsLocation}"
-            "${Qt5_NetworkLocation}"
-            "${Qt5_GuiLocation}"
-            )
-    #install(FILES ${biogui_libs} DESTINATION ${CMAKE_INSTALL_PREFIX} NAMELINK_ONLY)
 
     install(FILES $<$<CONFIG:Debug>:${Qt5_CoreLocation_Debug}>$<$<NOT:$<CONFIG:Debug>>:${Qt5_CoreLocation}> DESTINATION ${CMAKE_INSTALL_PREFIX} RENAME ${Qt5_CoreSOName})
     install(FILES $<$<CONFIG:Debug>:${Qt5_WidgetsLocation_Debug}>$<$<NOT:$<CONFIG:Debug>>:${Qt5_WidgetsLocation}> DESTINATION ${CMAKE_INSTALL_PREFIX} RENAME ${Qt5_WidgetsSOName})
@@ -410,7 +404,7 @@ if( TRUE )
     install(FILES $<$<CONFIG:Debug>:${Qt5_XmlPatternsLocation_Debug}>$<$<NOT:$<CONFIG:Debug>>:${Qt5_XmlPatternsLocation}> DESTINATION ${CMAKE_INSTALL_PREFIX} RENAME ${Qt5_XmlPatternsSOName})
     install(FILES $<$<CONFIG:Debug>:${Qt5_NetworkLocation_Debug}>$<$<NOT:$<CONFIG:Debug>>:${Qt5_NetworkLocation}> DESTINATION ${CMAKE_INSTALL_PREFIX} RENAME ${Qt5_NetworkSOName})
     install(FILES $<$<CONFIG:Debug>:${Qt5_GuiLocation_Debug}>$<$<NOT:$<CONFIG:Debug>>:${Qt5_GuiLocation}> DESTINATION ${CMAKE_INSTALL_PREFIX} RENAME ${Qt5_GuiSOName})
-
+endif()
 
     if (MINGW)
 
@@ -440,7 +434,7 @@ if( TRUE )
         endif()
 
 
-        if (UNIX)
+        if (UNIX AND NOT APPLE)
             get_filename_component(QT5GUI_DIR ${Qt5_GuiLocation} DIRECTORY)
 
             add_custom_command( TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${QT5GUI_DIR}/libicudata.so.56 ${PROJECT_BINARY_DIR})
@@ -466,5 +460,3 @@ if( TRUE )
 
 
         endif()
-
-endif()

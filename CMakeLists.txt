@@ -24,25 +24,72 @@ LIST(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set (CMAKE_CXX_STANDARD 11)
 
+MACRO(COPY_IF_DIFFERENT FROM_DIR TO_DIR FILES TARGETS TAGS)
+    # Macro to implement copy_if_different for a list of files
+    # Arguments -
+    #   FROM_DIR - this is the source directory
+    #   TO_DIR   - this is the destination directory
+    #   FILES    - names of the files to copy
+    #              TODO: add globing.
+    #   TARGETS  - List of targets
+    #   TAGS     - Since only the file name is used
+    #              to generate rules, pre-pend a user
+    #              supplied tag to prevent duplicate rule errors.
+    SET(AddTargets "")
+    FOREACH(SRC ${FILES})
+        GET_FILENAME_COMPONENT(SRCFILE ${SRC} NAME)
+        # Command to copy the files to ${STEP1}/src, if changed.
+        SET(TARGET  "${TAGS}/${SRCFILE}")
+        IF("${FROM_DIR}" STREQUAL "")
+            SET(FROM ${SRC})
+        ELSE("${FROM_DIR}" STREQUAL "")
+            SET(FROM ${FROM_DIR}/${SRC})
+        ENDIF("${FROM_DIR}" STREQUAL "")
+        IF("${TO_DIR}" STREQUAL "")
+            SET(TO ${SRCFILE})
+        ELSE("${TO_DIR}" STREQUAL "")
+            SET(TO   ${TO_DIR}/${SRCFILE})
+        ENDIF("${TO_DIR}" STREQUAL "")
+        ADD_CUSTOM_COMMAND(
+                OUTPUT  ${TARGET}
+                COMMAND ${CMAKE_COMMAND}
+                ARGS    -E copy_if_different ${FROM} ${TO}
+                COMMENT "Copying ${SRCFILE} ${TO_DIR}"
+        )
+        SET(AddTargets ${AddTargets} ${TARGET})
+    ENDFOREACH(SRC ${FILES})
+    SET(${TARGETS} ${AddTargets})
+ENDMACRO(COPY_IF_DIFFERENT FROM_DIR TO_DIR FILES TARGETS TAGS)
 
 # Include Qt basic functions
 include(QtCommon)
 
+message(STATUS "Detected OS:")
+
 if (APPLE)
+
+    message(STATUS ">>> Apple")
     set(Qt5_DIR "/Users/joppich/Qt/5.7/clang_64/")
 endif()
 
 if (WIN32)
 
+    message(STATUS ">>> WIN32")
     set(ENV{LUA_DIR} "D:/libraries/lua-5.3.3/;C:/lua53/")
-    message(WARNING "IN MINGW")
+    message(STATUS "IN MINGW")
     set(Qt5_DIR "C:/Qt/Qt5.7.0/5.7/mingw53_32;C:/Qt/5.7/mingw53_32")
     set(ENV{OPENSSL_ROOT_DIR} "C:/OpenSSL-Win32/lib/")
 
+endif()
+
+if (UNIX AND NOT APPLE)
+
+    message(STATUS ">>> Linux")
+    set(Qt5_DIR "/home/users/joppich//Qt/5.7/gcc_64/")
 
 endif()
 
-message(WARNING "QT PATH: ${Qt5_DIR}")
+message(STATUS "QT PATH: ${Qt5_DIR}")
 
 LIST(APPEND CMAKE_PREFIX_PATH "${Qt5_DIR}/lib/cmake/")
 LIST(APPEND CMAKE_MODULE_PATH "${Qt5_DIR}/lib/cmake/Qt5")
@@ -73,10 +120,10 @@ endif()
 find_package(Lua 5.2 REQUIRED)
 include_directories(${LUA_INCLUDE_DIR})
 
-message(WARNING "   *** Lua include: ${LUA_INCLUDE_DIR}")
-message(WARNING "   *** Lua libs: ${LUA_LIBRARIES}")
-message(WARNING "   *** Lua lib: ${LUA_LIBRARY}")
-message(WARNING "   *** Lua DLL dir: ${LUA_DLL_DIR}")
+message(STATUS "   *** Lua include: ${LUA_INCLUDE_DIR}")
+message(STATUS "   *** Lua libs: ${LUA_LIBRARIES}")
+message(STATUS "   *** Lua lib: ${LUA_LIBRARY}")
+message(STATUS "   *** Lua DLL dir: ${LUA_DLL_DIR}")
 
 # Search OpenSSL
 find_package(OpenSSL REQUIRED)
@@ -86,10 +133,10 @@ if( OPENSSL_FOUND )
     include_directories(${OPENSSL_INCLUDE_DIRS})
     #set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OPENSSL_C_FLAGS}")
     #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OPENSSL_CXX_FLAGS}")
-    message(WARNING "Using OpenSSL ${OPENSSL_VERSION}")
-    message(WARNING "OPENSSL LIBRARIES ${OPENSSL_LIBRARIES}")
-    message(WARNING "SSL LIBRARY ${OPENSSL_SSL_LIBRARY}")
-    message(WARNING "CRYPTO LIBRARY ${OPENSSL_CRYPTO_LIBRARY}")
+    message(STATUS "Using OpenSSL ${OPENSSL_VERSION}")
+    message(STATUS "OPENSSL LIBRARIES ${OPENSSL_LIBRARIES}")
+    message(STATUS "SSL LIBRARY ${OPENSSL_SSL_LIBRARY}")
+    message(STATUS "CRYPTO LIBRARY ${OPENSSL_CRYPTO_LIBRARY}")
 
 else()
     # Error; with REQUIRED, pkg_search_module() will throw an error by it's own
@@ -134,6 +181,10 @@ find_package(Qt5Network REQUIRED)
 find_package(Qt5Xml REQUIRED)
 find_package(Qt5XmlPatterns REQUIRED)
 
+set(CMAKE_INSTALL_RPATH_USE_LINK_PATH FALSE)
+set(CMAKE_INSTALL_RPATH "./")
+
+
 
 if (APPLE)
     set(BIOGUI_NETOWRK_INI "${CMAKE_CURRENT_SOURCE_DIR}/config.ini")
@@ -168,7 +219,6 @@ TARGET_LINK_LIBRARIES(${PROJECT_NAME} mylibeay myssleay lualib)
 
 qt5_use_modules(${PROJECT_NAME} Core Gui Widgets Network Xml XmlPatterns)
 
-set(BIOGUI_INSTALL_PATH ${CMAKE_CURRENT_SOURCE_DIR}/deploy)
 install(TARGETS ${PROJECT_NAME} DESTINATION ${CMAKE_INSTALL_PREFIX} )
 
 file(GLOB biogui_files
@@ -184,14 +234,12 @@ file(GLOB biogui_templates
 )
 install(FILES ${biogui_templates} DESTINATION ${CMAKE_INSTALL_PREFIX}/templates)
 
-message(WARNING "files to copy ${META_FILES_TO_INCLUDE}")
-message(WARNING "exe location ${PROJECT_BINARY_DIR}")
-message(WARNING "installing to: ${PROJECT_BINARY_DIR}")
+message(STATUS "files to copy ${META_FILES_TO_INCLUDE}")
+message(STATUS "exe location ${PROJECT_BINARY_DIR}")
+message(STATUS "installing to: ${PROJECT_BINARY_DIR}")
 
 if( TRUE )
     #get_filename_component(MINGW_BUILD_BIN ${CMAKE_CXX_COMPILER} PATH)
-    install(TARGETS bioGUI DESTINATION ${PROJECT_BINARY_DIR} )
-
 
     #install(TARGETS bioGUI DESTINATION ${BIOGUI_INSTALL_PATH} )
     #add_custom_command( TARGET deploy PRE_BUILD COMMAND ${CMAKE_COMMAND} -E remove_directory  ${BIOGUI_INSTALL_PATH})
@@ -247,70 +295,93 @@ if( TRUE )
     get_target_property(Qt5_GuiLocation_Debug Qt5::Gui LOCATION_DEBUG)
     get_target_property(Qt5_GuiSOName_Debug Qt5::Gui "IMPORTED_SONAME_DEBUG")
 
+    message(STATUS "Found Qt5 Core SO Name ${Qt5_CoreSOName}")
+    message(STATUS "Found Qt5 Widgets SO Name ${Qt5_WidgetsSOName}")
+    message(STATUS "Found Qt5 Xml SO Name ${Qt5_XmlSOName}")
+    message(STATUS "Found Qt5 XmlPatterns SO Name ${Qt5_XmlPatternsSOName}")
+    message(STATUS "Found Qt5 Network SO Name ${Qt5_NetworkSOName}")
+    message(STATUS "Found Qt5 Gui SO Name ${Qt5_GuiSOName}")
 
-
-
-    if (NOT ${Qt5_CoreSOName})
-        set(Qt5_CoreSOName "")
+    if (NOT Qt5_CoreSOName)
+        get_filename_component(_originalName "${Qt5_CoreLocation}" NAME)
+        set(Qt5_CoreSOName "${_originalName}")
     endif()
 
-    if (NOT ${Qt5_WidgetsSOName})
-        set(Qt5_WidgetsSOName "")
+    if (NOT Qt5_WidgetsSOName)
+        get_filename_component(_originalName "${Qt5_WidgetsLocation}" NAME)
+        set(Qt5_WidgetsSOName "${_originalName}")
     endif()
 
-    if (NOT ${Qt5_XmlSOName})
-        set(Qt5_XmlSOName "")
+    if (NOT Qt5_XmlSOName)
+        get_filename_component(_originalName "${Qt5_XmlLocation}" NAME)
+        set(Qt5_XmlSOName "${_originalName}")
     endif()
 
-    if (NOT ${Qt5_XmlPatternsSOName})
-        set(Qt5_XmlPatternsSOName "")
+    if (NOT Qt5_XmlPatternsSOName)
+        get_filename_component(_originalName "${Qt5_XmlPatternsLocation}" NAME)
+        set(Qt5_XmlPatternsSOName "${_originalName}")
     endif()
 
-    if (NOT ${Qt5_NetworkSOName})
-        set(Qt5_NetworkSOName "")
+    if (NOT Qt5_NetworkSOName)
+        get_filename_component(_originalName "${Qt5_NetworkLocation}" NAME)
+        set(Qt5_NetworkSOName "${_originalName}")
     endif()
 
-    if (NOT ${Qt5_GuiSOName})
-        set(Qt5_GuiSOName "")
+    if (NOT Qt5_GuiSOName)
+        get_filename_component(_originalName "${Qt5_GuiLocation}" NAME)
+        set(Qt5_GuiSOName "${_originalName}")
     endif()
 
-    if (NOT ${Qt5_CoreSOName_Debug})
-        set(Qt5_CoreSOName_Debug "")
+    if (NOT Qt5_CoreSOName_Debug)
+        get_filename_component(_originalName "${Qt5_CoreLocation_Debug}" NAME)
+        set(Qt5_CoreSOName_Debug "${_originalName}")
     endif()
 
-    if (NOT ${Qt5_WidgetsSOName_Debug})
-        set(Qt5_WidgetsSOName_Debug "")
+    if (NOT Qt5_WidgetsSOName_Debug)
+        get_filename_component(_originalName "${Qt5_WidgetsLocation_Debug}" NAME)
+        set(Qt5_WidgetsSOName_Debug "${_originalName}")
     endif()
 
-    if (NOT ${Qt5_XmlSOName_Debug})
-        set(Qt5_XmlSOName_Debug "")
+    if (NOT Qt5_XmlSOName_Debug)
+        get_filename_component(_originalName "${Qt5_XmlLocation_Debug}" NAME)
+        set(Qt5_XmlSOName_Debug "${_originalName}")
     endif()
 
-    if (NOT ${Qt5_XmlPatternsSOName_Debug})
-        set(Qt5_XmlPatternsSOName_Debug "")
+    if (NOT Qt5_XmlPatternsSOName_Debug)
+        get_filename_component(_originalName "${Qt5_XmlPatternsLocation_Debug}" NAME)
+        set(Qt5_XmlPatternsSOName_Debug "${_originalName}")
     endif()
 
-    if (NOT ${Qt5_NetworkSOName_Debug})
-        set(Qt5_NetworkSOName_Debug "")
+    if (NOT Qt5_NetworkSOName_Debug)
+        get_filename_component(_originalName "${Qt5_NetworkLocation_Debug}" NAME)
+        set(Qt5_NetworkSOName_Debug "${_originalName}")
     endif()
 
-    if (NOT ${Qt5_GuiSOName_Debug})
-        set(Qt5_GuiSOName_Debug "")
+    if (NOT Qt5_GuiSOName_Debug)
+        get_filename_component(_originalName "${Qt5_GuiLocation_Debug}" NAME)
+        set(Qt5_GuiSOName_Debug "${_originalName}")
     endif()
 
-    message(WARNING "Found Qt5 Core ${Qt5_CoreLocation}")
-    message(WARNING "Found Qt5 Widgets ${Qt5_WidgetsLocation}")
-    message(WARNING "Found Qt5 Xml ${Qt5_XmlLocation}")
-    message(WARNING "Found Qt5 XmlPatterns ${Qt5_XmlPatternsLocation}")
-    message(WARNING "Found Qt5 Network ${Qt5_NetworkLocation}")
-    message(WARNING "Found Qt5 Gui ${Qt5_GuiLocation}")
+    message(STATUS "Found Qt5 Core SO Name ${Qt5_CoreSOName}")
+    message(STATUS "Found Qt5 Widgets SO Name ${Qt5_WidgetsSOName}")
+    message(STATUS "Found Qt5 Xml SO Name ${Qt5_XmlSOName}")
+    message(STATUS "Found Qt5 XmlPatterns SO Name ${Qt5_XmlPatternsSOName}")
+    message(STATUS "Found Qt5 Network SO Name ${Qt5_NetworkSOName}")
+    message(STATUS "Found Qt5 Gui SO Name ${Qt5_GuiSOName}")
 
-    message(WARNING "Found Qt5 Core Debug ${Qt5_CoreLocation_Debug}")
-    message(WARNING "Found Qt5 Widgets Debug ${Qt5_WidgetsLocation_Debug}")
-    message(WARNING "Found Qt5 Xml Debug ${Qt5_XmlLocation_Debug}")
-    message(WARNING "Found Qt5 XmlPatterns Debug ${Qt5_XmlPatternsLocation_Debug}")
-    message(WARNING "Found Qt5 Network Debug ${Qt5_NetworkLocation_Debug}")
-    message(WARNING "Found Qt5 Gui Debug ${Qt5_GuiLocation_Debug}")
+    message(STATUS "Found Qt5 Core ${Qt5_CoreLocation}")
+    message(STATUS "Found Qt5 Widgets ${Qt5_WidgetsLocation}")
+    message(STATUS "Found Qt5 Xml ${Qt5_XmlLocation}")
+    message(STATUS "Found Qt5 XmlPatterns ${Qt5_XmlPatternsLocation}")
+    message(STATUS "Found Qt5 Network ${Qt5_NetworkLocation}")
+    message(STATUS "Found Qt5 Gui ${Qt5_GuiLocation}")
+
+    message(STATUS "Found Qt5 Core Debug ${Qt5_CoreLocation_Debug}")
+    message(STATUS "Found Qt5 Widgets Debug ${Qt5_WidgetsLocation_Debug}")
+    message(STATUS "Found Qt5 Xml Debug ${Qt5_XmlLocation_Debug}")
+    message(STATUS "Found Qt5 XmlPatterns Debug ${Qt5_XmlPatternsLocation_Debug}")
+    message(STATUS "Found Qt5 Network Debug ${Qt5_NetworkLocation_Debug}")
+    message(STATUS "Found Qt5 Gui Debug ${Qt5_GuiLocation_Debug}")
 
     # find the debug *d.dll file
     #get_target_property(Qt5_CoreLocationDebug Qt5::Core IMPORTED_LOCATION_DEBUG)
@@ -330,9 +401,15 @@ if( TRUE )
             "${Qt5_XmlPatternsLocation}"
             "${Qt5_NetworkLocation}"
             "${Qt5_GuiLocation}"
-
             )
-    install(FILES ${biogui_libs} DESTINATION ${CMAKE_INSTALL_PREFIX})
+    #install(FILES ${biogui_libs} DESTINATION ${CMAKE_INSTALL_PREFIX} NAMELINK_ONLY)
+
+    install(FILES $<$<CONFIG:Debug>:${Qt5_CoreLocation_Debug}>$<$<NOT:$<CONFIG:Debug>>:${Qt5_CoreLocation}> DESTINATION ${CMAKE_INSTALL_PREFIX} RENAME ${Qt5_CoreSOName})
+    install(FILES $<$<CONFIG:Debug>:${Qt5_WidgetsLocation_Debug}>$<$<NOT:$<CONFIG:Debug>>:${Qt5_WidgetsLocation}> DESTINATION ${CMAKE_INSTALL_PREFIX} RENAME ${Qt5_WidgetsSOName})
+    install(FILES $<$<CONFIG:Debug>:${Qt5_XmlLocation_Debug}>$<$<NOT:$<CONFIG:Debug>>:${Qt5_XmlLocation}> DESTINATION ${CMAKE_INSTALL_PREFIX} RENAME ${Qt5_XmlSOName})
+    install(FILES $<$<CONFIG:Debug>:${Qt5_XmlPatternsLocation_Debug}>$<$<NOT:$<CONFIG:Debug>>:${Qt5_XmlPatternsLocation}> DESTINATION ${CMAKE_INSTALL_PREFIX} RENAME ${Qt5_XmlPatternsSOName})
+    install(FILES $<$<CONFIG:Debug>:${Qt5_NetworkLocation_Debug}>$<$<NOT:$<CONFIG:Debug>>:${Qt5_NetworkLocation}> DESTINATION ${CMAKE_INSTALL_PREFIX} RENAME ${Qt5_NetworkSOName})
+    install(FILES $<$<CONFIG:Debug>:${Qt5_GuiLocation_Debug}>$<$<NOT:$<CONFIG:Debug>>:${Qt5_GuiLocation}> DESTINATION ${CMAKE_INSTALL_PREFIX} RENAME ${Qt5_GuiSOName})
 
 
     if (MINGW)
@@ -348,8 +425,20 @@ if( TRUE )
 					${MINGW_BUILD_BIN}/libstdc++-6.dll
 					${MINGW_BUILD_BIN}/libwinpthread-1.dll
 					)
-			install(FILES ${biogui_win_libs} DESTINATION ${CMAKE_INSTALL_PREFIX})
+
+            foreach (_file ${biogui_win_libs})
+                get_filename_component(_resolvedFile "${_file}" REALPATH)
+                get_filename_component(_originalName "${_file}" NAME)
+                get_filename_component(_originalExt "${_file}" EXT)
+
+                #message(STATUS "${_resolvedFile} ${_originalName} ${_originalExt}")
+
+                install(FILES ${_resolvedFile} DESTINATION ${CMAKE_INSTALL_PREFIX} RENAME "${_originalName}")
+            endforeach()
+
+
         endif()
+
 
         if (UNIX)
             get_filename_component(QT5GUI_DIR ${Qt5_GuiLocation} DIRECTORY)
@@ -363,9 +452,19 @@ if( TRUE )
 					${QT5GUI_DIR}/libicui18n.so.56
 					${QT5GUI_DIR}/libicuuc.so.56
 					)
-			install(FILES ${biogui_linux_libs} DESTINATION ${CMAKE_INSTALL_PREFIX})
+
+
+            foreach (_file ${biogui_linux_libs})
+                get_filename_component(_resolvedFile "${_file}" REALPATH)
+                get_filename_component(_originalName "${_file}" NAME)
+                get_filename_component(_originalExt "${_file}" EXT)
+
+                    #message(STATUS "${_resolvedFile} ${_originalName} ${_originalExt}")
+
+                install(FILES ${_resolvedFile} DESTINATION ${CMAKE_INSTALL_PREFIX} RENAME "${_originalName}")
+            endforeach()
+
 
         endif()
-    #add_custom_command( TARGET deploy POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${LUA_LIBRARIES} ${BIOGUI_INSTALL_PATH})
 
 endif()

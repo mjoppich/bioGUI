@@ -15,12 +15,10 @@ PROGNICE=Trimmomatic-0.36
 PROGDIR=$1
 
 PROGDIRESC=$(echo $PROGDIR | sed 's/ /\\ /g')
-
-APPBINARYDIR=${PROGDIR}/${PROG}/
+APPBINARYDIR=${PROGDIRESC}/${PROG}/
 
 if [ -z "${PROGDIR}" ]; then
 	PROGDIR=~/bioGUI/progs/
-	rm -rf $PROGDIR
 fi
 
 echo "Creating $PROGDIR"
@@ -28,15 +26,11 @@ echo "Creating $PROGDIR"
 ## create progdir
 mkdir -p "$PROGDIR"
 
-echo "exists PROGDIR PROG $PROGDIR/$PROG"
-
 #download and unzip
 if [ ! -f "$PROGDIR/$PROG.zip" ]; then
 echo "Downloading program"
 	wget http://www.usadellab.org/cms/uploads/supplementary/Trimmomatic/$PROGNICE.zip -O "$PROGDIR/$PROG.zip"
 fi
-
-echo "exists $PROGDIR/$PROG"
 
 if [ ! -d "$PROGDIR/$PROG" ]; then
 unzip -o "$PROGDIR/$PROG.zip" -d "$PROGDIR/$PROG"
@@ -48,7 +42,7 @@ if [ $# -gt 2 ]; then
 	if [ "$3" = "1" ]; then
 
 		if ! grep -q "$PROGDIR/$PROG" ~/.bashrc; then
-			echo "export PATH=\"$PROGDIR/$PROG:\$PATH\" " >> ~/.bashrc;
+			echo "export PATH=\"$PROGDIRESC/$PROG:\$PATH\" " >> ~/.bashrc;
 		fi
 	fi
 
@@ -306,7 +300,7 @@ cat << EOF | netcat $IP $PORT
    <value from="steps"/>
   </add>
   
-  <const id="bindir">${PROGDIR}/${PROG}/</const>
+  <const id="bindir">${PROGDIRESC}/${PROG}/</const>
 
   <execute location="" exec="java" param="-jar \${bindir}/trimmomatic-0.36.jar \${cl}" wsl="WSLsel">
     <output type="COUT" color="green" to="outputstream1" />

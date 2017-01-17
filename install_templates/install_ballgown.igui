@@ -24,17 +24,17 @@ PROG=ballgown_1.0.1
 PROGNICE=Ballgown_1.0.1
 PROGDIR=$1
 
-APPBINARYDIR=${PROGDIR}/${PROG}/
-
 if [ -z "${PROGDIR}" ]; then
 	PROGDIR=~/bioGUI/progs/
-	rm -rf $PROGDIR
 fi
 
-## create progdir
-mkdir -p $PROGDIR/$PROG
+PROGDIRESC=$(echo $PROGDIR | sed 's/ /\\ /g')
+APPBINARYDIR=${PROGDIRESC}/${PROG}/
 
-cd $PROGDIR/$PROG
+## create progdir
+mkdir -p "$PROGDIR/$PROG"
+
+cd "$PROGDIR/$PROG"
 
 cat << BALLGOWNRLOAD > loadData.R
 

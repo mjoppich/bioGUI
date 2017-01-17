@@ -25,7 +25,7 @@
     <label>sudo Password</label>
     <input id="sudopw" type="password"></input>
 
-	<checkbox id="addtopath" value="1" value-unselected="0" selected="true">Add program folder to PATH?</checkbox>
+	<checkbox id="addtopath" value="1" value-unselected="0" selected="true">Add program folder to PATH in &#126;/.bashrc?</checkbox>
   </group>
 
   <group id="templpath_sel" checkable="true" title="Store template?">

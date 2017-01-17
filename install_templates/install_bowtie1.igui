@@ -16,28 +16,28 @@ PROG=bowtie_1_1_2
 PROGNICE=Bowtie-1.1.2
 PROGDIR=$1
 
-APPBINARYDIR=${PROGDIR}/${PROG}/
-
 if [ -z "${PROGDIR}" ]; then
 	PROGDIR=~/bioGUI/progs/
-	rm -rf $PROGDIR
 fi
 
+PROGDIRESC=$(echo $PROGDIR | sed 's/ /\\ /g')
+APPBINARYDIR=${PROGDIRESC}/${PROG}/
+
 ## create progdir
-mkdir -p $PROGDIR
+mkdir -p "$PROGDIR"
 
 #download and unzip
-if [ ! -f $PROGDIR/$PROG.zip ]; then
-	wget https://sourceforge.net/projects/bowtie-bio/files/bowtie/1.1.2/bowtie-1.1.2-src.zip/download -O $PROGDIR/$PROG.zip
+if [ ! -f "$PROGDIR/$PROG.zip" ]; then
+	wget https://sourceforge.net/projects/bowtie-bio/files/bowtie/1.1.2/bowtie-1.1.2-src.zip/download -O "$PROGDIR/$PROG.zip"
 fi
 
 
 if [ ! -d "$PROGDIR/$PROG" ]; then
-unzip -d $PROGDIR/$PROG $PROGDIR/$PROG.zip 
-mv $PROGDIR/$PROG/*/* $PROGDIR/$PROG
+unzip -d "$PROGDIR/$PROG" "$PROGDIR/$PROG.zip"
+mv "$PROGDIR/$PROG/"*/* "$PROGDIR/$PROG"
 fi
 
-cd $PROGDIR/$PROG
+cd "$PROGDIR/$PROG"
 
 make
 
@@ -45,8 +45,8 @@ if [ $# -gt 2 ]; then
 
 	if [ "$3" = "1" ]; then
 
-		if ! grep -q $PROGDIR/$PROG ~/.bashrc; then
-			echo "export PATH=\"$PROGDIR/$PROG:\$PATH\" " >> ~/.bashrc;
+		if ! grep -q "$PROGDIRESC/$PROG" ~/.bashrc; then
+			echo "export PATH=\"$PROGDIRESC/$PROG:\$PATH\" " >> ~/.bashrc;
 		fi
 	fi
 

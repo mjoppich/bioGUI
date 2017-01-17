@@ -1,26 +1,37 @@
 #! Install glimmer302b
+
+echo "Dependencies: csh"
+if [ ! "$2" = "" ]; then
+	echo "Installing dependencies"
+	echo $2 | sudo -S apt-get update
+	echo $2 | sudo -S apt-get -y install csh
+	
+else
+	echo "No sudo password, not installing dependencies"
+fi
+
 ## set all variables
 PROG=glimmer302b
-
 PROGDIR=$1
+
 if [ -z "${PROGDIR}" ]; then
 	PROGDIR=~/bioGUI/progs/
 fi
 
-rm -rf $PROGDIR
+PROGDIRESC=$(echo $PROGDIR | sed 's/ /\\ /g')
+APPBINARYDIR=${PROGDIRESC}/${PROG}/
 
 ## create progdir
-mkdir -p $PROGDIR
-mkdir -p $PROGDIR/$PROG
+mkdir -p "$PROGDIR/$PROG"
 
 #download and unzip
-wget http://ccb.jhu.edu/software/glimmer/$PROG.tar.gz -O $PROGDIR/$PROG.tar.gz
+wget http://ccb.jhu.edu/software/glimmer/$PROG.tar.gz -O "$PROGDIR/$PROG.tar.gz"
 
 cd $PROGDIR
-tar -xzf $PROG.tar.gz --strip 1 -C $PROGDIR/$PROG
+tar -xzf "$PROG.tar.gz" --strip 1 -C "$PROGDIR/$PROG"
 
 #install prog
-cd $PROGDIR/$PROG/src
+cd "$PROGDIR/$PROG/src"
 
 make
 
@@ -28,8 +39,8 @@ if [ $# -gt 2 ]; then
 
 	if [ "$3" = "1" ]; then
 
-		if ! grep -q $PROGDIR/$PROG ~/.bashrc; then
-			echo "export PATH=\"$PROGDIR/$PROG:\$PATH\" " >> ~/.bashrc;
+		if ! grep -q "$PROGDIRESC/$PROG" ~/.bashrc; then
+			echo "export PATH=\"$PROGDIRESC/$PROG:\$PATH\" " >> ~/.bashrc;
 		fi
 	fi
 
@@ -41,8 +52,8 @@ if [ $# -eq 5 ]; then
 
 for script in $PROGDIR/$PROG/scripts/*.csh; do
 
-sed -i "/set awkpath = /c\set awkpath = $PROGDIR/$PROG/scripts/" $script
-sed -i "/set glimmerpath = /c\set glimmerpath = $PROGDIR/$PROG/bin/" $script
+sed -i "/set awkpath = /c\set awkpath = $PROGDIRESC/$PROG/scripts/" $script
+sed -i "/set glimmerpath = /c\set glimmerpath = $PROGDIRESC/$PROG/bin/" $script
 
 done
 
@@ -98,7 +109,7 @@ cat << EOF | netcat $IP $PORT
 <execution>
 
 <env id="ip" get="IPv4"/>
-<const id="progdir">${PROGDIR}/${PROG}</const>
+<const id="progdir">${APPBINARYDIR}</const>
 
 <relocate id="scr_output_folder_rel" wsl="\${WSLsel}" from="\${scr_output_folder}"/>
 <relocate id="scr_input_gen_rel" wsl="\${WSLsel}" from="\${scr_input_gen}"/>

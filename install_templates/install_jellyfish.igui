@@ -8,23 +8,23 @@ if [ -z "${PROGDIR}" ]; then
 	PROGDIR=~/bioGUI/progs/
 fi
 
-rm -rf $PROGDIR
+PROGDIRESC=$(echo $PROGDIR | sed 's/ /\\ /g')
 
 ## create progdir
-mkdir -p $PROGDIR
+mkdir -p "$PROGDIR"
 
 	#download and unzip
-if [ ! -f $PROGDIR/$PROG.tar.gz ]; then
-	wget https://github.com/gmarcais/Jellyfish/releases/download/v2.2.6/$PROG.tar.gz -O $PROGDIR/$PROG.tar.gz
+if [ ! -f "$PROGDIR/$PROG.tar.gz" ]; then
+	wget https://github.com/gmarcais/Jellyfish/releases/download/v2.2.6/$PROG.tar.gz -O "$PROGDIR/$PROG.tar.gz"
 fi
 
 cd $PROGDIR
-tar -xzf $PROG.tar.gz -C $PROGDIR/
+tar -xzf $PROG.tar.gz -C "$PROGDIR/"
 
 #install prog
 cd $PROGDIR/$PROG
 
-./configure --prefix=$PROGDIR/$PROG
+./configure --prefix="$PROGDIR/$PROG"
 make
 #make check
 make install
@@ -33,8 +33,8 @@ if [ $# -gt 2 ]; then
 
 	if [ "$3" = "1" ]; then
 
-		if ! grep -q $PROGDIR/$PROG ~/.bashrc; then
-			echo "export PATH=\"$PROGDIR/$PROG:\$PATH\" " >> ~/.bashrc;
+		if ! grep -q "$PROGDIRESC/$PROG" ~/.bashrc; then
+			echo "export PATH=\"$PROGDIRESC/$PROG:\$PATH\" " >> ~/.bashrc;
 		fi
 	fi
 
@@ -200,7 +200,7 @@ cat << EOF | netcat $IP $PORT
 </add>
 
 <env id="ip" get="IPv4"/>
-<const id="bindir">${PROGDIR}/${PROG}/bin/</const>
+<const id="bindir">${PROGDIRESC}/${PROG}/bin/</const>
     
 		<execute wsl="WSLsel" exec="jellyfish" location="\${bindir}" param="\${cl}">
 			<output type="CERR" color="red" to="outputstream2" />

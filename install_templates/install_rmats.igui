@@ -19,29 +19,30 @@ PROGNICE=rMATS-3.2.5
 PROGDIR=$1
 if [ -z "${PROGDIR}" ]; then
 	PROGDIR=~/bioGUI/progs/
-	rm -rf $PROGDIR
 fi
 
+PROGDIRESC=$(echo $PROGDIR | sed 's/ /\\ /g')
+
 ## create progdir
-mkdir -p $PROGDIR
+mkdir -p "$PROGDIR"
 
 #download and unzip
-if [ ! -f $PROGDIR/$PROG.tgz ]; then
-	wget https://sourceforge.net/projects/rnaseq-mats/files/MATS/rMATS.3.2.5.tgz/download -O $PROGDIR/$PROG.tgz
+if [ ! -f "$PROGDIR/$PROG.tgz" ]; then
+	wget https://sourceforge.net/projects/rnaseq-mats/files/MATS/rMATS.3.2.5.tgz/download -O "$PROGDIR/$PROG.tgz"
 fi
 
 
 if [ ! -d "$PROGDIR/$PROG" ]; then
-cd $PROGDIR
-tar -xzf $PROG.tgz -C $PROGDIR/
+cd "$PROGDIR"
+tar -xzf $PROG.tgz -C "$PROGDIR/"
 fi
 
 if [ $# -gt 2 ]; then
 
 	if [ "$3" = "1" ]; then
 
-		if ! grep -q $PROGDIR/$PROG ~/.bashrc; then
-			echo "export PATH=\"$PROGDIR/$PROG:\$PATH\" " >> ~/.bashrc;
+		if ! grep -q "$PROGDIRESC/$PROG" ~/.bashrc; then
+			echo "export PATH=\"$PROGDIRESC/$PROG:\$PATH\" " >> ~/.bashrc;
 		fi
 	fi
 
@@ -180,7 +181,7 @@ cat << EOF | netcat $IP $PORT
 </add> 
 
  
-  <const id="bindir">${PROGDIR}/${PROG}/</const>
+  <const id="bindir">${PROGDIRESC}/${PROG}/</const>
 
   <execute location="" exec="python" param="\${bindir}/RNASeq-MATS.py \${cl} wsl="WSLsel">
     <output type="COUT" color="green" to="outputstream1" />

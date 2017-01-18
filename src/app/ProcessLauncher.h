@@ -337,6 +337,15 @@ public slots:
 
             if ((sString.at(i) == ' ') || (sString.size()-1 == i))
             {
+
+                if (i >= 1)
+                {
+                    if ((sString.at(i-1) == '\\') && (sString.at(i) == ' '))
+                    {
+                        continue;
+                    }
+                }
+
                 size_t iOffSet = (sString.at(i) == ' ') ? 0 : 1;
 
                 std::string sPart = sString.substr(iLastArgPartStart, i-iLastArgPartStart+iOffSet);

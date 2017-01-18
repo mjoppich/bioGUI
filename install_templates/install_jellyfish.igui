@@ -18,16 +18,17 @@ if [ ! -f "$PROGDIR/$PROG.tar.gz" ]; then
 	wget https://github.com/gmarcais/Jellyfish/releases/download/v2.2.6/$PROG.tar.gz -O "$PROGDIR/$PROG.tar.gz"
 fi
 
-cd $PROGDIR
+cd "$PROGDIR"
 tar -xzf $PROG.tar.gz -C "$PROGDIR/"
 
 #install prog
-cd $PROGDIR/$PROG
+cd "$PROGDIR/$PROG"
 
 ./configure --prefix="$PROGDIR/$PROG"
 make
 #make check
-make install
+# the following intall fails on mac os, what else ...
+#make install
 
 if [ $# -gt 2 ]; then
 
@@ -45,7 +46,7 @@ if [ $# -eq 5 ]; then
 IP=$4
 PORT=$5
 
-cat << EOF | netcat $IP $PORT
+nc $IP $PORT << EOF
 <template rootid="blubb" intatt="111" description="Jellyfish ($PROG)" title="Jellyfish">
 
 <window width="500" height="1900" title="Jellyfish">
@@ -190,7 +191,7 @@ cat << EOF | netcat $IP $PORT
 </add>
 
 
-<add id="cl">
+<add id="cl" sep="">
 <if comp="EQUALS" value1="sel_cite" value2="TRUE"><value from="cl_cite"/></if>
 <if comp="EQUALS" value1="sel_count" value2="TRUE"><value from="cl_count"/></if>
 <if comp="EQUALS" value1="sel_merge" value2="TRUE"><value from="cl_merge"/></if>
@@ -200,7 +201,7 @@ cat << EOF | netcat $IP $PORT
 </add>
 
 <env id="ip" get="IPv4"/>
-<const id="bindir">${PROGDIRESC}/${PROG}/bin/</const>
+<const id="bindir">${PROGDIR}/${PROG}/bin/</const>
     
 		<execute wsl="WSLsel" exec="jellyfish" location="\${bindir}" param="\${cl}">
 			<output type="CERR" color="red" to="outputstream2" />

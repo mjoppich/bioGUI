@@ -57,7 +57,7 @@ if [ $# -eq 5 ]; then
 IP=$4
 PORT=$5
 
-cat << EOF | netcat $IP $PORT
+nc $IP $PORT << EOF
 
 <template description="bowtie2 2.0.4 aligner" title="bowtie2 2.0.4">
 <window title="bowtie2 2.0.4 aligner">
@@ -146,7 +146,7 @@ cat << EOF | netcat $IP $PORT
 </window>
 
 <execution>
-<const id="bindir">${APPBINARYDIR}</const>
+<const id="bindir">${PROGDIR}/${PROG}/</const>
 
 <relocate id="bowtie2_build_inref_rel" wsl="\${WSLsel}" from="\${bowtie2_build_inref}"/>
 <relocate id="bowtie2_build_idx_out_rel" wsl="\${WSLsel}" from="\${bowtie2_build_idx_out}"/>

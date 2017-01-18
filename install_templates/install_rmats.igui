@@ -53,7 +53,7 @@ if [ $# -eq 5 ]; then
 IP=$4
 PORT=$5
 
-cat << EOF | netcat $IP $PORT
+nc $IP $PORT << EOF
 
 <template description="rMATS replicate MATS" title="$PROGNICE">
  <window title="$PROGNICE">
@@ -181,9 +181,9 @@ cat << EOF | netcat $IP $PORT
 </add> 
 
  
-  <const id="bindir">${PROGDIRESC}/${PROG}/</const>
+  <const id="bindir">${PROGDIR}/${PROG}/</const>
 
-  <execute location="" exec="python" param="\${bindir}/RNASeq-MATS.py \${cl} wsl="WSLsel">
+  <execute location="" exec="python" param="&quot;\${bindir}/RNASeq-MATS.py&quot; \${cl}" wsl="WSLsel">
     <output type="COUT" color="green" to="outputstream1" />
     <output type="CERR" color="red" to="outputstream2" />
   </execute>

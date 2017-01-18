@@ -1,5 +1,7 @@
 #! Install glimmer302b
 
+echo "This tool will not compile in folders where the absolute path contains spaces!"
+
 echo "Dependencies: csh"
 if [ ! "$2" = "" ]; then
 	echo "Installing dependencies"
@@ -27,7 +29,7 @@ mkdir -p "$PROGDIR/$PROG"
 #download and unzip
 wget http://ccb.jhu.edu/software/glimmer/$PROG.tar.gz -O "$PROGDIR/$PROG.tar.gz"
 
-cd $PROGDIR
+cd "$PROGDIR"
 tar -xzf "$PROG.tar.gz" --strip 1 -C "$PROGDIR/$PROG"
 
 #install prog
@@ -63,7 +65,7 @@ echo "sending template"
 IP=$4
 PORT=$5
 
-cat << EOF | netcat $IP $PORT
+nc $IP $PORT << EOF
 <!--<?xml version="1.0" encoding="UTF-8")>-->
 <template description="Glimmer3 scripts ($PROG)" title="Glimmer3">
 

@@ -23,7 +23,7 @@ if [ -z "${PROGDIR}" ]; then
 fi
 
 PROGDIRESC=$(echo $PROGDIR | sed 's/ /\\ /g')
-APPBINARYDIR=$PROGDIRESC/$PROG/
+APPBINARYDIR="$PROGDIR/$PROG/"
 
 
 ## create progdir
@@ -59,8 +59,7 @@ if [ $# -eq 5 ]; then
 IP=$4
 PORT=$5
 
-cat << EOF | netcat $IP $PORT
-
+nc $IP $PORT << EOF
 
 <template description="RSEM: estimating gene/isoform expression levels" title="$PROGNICE">
  <window title="$PROGNICE">

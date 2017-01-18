@@ -1,4 +1,4 @@
-#! Install hisat2-2.0.4
+#! Install hisat2-2.0.5
 
 echo "Dependencies: unzip"
 if [ ! "$2" = "" ]; then
@@ -11,7 +11,7 @@ else
 fi
 
 ## set all variables
-PROG=hisat2-2.0.4
+PROG=hisat2-2.0.5
 
 PROGDIR=$1
 if [ -z "${PROGDIR}" ]; then
@@ -26,9 +26,8 @@ mkdir -p "$PROGDIR"
 
 #download and unzip
 if [ ! -f "$PROGDIR/$PROG.zip" ]; then
-	wget ftp://ftp.ccb.jhu.edu/pub/infphilo/hisat2/downloads/hisat2-2.0.4-source.zip -O "$PROGDIR/$PROG.zip"
+	wget ftp://ftp.ccb.jhu.edu/pub/infphilo/hisat2/downloads/hisat2-2.0.5-source.zip -O "$PROGDIR/$PROG.zip"
 fi
-
 
 if [ ! -d "$PROGDIR/$PROG" ]; then
 cd "$PROGDIR"
@@ -41,6 +40,10 @@ fi
 cd "$PROGDIR/$PROG"
 
 make
+
+#now fix spaces in path
+perl -pi -e 's/my \$align_prog_s= File::Spec->catpath\(\$vol\,\$script_path\,\$align_bin_s\);/my \$align_prog_s= "\\\"".File::Spec->catpath(\$vol,\$script_path,\$align_bin_s).\"\\\"\";/' hisat2
+perl -pi -e 's/my \$align_prog_l= File::Spec->catpath\(\$vol\,\$script_path\,\$align_bin_l\);/my \$align_prog_l= "\\\"".File::Spec->catpath(\$vol,\$script_path,\$align_bin_l).\"\\\"\";/' hisat2
 
 if [ $# -gt 2 ]; then
 
@@ -58,10 +61,10 @@ if [ $# -eq 5 ]; then
 IP=$4
 PORT=$5
 
-cat << EOF | netcat $IP $PORT
+nc $IP $PORT << EOF
 
-<template description="hisat2 2.0.4 aligner" title="hisat2 2.0.4">
-<window title="hisat2 2.0.4 aligner">
+<template description="hisat2 2.0.5 aligner" title="hisat2 2.0.5">
+<window title="hisat2 2.0.5 aligner">
 <vgroup>
 
   <group title="Alignment Information">
@@ -260,7 +263,7 @@ end
 <value from="hisat_align_mate_orientations"/>
 
 </add>
-	
+
   <execute program="hisat2" param="\${cl}" location="\${bindir}" exec="hisat2" wsl="WSLsel">
     <output type="COUT" color="green" to="outputstream1" />
     <output type="CERR" color="red" to="outputstream2" />

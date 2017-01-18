@@ -19,7 +19,7 @@ if [ -z "${PROGDIR}" ]; then
 fi
 
 PROGDIRESC=$(echo $PROGDIR | sed 's/ /\\ /g')
-APPBINARYDIR=${PROGDIRESC}/${PROG}/bin
+APPBINARYDIR=${PROGDIR}/${PROG}/bin
 
 
 ## create progdir
@@ -57,7 +57,7 @@ if [ $# -eq 5 ]; then
 IP=$4
 PORT=$5
 
-cat << EOF | netcat $IP $PORT
+nc $IP $PORT << EOF
 
 <template description="Samtools" title="${PROGNICE}">
 <window title="Samtools 1.3.1">

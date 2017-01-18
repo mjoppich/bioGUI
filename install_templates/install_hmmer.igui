@@ -15,18 +15,26 @@ PROGDIRESC=$(echo $PROGDIR | sed 's/ /\\ /g')
 mkdir -p "$PROGDIR"
 
 #download and unzip
-wget http://eddylab.org/software/hmmer3/3.1b2/hmmer-3.1b2.tar.gz -O "$PROGDIR/$PROG.tar.gz"
+if [ ! -f "$PROGDIR/$PROG.tar.gz" ]; then
+	wget http://eddylab.org/software/hmmer3/3.1b2/hmmer-3.1b2.tar.gz -O "$PROGDIR/$PROG.tar.gz"
+fi
 
-cd $PROGDIR
+if [ ! -d "$PROGDIR/$PROG" ]; then
+
+
+cd "$PROGDIR"
 tar -xzf $PROG.tar.gz -C "$PROGDIR/"
+
+fi
 
 #install prog
 cd "$PROGDIR/$PROG"
 
-./configure -prefix="$PROGDIR/$PROG"
+./configure# -prefix="$PROGDIR/$PROG"
 make
-make check
-make install
+#make check
+# does not really work on mac os
+#make install
 
 if [ $# -gt 2 ]; then
 
@@ -44,7 +52,7 @@ if [ $# -eq 5 ]; then
 IP=$4
 PORT=$5
 
-cat << EOF | netcat $IP $PORT
+nc $IP $PORT << EOF
 <template rootid="hmmerroot" description="HMMER ($PROG)" title="HMMER">
 
 <window width="500" height="800" title="HMMER">
@@ -90,7 +98,7 @@ cat << EOF | netcat $IP $PORT
 <relocate id="loc_search_db" wsl="\${WSLsel}" from="\${search_db}"/>
 <relocate id="loc_search_output" wsl="\${WSLsel}" from="\${search_output}"/>
 
-<const id="bindir">${PROGDIR}/${PROG}/bin/</const>
+<const id="bindir">${PROGDIRESC}/${PROG}/src/</const>
 
 <add id="cl_build" sep=" ">
 <add sep="">
@@ -120,7 +128,7 @@ cat << EOF | netcat $IP $PORT
 
 <env id="ip" get="IPv4"/>
 
-<execute location="" exec="sh" wsl="WSLsel" param="-c &quot; \${cl} 2>&amp;1 | netcat \${ip} 55025 &quot;">
+<execute location="" exec="sh" wsl="WSLsel" param="-c &quot; \${cl} 2>&amp;1 &quot;">
     <output type="COUT" color="green" to="outputstream1" />
     <output type="CERR" color="red" to="outputstream2" />
   </execute>

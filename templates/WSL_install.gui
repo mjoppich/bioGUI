@@ -67,7 +67,12 @@
 
 <add id="cl" sep=" ">
 <value from="prog_wsl"/>
+<add sep="">
+<const>&quot;</const>
 <value from="user_instpath"/>
+<const>&quot;</const>
+</add>
+
 <add sep="">
 <const>&quot;</const>
 <value from="sudopw"/>

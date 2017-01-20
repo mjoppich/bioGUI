@@ -45,13 +45,13 @@ The user has to submit his name, eMail address, a template name and the template
 He can select whether he wants to be an anonymous user (user name is always hidden) and whether this is an installation script (which downloads and creates the \ac{GUI} template specifically for this installed application) or a regular template.
 A screenshot of the template submission is shown below.
 
-.. image:: ./images/templates/template_submission.PNG
+.. image:: ./images/templates/template_submission.png
    :scale: 50
 
 Additionally the (`bioGUI website <https://www.bio.ifi.lmu.de/software/bioGUI>`_) also contains a searchable list of already available templates.
 Available templates are only shown and can be downloaded via the *bioGUI* application.
 
-.. image:: ./images/templates/existing_templates.PNG
+.. image:: ./images/templates/existing_templates.png
    :scale: 50
 
 Within *bioGUI*, clicking the *Download Templates* button, a new dialog window opens showing a list of available templates.
@@ -59,7 +59,7 @@ Columns can be sorted by double clicking the header, and using the search only t
 Upon selecting one or multiple (keep ctrl-key down while clicking) rows and clicking the *Download* button, those templates are downloaded and available for the user.
 Since it is possible to copy or alter templates, new templates are created at all times (no information is lost).
 
-.. image:: ./images/templates/biogui_selection.PNG
+.. image:: ./images/templates/biogui_selection.png
    :scale: 50
 
 .. _install_download_templates:

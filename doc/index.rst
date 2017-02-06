@@ -40,3 +40,4 @@ Please note additional information provided in our :ref:`user_guide`.
    user_guide.rst
    build_wsl.rst
    developer_guide.rst
+   licence.rst

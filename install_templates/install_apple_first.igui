@@ -1,0 +1,26 @@
+#! First Time Mac OS Setup
+
+echo "First Time Mac OS Setup"
+
+if [ "$(uname)" == "Darwin" ]; then
+
+	echo "Dependencies: pip "
+	if [ ! "$2" = "" ]; then
+		echo "Installing dependencies"
+		echo $2 | sudo -S easy_install pip
+		
+		echo "Installing brew"
+		yes "$2" | /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+		
+		echo "Enjoy bioGUI!"
+	else
+		echo "No sudo password, not installing dependencies"
+		echo "bioGUI might not be operational!"
+	fi
+	
+	
+else
+
+	echo "You are not running MAC OS. This install template does not work on your system."
+
+fi

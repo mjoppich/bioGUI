@@ -1,6 +1,8 @@
-#! First Time WSL Setup
+#! First Time Ubuntu/WSL/apt-get Setup
 
-echo "First Time WSL Setup"
+echo "First Time Ubuntu/WSL/apt-get Setup"
+
+command -v apt-get >/dev/null 2>&1 || { echo >&2 "This install scripts requires apt-get to be installed (being on Ubuntu, Windows Subsystem for Linux or any other apt-get enabled distribution helps.\n\n Aborting.)."; exit 1; }
 
 echo "Dependencies: build-essential dos2unix"
 if [ ! "$2" = "" ]; then

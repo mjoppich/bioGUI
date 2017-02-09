@@ -113,15 +113,29 @@ public class TemplateManager {
         try
         {
 
-            PreparedStatement oStatement = connect.prepareStatement("select * from templates where displayname = '"+oTemp.getDisplayname()+"' and type = '"+oTemp.getTypeStr()+"' and user = "+oTemp.getUserid()+";");
+            PreparedStatement oStatement = connect.prepareStatement("select * from templates where displayname = ? and type = ? and user = ?;");
+
+            oStatement.setString(1, oTemp.getDisplayname());
+            oStatement.setInt(2, Integer.parseInt(oTemp.getTypeStr()));
+            oStatement.setInt(3, oTemp.getUserid());
+
             ResultSet oExisting = oStatement.executeQuery();
+
 
             ArrayList vExisting = this.processTemplates(oExisting, m_oUserManager);
 
             if (vExisting.size() > 0)
                 return -1;
 
-            oStatement = connect.prepareStatement("insert into templates (displayname, template, type, user, anonym) values ('"+oTemp.getDisplayname()+"','"+oTemp.getFullTemplate()+"',"+oTemp.getTypeStr()+" ,"+oTemp.getUserid()+", "+ (oTemp.isAnonym() ? "1" : "0") + ");", Statement.RETURN_GENERATED_KEYS);
+            oStatement = connect.prepareStatement("insert into templates (displayname, template, type, user, anonym) values (?,?, ? , ?, ?);", Statement.RETURN_GENERATED_KEYS);
+            oStatement.setString(1, oTemp.getDisplayname());
+            oStatement.setString(2, oTemp.getFullTemplate());
+            oStatement.setInt(3, Integer.parseInt(oTemp.getTypeStr()));
+            oStatement.setInt(4, oTemp.getUserid());
+
+            boolean bAnonym = oTemp.isAnonym() ? true : false;
+            oStatement.setBoolean(5, bAnonym);
+
             oStatement.executeUpdate();
 
             ResultSet generatedKeys = oStatement.getGeneratedKeys();

@@ -91,8 +91,10 @@ if (UNIX AND NOT APPLE)
     message(STATUS ">>> Linux")
     set(Qt5_DIR "/home/users/joppich//Qt/5.7/gcc_64/")
 
-set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
-set(CMAKE_INSTALL_RPATH "./")
+    set(ENV{OPENSSL_ROOT_DIR} "/usr/lib64/")
+
+    set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+    set(CMAKE_INSTALL_RPATH "./")
 
 endif()
 
@@ -138,8 +140,7 @@ find_package(OpenSSL REQUIRED)
 if( OPENSSL_FOUND )
 
     include_directories(${OPENSSL_INCLUDE_DIRS})
-    #set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OPENSSL_C_FLAGS}")
-    #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OPENSSL_CXX_FLAGS}")
+
     message(STATUS "Using OpenSSL ${OPENSSL_VERSION}")
     message(STATUS "OPENSSL LIBRARIES ${OPENSSL_LIBRARIES}")
     message(STATUS "SSL LIBRARY ${OPENSSL_SSL_LIBRARY}")

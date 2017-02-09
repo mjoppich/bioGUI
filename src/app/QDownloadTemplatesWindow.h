@@ -144,10 +144,10 @@ public:
         pColumnHeader = new QTableWidgetItem("Type");
         pTable->setHorizontalHeaderItem(0, pColumnHeader);
 
-        pColumnHeader = new QTableWidgetItem("Name");
+        pColumnHeader = new QTableWidgetItem("Template Name");
         pTable->setHorizontalHeaderItem(1, pColumnHeader);
 
-        pColumnHeader = new QTableWidgetItem("Author");
+        pColumnHeader = new QTableWidgetItem("Template Author");
         pTable->setHorizontalHeaderItem(2, pColumnHeader);
 
         pColumnHeader = new QTableWidgetItem("id");

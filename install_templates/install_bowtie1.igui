@@ -63,7 +63,7 @@ nc $IP $PORT << EOF
 <window title="bowtie 1.1.2 aligner">
 <vgroup>
 
-  <label>This template was taken from bowtie2. Some functions may not be implemented in bowtie1!</label>
+  <label>This template was taken from bowtie2. Some functions may not work as in bowtie1! Use with care!</label>
 
   <group title="Alignment Information">
 	<checkbox id="WSLsel" value="true" selectonwindows="true">run in WSL?</checkbox>

@@ -91,7 +91,8 @@ if (UNIX AND NOT APPLE)
     message(STATUS ">>> Linux")
     set(Qt5_DIR "/home/users/joppich//Qt/5.7/gcc_64/")
 
-    set(ENV{OPENSSL_ROOT_DIR} "/usr/lib64/")
+    set(ENV{OPENSSL_ROOT_DIR} "/home/users/joppich/libs/openssl/lib/")
+    set(ENV{LUA_DIR} "/home/users/joppich/libs/lua/")
 
     set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
     set(CMAKE_INSTALL_RPATH "./")
@@ -219,7 +220,7 @@ SET_TARGET_PROPERTIES(lualib PROPERTIES IMPORTED_LOCATION "${LUA_LIBRARY}")
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
-TARGET_LINK_LIBRARIES(${PROJECT_NAME} mylibeay myssleay lualib)
+TARGET_LINK_LIBRARIES(${PROJECT_NAME} mylibeay myssleay lualib ${CMAKE_DL_LIBS})
 
 qt5_use_modules(${PROJECT_NAME} Core Gui Widgets Network Xml XmlPatterns)
 
@@ -227,7 +228,8 @@ install(TARGETS ${PROJECT_NAME} DESTINATION ${CMAKE_INSTALL_PREFIX} )
 
 message(STATUS "files to copy ${META_FILES_TO_INCLUDE}")
 message(STATUS "exe location ${PROJECT_BINARY_DIR}")
-message(STATUS "installing to: ${PROJECT_BINARY_DIR}")
+message(STATUS "to change install location set: -DCMAKE_INSTALL_PREFIX=/where/you/want/")
+message(STATUS "installing to: ${CMAKE_INSTALL_PREFIX}")
 
 file(GLOB biogui_files
         "LICENSE"

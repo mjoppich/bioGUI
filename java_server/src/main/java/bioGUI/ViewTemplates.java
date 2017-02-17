@@ -70,7 +70,7 @@ public class ViewTemplates {
 
 		templates = oTempManager.getTemplates( filterText );
 
-		System.out.println("templates: " + templates.size());
+		//System.out.println("templates: " + templates.size());
 
 	}
 
@@ -105,7 +105,7 @@ public class ViewTemplates {
 
 	public void setFilterText(String filterText) {
 
-		System.out.println(filterText);
+		//System.out.println(filterText);
 
 		this.filterText = filterText;
 	}

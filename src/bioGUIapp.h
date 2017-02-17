@@ -53,7 +53,7 @@ public:
 
     void reloadTemplates()
     {
-        QDir oTemplatePath = QDir::currentPath() + "/templates/";
+        QDir oTemplatePath = m_oTemplatePath.path() + "/templates/";
 
         this->addTemplates( oTemplatePath );
     }

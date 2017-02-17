@@ -78,7 +78,7 @@ public class UserManager {
 
             User oUser = new User(iUserID, sName, sEmail);
 
-            System.out.println( oUser );
+            //System.out.println( oUser );
 
             vUsers.add(oUser);
         }

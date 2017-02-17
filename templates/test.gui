@@ -1,0 +1,49 @@
+<template description="Test Program to Show Execution" title="Test Program">
+<window title="Test Program">
+<vgroup>
+
+	<group title="Files">
+        <filedialog id="folderin" folder="true">Input READS folder</filedialog>
+        <filedialog id="fileout" output="true">Output Statistics (PNG)</filedialog>
+	</group>
+
+	<group title="Operation">
+        <combobox id="operation">
+        <comboitem value="--reads">MinKNOWN reads folder</comboitem>
+        <comboitem value="--folders">index</comboitem>
+        </combobox>
+    </group>
+
+    <action program="test">Run</action>
+
+<hgroup>
+    <streambox id="output1">
+        <stream id="outputstream1">std out</stream>
+        <stream id="outputstream2">err out</stream>
+   </streambox>
+   <image id="statimg" src="" width="250" height="250"/>
+</hgroup>
+
+</vgroup>
+</window>
+
+<execution>
+
+  <const id="bindir>/home/users/joppich/progs/anaconda3/bin/</const>
+
+  <add id="cl" sep=" ">
+  <value from="${operation}"/>
+  <value from="${folderin}"/>
+  <const>--output</const>
+    <value from="${fileout}"/>
+  </add>
+
+
+  <execute program="test" param="${cl}" location="${bindir}" exec="python" wsl="WSLsel">
+    <output type="COUT" color="green" to="outputstream1" />
+    <output type="CERR" color="red" to="outputstream2" />
+    <update id="statimg" attrib="src" value="${fileout}"/>
+  </execute>
+
+</execution>
+</template>

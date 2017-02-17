@@ -27,23 +27,35 @@ bioGUIapp::bioGUIapp(int& argc, char** argv)
 
     QCoreApplication::setApplicationName("bioGUI");
     std::cerr << "Launching " << QCoreApplication::applicationName().toStdString() << std::endl;
-
-
     std::cerr << "Main Application currently in dir: " << std::endl;
 
     QString sApplicationDir = QCoreApplication::applicationDirPath() + QDir::separator();
     QDir::setCurrent(sApplicationDir);
 
-    QString sCurrentDir = QDir::currentPath();
+    m_oTemplatePath = QDir::currentPath();
+
+    if (argc > 1)
+    {
+        QString sGivenPath = QString(argv[1]);
+        QDir oGivenPath (sGivenPath);
+
+        if (oGivenPath.exists() == true)
+        {
+            m_oTemplatePath = oGivenPath;
+        } else {
+
+            std::cerr << "Given path does not exist: " << oGivenPath.path().toStdString() << std::endl;
+
+        }
+    }
+
 
     //QMessageBox::warning(NULL, sApplicationDir, sApplicationDir); 
     //QMessageBox::warning(NULL, sCurrentDir, sCurrentDir);
 
-    std::cerr << QDir::currentPath().toStdString() << std::endl;
+    std::cerr << m_oTemplatePath.path().toStdString() << std::endl;
 
-
-
-    this->loadInitFile(QDir::currentPath());
+    this->loadInitFile(m_oTemplatePath);
 
     /*
      *
@@ -81,7 +93,6 @@ bioGUIapp::bioGUIapp(int& argc, char** argv)
         QApplication::setStyle(pStyle);
 #endif
 
-    m_oTemplatePath = QDir::currentPath();
     m_pMainWindow = new QWidget();
 
     //QHBoxLayout* pMainLayout = new QHBoxLayout();

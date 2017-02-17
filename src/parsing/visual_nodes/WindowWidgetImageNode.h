@@ -50,6 +50,9 @@ public:
 
         QString sFileName = this->getQAttribute(pDOMElement, "src", "");
 
+        QDir oDirectory(sFileName);
+        std::cerr << "Loading image " << oDirectory.absolutePath().toStdString() << std::endl;
+
         QGraphicsScene* pScene = new QGraphicsScene();
         QGraphicsView* pView = new QGraphicsView(pScene);
         QGraphicsPixmapItem* pItem = new QGraphicsPixmapItem(QPixmap( sFileName ));

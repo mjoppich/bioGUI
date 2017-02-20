@@ -71,13 +71,13 @@ public:
 
     virtual std::string evaluateChildren( std::map< std::string, ExecutionNode*>* pID2Node,
                                           std::map<std::string, std::string>* pInputID2Value,
-                                          std::map<std::string, QWidget*>* pInputID2Widget,
+                                          std::map<std::string, WidgetFunctionNode*>* pInputID2FunctionWidget,
                                           bool bEmitSignal);
 
 
     std::string evaluate( std::map< std::string, ExecutionNode*>* pID2Node,
                           std::map<std::string, std::string>* pInputID2Value,
-                          std::map<std::string, QWidget*>* pInputID2Widget, bool bEmitSignal = false)
+                          std::map<std::string, WidgetFunctionNode*>* pInputID2FunctionWidget, bool bEmitSignal = false)
     {
 
         if (!(std::find(m_vValidCompareModes.begin(), m_vValidCompareModes.end(), m_sCompareMode) != m_vValidCompareModes.end() ))
@@ -107,7 +107,7 @@ public:
 
         std::string sReturn = "";
 
-        std::string sValue1 = this->getNodeValueOrValue( m_sValue1, m_sValue1, pID2Node, pInputID2Value, pInputID2Widget);
+        std::string sValue1 = this->getNodeValueOrValue( m_sValue1, m_sValue1, pID2Node, pInputID2Value, pInputID2FunctionWidget);
         std::string sValue2 = "N/A";
 
         // by default do not evaluate else part
@@ -126,7 +126,7 @@ public:
 
         } else {
 
-            sValue2 = this->getNodeValueOrValue( m_sValue2, m_sValue2, pID2Node, pInputID2Value, pInputID2Widget);
+            sValue2 = this->getNodeValueOrValue( m_sValue2, m_sValue2, pID2Node, pInputID2Value, pInputID2FunctionWidget);
 
             if (sQCompareMode.compare("EQUALS", Qt::CaseInsensitive) == 0)
             {
@@ -159,7 +159,7 @@ public:
         std::cerr << "Val 2: " << sValue2 << std::endl;
         std::cerr << "Evaluating else node: " << m_bEvaluateElse << std::endl;
 
-        sReturn = this->evaluateChildren(pID2Node, pInputID2Value, pInputID2Widget, bEmitSignal);
+        sReturn = this->evaluateChildren(pID2Node, pInputID2Value, pInputID2FunctionWidget, bEmitSignal);
 
         if (bEmitSignal)
         {

@@ -29,6 +29,7 @@
 #include <map>
 #include <iostream>
 #include <src/Validable.h>
+#include <src/parsing/visual_nodes/WidgetFunctionNode.h>
 
 class QBufferTcpServer;
 
@@ -104,7 +105,7 @@ public:
     bool checkWSL(QString& sWSLStr,
                   std::map< std::string, ExecutionNode*>* pID2Node,
                   std::map<std::string, std::string>* pInputID2Value,
-                  std::map<std::string, QWidget*>* pInputID2Widget )
+                  std::map<std::string, WidgetFunctionNode*>* pInputID2FunctionWidget )
     {
         /*
          * Are we relocating for WSL?
@@ -114,7 +115,7 @@ public:
         if (sWSLStr.size() > 0)
         {
 
-            std::string sValue = this->getNodeValueOrValue(sWSLStr.toStdString(), sWSLStr.toStdString(), pID2Node, pInputID2Value, pInputID2Widget );
+            std::string sValue = this->getNodeValueOrValue(sWSLStr.toStdString(), sWSLStr.toStdString(), pID2Node, pInputID2Value, pInputID2FunctionWidget );
 
             if (QString(sValue.c_str()).compare("TRUE", Qt::CaseInsensitive) == 0)
             {
@@ -156,7 +157,7 @@ public:
 
     virtual std::string evaluate( std::map< std::string, ExecutionNode*>* pID2Node,
                                   std::map<std::string, std::string>* pInputID2Value,
-                                  std::map<std::string, QWidget*>* pInputID2Widget) = 0;
+                                  std::map<std::string, WidgetFunctionNode*>* pInputID2FunctionWidget) = 0;
 
 
     virtual NODE_TYPE getType()
@@ -196,7 +197,7 @@ public:
 
     virtual std::string evaluateChildren( std::map< std::string, ExecutionNode*>* pID2Node,
                                   std::map<std::string, std::string>* pInputID2Value,
-                                  std::map<std::string, QWidget*>* pInputID2Widget)
+                                  std::map<std::string, WidgetFunctionNode*>* pInputID2FunctionWidget)
     {
         std::string sReturn = "";
 
@@ -208,7 +209,7 @@ public:
                 sReturn = sReturn + m_sSeperator;
             }
 
-            sReturn = sReturn + m_vChildren.at(i)->evaluate(pID2Node, pInputID2Value, pInputID2Widget);
+            sReturn = sReturn + m_vChildren.at(i)->evaluate(pID2Node, pInputID2Value, pInputID2FunctionWidget);
 
         }
 
@@ -232,11 +233,92 @@ public:
 
 protected:
 
+    virtual std::string parseDynamicValues( std::string& sArgs, std::map< std::string, ExecutionNode*>* pID2Node,
+                           std::map<std::string, std::string>* pInputID2Value,
+                           std::map<std::string, WidgetFunctionNode*>* pInputID2FunctionWidget )
+    {
+        std::string sCLArg = "";
+
+        if (sArgs.size() > 0)
+        {
+
+            if (sArgs.find("${") == std::string::npos)
+            {
+
+                std::map< std::string, ExecutionNode*>::iterator oCLNode = pID2Node->find(sArgs);
+
+                if (oCLNode != pID2Node->end())
+                {
+                    ExecutionNode* pParamNode = oCLNode->second;
+                    sCLArg = pParamNode->evaluate(pID2Node, pInputID2Value, pInputID2FunctionWidget);
+                } else {
+                    sCLArg = sArgs;
+                }
+
+            } else {
+
+                sCLArg = std::string(sArgs);
+                this->parseCommand(&sCLArg, 0, pID2Node, pInputID2Value, pInputID2FunctionWidget);
+
+            }
+
+        }
+
+        return sCLArg;
+    }
+
+    virtual size_t parseCommand(std::string* pCommand, size_t iPos, std::map< std::string, ExecutionNode*>* pID2Node,
+                        std::map<std::string, std::string>* pInputID2Value,
+                        std::map<std::string, WidgetFunctionNode*>* pInputID2FunctionWidget)
+    {
+
+        size_t iVarPos;
+        size_t iStartPos = iPos;
+
+        // { prog  2>&amp;1 1>&amp;3 3>&amp;- | netcat ${ip} 55026; } 3>&amp;1 1>&amp;2 | netcat ${ip} 55025
+
+        while( ( iVarPos = std::min(pCommand->find("${", iPos), pCommand->find("}", iPos))  ) != std::string::npos )
+        {
+            if (( pCommand->at(iVarPos) == '}' ) && (iStartPos != -1))
+            {
+
+                std::string sPrefix = pCommand->substr(0, iStartPos-2);
+                std::string sSuffix = pCommand->substr(iVarPos+1, pCommand->size());
+                std::string sID = pCommand->substr(iStartPos, iVarPos-iStartPos);
+
+                pCommand->clear();
+                pCommand->append(sPrefix);
+
+                //std::string sValue = this->evaluateID(sID, pID2Node, pInputID2Value, pInputID2Widget);
+                std::string sValue = this->getNodeValueOrValue(sID, sID, pID2Node, pInputID2Value, pInputID2FunctionWidget);
+
+                std::cout << "id " << sID << " value " << sValue << std::endl;
+                pCommand->append(sValue);
+
+                pCommand->append(sSuffix);
+
+                // uncommented because I might want to replace variables in variables :)
+                iPos = sPrefix.size() + sValue.size();
+
+                iStartPos = -1;
+
+
+            } else {
+                iPos = this->parseCommand(pCommand, iVarPos+2, pID2Node, pInputID2Value, pInputID2FunctionWidget);
+            }
+        }
+
+
+        return iVarPos;
+
+
+    }
+
     virtual void addNodeAttributes(std::vector<std::string>& vAttributes) = 0;
 
     Validable<std::string> evaluateID( std::string sID, std::map< std::string, ExecutionNode*>* pID2Node,
                           std::map<std::string, std::string>* pInputID2Value,
-                          std::map<std::string, QWidget*>* pInputID2Widget)
+                          std::map<std::string, WidgetFunctionNode*>* pInputID2FunctionWidget)
     {
 
         Validable<std::string> oReturn("", false);
@@ -256,7 +338,7 @@ protected:
         if (oJt != pID2Node->end())
         {
 
-            std::string sValue = oJt->second->evaluate(pID2Node, pInputID2Value, pInputID2Widget);
+            std::string sValue = oJt->second->evaluate(pID2Node, pInputID2Value, pInputID2FunctionWidget);
             oReturn.setValue(sValue);
         }
 
@@ -269,7 +351,7 @@ protected:
 
     Validable<std::string> getNodeValue(std::string sID, std::map< std::string, ExecutionNode*>* pID2Node,
                           std::map<std::string, std::string>* pInputID2Value,
-                          std::map<std::string, QWidget*>* pInputID2Widget)
+                          std::map<std::string, WidgetFunctionNode*>* pInputID2FunctionWidget)
     {
         Validable<std::string> oReturn("", false);
 
@@ -286,7 +368,7 @@ protected:
 
         if (oJt != pID2Node->end())
         {
-            std::string sValue = oJt->second->evaluate(pID2Node, pInputID2Value, pInputID2Widget);
+            std::string sValue = oJt->second->evaluate(pID2Node, pInputID2Value, pInputID2FunctionWidget);
             oReturn.setValue(sValue);
         }
 
@@ -299,7 +381,7 @@ protected:
     std::string getNodeValueOrValue(std::string sValue, std::string sDefaultValue,
                                 std::map< std::string, ExecutionNode*>* pID2Node,
                                 std::map<std::string, std::string>* pInputID2Value,
-                                std::map<std::string, QWidget*>* pInputID2Widget)
+                                std::map<std::string, WidgetFunctionNode*>* pInputID2FunctionWidget)
     {
 
         std::string sSearchValue = sValue;
@@ -309,7 +391,7 @@ protected:
         }
 
         // if it is a node value, fetch it here!
-        Validable<std::string> oRetValue = this->evaluateID(sSearchValue, pID2Node, pInputID2Value, pInputID2Widget);
+        Validable<std::string> oRetValue = this->evaluateID(sSearchValue, pID2Node, pInputID2Value, pInputID2FunctionWidget);
 
         if (oRetValue.valid())
         {

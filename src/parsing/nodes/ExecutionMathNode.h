@@ -43,7 +43,7 @@ public:
 
     std::string evaluate( std::map< std::string, ExecutionNode*>* pID2Node,
                           std::map<std::string, std::string>* pInputID2Value,
-                          std::map<std::string, QWidget*>* pInputID2Widget)
+                          std::map<std::string, WidgetFunctionNode*>* pInputID2FunctionWidget)
     {
 
 
@@ -58,7 +58,7 @@ public:
                 continue;
             }
 
-            std::string sChild = m_vChildren.at(i)->evaluate(pID2Node, pInputID2Value, pInputID2Widget);
+            std::string sChild = m_vChildren.at(i)->evaluate(pID2Node, pInputID2Value, pInputID2FunctionWidget);
             float fChild = std::stof(sChild);
 
             if (i == 0)

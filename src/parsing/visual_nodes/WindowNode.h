@@ -24,6 +24,7 @@
 #include <string>
 #include <QDomElement>
 #include <functional>
+#include "WidgetFunctionNode.h"
 
 /*
 class WindowNodeException : public std::exception
@@ -181,7 +182,7 @@ public:
 
         bool bHasChildrenFinished = false;
 
-        WidgetFunctionNode* pWidgetFuncNode;
+        WidgetFunctionNode* pWidgetFuncNode = NULL;
     };
 
 

@@ -74,7 +74,7 @@ public:
 
     std::string evaluate(std::map<std::string, ExecutionNode *> *pID2Node,
                          std::map <std::string, std::string> *pInputID2Value,
-                         std::map<std::string, QWidget *> *pInputID2Widget) {
+                         std::map<std::string, WidgetFunctionNode*>* pInputID2FunctionWidget) {
 
         bool bLUAFileExists = ExecutionFileNode::file_exists( m_sScriptFile );
 
@@ -112,7 +112,7 @@ public:
 
                     std::string sFieldName = sArgName.substr(2, sArgName.size()-3);
 
-                    std::string sArg = this->getNodeValueOrValue(sFieldName, sFieldName, pID2Node, pInputID2Value, pInputID2Widget);
+                    std::string sArg = this->getNodeValueOrValue(sFieldName, sFieldName, pID2Node, pInputID2Value, pInputID2FunctionWidget);
 
                     vArguments.push_back( sArg );
 

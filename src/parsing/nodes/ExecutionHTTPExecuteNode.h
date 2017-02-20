@@ -129,7 +129,7 @@ public:
 
     virtual std::string evaluate( std::map< std::string, ExecutionNode*>* pID2Node,
                                   std::map<std::string, std::string>* pInputID2Value,
-                                  std::map<std::string, QWidget*>* pInputID2Widget, bool bEmitSignal = false)
+                                  std::map<std::string, WidgetFunctionNode*>* pInputID2FunctionWidget, bool bEmitSignal = false)
     {
         std::string sURL = m_sExecLocation;
 
@@ -143,7 +143,7 @@ public:
         QString qsURL( sURL.c_str() );
 
         QUrlQuery* pPostData = new QUrlQuery();
-        std::string sCLArg = this->parseArgs(m_sCLArg, pID2Node, pInputID2Value, pInputID2Widget);
+        std::string sCLArg = this->parseDynamicValues(m_sCLArg, pID2Node, pInputID2Value, pInputID2FunctionWidget);
         QString qsCLArg(sCLArg.c_str());
 
         if (!m_bPortCLtoPOST)
@@ -220,11 +220,11 @@ public:
         });
 
 
-        this->evaluateChildren(pID2Node, pInputID2Value, pInputID2Widget, NULL, pThread, false);
+        this->evaluateChildren(pID2Node, pInputID2Value, pInputID2FunctionWidget, NULL, pThread, false);
 
-        QObject::connect(pThread, &ExecuteThread::executionFinished, [pThread, pID2Node, pInputID2Value, pInputID2Widget, bEmitSignal, this](){
+        QObject::connect(pThread, &ExecuteThread::executionFinished, [pThread, pID2Node, pInputID2Value, pInputID2FunctionWidget, bEmitSignal, this](){
 
-            this->evaluateChildren(pID2Node, pInputID2Value, pInputID2Widget, NULL, pThread, true);
+            this->evaluateChildren(pID2Node, pInputID2Value, pInputID2FunctionWidget, NULL, pThread, true);
             pThread->deleteLater();
 
             if (bEmitSignal)

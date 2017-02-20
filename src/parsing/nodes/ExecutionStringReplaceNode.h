@@ -44,7 +44,7 @@ class ExecutionStringReplaceNode : public ExecutionNode {
 
         std::string evaluate( std::map< std::string, ExecutionNode*>* pID2Node,
                               std::map<std::string, std::string>* pInputID2Value,
-                              std::map<std::string, QWidget*>* pInputID2Widget)
+                              std::map<std::string, WidgetFunctionNode*>* pInputID2FunctionWidget)
         {
 
             std::string sChildren = "";
@@ -52,11 +52,11 @@ class ExecutionStringReplaceNode : public ExecutionNode {
             if (m_sFrom.size() == 0)
             {
 
-                 sChildren = this->evaluateChildren(pID2Node, pInputID2Value, pInputID2Widget);
+                 sChildren = this->evaluateChildren(pID2Node, pInputID2Value, pInputID2FunctionWidget);
 
             } else {
 
-                Validable<std::string> oRet = this->getNodeValue(m_sFrom, pID2Node, pInputID2Value, pInputID2Widget);
+                Validable<std::string> oRet = this->getNodeValue(m_sFrom, pID2Node, pInputID2Value, pInputID2FunctionWidget);
 
                 if (!oRet.valid())
                     return "";

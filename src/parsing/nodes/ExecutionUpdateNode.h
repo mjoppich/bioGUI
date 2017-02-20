@@ -17,28 +17,27 @@
  *
  */
 
-#ifndef BIOGUI_EXECUTIONCONSTNODE_H
-#define BIOGUI_EXECUTIONCONSTNODE_H
+#ifndef BIOGUI_EXECUTIONUPDATENODE_H
+#define BIOGUI_EXECUTIONUPDATENODE_H
 
 
 #include "ExecutionNode.h"
 
-class ExecutionConstNode : public ExecutionNode {
+class ExecutionUpdateNode : public ExecutionNode {
+
 public:
 
-    ExecutionConstNode(QDomElement* pElement)
-    : ExecutionNode(pElement)
+    ExecutionUpdateNode(QDomElement* pElement)
+            : ExecutionNode(pElement)
     {
+        m_sValue = this->getDomElementAttribute(pElement, "VALUE", "").toStdString();
 
-        m_sValue = "";
-        m_sTag = "const";
-
-        if (pElement != NULL)
-            m_sValue = pElement->text().toStdString();
+        m_sTarget = this->getDomElementAttribute(pElement, "TARGET", "");
+        m_sAttribute = this->getDomElementAttribute(pElement, "ATTRIB", "");
 
     }
 
-    virtual ~ExecutionConstNode()
+    virtual ~ExecutionUpdateNode()
     {
 
     }
@@ -47,22 +46,34 @@ public:
                           std::map<std::string, std::string>* pInputID2Value,
                           std::map<std::string, WidgetFunctionNode*>* pInputID2FunctionWidget)
     {
-        return m_sValue;
-    }
 
-    void setValue(std::string sValue)
-    {
-        m_sValue = sValue;
+        std::map<std::string, WidgetFunctionNode*>::iterator oIt = pInputID2FunctionWidget->find(m_sTarget.toStdString());
+
+        if (oIt != pInputID2FunctionWidget->end())
+        {
+            // do something
+            oIt->second->setAttribute( m_sAttribute.toStdString(), m_sValue );
+
+            return m_sValue;
+        }
+
+        return "";
     }
 
 protected:
 
     void addNodeAttributes(std::vector<std::string>& vAttributes)
     {
+        vAttributes.push_back("TARGET");
+        vAttributes.push_back("ATTRIB");
+        vAttributes.push_back("VALUE");
     }
+
+    QString m_sAttribute;
+    QString m_sTarget;
 
 
 };
 
 
-#endif //BIOGUI_EXECUTIONCONSTNODE_H
+#endif //BIOGUI_EXECUTIONUPDATENODE_H

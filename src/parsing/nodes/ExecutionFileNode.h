@@ -45,7 +45,7 @@ public:
 
     std::string evaluate( std::map< std::string, ExecutionNode*>* pID2Node,
                           std::map<std::string, std::string>* pInputID2Value,
-                          std::map<std::string, QWidget*>* pInputID2Widget)
+                          std::map<std::string, WidgetFunctionNode*>* pInputID2FunctionWidget)
     {
 
         if ( QString("PARSE").compare(QString(m_sAction.c_str()), Qt::CaseInsensitive) == 0 )
@@ -91,7 +91,7 @@ public:
             if (oJt != pID2Node->end())
             {
 
-                std::string sReturn = oJt->second->evaluate(pID2Node, pInputID2Value, pInputID2Widget);
+                std::string sReturn = oJt->second->evaluate(pID2Node, pInputID2Value, pInputID2FunctionWidget);
 
                 QFile oFile(QString(m_sTo.c_str()));
                 if (oFile.open(QIODevice::ReadWrite)) {
@@ -105,7 +105,7 @@ public:
 
         } else if ( QString("DELETE").compare(QString(m_sAction.c_str()), Qt::CaseInsensitive) == 0 ) {
 
-            std::string sNodeValue = this->getNodeValueOrValue(m_sFrom, m_sFrom, pID2Node, pInputID2Value, pInputID2Widget);
+            std::string sNodeValue = this->getNodeValueOrValue(m_sFrom, m_sFrom, pID2Node, pInputID2Value, pInputID2FunctionWidget);
 
             QFile oDeleteFile(QString(sNodeValue.c_str()));
 

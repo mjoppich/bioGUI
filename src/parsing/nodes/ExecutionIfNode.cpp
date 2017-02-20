@@ -23,7 +23,7 @@
 
 std::string ExecutionIfNode::evaluateChildren(std::map<std::string, ExecutionNode *> *pID2Node,
                                               std::map<std::string, std::string> *pInputID2Value,
-                                              std::map<std::string, QWidget *> *pInputID2Widget,
+                                              std::map<std::string, WidgetFunctionNode*>* pInputID2FunctionWidget,
                                               bool bEmitSignal)
 {
 
@@ -51,7 +51,7 @@ std::string ExecutionIfNode::evaluateChildren(std::map<std::string, ExecutionNod
 
                 QObject::connect(pExecNode, &ExecutionExecutableNode::finishedExecution, [bEmitSignal, this] () { emit this->childHasFinished(bEmitSignal);});
 
-                std::string sReturn = pExecNode->evaluate(pID2Node, pInputID2Value, pInputID2Widget, bEmitSignal);
+                std::string sReturn = pExecNode->evaluate(pID2Node, pInputID2Value, pInputID2FunctionWidget, bEmitSignal);
                 if (sReturn.size() != 0)
                     vReturn.push_back(sReturn);
 
@@ -63,7 +63,7 @@ std::string ExecutionIfNode::evaluateChildren(std::map<std::string, ExecutionNod
             pElseNode->setSeperator(m_sSeperator);
         }
 
-        std::string sReturn = pChild->evaluate(pID2Node, pInputID2Value, pInputID2Widget);
+        std::string sReturn = pChild->evaluate(pID2Node, pInputID2Value, pInputID2FunctionWidget);
         if (sReturn.size() != 0)
             vReturn.push_back(sReturn);
 

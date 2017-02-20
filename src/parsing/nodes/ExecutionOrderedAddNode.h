@@ -68,16 +68,16 @@ public:
 
     std::string evaluate( std::map< std::string, ExecutionNode*>* pID2Node,
                           std::map<std::string, std::string>* pInputID2Value,
-                          std::map<std::string, QWidget*>* pInputID2Widget)
+                          std::map<std::string, WidgetFunctionNode*>* pInputID2FunctionWidget)
     {
 
         std::vector<ExecutionNode*> vSorted;
 
         QExclusiveGroupBox* pFromElem = NULL;
-        std::map<std::string, QWidget*>::iterator oIt = pInputID2Widget->find(m_sFrom);
-        if (oIt != pInputID2Widget->end())
+        std::map<std::string, WidgetFunctionNode*>::iterator oIt = pInputID2FunctionWidget->find(m_sFrom);
+        if (oIt != pInputID2FunctionWidget->end())
         {
-            pFromElem = dynamic_cast<QExclusiveGroupBox*>(oIt->second);
+            pFromElem = dynamic_cast<QExclusiveGroupBox*>(oIt->second->getWidget());
 
         }
 
@@ -91,9 +91,9 @@ public:
 
         std::map<QWidget*, std::string> mWidgetToString;
 
-        for (oIt = pInputID2Widget->begin(); oIt != pInputID2Widget->end(); ++oIt)
+        for (oIt = pInputID2FunctionWidget->begin(); oIt != pInputID2FunctionWidget->end(); ++oIt)
         {
-            mWidgetToString.insert(std::pair<QWidget*, std::string>(oIt->second, oIt->first));
+            mWidgetToString.insert(std::pair<QWidget*, std::string>(oIt->second->getWidget(), oIt->first));
         }
 
         // ordered ids in gridlayout
@@ -136,7 +136,7 @@ public:
                 sReturn = sReturn + m_sSeperator;
             }
 
-            std::string sReturned = vSorted.at(i)->evaluate(pID2Node, pInputID2Value, pInputID2Widget);
+            std::string sReturned = vSorted.at(i)->evaluate(pID2Node, pInputID2Value, pInputID2FunctionWidget);
             sReturn = sReturn + sReturned;
 
         }

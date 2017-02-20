@@ -53,20 +53,20 @@ public:
 
     std::string evaluate( std::map< std::string, ExecutionNode*>* pID2Node,
                           std::map<std::string, std::string>* pInputID2Value,
-                          std::map<std::string, QWidget*>* pInputID2Widget)
+                          std::map<std::string, WidgetFunctionNode*>* pInputID2FunctionWidget)
     {
 
         std::string sChildren = "";
 
         bool bMakeUnix = m_bMakeUnix;
 
-        bool bWSL = this->checkWSL(m_sToWSL, pID2Node, pInputID2Value, pInputID2Widget);
+        bool bWSL = this->checkWSL(m_sToWSL, pID2Node, pInputID2Value, pInputID2FunctionWidget);
 
         /*What should be relocated?
          * */
         if (m_sFrom.size() == 0)
         {
-            sChildren = this->evaluateChildren(pID2Node, pInputID2Value, pInputID2Widget);
+            sChildren = this->evaluateChildren(pID2Node, pInputID2Value, pInputID2FunctionWidget);
         } else {
 
             if (m_sFrom[0] == '$' and m_sFrom[1] == '{' and m_sFrom[m_sFrom.size()-1] == '}')
@@ -80,7 +80,7 @@ public:
                     sDynID = m_sFrom.substr(2, m_sFrom.size()-3);
                 }
 
-                sChildren = this->getNodeValueOrValue(sDynID, sDynID, pID2Node, pInputID2Value, pInputID2Widget);
+                sChildren = this->getNodeValueOrValue(sDynID, sDynID, pID2Node, pInputID2Value, pInputID2FunctionWidget);
             } else {
                 sChildren = m_sFrom;
             }

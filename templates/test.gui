@@ -29,20 +29,21 @@
 
 <execution>
 
-  <const id="bindir>/home/users/joppich/progs/anaconda3/bin/</const>
+  <const id="bindir">/home/users/joppich/progs/anaconda3/bin/</const>
 
   <add id="cl" sep=" ">
-  <value from="${operation}"/>
-  <value from="${folderin}"/>
+  <value from="operation"/>
+  <value from="folderin"/>
   <const>--output</const>
-    <value from="${fileout}"/>
+    <value from="fileout"/>
   </add>
-
 
   <execute program="test" param="${cl}" location="${bindir}" exec="python" wsl="WSLsel">
     <output type="COUT" color="green" to="outputstream1" />
     <output type="CERR" color="red" to="outputstream2" />
-    <update id="statimg" attrib="src" value="${fileout}"/>
+    <update target="statimg" attrib="src" value="${fileout}"/>
+    <messagebox deferred="false">Instant message: ${cl}</messagebox>
+    <messagebox deferred="true">Defferred message: ${statimg}</messagebox>
   </execute>
 
 </execution>

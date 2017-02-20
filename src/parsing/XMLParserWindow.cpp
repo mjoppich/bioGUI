@@ -86,8 +86,13 @@ QWidget* XMLParserWindow::createComponent(QDomElement* pElement, bool* pChildren
         }
 
 
+        if (oWidget.pWidgetFuncNode == NULL)
+        {
+            oWidget.pWidgetFuncNode = new WidgetFunctionNode(pReturn);
+        }
+
         std::string sID = this->getAttribute(pElement, "ID", "").toStdString();
-        this->addID2Widget(sID, pReturn, false);
+        this->addID2WidgetFunction(sID, oWidget.pWidgetFuncNode, false);
 
     }
 

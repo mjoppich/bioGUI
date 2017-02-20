@@ -44,6 +44,8 @@
 #include <iostream>
 #include <ctype.h>
 #include <sstream>
+#include <src/parsing/nodes/ExecutionMessageBoxNode.h>
+#include <src/parsing/nodes/ExecutionUpdateNode.h>
 
 class XMLParserExecution : public XMLParser {
 
@@ -127,6 +129,16 @@ public:
 
         this->insertNodeType("SCRIPT", [] (QDomElement* pElement) {
             ExecutionScriptNode* pNode = new ExecutionScriptNode( pElement );
+            return (ExecutionNode*) pNode;
+        });
+
+        this->insertNodeType("MESSAGEBOX", [] (QDomElement* pElement) {
+            ExecutionMessageBoxNode* pNode = new ExecutionMessageBoxNode( pElement );
+            return (ExecutionNode*) pNode;
+        });
+
+        this->insertNodeType("UPDATE", [] (QDomElement* pElement) {
+            ExecutionUpdateNode* pNode = new ExecutionUpdateNode( pElement );
             return (ExecutionNode*) pNode;
         });
 

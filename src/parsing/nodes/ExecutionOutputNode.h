@@ -67,14 +67,14 @@ public:
 
     std::string evaluate( std::map< std::string, ExecutionNode*>* pID2Node,
                           std::map<std::string, std::string>* pInputID2Value,
-                          std::map<std::string, QWidget*>* pInputID2Widget)
+                          std::map<std::string, WidgetFunctionNode*>* pInputID2FunctionWidget)
     {
-        return evaluateDeferred(pID2Node, pInputID2Value, pInputID2Widget, NULL, NULL, false);
+        return evaluateDeferred(pID2Node, pInputID2Value, pInputID2FunctionWidget, NULL, NULL, false);
     }
 
     std::string evaluateDeferred( std::map< std::string, ExecutionNode*>* pID2Node,
                           std::map<std::string, std::string>* pInputID2Value,
-                          std::map<std::string, QWidget*>* pInputID2Widget,
+                          std::map<std::string, WidgetFunctionNode*>* pInputID2FunctionWidget,
                           QProcess* pProcess, ExecuteThread* pThread, bool bDeferred)
     {
 
@@ -87,7 +87,7 @@ public:
         if (m_sTo.size() == 0)
         {
 
-            std::string sOpenLocation = this->getNodeValueOrValue(m_sLocation, m_sLocation, pID2Node, pInputID2Value, pInputID2Widget);
+            std::string sOpenLocation = this->getNodeValueOrValue(m_sLocation, m_sLocation, pID2Node, pInputID2Value, pInputID2FunctionWidget);
 
 
             if (m_sType.compare("FILE") == 0)
@@ -148,10 +148,10 @@ public:
          */
 
         QWidget* pWidget = NULL;
-        std::map<std::string, QWidget*>::iterator oIt = pInputID2Widget->find( m_sTo );
-        if ( oIt != pInputID2Widget->end() )
+        std::map<std::string, WidgetFunctionNode*>::iterator oIt = pInputID2FunctionWidget->find( m_sTo );
+        if ( oIt != pInputID2FunctionWidget->end() )
         {
-            pWidget = oIt->second;
+            pWidget = oIt->second->getWidget();
 
         } else {
             LOGERROR("invalid TO id given for node id " + m_sID);
@@ -164,7 +164,9 @@ public:
          *
          *
          */
-        if (AdvancedStreamBox* pTextEdit = dynamic_cast<AdvancedStreamBox*>( pWidget ))
+        AdvancedStreamBox* pTextEdit = dynamic_cast<AdvancedStreamBox*>( pWidget );
+
+        if ( pTextEdit )
         {
 
             if ( bDeferred == false)
@@ -227,7 +229,7 @@ public:
                 if (m_sType.compare("FILE") == 0)
                 {
 
-                    std::string sSaveTo = this->getNodeValueOrValue(m_sFrom, "", pID2Node, pInputID2Value, pInputID2Widget);
+                    std::string sSaveTo = this->getNodeValueOrValue(m_sFrom, "", pID2Node, pInputID2Value, pInputID2FunctionWidget);
 
                     if (sSaveTo.size() != 0)
                     {

@@ -22,6 +22,7 @@
 
 
 #include <functional>
+#include <src/parsing/visual_nodes/WidgetFunctionNode.h>
 #include "ExecutionNode.h"
 #include "ExecutionExecuteNode.h"
 #include "ExecutionIfNode.h"
@@ -33,9 +34,9 @@ class ExecutionNetwork : public QObject{
 public:
 
     ExecutionNetwork(std::map< std::string, std::function< std::string () > >* pID2Value,
-                     std::map< std::string, QWidget* >* pInputID2Widget )
+                     std::map< std::string, WidgetFunctionNode* >* pInputID2FunctionWidget )
     {
-        this->setMaps(pID2Value, pInputID2Widget);
+        this->setMaps(pID2Value, pInputID2FunctionWidget);
     }
 
     ~ExecutionNetwork()
@@ -47,10 +48,10 @@ public:
     }
 
     void setMaps(std::map< std::string, std::function< std::string () > >* pID2Value,
-                 std::map< std::string, QWidget* >* pInputID2Widget)
+                 std::map< std::string, WidgetFunctionNode* >* pInputID2FunctionWidget)
     {
         m_pID2Value = pID2Value;
-        m_pInputID2Widget = pInputID2Widget;
+        m_pInputID2FunctionWidget = pInputID2FunctionWidget;
     }
 
     int execute( std::string& sProgramToRun )
@@ -148,7 +149,7 @@ public:
 
             std::cout << "evaluate " << pExecNode->getID() << std::endl;
 
-            pExecNode->evaluate( &mID2Node, &mInputID2Value, m_pInputID2Widget, true );
+            pExecNode->evaluate( &mID2Node, &mInputID2Value, m_pInputID2FunctionWidget, true );
 
         }
 
@@ -165,7 +166,7 @@ protected:
 
     // given from outside
     std::map< std::string, std::function< std::string () > >* m_pID2Value;
-    std::map< std::string, WidgetFunctionNode* >* m_pInputID2Widget;
+    std::map< std::string, WidgetFunctionNode* >* m_pInputID2FunctionWidget;
 
 
     // to be filled in execute

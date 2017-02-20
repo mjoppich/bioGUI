@@ -224,10 +224,12 @@ protected:
                 QWidget* pChildElement = vChildren.at(i);
                 QWidget* pTransformedChildElement = pGroupBox->addNextWidget(pChildElement);
 
+                WidgetFunctionNode* pTransformedChildNode = new WidgetFunctionNode(pTransformedChildElement);
+
                 m_pFactory->addToLayout(pLayout, pTransformedChildElement);
 
                 std::string sID = this->getDomID(&oChildNode);
-                m_pFactory->getApp()->getWindowParser()->addID2Widget(sID, pTransformedChildElement, true);
+                m_pFactory->getApp()->getWindowParser()->addID2WidgetFunction(sID, pTransformedChildNode, true);
 
                 oPostProcFunc(pGroupBox, pLayout, pChildElement, pTransformedChildElement, &vSelected, iAdded);
             }

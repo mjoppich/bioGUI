@@ -53,7 +53,7 @@
 #include <src/app/QAbstractButtonItem.h>
 #include <src/app/QExclusiveGroupBox.h>
 #include <src/parsing/visual_nodes/WindowComponentFactory.h>
-#include <src/parsing/nodes/WidgetFunctionNode.h>
+#include <src/parsing/visual_nodes/WidgetFunctionNode.h>
 #include "XMLParser.h"
 
 class bioGUIapp;
@@ -71,7 +71,7 @@ public:
         m_pApp = pApp;
 
         m_pID2Value = new std::map<std::string, std::function< std::string()> >();
-        m_pID2Widget = new std::map<std::string, WidgetFunctionNode* >();
+        m_pInputID2FunctionWidget = new std::map<std::string, WidgetFunctionNode* >();
 
 
         /**
@@ -89,7 +89,7 @@ public:
 
     }
 
-    void addID2Widget(std::string& sID, QWidget* pWidget, bool bOverwrite=false)
+    void addID2WidgetFunction(std::string& sID, WidgetFunctionNode* pWidgetNode, bool bOverwrite=false)
     {
 
         if (sID.length() > 0)
@@ -98,23 +98,24 @@ public:
             if (bOverwrite)
             {
 
-                std::map<std::string, QWidget*>::iterator oIt = m_pID2Widget->find(sID);
+                std::map<std::string, WidgetFunctionNode*>::iterator oIt = m_pInputID2FunctionWidget->find(sID);
 
-                if (oIt != m_pID2Widget->end())
+                if (oIt != m_pInputID2FunctionWidget->end())
                 {
                     // overwrite
-                    oIt->second = pWidget;
+                    oIt->second = pWidgetNode;
                     return;
                 }
 
             }
 
             // insert new
-            m_pID2Widget->insert( std::pair<std::string, QWidget*>(sID, pWidget));
+            m_pInputID2FunctionWidget->insert( std::pair<std::string, WidgetFunctionNode*>(sID, pWidgetNode));
 
         }
 
     }
+
 
     void loadFile(std::string& sFileName)
     {
@@ -149,7 +150,7 @@ public:
 
         m_vWidgets.clear();
         m_vActions.clear();
-        m_pID2Widget->clear();
+        m_pInputID2FunctionWidget->clear();
         m_pID2Value->clear();
 
         QWidget* pWindow = (QWidget*) createComponents(NULL, pWindowRoot);
@@ -316,7 +317,7 @@ public:
 
     std::map<std::string, WidgetFunctionNode* >* getID2Widget()
     {
-        return m_pID2Widget;
+        return m_pInputID2FunctionWidget;
     }
 
     std::map<std::string, std::function< std::string()> >* getID2Value()
@@ -910,7 +911,7 @@ protected:
     bioGUIapp* m_pApp;
 
     std::map<std::string, std::function< std::string() > >* m_pID2Value = NULL;
-    std::map<std::string, WidgetFunctionNode*>* m_pID2Widget = NULL;
+    std::map<std::string, WidgetFunctionNode*>* m_pInputID2FunctionWidget = NULL;
     std::vector<QWidget*> m_vWidgets;
     std::vector<QWidget*> m_vActions;
 

@@ -89,15 +89,15 @@ public:
 
     std::string getOS(std::map< std::string, ExecutionNode*>* pID2Node = NULL,
                       std::map<std::string, std::string>* pInputID2Value = NULL,
-                      std::map<std::string, QWidget*>* pInputID2Widget = NULL)
+                      std::map<std::string, WidgetFunctionNode*>* pInputID2FunctionWidget = NULL)
     {
 
 
         bool bWSL = false;
 
-        if ((pID2Node != NULL) && (pInputID2Value != NULL) && (pInputID2Widget != NULL))
+        if ((pID2Node != NULL) && (pInputID2Value != NULL) && (pInputID2FunctionWidget != NULL))
         {
-            bWSL = this->checkWSL(m_sToWSL, pID2Node, pInputID2Value, pInputID2Widget);
+            bWSL = this->checkWSL(m_sToWSL, pID2Node, pInputID2Value, pInputID2FunctionWidget);
         }
 
         if (bWSL)
@@ -119,10 +119,10 @@ public:
 
     std::string evaluate( std::map< std::string, ExecutionNode*>* pID2Node,
                           std::map<std::string, std::string>* pInputID2Value,
-                          std::map<std::string, QWidget*>* pInputID2Widget) {
+                          std::map<std::string, WidgetFunctionNode*>* pInputID2FunctionWidget) {
 
 
-        bool bWSL = this->checkWSL(m_sToWSL, pID2Node, pInputID2Value, pInputID2Widget);
+        bool bWSL = this->checkWSL(m_sToWSL, pID2Node, pInputID2Value, pInputID2FunctionWidget);
 
         std::string sResult;
 

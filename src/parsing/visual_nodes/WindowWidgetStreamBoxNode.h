@@ -107,7 +107,9 @@ public:
                 if (sID.length() > 0)
                 {
 
-                    m_pFactory->getApp()->getWindowParser()->addID2Widget( sID, pStreamOut, true );
+                    WidgetFunctionNode* pWidgetFuncNode = new WidgetFunctionNode(pStreamOut);
+
+                    m_pFactory->getApp()->getWindowParser()->addID2WidgetFunction( sID, pWidgetFuncNode, true );
                     pStreamOut->addStream( sID, pButton );
                     pLayout->addWidget( pChildElement );
 
@@ -141,7 +143,10 @@ public:
         std::string sID = this->getAttribute(pDOMElement, "id", "");
         if (sID.length() > 0)
         {
-            m_pFactory->getApp()->getWindowParser()->addID2Widget( sID, pStreamOut, true );
+
+            WidgetFunctionNode* pWidgetFuncNode = new WidgetFunctionNode(pStreamOut);
+
+            m_pFactory->getApp()->getWindowParser()->addID2WidgetFunction( sID, pWidgetFuncNode, true );
 
         }
 

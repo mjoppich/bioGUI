@@ -62,6 +62,7 @@ public:
         });
 
         oReturn.pElement = pAction;
+        oReturn.pWidgetFuncNode = new WidgetFunctionNode(pAction);
 
         m_pFactory->getApp()->getWindowParser()->addAction(pAction);
 

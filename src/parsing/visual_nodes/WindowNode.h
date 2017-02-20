@@ -180,6 +180,8 @@ public:
         }
 
         bool bHasChildrenFinished = false;
+
+        WidgetFunctionNode* pWidgetFuncNode;
     };
 
 

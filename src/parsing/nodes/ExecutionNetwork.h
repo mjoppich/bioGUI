@@ -165,7 +165,7 @@ protected:
 
     // given from outside
     std::map< std::string, std::function< std::string () > >* m_pID2Value;
-    std::map< std::string, QWidget* >* m_pInputID2Widget;
+    std::map< std::string, WidgetFunctionNode* >* m_pInputID2Widget;
 
 
     // to be filled in execute

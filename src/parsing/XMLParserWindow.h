@@ -53,6 +53,7 @@
 #include <src/app/QAbstractButtonItem.h>
 #include <src/app/QExclusiveGroupBox.h>
 #include <src/parsing/visual_nodes/WindowComponentFactory.h>
+#include <src/parsing/nodes/WidgetFunctionNode.h>
 #include "XMLParser.h"
 
 class bioGUIapp;
@@ -70,7 +71,7 @@ public:
         m_pApp = pApp;
 
         m_pID2Value = new std::map<std::string, std::function< std::string()> >();
-        m_pID2Widget = new std::map<std::string, QWidget* >();
+        m_pID2Widget = new std::map<std::string, WidgetFunctionNode* >();
 
 
         /**
@@ -313,7 +314,7 @@ public:
         }
     }
 
-    std::map<std::string, QWidget* >* getID2Widget()
+    std::map<std::string, WidgetFunctionNode* >* getID2Widget()
     {
         return m_pID2Widget;
     }
@@ -909,7 +910,7 @@ protected:
     bioGUIapp* m_pApp;
 
     std::map<std::string, std::function< std::string() > >* m_pID2Value = NULL;
-    std::map<std::string, QWidget*>* m_pID2Widget = NULL;
+    std::map<std::string, WidgetFunctionNode*>* m_pID2Widget = NULL;
     std::vector<QWidget*> m_vWidgets;
     std::vector<QWidget*> m_vActions;
 

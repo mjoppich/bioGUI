@@ -89,7 +89,9 @@ endif()
 if (UNIX AND NOT APPLE)
 
     message(STATUS ">>> Linux")
-    set(Qt5_DIR "/home/users/joppich//Qt/5.7/gcc_64/")
+
+    set(Qt5_DIR "")
+    LIST(APPEND Qt5_DIR "~/Qt/5.8/gcc_64/" "~/Qt/5.7/gcc_64/")
 
     set(ENV{OPENSSL_ROOT_DIR} "/home/users/joppich/libs/openssl/lib/")
     set(ENV{LUA_DIR} "/home/users/joppich/libs/lua/")
@@ -101,10 +103,15 @@ endif()
 
 message(STATUS "QT PATH: ${Qt5_DIR}")
 
-LIST(APPEND CMAKE_PREFIX_PATH "${Qt5_DIR}/lib/cmake/")
-LIST(APPEND CMAKE_MODULE_PATH "${Qt5_DIR}/lib/cmake/Qt5")
-set(QT_QMAKE_EXECUTABLE "${Qt5_DIR}/bin/qmake")
-set(CMAKE_FRAMEWORK_PATH "${Qt5_DIR}/lib/cmake")
+foreach(elem ${Qt5_DIR})
+
+    LIST(APPEND CMAKE_PREFIX_PATH "${elem}/lib/cmake/")
+    LIST(APPEND CMAKE_MODULE_PATH "${elem}/lib/cmake/Qt5")
+
+endforeach()
+
+#set(QT_QMAKE_EXECUTABLE "${Qt5_DIR}/bin/qmake")
+#set(CMAKE_FRAMEWORK_PATH "${Qt5_DIR}/lib/cmake")
 
 # Basic information about project
 project(bioGUI VERSION 1.0)

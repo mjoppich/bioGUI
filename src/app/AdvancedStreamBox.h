@@ -118,7 +118,7 @@ class AdvancedCornerWidget : public QWidget {
 
 public:
 
-    AdvancedCornerWidget(AdvancedStreamBox* pParentBox);
+    AdvancedCornerWidget(QWidget* pParentBox);
 
     void updateWidgetGeometry();
 
@@ -139,7 +139,7 @@ protected:
     QPoint m_oMouseEnd;
     QSize m_oCurrentSize;
 
-    AdvancedStreamBox* m_pParentBox;
+    QWidget* m_pParentBox;
 
 };
 

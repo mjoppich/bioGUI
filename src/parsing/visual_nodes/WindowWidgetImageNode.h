@@ -23,7 +23,58 @@
 #include <QtWidgets/QGraphicsScene>
 #include <QGraphicsView>
 #include <QGraphicsPixmapItem>
+#include <QDebug>
 #include "WindowWidgetNode.h"
+#include <iostream>
+
+class QZoomableGraphicsView : public QGraphicsView
+{
+Q_OBJECT
+public:
+
+    QZoomableGraphicsView(QGraphicsScene* pScene)
+            : QGraphicsView(pScene)
+    {
+        this->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+        this->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+
+        this->setSizeAdjustPolicy(SizeAdjustPolicy::AdjustIgnored);
+
+        AdvancedCornerWidget* pCornerWidget = new AdvancedCornerWidget(this);
+
+        this->connect(pCornerWidget, &AdvancedCornerWidget::sizeChanged, this, &QZoomableGraphicsView::sizeChanged);
+
+        this->setCornerWidget( pCornerWidget );
+
+    }
+
+
+    void wheelEvent(QWheelEvent *event){
+
+        this->setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
+        // Scale the view / do the zoom
+        double scaleFactor = 1.15;
+        if(event->delta() > 0) {
+            // Zoom in
+            this-> scale(scaleFactor, scaleFactor);
+
+        } else {
+            // Zooming out
+            this->scale(1.0 / scaleFactor, 1.0 / scaleFactor);
+        }
+
+    }
+
+    virtual QSize sizeHint() {
+        return QSize(this->minimumWidth(), this->minimumHeight());
+    }
+
+    signals:
+
+    void sizeChanged();
+
+
+};
 
 class WindowWidgetImageNode : public WindowWidgetNode {
 
@@ -54,7 +105,7 @@ public:
         std::cerr << "Loading image " << oDirectory.absolutePath().toStdString() << std::endl;
 
         QGraphicsScene* pScene = new QGraphicsScene();
-        QGraphicsView* pView = new QGraphicsView(pScene);
+        QZoomableGraphicsView* pView = new QZoomableGraphicsView(pScene);
         QGraphicsPixmapItem* pItem = new QGraphicsPixmapItem(QPixmap( sFileName ));
 
         pScene->addItem( pItem );
@@ -73,11 +124,76 @@ public:
             int iHeight = sHeight.toInt();
 
             pView->setFixedSize(iWidth, iHeight);
-
+            //pView->setFixedSize(iWidth, iHeight);
         }
+        bioGUIapp* pApp = m_pFactory->getApp();
+
+        QObject::connect(pView, &QZoomableGraphicsView::sizeChanged, [pView, pApp] () {
+
+            LOGLVL(std::to_string(pView->sizeHint().height()) + " " + std::to_string(pView->sizeHint().width()), Logging::DEBUG);
+
+            pView->setFixedSize(pView->sizeHint());
+
+            QWidget* pParent = pView->parentWidget();
+
+
+            if (pParent != NULL)
+            {
+                QLayout* pLayout = pParent->layout();
+
+                if (pLayout != NULL)
+                {
+                    pLayout->activate();
+                    pLayout->update();
+                }
+            }
+
+            pApp->reloadAppWindow();
+
+        });
+
+        QWidget* pImageWidget = new QWidget();
+        QLayout* pLayout = new QHBoxLayout();
+
+        pLayout->addWidget(pView);
+        pLayout->setSizeConstraint(QLayout::SetFixedSize);
+        pView->setSizePolicy(QSizePolicy::Policy::Minimum, QSizePolicy::Policy::Minimum);
+
+        pImageWidget->setLayout(pLayout);
 
         oReturn.bHasChildrenFinished = true;
-        oReturn.pElement = pView;
+        oReturn.pElement = pImageWidget;
+
+        WidgetFunctionNode* pWidgetNode = new WidgetFunctionNode(pImageWidget, [pScene] (const QWidget* pWidget, std::string key, std::string value) {
+
+            QString sKey(key.c_str());
+
+            if (sKey.compare("src", Qt::CaseInsensitive) == 0)
+            {
+
+                QFileInfo oFile(QString(value.c_str()));
+
+
+                if (!oFile.exists())
+                {
+                    LOGLVL("Image Upd src: File does not exist: " + value, Logging::ERR)
+
+                    return;
+                }
+
+                LOGLVL("Image Upd src: Loading Image: " + value, Logging::INFO)
+
+                QGraphicsPixmapItem* pItem = new QGraphicsPixmapItem(QPixmap( oFile.absoluteFilePath() ));
+
+                pScene->clear();
+                pScene->addItem( pItem );
+
+            }
+
+            return;
+        });
+
+        oReturn.pWidgetFuncNode = pWidgetNode;
 
         return oReturn;
 

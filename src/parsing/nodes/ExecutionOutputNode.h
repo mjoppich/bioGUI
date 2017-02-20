@@ -32,12 +32,13 @@
 #include <fstream>
 
 #include "ExecutionNode.h"
+#include "ExecutionDeferredNode.h"
 
-class ExecutionOutputNode : public ExecutionNode {
+class ExecutionOutputNode : public ExecutionDeferredNode {
 
 public:
     ExecutionOutputNode(QDomElement* pElement)
-    : ExecutionNode(pElement)
+    : ExecutionDeferredNode(pElement)
     {
 
         m_sType = this->getDomElementAttribute(pElement, "TYPE", "STD").toUpper().toStdString();
@@ -49,7 +50,6 @@ public:
         m_sHost = this->getDomElementAttribute(pElement, "host", "").toStdString();
         m_iPort = std::stoi(this->getDomElementAttribute(pElement, "port", "25").toStdString());
 
-        m_bDefferred = (this->getDomElementAttribute(pElement, "DEFERRED", "true").toUpper().compare("TRUE", Qt::CaseInsensitive) == 0);
 
 
         if (m_sTo.size() == 0)
@@ -308,7 +308,6 @@ protected:
     std::string m_sHost;
     int m_iPort;
 
-    bool m_bDefferred;
 
 
 

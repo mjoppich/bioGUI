@@ -6,18 +6,19 @@
 #define BIOGUI_EXECUTIONMESSAGEBOXNODE_H
 
 #include "ExecutionNode.h"
+#include "ExecutionDeferredNode.h"
 
 #include <QDialogButtonBox>
 #include <QMessageBox>
 
-class ExecutionMessageBoxNode : public ExecutionNode {
+class ExecutionMessageBoxNode : public ExecutionDeferredNode {
 
 public:
 
     enum MB_TYPE {INFO, ALERT, QUESTION} ;
 
     ExecutionMessageBoxNode(QDomElement* pElement)
-            : ExecutionNode(pElement)
+            : ExecutionDeferredNode(pElement)
     {
         m_sTag = "messagebox";
 
@@ -50,10 +51,18 @@ public:
 
     }
 
-    std::string evaluate( std::map< std::string, ExecutionNode*>* pID2Node,
-                          std::map<std::string, std::string>* pInputID2Value,
-                          std::map<std::string, WidgetFunctionNode*>* pInputID2FunctionWidget)
+    virtual std::string evaluateDeferred( std::map< std::string, ExecutionNode*>* pID2Node,
+                                          std::map<std::string, std::string>* pInputID2Value,
+                                          std::map<std::string, WidgetFunctionNode*>* pInputID2FunctionWidget,
+                                          QProcess* pProcess, ExecuteThread* pThread, bool bDeferred)
     {
+
+        if (m_bDeferred && !bDeferred)
+            return "";
+
+        if (!m_bDeferred && bDeferred)
+            return "";
+
 
         if (m_sValue.size() > 0)
         {
@@ -97,6 +106,14 @@ public:
 
         return m_sValue.toStdString();
 
+    }
+
+    std::string evaluate( std::map< std::string, ExecutionNode*>* pID2Node,
+                          std::map<std::string, std::string>* pInputID2Value,
+                          std::map<std::string, WidgetFunctionNode*>* pInputID2FunctionWidget)
+    {
+
+        return this->evaluateDeferred(pID2Node, pInputID2Value, pInputID2FunctionWidget, NULL, NULL, false);
     }
 
 protected:

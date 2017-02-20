@@ -20,7 +20,7 @@
 #include "AdvancedStreamBox.h"
 
 
-AdvancedCornerWidget::AdvancedCornerWidget(AdvancedStreamBox* pParentBox)
+AdvancedCornerWidget::AdvancedCornerWidget(QWidget* pParentBox)
 {
     m_oMouseStart = QPoint(-1,-1);
     m_oMouseEnd = QPoint(-1,-1);

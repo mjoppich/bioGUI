@@ -76,10 +76,13 @@ public:
             if (bDeferred)
             {
                 // only output nodes
-                if (ExecutionOutputNode* pOutPutnode = dynamic_cast<ExecutionOutputNode*>( m_vChildren.at(i) ))
+                if (ExecutionDeferredNode* pOutPutnode = dynamic_cast<ExecutionDeferredNode*>( m_vChildren.at(i) ))
                 {
                     sReturn = sReturn + pOutPutnode->evaluateDeferred(pID2Node, pInputID2Value, pInputID2FunctionWidget, pProcess, pThread, bDeferred);
                 }
+
+
+
             } else {
 
                 if (pProcess != NULL)

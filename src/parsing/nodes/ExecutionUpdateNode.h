@@ -22,18 +22,21 @@
 
 
 #include "ExecutionNode.h"
+#include "ExecutionDeferredNode.h"
 
-class ExecutionUpdateNode : public ExecutionNode {
+class ExecutionUpdateNode : public ExecutionDeferredNode {
 
 public:
 
     ExecutionUpdateNode(QDomElement* pElement)
-            : ExecutionNode(pElement)
+            : ExecutionDeferredNode(pElement)
     {
         m_sValue = this->getDomElementAttribute(pElement, "VALUE", "").toStdString();
 
         m_sTarget = this->getDomElementAttribute(pElement, "TARGET", "");
         m_sAttribute = this->getDomElementAttribute(pElement, "ATTRIB", "");
+
+
 
     }
 
@@ -42,22 +45,40 @@ public:
 
     }
 
-    std::string evaluate( std::map< std::string, ExecutionNode*>* pID2Node,
-                          std::map<std::string, std::string>* pInputID2Value,
-                          std::map<std::string, WidgetFunctionNode*>* pInputID2FunctionWidget)
+    virtual std::string evaluateDeferred( std::map< std::string, ExecutionNode*>* pID2Node,
+                                          std::map<std::string, std::string>* pInputID2Value,
+                                          std::map<std::string, WidgetFunctionNode*>* pInputID2FunctionWidget,
+                                          QProcess* pProcess, ExecuteThread* pThread, bool bDeferred)
     {
+
+        if (m_bDeferred && !bDeferred)
+            return "";
+
+        if (!m_bDeferred && bDeferred)
+            return "";
 
         std::map<std::string, WidgetFunctionNode*>::iterator oIt = pInputID2FunctionWidget->find(m_sTarget.toStdString());
 
         if (oIt != pInputID2FunctionWidget->end())
         {
+            std::string resolvedValue = this->parseDynamicValues(m_sValue, pID2Node, pInputID2Value, pInputID2FunctionWidget);
+
             // do something
-            oIt->second->setAttribute( m_sAttribute.toStdString(), m_sValue );
+            oIt->second->setAttribute( m_sAttribute.toStdString(), resolvedValue );
 
             return m_sValue;
         }
 
         return "";
+
+    }
+
+    std::string evaluate( std::map< std::string, ExecutionNode*>* pID2Node,
+                          std::map<std::string, std::string>* pInputID2Value,
+                          std::map<std::string, WidgetFunctionNode*>* pInputID2FunctionWidget)
+    {
+
+        return this->evaluateDeferred(pID2Node, pInputID2Value, pInputID2FunctionWidget, NULL, NULL, false);
     }
 
 protected:
@@ -67,11 +88,11 @@ protected:
         vAttributes.push_back("TARGET");
         vAttributes.push_back("ATTRIB");
         vAttributes.push_back("VALUE");
+        vAttributes.push_back("DEFERRED");
     }
 
     QString m_sAttribute;
     QString m_sTarget;
-
 
 };
 

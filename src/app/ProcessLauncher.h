@@ -198,6 +198,7 @@ public:
 
         }
         */
+
         QIODevice::OpenMode eMode = QIODevice::ReadWrite;
 
         std::cout << "Running QProcess for: " << m_sProgram.toStdString() << " " << m_sParam.toStdString() << std::endl;
@@ -227,6 +228,9 @@ public:
         LOGLVL( oArgs.join(',').toStdString(), Logging::ERR);
 
         QProcess* pProcess = m_pProcess;
+        QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+        pProcess->setProcessEnvironment(env);
+
 
         this->connect(m_pProcess, static_cast<void(QProcess::*)(QProcess::ProcessError)>(&QProcess::errorOccurred),
                            [pProcess, this](QProcess::ProcessError errorCode){

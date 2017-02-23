@@ -55,7 +55,7 @@ public:
 
         QComboBox *pComboBox = new QComboBox();
 
-        QString sCurrentPath = QDir::current().absolutePath();
+        QString sCurrentPath = this->m_pFactory->getApp()->getAppPath();
         QString sSearchPath = this->getQAttribute(pDOMElement, "path", sCurrentPath + "/install_templates/");
 
         bool bHasPathSet = this->hasAttribute(pDOMElement, "path");

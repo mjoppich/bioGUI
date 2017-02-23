@@ -51,9 +51,14 @@ public:
         return m_pWindowParser;
     }
 
+    QString getAppPath()
+    {
+        return m_oTemplatePath.path();
+    }
+
     void reloadTemplates()
     {
-        QDir oTemplatePath = m_oTemplatePath.path() + "/templates/";
+        QDir oTemplatePath = this->getAppPath() + "/templates/";
 
         this->addTemplates( oTemplatePath );
     }

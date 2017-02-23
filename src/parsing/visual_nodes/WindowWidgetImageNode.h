@@ -91,7 +91,142 @@ public:
 
     }
 
-    virtual CreatedElement getWindowElement( QDomElement* pDOMElement )
+    QZoomableGraphicsView* createImage(QString sFileName)
+    {
+
+        QDir oDirectory(sFileName);
+        std::cerr << "Loading image " << oDirectory.absolutePath().toStdString() << std::endl;
+
+        QGraphicsScene* pScene = new QGraphicsScene();
+        QZoomableGraphicsView* pView = new QZoomableGraphicsView(pScene);
+        QGraphicsPixmapItem* pItem = new QGraphicsPixmapItem(QPixmap( sFileName ));
+
+        pScene->addItem( pItem );
+
+        return pView;
+    }
+
+    virtual CreatedElement getWindowElement( QDomElement* pDOMElement)
+    {
+
+        QString sTag = pDOMElement->tagName();
+        QString sValue = pDOMElement->text();
+
+        CreatedElement oReturn;
+        oReturn.bHasChildrenFinished = true;
+
+        QGroupBox* pGroupBox = new QGroupBox();
+
+
+        QString sFileName = this->getQAttribute(pDOMElement, "src", "");
+        QZoomableGraphicsView* pView = this->createImage(sFileName);
+
+        QString sWidth =  this->getQAttribute(pDOMElement, "width" , "");
+        QString sHeight = this->getQAttribute(pDOMElement, "height", "");
+
+        if ((sWidth.length() > 0) && (sHeight.length() > 0))
+        {
+            int iWidth = sWidth.toInt();
+            int iHeight = sHeight.toInt();
+
+            pView->setFixedSize(iWidth, iHeight);
+        }
+
+        // this could also be a hboxlayout or a grid layout
+        QLayout* pLayout = new QVBoxLayout();
+        pLayout->addWidget( pView );
+
+        QPushButton* pClearButton = new QPushButton("Clear");
+
+        QObject::connect(pClearButton, &QAbstractButton::clicked, [pView] {
+
+            // do something here
+
+        });
+
+        pLayout->addWidget(pClearButton);
+
+        QPushButton* pSaveLogButton = new QPushButton("Full View");
+
+        QObject::connect(pSaveLogButton, &QAbstractButton::clicked, [pView] {
+
+            // do something here
+
+        });
+
+        pLayout->addWidget(pSaveLogButton);
+
+        pGroupBox->setLayout(pLayout);
+
+        oReturn.pElement = pGroupBox;
+
+        bioGUIapp* pApp = m_pFactory->getApp();
+        pLayout->setSizeConstraint(QLayout::SetFixedSize);
+
+        QObject::connect(pView, &QZoomableGraphicsView::sizeChanged, [pApp, pLayout] () {
+
+            pLayout->activate();
+            pLayout->update();
+
+            //pApp->getMainWindow()->update();
+            pApp->reloadAppWindow();
+
+        });
+
+        QObject::connect(pView, &QZoomableGraphicsView::sizeChanged, [pGroupBox] () {
+
+            pGroupBox->activateWindow();
+
+            pGroupBox->parentWidget()->activateWindow();
+            pGroupBox->parentWidget()->layout()->activate();
+            pGroupBox->parentWidget()->layout()->update();
+
+        });
+
+        // must be done here because otherwise the groupbox is the id widget ...
+        std::string sID = this->getAttribute(pDOMElement, "id", "");
+        if (sID.length() > 0)
+        {
+
+            WidgetFunctionNode* pWidgetFuncNode = new WidgetFunctionNode(pView, [pView] (const QWidget* pWidget, std::string key, std::string value) {
+
+                QString sKey(key.c_str());
+
+                if (sKey.compare("src", Qt::CaseInsensitive) == 0)
+                {
+
+                    QFileInfo oFile(QString(value.c_str()));
+
+
+                    if (!oFile.exists())
+                    {
+                        LOGLVL("Image Upd src: File does not exist: " + value, Logging::ERR)
+
+                        return;
+                    }
+
+                    LOGLVL("Image Upd src: Loading Image: " + value, Logging::INFO)
+
+                    QGraphicsPixmapItem* pItem = new QGraphicsPixmapItem(QPixmap( oFile.absoluteFilePath() ));
+                    QGraphicsScene* pScene = pView->scene();
+
+                    pScene->clear();
+                    pScene->addItem( pItem );
+
+                }
+
+                return;
+            });
+            m_pFactory->getApp()->getWindowParser()->addID2WidgetFunction( sID, pWidgetFuncNode, true );
+
+        }
+
+        return oReturn;
+
+
+    }
+
+    virtual CreatedElement getWindowElementImg( QDomElement* pDOMElement )
     {
 
         QString sTag = pDOMElement->tagName();

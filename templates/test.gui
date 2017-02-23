@@ -1,27 +1,30 @@
-<template description="Test Program to Show Execution" title="Test Program">
-<window title="Test Program">
+<template description="poreSTAT" title="poreSTAT">
+<window title="poreSTAT alpha">
 <vgroup>
   	<checkbox id="WSLsel" value="true" selectonwindows="true">Run in WSL?</checkbox>
 
-	<group title="Files">
-        <filedialog id="folderin" folder="true">Input READS folder</filedialog>
-        <filedialog id="fileout" output="true">Output Statistics (PNG)</filedialog>
-	</group>
-
 	<group title="Operation">
         <combobox id="operation">
-        <comboitem value="--reads">MinKNOWN reads folder</comboitem>
+        <comboitem value="--reads">MinKNOW reads folder</comboitem>
         <comboitem value="--folders">index</comboitem>
         </combobox>
     </group>
 
-    <action program="test">Run</action>
-   <image id="statimg" src="/home/proj/projekte/sequencing/HPYLORI_MINION_ILLUMINA_JIMENEZ/tmp.png" width="100" height="100"/>
+	<group title="Files">
+        <filedialog id="folderin" folder="true" location="/home/proj/projekte/sequencing/HPYLORI_MINION_ILLUMINA_JIMENEZ/reads/fail">Input READS folder</filedialog>
+        <filedialog id="fileout" output="true" location="/home/proj/projekte/sequencing/HPYLORI_MINION_ILLUMINA_JIMENEZ/tmp.png">Output Statistics (PNG)</filedialog>
+	</group>
 
-    <streambox id="output1">
-        <stream id="outputstream1">std out</stream>
-        <stream id="outputstream2">err out</stream>
-   </streambox>
+    <action program="test">Run</action>
+
+    <hgroup>
+       <image id="statimg" src="/home/proj/projekte/sequencing/HPYLORI_MINION_ILLUMINA_JIMENEZ/tmp.png" width="100" height="100"/>
+
+        <streambox id="output1">
+            <stream id="outputstream1">std out</stream>
+            <stream id="outputstream2">err out</stream>
+       </streambox>
+    </hgroup>
 
 </vgroup>
 </window>

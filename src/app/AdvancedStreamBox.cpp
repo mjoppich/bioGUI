@@ -57,6 +57,8 @@ void AdvancedCornerWidget::updateWidgetGeometry() {
     }
 
     m_pParentBox->setMinimumSize(oNewMin);
+    m_pParentBox->setMaximumSize(oNewMin);
+    m_pParentBox->setFixedSize(oNewMin);
     //m_pParentBox->resize(oNewMin);
 
     emit sizeChanged();

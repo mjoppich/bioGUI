@@ -39,5 +39,8 @@ Please note additional information provided in our :ref:`user_guide`.
 
    user_guide.rst
    build_wsl.rst
+   biogui_idea.rst
    developer_guide.rst
+   nodes.rst
+   install_template_example.rst
    licence.rst

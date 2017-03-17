@@ -1,33 +1,10 @@
-
 ********************
 Developer Guide
 ********************
 
+It is highly recommend to read the mechanism section :ref:`bioGUI_working_mechanism` first.
 
-bioGUI templates
-================
-
-.. _biogui_principles_layout:
-
-window-part of template
-=======================
-
-layout model
-------------
-
-asdasdasd
-
-.. _biogui_principles_execution:
-
-execution-part of template
-==========================
-
-execution-model
----------------
-
-asdads
-
-extending bioGUI
+Extending bioGUI
 ================
 
 Window component factory

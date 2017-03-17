@@ -35,8 +35,8 @@ Most (install) templates will require you to have wget and netcat install. Using
 
 You can get brew from `here <http://brew.sh/>`_
 
-Download Template
-==================
+Downloading Templates
+=====================
 
 
 Part of *bioGUI* is a user-friendly accessibility of templates for various programs.
@@ -64,10 +64,10 @@ Since it is possible to copy or alter templates, new templates are created at al
 
 .. _install_download_templates:
 
-Install Downloaded Template:
------------------------------
+Installing new software with Install Modules
+--------------------------------------------
 
-After downloading an *Install Template*, the *Install Template Module* will list the downloaded install template.
+After downloading an *Install Module*, the *Install Template Module* will list the downloaded install template.
 The screenshot below shows the *Install Template Module*.
 In the dropdown menu, the *hisat2* install template has been chosen.
 Since this module is executed on Windows, *WSL* is selected.

@@ -1,0 +1,29 @@
+<zk>
+    <zscript>
+        <![CDATA[
+
+    import java.util.ArrayList;
+    import bioGUI.*;
+
+    Object o = Executions.getCurrent().getNativeResponse();
+    o.setContentType("txt");
+
+    CategoryManager oCatIT = new CategoryManager();
+
+    String sDel = "\t";
+
+    for (Category oCat : oCatIT.getCategories())
+    {
+
+        String sLine = oCat.getID() + sDel + oCat.getCategory();
+
+        o.getWriter().print( sLine + "\n");
+
+    }
+
+
+    o.getWriter().close();
+]]>
+    </zscript>
+
+</zk>

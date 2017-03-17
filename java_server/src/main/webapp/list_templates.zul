@@ -9,13 +9,27 @@
     o.setContentType("txt");
 
     TemplateManager oTempIT = new TemplateManager();
+    CategoryManager oCatIT = new CategoryManager();
 
     String sDel = "\t";
 
     for (Template oTemp : oTempIT.getTemplates())
     {
 
+        StringBuilder oJoin = new StringBuilder();
+
+        int i = 0;
+        for (Category oCat : oCatIT.getCategoriesForTemplate(oTemp.getTemplateid()))
+        {
+            if (i > 0)
+                oJoin.append(",");
+
+            oJoin.append(oCat.getID());
+            ++i;
+        }
+
         String sLine = oTemp.getTemplateid() + sDel + oTemp.getTypeStr() + sDel + oTemp.getDisplayname() + sDel + oTemp.getTimestampDate() + sDel + oTemp.getAuthor();
+        sLine = sLine + sDel + oJoin.toString();
 
         o.getWriter().print( sLine + "\n");
 

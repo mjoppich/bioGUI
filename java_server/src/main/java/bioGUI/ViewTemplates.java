@@ -1,13 +1,17 @@
 package bioGUI;
 
-import org.zkoss.bind.annotation.Command;
-import org.zkoss.bind.annotation.Init;
-import org.zkoss.bind.annotation.NotifyChange;
+import org.zkoss.bind.annotation.*;
+import org.zkoss.zk.ui.Component;
+import org.zkoss.zk.ui.event.CheckEvent;
 import org.zkoss.zk.ui.event.Event;
-import org.zkoss.zul.Messagebox;
-import org.zkoss.zul.Textbox;
+import org.zkoss.zk.ui.select.Selectors;
+import org.zkoss.zk.ui.select.annotation.Wire;
+import org.zkoss.zk.ui.select.annotation.WireVariable;
+import org.zkoss.zul.*;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 
 public class ViewTemplates {
 
@@ -17,14 +21,26 @@ public class ViewTemplates {
 	private Template templatecreation = new Template();
 
 	private TemplateManager oTempManager = new TemplateManager();
+	private CategoryManager oCatManager = new CategoryManager();
 
-	private ArrayList templates = oTempManager.getTemplates();
+	private ArrayList<Template> templates = oTempManager.getTemplates();
+	private ArrayList<Category> categories = oCatManager.getCategories();
 
 	private String filterText;
 
 	@Init
 	public void init() {
 		count = 100;
+
+		if (templates != null)
+		{
+			for (Template oTemp: templates)
+			{
+
+				oTemp.setCategories( this.getCategoriesForTemplate(oTemp.getTemplateid()) );
+
+			}
+		}
 	}
 
 	@Command
@@ -46,10 +62,23 @@ public class ViewTemplates {
 
 			int iAddTemplate = oTempManager.addTemplate(templatecreation);
 
-			if (iAddTemplate != -1)
+ 			if (iAddTemplate != -1)
 			{
 				usercreation = new User();
 				templatecreation = new Template();
+
+				HashSet<Integer> setTemplateCategories = new HashSet<Integer>();
+
+				// insert categories
+				for( Object obj : catgrid.getRows().getChildren() ){
+					Row comp = (Row) obj;
+					Checkbox ck = (Checkbox) comp.getChildren().get(0);
+
+					if (ck.isChecked())
+						setTemplateCategories.add( Integer.parseInt(ck.getValue().toString()) );
+				}
+
+				oCatManager.setCategories(iAddTemplate, setTemplateCategories);
 
 				Messagebox.show("Template inserted.");
 			} else {
@@ -63,6 +92,28 @@ public class ViewTemplates {
 
 	}
 
+	@AfterCompose
+	public void afterCompose(@ContextParam(ContextType.VIEW) Component view){
+		Selectors.wireComponents(view, this, false);
+	}
+
+	@Wire("#catgrid")
+	private Grid catgrid;
+
+	@Wire("#allCatCheckbox")
+	private Checkbox allCatCheckbox;
+
+	@Command
+	public void toggleAllCategories(){
+		List components = catgrid.getRows().getChildren();
+
+		for(Object obj:components){
+			Row comp = (Row) obj;
+			Checkbox ck = (Checkbox) comp.getChildren().get(0);
+			ck.setChecked(allCatCheckbox.isChecked());
+		}
+	}
+
 	@Command
 	@NotifyChange("templates")
 	public void changeFilter() {
@@ -70,8 +121,35 @@ public class ViewTemplates {
 
 		templates = oTempManager.getTemplates( filterText );
 
+		for (Template oTemp: templates)
+		{
+			oTemp.setCategories( this.getCategoriesForTemplate(oTemp.getTemplateid()) );
+		}
+
 		//System.out.println("templates: " + templates.size());
 
+	}
+
+	public String getCategoriesForTemplate(int iTemplateID)
+	{
+		ArrayList<Category> oCats = oCatManager.getCategoriesForTemplate(iTemplateID);
+
+		StringBuilder oSB = new StringBuilder();
+
+		for (int i = 0; i < oCats.size(); ++i)
+		{
+			if (i > 0)
+				oSB.append(", ");
+
+			oSB.append(oCats.get(i).getCategory());
+		}
+
+		return oSB.toString();
+	}
+
+	public ArrayList<Category> getCategories()
+	{
+		return categories;
 	}
 
 	public ArrayList<Template> getTemplates()

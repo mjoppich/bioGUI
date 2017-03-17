@@ -13,7 +13,24 @@ public class Template {
 
     private int templateid, userid, type, timestamp;
     private boolean anonym;
-    private String displayname, typeStr;
+    private String displayname, typeStr, omictoolslink, categories;
+
+    public String getCategories()
+    {
+        return categories;
+    }
+
+    public void setCategories(String cats)
+    {
+        this.categories = cats;
+    }
+
+    public void setOmictoolslink(String omictoolslink) {
+        this.omictoolslink = omictoolslink;
+    }
+    public String getOmictoolslink() {
+        return this.omictoolslink;
+    }
 
     public String getTemplate() {
         return template;
@@ -102,7 +119,7 @@ public class Template {
         this.templateid = templateid;
     }
 
-    public Template(int iTemplateID, int iUserID, String sDisplayname, int iType, String sTemplate, int iTimestamp, boolean bAnonym) {
+    public Template(int iTemplateID, int iUserID, String sDisplayname, int iType, String sTemplate, int iTimestamp, boolean bAnonym, String sOmicTools) {
 
         this.templateid = iTemplateID;
         this.userid = iUserID;
@@ -113,6 +130,7 @@ public class Template {
         this.template = sTemplate;
         this.timestamp = iTimestamp;
         this.anonym = bAnonym;
+        this.omictoolslink = sOmicTools;
 
     }
 

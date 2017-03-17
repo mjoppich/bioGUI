@@ -85,15 +85,16 @@ public class TemplateManager {
                 String sTemplate = resultSet.getString("template");
                 Timestamp iTimestamp = resultSet.getTimestamp("timestamp");
                 boolean bAnonym = resultSet.getBoolean("anonym");
+                String sOmicTools = resultSet.getString("omictools");
 
                 long iSecsTo0 = iTimestamp.getTime() / 1000;
 
-                Template oNewTemplate = new Template(iTemplateID, iUserID, sDisplayname, iType, sTemplate, (int) iSecsTo0 , bAnonym);
+                Template oNewTemplate = new Template(iTemplateID, iUserID, sDisplayname, iType, sTemplate, (int) iSecsTo0 , bAnonym, sOmicTools);
                 User oTemplateUser = oUManager.getUser(iUserID);
 
                 oNewTemplate.setUser(oTemplateUser);
 
-                System.out.println( oNewTemplate );
+                //System.out.println( oNewTemplate );
 
                 vReturn.add(oNewTemplate);
             }
@@ -127,7 +128,7 @@ public class TemplateManager {
             if (vExisting.size() > 0)
                 return -1;
 
-            oStatement = connect.prepareStatement("insert into templates (displayname, template, type, user, anonym) values (?,?, ? , ?, ?);", Statement.RETURN_GENERATED_KEYS);
+            oStatement = connect.prepareStatement("insert into templates (displayname, template, type, user, anonym, omictools) values (?,?, ? , ?, ?, ?);", Statement.RETURN_GENERATED_KEYS);
             oStatement.setString(1, oTemp.getDisplayname());
             oStatement.setString(2, oTemp.getFullTemplate());
             oStatement.setInt(3, Integer.parseInt(oTemp.getTypeStr()));
@@ -135,6 +136,8 @@ public class TemplateManager {
 
             boolean bAnonym = oTemp.isAnonym() ? true : false;
             oStatement.setBoolean(5, bAnonym);
+
+            oStatement.setString(6, oTemp.getOmictoolslink());
 
             oStatement.executeUpdate();
 

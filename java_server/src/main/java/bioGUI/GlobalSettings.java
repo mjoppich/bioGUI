@@ -13,7 +13,7 @@ public class GlobalSettings {
 
     public static String m_sDBName = "bioGUI";
     public static String m_sDBUser = "ewms";
-    public static String m_sDBPW = "EwMsA0";
+    public static String m_sDBPW = "";
 
     public static Connection getDB()
     {

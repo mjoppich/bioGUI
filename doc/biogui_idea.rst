@@ -7,6 +7,8 @@ How does bioGUI work?
 *bioGUI* heavily relies on the philosophy that everything is a network.
 Especially templates are seen as network, both in their visual description but most importantly also in the execution model.
 
+.. _biogui_install_modules :
+
 Install modules
 ================
 

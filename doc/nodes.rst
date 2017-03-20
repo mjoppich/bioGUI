@@ -178,6 +178,7 @@ The ``DATADIR`` returns the path to where applications are stored, such as appli
     <env id="envip" get="IP"/>
     <env id="..." get="IP|IPv4|IPv6|LINUX|UNIX|MAC|WIN|DATADIR"/>
 
+.. _biogui_nodes_script :
 
 <SCRIPT> node
 =============
@@ -219,7 +220,7 @@ The return value is thus *some\file.pdf*.
     </window>
     <execution>
 
-    <execute program="python-prog" exec="python" param="some.py">
+    <execute program="python-prog" exec="python" param="some.py" wsl="${WSLsel}">
         <output type="COUT" color="green" to="outputstream1"/>
         <output type="CERR" color="red" to="outputstream1"/>
         <update deferred="true" target="statimg" attrib="src" value="..."/>
@@ -227,7 +228,7 @@ The return value is thus *some\file.pdf*.
         <messagebox deferred="true">This is shown when program ended.</messagebox>
     </execute>
 
-    <execute exec="cowsay" param="hello">
+    <execute exec="cowsay" param="hello" wsl="${WSLsel}">
         <output type="COUT" color="green" to="outputstream1"/>
         <output type="CERR" color="red" to="outputstream2"/>
     </execute>
@@ -241,6 +242,9 @@ Here, only the *python* program will be executed.
 In contrast, the action node with id *no_program* has no program attribute set. Therefore, all available executable nodes will be executed. Thus, both the *python* program and the *cowsay* program will be executed.
 
 Executable nodes may have several children. In general, these children may have a ``deferred`` attribute which means that these nodes are either activated *before* (``deferred="false"``) the executable is started, or *after* (``deferred="true"``).
+
+The **WSL** attribute signals *bioGUI* whether a program should be executed in WSL/Bash on Ubuntu on Windows, or not.
+If this is set to *true*, the application is executed in WSL on Windows.
 
 <OUTPUT> node
 -------------

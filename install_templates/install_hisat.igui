@@ -155,20 +155,8 @@ nc $IP $PORT << EOF
 <execution>
 <const id="bindir">${PROGDIR}/${PROG}/</const>
 
-<if id="hisat_build_inref_rel" comp="EQUALS" value1="WSLsel" value2="true">
-<relocate from="\${hisat_build_inref}" wsl="true"/>
-<else>
-<value from="hisat_build_inref"/>
-</else>
-</if>
-
-<if id="hisat_build_idx_out_rel" comp="EQUALS" value1="WSLsel" value2="true">
-<relocate from="\${hisat_build_idx_out}" wsl="true"/>
-<else>
-<value from="hisat_build_idx_out"/>
-</else>
-</if>
-
+<relocate id="hisat_build_inref_rel" from="\${hisat_build_inref}" wsl="\${WSLsel}"/>
+<relocate id="hisat_build_idx_out_rel" from="\${hisat_build_idx_out}" wsl="\${WSLsel}"/>
 
 <add id="cl_idx" sep=" ">
 <value from="hisat_build_inref_rel"/>
@@ -180,12 +168,8 @@ nc $IP $PORT << EOF
     <output type="CERR" color="red" to="outputstream2" />
   </execute>
 
-<if id="hisat_index_rel_raw" comp="EQUALS" value1="WSLsel" value2="true">
-<relocate from="\${hisat_index}" wsl="true"/>
-<else>
-<value from="hisat_index"/>
-</else>
-</if>
+
+<relocate id="hisat_index_rel_raw" from="\${hisat_index}" wsl="\${WSLsel}"/>
 
 <script id="hisat_index_rel" argv="\${hisat_index_rel_raw}">
 <![CDATA[

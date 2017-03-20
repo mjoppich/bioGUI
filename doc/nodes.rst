@@ -1,3 +1,5 @@
+.. _bioGUI_nodes_descr :
+
 ########################
 bioGUI Nodes Description
 ########################
@@ -249,6 +251,8 @@ The output is transported to the specified stream (`<STREAMBOX>/<STREAM> node`_)
 
 There also exist output nodes of type ``TCP``. These must have **host** (from where is information received) and **port** attributes set.
 Additionally nodes of type ``FILE`` directly save output to a file.
+
+.. _bioGUI_nodes_execution_update :
 
 <UPDATE> node
 -------------

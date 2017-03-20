@@ -1,3 +1,5 @@
+.. _biogui_developer_guide:
+
 ********************
 Developer Guide
 ********************

@@ -1,3 +1,5 @@
+.. _biogui_introduction:
+
 ==============================================
 bioGUI: a universal GUI for command line tools
 ==============================================

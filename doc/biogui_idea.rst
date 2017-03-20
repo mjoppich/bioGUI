@@ -1,8 +1,8 @@
 .. _bioGUI_working_mechanism :
 
-************************
-bioGUI Working mechanism
-************************
+*********************
+How does bioGUI work?
+*********************
 
 *bioGUI* heavily relies on the philosophy that everything is a network.
 Especially templates are seen as network, both in their visual description but most importantly also in the execution model.

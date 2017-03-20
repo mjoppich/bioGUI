@@ -7,6 +7,17 @@
 bioGUI documentation
 ********************
 
+Bioinformatics is a highly interdisciplinary field providing tools for researchers from many disciplines.
+Nonetheless, most methods are implemented with a command line Interface only.
+
+Using *bioGUI*, former command line-only tools can be started from a GUI, making them available to a broader scientific community.
+
+If you are a **user**, it is recommended to start reading directly from :ref:`biogui_introduction`.
+
+If you are a (bioinformatics) tools **developer** and want to learn how to build (install) templates, start reading here: :ref:`bioGUI_working_mechanism`.
+
+If the offered windows and execution nodes are not enough and you want to **extend** *bioGUI*, the *bioGUI* :ref:`biogui_developer_guide` may be of help for you.
+
 .. toctree::
     :maxdepth: 2
 

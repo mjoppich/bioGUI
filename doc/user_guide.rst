@@ -5,6 +5,12 @@
 User Guide
 ********************
 
+How to get bioGUI?
+==================
+
+Download bioGUI releases from the `github releases <http://github.com/mjoppich/bioGUI/>`_.
+Please note additional information provided in our :ref:`user_guide`.
+
 .. _download_templates:
 
 Install bioGUI

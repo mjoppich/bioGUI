@@ -7,40 +7,25 @@
 bioGUI documentation
 ********************
 
-bioGUI: a universal GUI for CLI applications
-============================================
+Bioinformatics is a highly interdisciplinary field providing tools for researchers from many disciplines.
+Nonetheless, most methods are implemented with a command line Interface only.
 
-With bioGUI developers can easily build a graphical-user-interface (GUI) for their command-line only application.
-Such a GUI then enables many more people to use their software.
-Especially in biology, the domain experts are often computer novices and have difficulties using tools written for them by bioinformaticiens/computer scientists.
+Using *bioGUI*, former command line-only tools can be started from a GUI, making them available to a broader scientific community.
 
-Who is bioGUI for?
-==================
+If you are a **user**, it is recommended to start reading directly from :ref:`biogui_introduction`.
 
-With bioGUI domain experts, which have no clue about the command line, should be enabled to use highly sophisticated tools written for them.
-bioGUI specifically aims at Windows users, as Microsoft just introduced the Windows Subsystem for Linux (WSL) with its *Bash on Ubuntu on Windows*.
-This system allows the usage of said sophisticated tools on a regular Windows computer as most people have.
-With bioGUI one also does not need any knowledge about the command line, because the task of executing a given tools becomes a point & click solution.
+If you are a (bioinformatics) tools **developer** and want to learn how to build (install) templates, start reading here: :ref:`bioGUI_working_mechanism`.
 
-What is bioGUI not?
-=======================
-
-It is not about generating a GUI by its own.
-
-How to get bioGUI?
-==================
-
-Download bioGUI releases from the `github releases <http://github.com/mjoppich/bioGUI/>`_.
-Please note additional information provided in our :ref:`user_guide`.
+If the offered windows and execution nodes are not enough and you want to **extend** *bioGUI*, the *bioGUI* :ref:`biogui_developer_guide` may be of help for you.
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+    :maxdepth: 2
 
-   user_guide.rst
-   build_wsl.rst
-   biogui_idea.rst
-   developer_guide.rst
-   nodes.rst
-   install_template_example.rst
-   licence.rst
+    introduction.rst
+    user_guide.rst
+    build_wsl.rst
+    biogui_idea.rst
+    developer_guide.rst
+    nodes.rst
+    install_template_example.rst
+    licence.rst

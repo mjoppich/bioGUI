@@ -59,11 +59,20 @@ public:
         QString sLineEditLocation = this->getQAttribute(pDOMElement, "location", "");
         if (sLineEditLocation.length() > 0)
         {
-            pLineEdit->setText(sLineEditLocation);
 
-            QFileInfo oLineEditInfo( sLineEditLocation );
+            if (sLineEditLocation.startsWith("${APPDIR}", Qt::CaseInsensitive))
+            {
+                sLineEditLocation.replace("${APPDIR}", this->m_pFactory->getApp()->getAppPath(), Qt::CaseInsensitive);
 
-            sPathHint = oLineEditInfo.absoluteDir().path();
+                QFileInfo oLineEditInfo( sLineEditLocation );
+                sPathHint = oLineEditInfo.absoluteDir().path();
+
+            } else {
+                pLineEdit->setText(sLineEditLocation);
+                QFileInfo oLineEditInfo( sLineEditLocation );
+                sPathHint = oLineEditInfo.absoluteDir().path();
+            }
+
         }
 
         QPushButton* pFileButton = new QPushButton(sValue);
@@ -71,6 +80,7 @@ public:
         bool bMultiples = (this->getQAttribute(pDOMElement, "multiples", "FALSE").compare("TRUE", Qt::CaseInsensitive) == 0);
         bool bOutput = (this->getQAttribute(pDOMElement, "output", "FALSE").compare("TRUE", Qt::CaseInsensitive) == 0);
         bool bFolder = (this->getQAttribute(pDOMElement, "folder", "FALSE").compare("TRUE", Qt::CaseInsensitive) == 0);
+
         QString sFileDelim = this->getQAttribute(pDOMElement, "multiples_delim", ";");
         QString sFileFilter = this->getQAttribute(pDOMElement, "filter", "");
 

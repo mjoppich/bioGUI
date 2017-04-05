@@ -121,7 +121,7 @@ public:
                 QModelIndex index = oSelRows.at(i);
                 qDebug() << index.row();
 
-                int iRowTemplateID = m_pTable->item(index.row(), 3)->data(Qt::EditRole).toInt();
+                int iRowTemplateID = m_pTable->item(index.row(), 4)->data(Qt::EditRole).toInt();
 
                 this->downloadTemplate(iRowTemplateID);
             }
@@ -495,23 +495,7 @@ protected:
 
         }
 
-        QDir oCurrentWorkDir = QDir::current();
-        if (!QDir::setCurrent( sDownloadDir ))
-        {
-            QMessageBox::warning(NULL, "Warning: creating dir " + sDownloadDir, "The download directory " + sDownloadDir + " is not existing.\n\n Creating it.");
-
-            QDir::current().mkdir(sDownloadDir);
-            if (! QDir::setCurrent( sDownloadDir) )
-            {
-                QMessageBox::critical(NULL, "Error: Failed creating dir " + sDownloadDir, "The download directory " + sDownloadDir + " is not existing or can not be created.\n\n Downloading templates failed.");
-        
-                QDir::setCurrent(oCurrentWorkDir.absolutePath());
-                return;                    
-
-            }
-        }
-
-        QTemporaryFile oUniqueFileName("biogui_template.XXXXXX" + sFileExtension);
+        QTemporaryFile oUniqueFileName( sDownloadDir + "biogui_template.XXXXXX" + sFileExtension);
         oUniqueFileName.open();
 
         qDebug() << sDownloadDir;
@@ -522,8 +506,6 @@ protected:
         oUniqueFileName.close();
 
         QFileInfo oInfo(sFilename);
-
-        QDir::setCurrent(oCurrentWorkDir.path());
 
         QNetworkAccessManager* pNetworkManager = new QNetworkAccessManager(this);
 
@@ -570,7 +552,6 @@ protected:
         this->querySSLURL(sURL, pNetworkManager);
 
     }
-
 
     QPushButton* m_pDownloadButton = NULL;
     QPushButton* m_pCancelButton = NULL;

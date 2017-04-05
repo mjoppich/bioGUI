@@ -25,6 +25,7 @@
 #include <QtCore/QStandardPaths>
 #include <src/app/ProcessLauncher.h>
 #include <QtCore/QCoreApplication>
+
 #include "ExecutionNode.h"
 
 class ExecutionEnvNode : public ExecutionNode {
@@ -119,82 +120,7 @@ public:
 
     std::string evaluate( std::map< std::string, ExecutionNode*>* pID2Node,
                           std::map<std::string, std::string>* pInputID2Value,
-                          std::map<std::string, WidgetFunctionNode*>* pInputID2FunctionWidget) {
-
-
-        bool bWSL = this->checkWSL(m_sToWSL, pID2Node, pInputID2Value, pInputID2FunctionWidget);
-
-        std::string sResult;
-
-        if (m_sGet.compare("IP", Qt::CaseInsensitive) == 0)
-        {
-
-            return this->getIPaddress(QAbstractSocket::AnyIPProtocol).toString().toStdString();
-
-        }
-
-        if (m_sGet.compare("IPv4", Qt::CaseInsensitive) == 0)
-        {
-
-            return this->getIPaddress(QAbstractSocket::IPv4Protocol).toString().toStdString();
-
-        }
-
-        if (m_sGet.compare("IPv6", Qt::CaseInsensitive) == 0)
-        {
-            return this->getIPaddress(QAbstractSocket::IPv6Protocol).toString().toStdString();
-        }
-
-        if (m_sGet.compare("LINUX", Qt::CaseInsensitive) == 0)
-        {
-
-            return (this->getOS().compare("LINUX") == 0) ? "True" : "False";
-
-        }
-
-        if (m_sGet.compare("UNIX", Qt::CaseInsensitive) == 0)
-        {
-            return ((this->getOS().compare("LINUX") == 0) || (this->getOS().compare("MAC") == 0)) ? "True" : "False";
-
-        }
-
-        if (m_sGet.compare("MAC", Qt::CaseInsensitive) == 0)
-        {
-            return (this->getOS().compare("MAC") == 0) ? "True" : "False";
-        }
-
-        if (m_sGet.compare("WIN", Qt::CaseInsensitive) == 0)
-        {
-            return (this->getOS().compare("WIN") == 0) ? "True" : "False";
-        }
-
-        if (m_sGet.compare("OS", Qt::CaseInsensitive) == 0)
-        {
-            return this->getOS();
-        }
-
-        if (m_sGet.compare("DATADIR", Qt::CaseInsensitive) == 0)
-        {
-
-            if (!bWSL)
-                return QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation).toStdString();
-
-            // we are on WSL
-            ProcessLauncher* pLauncher = new ProcessLauncher("echo", "~", true);
-            QString sQHome = pLauncher->startBlocking().trimmed();
-
-            // exec in WSL "echo ~"
-            std::string sHome = sQHome.toStdString() + "/";
-
-            sHome += ".local/share/" + QCoreApplication::applicationName().toStdString();
-
-            return sHome;
-
-        }
-
-        return sResult;
-
-    }
+                          std::map<std::string, WidgetFunctionNode*>* pInputID2FunctionWidget);
 
 protected:
 

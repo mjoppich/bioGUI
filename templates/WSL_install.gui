@@ -29,7 +29,7 @@
   </group>
 
   <group id="templpath_sel" checkable="true" title="Store template?">
-    <filedialog id="templpath" output="true" filter="*.gui" location="./templates/">Save Template to</filedialog>
+       <filedialog id="templpath" output="true" filter="*.gui" location="${APPDIR}/templates/">Save Template to</filedialog>
   </group>
 
 
@@ -56,6 +56,11 @@
 
 <env id="localip" get="IPv4"/>
 <env id="loc_appdata" get="DATADIR" wsl="WSLsel"/>
+
+<add id="loc_appdir" sep="/">
+<env get="APPDIR" wsl="WSLsel"/>
+<const>templates/</const>
+</add>
 
 <if id="user_instpath" comp="EQUALS" value1="user_sel_instpath" value2="data">
 <value from="loc_appdata"/>
@@ -87,17 +92,21 @@
 
 <add id="template_path" sep="">
 <if comp="EQUALS" value1="templpath_sel" value2="true">
-<script argv="${templpath}">
+<script argv="${templpath},${loc_appdir}">
 <![CDATA[
-function evaluate(arg1)
+function evaluate(gvnPath, appdir)
 
         ext=".gui"
-	
-	if ( string.sub(arg1,-string.len(ext))==ext ) then
-		return(arg1)
-	else
-		return(arg1 .. ".gui")
-	end
+
+        if ( string.sub(gvnPath, math.min(string.len(gvnPath), string.len(appdir)))~=appdir) then
+                gvnPath = appdir .. gvnPath
+        end
+        
+        if ( string.sub(gvnPath,-string.len(ext))==ext ) then
+                return(gvnPath)
+        else
+                return(gvnPath .. ".gui")
+        end
 end
 ]]>
 </script>

@@ -58,6 +58,7 @@ public:
 
         QLayout* pLayout = new QVBoxLayout();
 
+
         m_pDownloadButton = new QPushButton("Download");
         m_pCancelButton = new QPushButton("Cancel");
         QWidget* pButtonWidget = new QWidget();
@@ -69,6 +70,9 @@ public:
         pLayout->setAlignment(Qt::AlignLeft);
 
         m_pTable = this->setupTable();
+
+        QLabel* pHints = new QLabel("Hint: Double-click header to sort by column!");
+        pLayout->addWidget(pHints);
         pLayout->addWidget(m_pTable);
 
         QLabel* pLabel = new QLabel("Filter: ");
@@ -150,14 +154,19 @@ public:
         pColumnHeader = new QTableWidgetItem("Template Author");
         pTable->setHorizontalHeaderItem(2, pColumnHeader);
 
-        pColumnHeader = new QTableWidgetItem("id");
+        pColumnHeader = new QTableWidgetItem("Category");
         pTable->setHorizontalHeaderItem(3, pColumnHeader);
 
-        pColumnHeader = new QTableWidgetItem("filename");
+        pColumnHeader = new QTableWidgetItem("id");
         pTable->setHorizontalHeaderItem(4, pColumnHeader);
 
-        pTable->setColumnHidden(3, true);
+        pColumnHeader = new QTableWidgetItem("filename");
+        pTable->setHorizontalHeaderItem(5, pColumnHeader);
+
+
+
         pTable->setColumnHidden(4, true);
+        pTable->setColumnHidden(5, true);
 
         QHeaderView* pHView = pTable->horizontalHeader();
         pHView->setSectionResizeMode(QHeaderView::Interactive);
@@ -282,9 +291,39 @@ protected:
         pTable->setItem(iCurrentRow, 2, new QStringTableWidgetItem( vElems.at(4) ));
 
         //id
-        pTable->setItem(iCurrentRow, 3, new QStringTableWidgetItem( vElems.at(0) ));
+        pTable->setItem(iCurrentRow, 4, new QStringTableWidgetItem( vElems.at(0) ));
         //filename
-        pTable->setItem(iCurrentRow, 4, new QStringTableWidgetItem( "" ));
+        pTable->setItem(iCurrentRow, 5, new QStringTableWidgetItem( "" ));
+
+
+        /*
+         * CATEGORIES
+         */
+        QString sCategories = "";
+
+        QString sAllCats = vElems.at(5);
+        QStringList aCats = sAllCats.split(",");
+
+        for (int i = 0; i < aCats.size(); ++i)
+        {
+            int iCatID = aCats.at(i).toInt();
+
+            std::map<int, QString>::iterator oIt = m_mID2Category.find( iCatID );
+
+            if ((oIt != m_mID2Category.end()) && (i > 0))
+            {
+                sCategories += ", ";
+            }
+
+            if (oIt != m_mID2Category.end())
+            {
+
+                sCategories += oIt->second;
+
+            }
+        }
+
+        pTable->setItem(iCurrentRow, 3, new QStringTableWidgetItem( sCategories ));
 
         QString sID = vElems.at(0);
         int iID = sID.toInt();
@@ -295,6 +334,73 @@ protected:
     void populateTable(QTableWidget* pTable)
     {
 
+        this->getAvailableCategories();
+        this->fetchAvailableTemplates(pTable);
+
+    }
+
+    void getAvailableCategories()
+    {
+
+
+        m_mID2Category.clear();
+
+        QNetworkAccessManager* pNetworkManager = new QNetworkAccessManager(this);
+
+        connect(pNetworkManager, &QNetworkAccessManager::finished, [this] (QNetworkReply* pReply) {
+
+            qDebug() << pReply->errorString();
+            qDebug() << pReply->isRunning();
+            if (! pReply->isReadable() )
+            {
+                qDebug() << "not readable";
+                return;
+            }
+
+            QByteArray oReplyData = pReply->readAll();
+
+            QString oReplyLines = QString(oReplyData);
+
+            if (oReplyLines.size() == 0)
+            {
+                QMessageBox::critical(this, "The server does not respond", "The application received an empty result. Error code: " + pReply->errorString());
+
+                return;
+            }
+
+            qDebug() << oReplyLines;
+
+            QStringList vLines = oReplyLines.split("\n");
+
+            for (int i = 0; i < vLines.size(); ++i)
+            {
+
+                QString sLine = vLines.at(i);
+                QStringList aLine = sLine.split("\t");
+
+                if (aLine.length() != 2)
+                {
+                    continue;
+                }
+
+                int iID = aLine[0].toInt();
+                QString sCategory = aLine[1];
+
+                m_mID2Category.insert(std::pair<int, QString>(iID, sCategory));
+            }
+
+        });
+
+        QString sQueryURL = m_sServerLocation + "/list_categories.php";
+
+        qDebug() << sQueryURL;
+
+        this->querySSLURL(sQueryURL, pNetworkManager);
+
+    }
+
+    void fetchAvailableTemplates( QTableWidget* pTable )
+    {
         m_mID2Type.clear();
 
         QNetworkAccessManager* pNetworkManager = new QNetworkAccessManager(this);
@@ -340,8 +446,6 @@ protected:
         qDebug() << sQueryURL;
 
         this->querySSLURL(sQueryURL, pNetworkManager);
-
-
     }
 
     void querySSLURL(QString& sURL, QNetworkAccessManager* pNetworkManager)
@@ -478,6 +582,7 @@ protected:
     QString m_sServerLocation = "";
 
     std::map<int, int> m_mID2Type;
+    std::map<int, QString> m_mID2Category;
 
 
 

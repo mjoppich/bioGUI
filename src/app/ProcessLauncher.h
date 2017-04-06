@@ -41,6 +41,7 @@
     #define __BIOGUI__64
 #endif
 
+/*
 
 class ProcessThread : public ExecuteThread
 {
@@ -118,6 +119,8 @@ protected:
 
 };
 
+*/
+
 class ProcessLauncher : public QObject
 {
     Q_OBJECT
@@ -132,7 +135,7 @@ public:
         {
             m_pProcess = new QProcess();
         } else {
-            m_pThread = NULL;//new ProcessThread(m_sProgram + " " + m_sParam);
+            //m_pThread = NULL;//new ProcessThread(m_sProgram + " " + m_sParam);
             m_pProcess = new QProcess();
         }
     }
@@ -162,6 +165,8 @@ public:
         return m_pProcess;
     }
 
+    /*
+
     ExecuteThread* getThread()
     {
         return NULL;
@@ -171,6 +176,8 @@ public:
 
         return NULL;
     }
+
+    */
 
     QString startBlocking(uint32_t iWaitMSec = 10000)
     {
@@ -259,23 +266,23 @@ public:
         this->connect(m_pProcess, static_cast<void(QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished),
                            [pProcess, this](int exitCode, QProcess::ExitStatus exitStatus){
 
-                               std::cerr << "Exit Code: " << exitCode << std::endl;
-                               std::cerr << "Exit Status: " << exitStatus << std::endl;
-
-                               std::string sError = pProcess->errorString().toStdString();
-                               std::cerr << "Error: " << sError << std::endl;
-
-                               std::string sProgram = pProcess->program().toStdString();
-                               std::cerr << "Program: " << sProgram << std::endl;
+                                LOGERROR( "Exit Code: " + std::to_string(exitCode) );
+                                LOGERROR( "Exit Status: " + std::to_string(exitStatus) );
+                                LOGERROR( "Error: " + pProcess->errorString().toStdString() );
+                                LOGERROR( "Program: " + pProcess->program().toStdString() );
 
                                for (int i = 0; i < pProcess->arguments().size(); ++i)
                                {
                                    std::string sArgument = pProcess->arguments().at(i).toStdString();
 
                                    std::cerr << "Argument " << i << " : " << sArgument << std::endl;
+
+                                   LOGERROR( "Argument " + std::to_string(i) + ": " + pProcess->arguments().at(i).toStdString() );
+
                                }
 
-                               std::cout << "finished: " << pProcess << std::endl;
+                               LOGERROR( "Process ID: " + std::to_string(pProcess->processId()) );
+                               LOGERROR( "Process: " + std::to_string((uint64_t) pProcess) );
 
                                emit this->finished();
                            });
@@ -294,8 +301,10 @@ public slots:
 
     void executionFinished()
     {
+        /*
         if (m_pThread != NULL)
             m_pThread->deleteLater();
+            */
 
         if (m_pProcess != NULL)
             m_pProcess->deleteLater();
@@ -389,7 +398,7 @@ protected:
 
 
     QProcess* m_pProcess = NULL;
-    ProcessThread* m_pThread = NULL;
+    //ProcessThread* m_pThread = NULL;
     bool m_bWindowsProcNoHandle = false;
     QString m_sProgram;
     QString m_sParam;

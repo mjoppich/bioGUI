@@ -259,7 +259,19 @@ public:
     {
 
         ExecutionNetwork* pNetwork = NULL;
-        ExecutionRunThread* pThread = NULL;
+
+        if (m_pExecThread != NULL)
+        {
+            LOGERROR("QUIT");
+            m_pExecThread->quit();
+            LOGERROR("WAIT");
+            m_pExecThread->wait();
+            LOGERROR("DELETE");
+            m_pExecThread->deleteLater();
+
+            m_pExecThread = NULL;
+        }
+
 
         this->disableActions();
 
@@ -267,13 +279,18 @@ public:
         std::string sCurrentFilePath = m_pWindowParser->getCurrentDocumentPath();
         pParseExecution->initializeFile(sCurrentFilePath);
 
-        pThread = new ExecutionRunThread(m_pWindowParser, pParseExecution, sProgramToRun);
+        m_pExecThread = new ExecutionRunThread(m_pWindowParser, pParseExecution, sProgramToRun);
+        bioGUIapp* pApp = this;
 
-        this->connect(pThread, &QThread::started, pThread, &ExecutionRunThread::startExecution);
-        this->connect(pThread, &ExecutionRunThread::executionFinished, this, &bioGUIapp::programFinished);
-        this->connect(pThread, &ExecutionRunThread::executionFinished, pThread, &ExecutionRunThread::deleteLater);
+        this->connect(m_pExecThread, &QThread::started, m_pExecThread, &ExecutionRunThread::startExecution);
+        this->connect(m_pExecThread, &ExecutionRunThread::executionFinished, [pApp] () {
 
-        pThread->start();
+            pApp->programFinished();
+
+        });
+        //this->connect(pThread, &ExecutionRunThread::executionFinished, pThread, &ExecutionRunThread::deleteLater);
+
+        m_pExecThread->start();
 
     }
 
@@ -378,6 +395,10 @@ protected:
     XMLParserWindow* m_pWindowParser = NULL;
 
     QString m_sDownloadServerLocation = "";
+
+
+    /** TEST PLAYGROUND **/
+    ExecutionRunThread* m_pExecThread = NULL;
 
 
 };

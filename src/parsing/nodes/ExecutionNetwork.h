@@ -132,6 +132,8 @@ public:
 
         if (oIt == m_vExecNodes.end())
         {
+            LOGERROR("EXECUTION FINISHED!")
+
             emit executionFinished();
             return 0;
         }

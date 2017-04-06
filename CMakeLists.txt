@@ -81,7 +81,7 @@ if (WIN32)
     message(STATUS ">>> WIN32")
     set(ENV{LUA_DIR} "D:/libraries/lua-5.3.3/;C:/lua53/")
     message(STATUS "IN MINGW")
-    set(Qt5_DIR "C:/Qt/Qt5.7.0/5.7/mingw53_32;C:/Qt/5.7/mingw53_32")
+    set(Qt5_DIR "C:/Qt/5.8/mingw53_32;C:/Qt/5.8/mingw53_32")
     set(ENV{OPENSSL_ROOT_DIR} "C:/OpenSSL-Win32/lib/")
 
 endif()

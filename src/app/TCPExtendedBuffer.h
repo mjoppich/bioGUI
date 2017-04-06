@@ -77,7 +77,7 @@ public:
     ~TCPExtendedBuffer()
     {
 
-        this->stopTransmissions();
+        //this->stopTransmissions();
 
         m_pServer->deleteLater();
 

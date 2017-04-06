@@ -223,6 +223,8 @@ public:
 
             } else {
 
+                LOGERROR("Deferred Output Node");
+
                 pTextEdit->finishProcess(pProcess);
                 pTextEdit->finishThread(pThread);
 

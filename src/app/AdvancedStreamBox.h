@@ -257,8 +257,10 @@ public:
             {
 
                 ExtendedProcessBuffer* pBuffer = oIt->second.at(i);
-                pBuffer->transferText("\n");
 
+                LOGERROR("Deleting PROC Buffer: " + std::to_string((uint64_t) pBuffer));
+
+                pBuffer->transferText("\n");
                 pBuffer->deleteLater();
 
             }
@@ -272,7 +274,10 @@ public:
     void finishThread( ExecuteThread* pThread )
     {
 
-        std::cout << "finishing thread: " << pThread << std::endl;
+        LOGERROR("Finishing thread: " + std::to_string((uint64_t) pThread));
+
+        if (pThread == NULL)
+            return;
 
 
         std::map<ExecuteThread*, std::vector<ExtendedThreadBuffer*> >::iterator oJt = m_mThreadToBuffer.find(pThread);
@@ -466,7 +471,9 @@ protected slots:
     void receiveText(QString sString, QColor oColor, QString sStreamID)
     {
 
-        std::cout << "received: " << sString.toStdString() << " for stream " << sStreamID.toStdString()  << std::endl;
+        LOGERROR("AdvancedStreamBox received: " + std::to_string((uint64_t) this) + " for STREAM: " + sStreamID.toStdString());
+        LOGERROR( sString.toStdString() );
+        LOGERROR("RECEIVE END");
 
         AdvancedListWidgetItem* pLastStream = this->getLastItemForStream(&sStreamID);
 

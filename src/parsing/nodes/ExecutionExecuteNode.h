@@ -137,12 +137,12 @@ public:
 
         ProcessLauncher* pLauncher = new ProcessLauncher(QString(sProgram.c_str()), QString(sCLArg.c_str()), bWSL);
 
-        this->evaluateChildren(pID2Node, pInputID2Value, pInputID2FunctionWidget, pLauncher->getProcess(), pLauncher->getThread(), false);
+        this->evaluateChildren(pID2Node, pInputID2Value, pInputID2FunctionWidget, pLauncher->getProcess(), NULL, false); //
 
         pLauncher->connect(pLauncher, &ProcessLauncher::finished,
                 [pLauncher, pID2Node, pInputID2Value, pInputID2FunctionWidget, bEmitSignal, this](){
 
-                    this->evaluateChildren(pID2Node, pInputID2Value, pInputID2FunctionWidget, pLauncher->getProcess(), pLauncher->getThread(), true);
+                    this->evaluateChildren(pID2Node, pInputID2Value, pInputID2FunctionWidget, pLauncher->getProcess(), NULL, true);
                     pLauncher->deleteLater();
 
                     // calculation finished!

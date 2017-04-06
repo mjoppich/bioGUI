@@ -45,6 +45,7 @@ public:
 
         if (this->m_pParentThread != NULL)
         {
+            m_pParentThread->pThread->deleteLater();
             delete m_pParentThread;
         }
 

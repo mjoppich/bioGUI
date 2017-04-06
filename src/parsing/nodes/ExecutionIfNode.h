@@ -155,9 +155,10 @@ public:
          * Any method that needs value2
          *
          */
-        std::cerr << "Val 1: " << sValue1 << std::endl;
-        std::cerr << "Val 2: " << sValue2 << std::endl;
-        std::cerr << "Evaluating else node: " << m_bEvaluateElse << std::endl;
+        LOGERROR("IF ID: " + m_sID);
+        LOGERROR("Val 1: " + sValue1);
+        LOGERROR("Val 2: " + sValue2);
+        LOGERROR("Go into Else? " + std::to_string(m_bEvaluateElse));
 
         sReturn = this->evaluateChildren(pID2Node, pInputID2Value, pInputID2FunctionWidget, bEmitSignal);
 

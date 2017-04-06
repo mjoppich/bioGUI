@@ -4,7 +4,7 @@
 How does bioGUI work?
 *********************
 
-*bioGUI* heavily relies on the philosophy that everything is a network.
+*bioGUI* relies on the philosophy that the visual appearance as well as the assembly of the command line arguments can be represented as a network.
 Especially templates are seen as network, both in their visual description but most importantly also in the execution model.
 
 .. _biogui_install_modules :
@@ -145,7 +145,7 @@ Finally we can send the template to *bioGUI*, if an IP address and port have bee
 
 Make sure to use ``nc`` to send the content, as this will not work on Mac OS otherwise.
 In order to customize the template inbetween the ``EOF``, bash variables to be replaced must be written as ``${var-name}``.
-This conflicts with how *bioGUI* expects variables. Therefore make sure to escape the backslaash where you want to access variables in the *bioGUI* template!
+This conflicts with how *bioGUI* expects variables. Therefore, make sure to escape the backslaash where you want to access variables in the *bioGUI* template!
 
 bioGUI Templates
 ================
@@ -248,7 +248,7 @@ The idea is again based on a network of predefined nodes.
 The nodes can either be visual components, accessed by their respective **id**, or :ref:`biogui_execution_nodes` .
 
 Upon starting an application with *bioGUI*, the execution network is responsible to construct the command line arguments with which the target application is called.
-Therefore all executable nodes in the ``<execution>`` part are searched and *evaluated* one after the other (if there exist several).
+Therefore, all executable nodes in the ``<execution>`` part are searched and *evaluated* one after the other (if there exist several).
 Since execution must be started via an ``action`` visual element, which can have a *program* attribute, this allows to specify which executable nodes are executed: if the ``program`` attribute is set, this must match with the ``program`` attribute of the executable node.
 
 Finally an executable node is executed. Upon this the command line arguments are assembled. This is shown exemplarily in the below figure:

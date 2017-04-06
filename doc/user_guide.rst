@@ -33,7 +33,7 @@ Mac OS
 
 Download and open the provided dmg package. You can simply drag and drop the bioGUI.app into your Applications folder.
 In order to productively use bioGUI, it may be required to install the OSX command line tools as well as brew.
-Most (install) templates will require you to have wget and netcat install. Using brew installation is simple:
+Most (install) templates will require you to have wget and netcat installed. Using brew installation is simple:
 
 .. code:: bash
     
@@ -46,9 +46,10 @@ Downloading Templates
 
 
 Part of *bioGUI* is a user-friendly accessibility of templates for various programs.
-Therefore application developers and sophisticated users can upload their templates to our website in order to make their template available to other users.
+Therefore, application developers and sophisticated users can upload their templates to our website in order to make their template available to other users.
 The user has to submit his name, eMail address, a template name and the template itself.
 He can select whether he wants to be an anonymous user (user name is always hidden) and whether this is an installation script (which downloads and creates the \ac{GUI} template specifically for this installed application) or a regular template.
+Additionally, categories for the template can be supplied, e.g. whether this is a template for a sequencing tool, or proteomics.
 A screenshot of the template submission is shown below.
 
 .. image:: ./images/templates/template_submission.png
@@ -63,7 +64,7 @@ Available templates are only shown and can be downloaded via the *bioGUI* applic
 Within *bioGUI*, clicking the *Download Templates* button, a new dialog window opens showing a list of available templates.
 Columns can be sorted by double clicking the header, and using the search only templates which contain the searched words are shown.
 Upon selecting one or multiple (keep ctrl-key down while clicking) rows and clicking the *Download* button, those templates are downloaded and available for the user.
-Since it is possible to copy or alter templates, new templates are created at all times (no information is lost).
+Since it is possible to copy or alter templates, *bioGUI* never overwrites existing templates, but will create a new copy.
 
 .. image:: ./images/templates/biogui_selection.png
    :scale: 50

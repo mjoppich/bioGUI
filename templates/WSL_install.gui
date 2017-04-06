@@ -84,14 +84,14 @@
 <const>&quot;</const>
 </add>
 <value from="addtopath"/>
-<if comp="EQUALS" value1="templpath_sel" value2="true" sep=" ">
+<if id="templpath_sel_if" comp="EQUALS" value1="templpath_sel" value2="true" sep=" ">
 <value from="localip"/>
 <const>33333</const>
 </if>
 </add>
 
 <add id="template_path" sep="">
-<if comp="EQUALS" value1="templpath_sel" value2="true">
+<if id="script_else" comp="EQUALS" value1="templpath_sel" value2="true">
 <script argv="${templpath},${loc_appdir}">
 <![CDATA[
 function evaluate(gvnPath, appdir)
@@ -121,7 +121,7 @@ end
     <output id="outcout" type="COUT" color="green" to="outputstream1" />
 	<output id="outcout2" type="CERR" color="red" to="outputstream2" />
 	<output type="TCP" host="" port="33333" color="blue" to="savetemplate" />
-	<output deferred="true" type="FILE" from="template_path" to="savetemplate" />
+	<output deferred="true" type="FILE" from="${template_path}" to="savetemplate" />
   </execute>
    
 </execution>

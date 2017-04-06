@@ -29,7 +29,7 @@ Step 2: Setup WSL
 
 Despite the interest to hide any command line as much as possible from the user, the following initial setup can not be automised.
 First a Command Prompt or better PowerShell must be started.
-Therefore simply search for the *Windows PowerShell* in the start menu.
+Search for the *Windows PowerShell* in the start menu.
 
 .. image:: ./images/wsl/powershell.PNG
    :scale: 30
@@ -41,8 +41,8 @@ However, before the download starts, first the user has to acknowledge that he w
    :scale: 30
 
 Finally, after *WSL* has been downloaded and extracted, *WSL* has to create a linux user account.
-Therefore choose a username and password you can easily remember.
-Remembering the password is essential here it will be needed for any installation one is performing on *WSL*.
+It is recommended to choose a username and password you can easily remember.
+Remembering the password is essential here, as it will be needed for any installation one is performing on *WSL*.
 
 .. image:: ./images/wsl/powershell_setup_user.PNG
    :scale: 30

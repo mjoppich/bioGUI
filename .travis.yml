@@ -9,9 +9,9 @@ before_install:
  - sudo apt-get install -y build-essential git libssl-dev liblua5.2-dev libgl1-mesa-dev wget libfontconfig1 libdbus-1-dev
  - sudo apt-get install -y libglu1-mesa-dev
  - sudo apt-get purge cmake
- - mkdir -p ~/cmake/ && cd ~/cmake && wget https://cmake.org/files/v3.7/cmake-3.7.0-Linux-x86_64.tar.gz
- - tar xf cmake-3.7.0-Linux-x86_64.tar.gz
- - cd cmake-3.7.0-Linux-x86_64
+ - mkdir -p ~/cmake/ && cd ~/cmake && wget https://cmake.org/files/v3.7/cmake-3.7.2.tar.gz
+ - tar xf cmake-3.7.2.tar.gz
+ - cd cmake-3.7.2
  - ./configure
  - sudo make install
  - cd ~

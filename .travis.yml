@@ -29,6 +29,6 @@ before_install:
 before_script:
   - mkdir build
   - cd build
-  - PATH=/usr/local/qt/5.7/gcc_64/bin/:$PATH cmake -DCMAKE_CXX_COMPILER=/usr/bin/g++-4.8 -DCMAKE_C_COMPILER=/usr/bin/gcc-4.8..
+  - PATH=/usr/local/qt/5.7/gcc_64/bin/:$PATH cmake ..
 
 script: make

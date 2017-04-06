@@ -16,11 +16,12 @@ before_install:
  - ./configure
  - sudo make install
  - cd ~
+ - pwd
  - wget http://download.qt.io/official_releases/qt/5.7/5.7.0/qt-opensource-linux-x64-5.7.0.run
  - chmod u+x qt-opensource-linux-x64-5.7.0.run
- - sudo ./qt-opensource-linux-x64-5.7.0.run --verbose -platform minimal --script ~/mjoppich/bioGUI/silent_qt_install.qs
+ - sudo ./qt-opensource-linux-x64-5.7.0.run --verbose -platform minimal --script /home/travis/build/mjoppich/bioGUI/silent_qt_install.qs
  - export PATH=/usr/local/qt/5.7/gcc_64/bin/:$PATH
- - cd ~/mjoppich/bioGUI
+ - cd /home/travis/build/mjoppich/bioGUI
  
 
 before_script:

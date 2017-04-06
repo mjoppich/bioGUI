@@ -7,8 +7,7 @@ compiler: gcc
 before_install:
  - pwd
  - sudo apt-get -qq update
- - sudo apt-get install -y build-essential git libssl-dev liblua5.2-dev libgl1-mesa-dev wget libfontconfig1 libdbus-1-dev
- - sudo apt-get install -y libglu1-mesa-dev
+ - sudo apt-get install -y build-essential git libssl-dev liblua5.2-dev libgl1-mesa-dev wget libfontconfig1 libdbus-1-dev libglu1-mesa-dev g++-4.8 gcc-4.8
  - sudo apt-get purge cmake
  - mkdir -p ~/cmake/ && cd ~/cmake && wget https://cmake.org/files/v3.7/cmake-3.7.2.tar.gz
  - tar xf cmake-3.7.2.tar.gz
@@ -29,6 +28,6 @@ before_install:
 before_script:
   - mkdir build
   - cd build
-  - PATH=/usr/local/qt/5.7/gcc_64/bin/:$PATH cmake ..
+  - PATH=/usr/local/qt/5.7/gcc_64/bin/:$PATH cmake -DCMAKE_CXX_COMPILER=/usr/bin/g++-4.8 -DCMAKE_C_COMPILER=/usr/bin/gcc-4.8..
 
 script: make

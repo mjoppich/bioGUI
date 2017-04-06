@@ -1,0 +1,20 @@
+language: cpp
+
+compiler: gcc
+
+before_install:
+ - sudo apt-get apt-get -qq update
+ - sudo apt-get install -qq -y install build-essential git cmake libssl-dev liblua5.3-dev libgl1-mesa-dev wget libfontconfig1 libdbus-1-dev
+ - sudo apt-get install -qq -y install libglu1-mesa-dev
+ - wget http://download.qt.io/official_releases/qt/5.7/5.7.0/qt-opensource-linux-x64-5.7.0.run
+ - chmod u+x qt-opensource-linux-x64-5.7.0.run
+ - ./qt-opensource-linux-x64-5.7.0.run --verbose -platform minimal --script ./silent_qt_install.qs
+ - export PATH=/usr/local/qt/5.7/gcc_64/bin/:$PATH
+ 
+
+before_script:
+  - mkdir build
+  - cd build
+  - cmake ..
+
+script: make

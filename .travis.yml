@@ -5,6 +5,7 @@ sudo: required
 compiler: gcc
 
 before_install:
+ - pwd
  - sudo apt-get -qq update
  - sudo apt-get install -y build-essential git libssl-dev liblua5.2-dev libgl1-mesa-dev wget libfontconfig1 libdbus-1-dev
  - sudo apt-get install -y libglu1-mesa-dev
@@ -17,8 +18,9 @@ before_install:
  - cd ~
  - wget http://download.qt.io/official_releases/qt/5.7/5.7.0/qt-opensource-linux-x64-5.7.0.run
  - chmod u+x qt-opensource-linux-x64-5.7.0.run
- - sudo ./qt-opensource-linux-x64-5.7.0.run --verbose -platform minimal --script ./silent_qt_install.qs
+ - sudo ./qt-opensource-linux-x64-5.7.0.run --verbose -platform minimal --script ~/mjoppich/bioGUI/silent_qt_install.qs
  - export PATH=/usr/local/qt/5.7/gcc_64/bin/:$PATH
+ - cd ~/mjoppich/bioGUI
  
 
 before_script:

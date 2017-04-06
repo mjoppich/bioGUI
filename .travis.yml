@@ -1,6 +1,5 @@
 language: cpp
 
-dist: trusty
 sudo: required
 
 compiler: gcc
@@ -11,7 +10,7 @@ before_install:
  - sudo apt-get install -y libglu1-mesa-dev
  - wget http://download.qt.io/official_releases/qt/5.7/5.7.0/qt-opensource-linux-x64-5.7.0.run
  - chmod u+x qt-opensource-linux-x64-5.7.0.run
- - ./qt-opensource-linux-x64-5.7.0.run --verbose -platform minimal --script ./silent_qt_install.qs
+ - sudo ./qt-opensource-linux-x64-5.7.0.run --verbose -platform minimal --script ./silent_qt_install.qs
  - export PATH=/usr/local/qt/5.7/gcc_64/bin/:$PATH
  
 

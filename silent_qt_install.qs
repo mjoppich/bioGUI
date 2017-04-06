@@ -27,7 +27,7 @@ Controller.prototype.ComponentSelectionPageCallback = function() {
     var widget = gui.currentPageWidget();
 
     widget.deselectAll();
-    widget.selectComponent("qt.57.gcc_64");
+    widget.selectComponent("qt.58.gcc_64");
 
     gui.clickButton(buttons.NextButton);
 }
@@ -44,6 +44,12 @@ Controller.prototype.StartMenuDirectoryPageCallback = function() {
 Controller.prototype.ReadyForInstallationPageCallback = function()
 {
     gui.clickButton(buttons.NextButton);
+}
+
+Controller.prototype.PerformInstallationPageCallback = function()
+{
+   gui.clockButton(buttons.CommitButton);
+
 }
 
 Controller.prototype.FinishedPageCallback = function() {

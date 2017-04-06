@@ -91,7 +91,7 @@ if (UNIX AND NOT APPLE)
     message(STATUS ">>> Linux")
 
     set(Qt5_DIR "")
-    LIST(APPEND Qt5_DIR "~/Qt/5.8/gcc_64/" "~/Qt/5.7/gcc_64/")
+    LIST(APPEND Qt5_DIR "~/Qt/5.8/gcc_64/" "~/Qt/5.7/gcc_64/" "/usr/local/qt/5.7/gcc_64/")
 
     set(ENV{OPENSSL_ROOT_DIR} "/home/users/joppich/libs/openssl/lib/")
     set(ENV{LUA_DIR} "/home/users/joppich/libs/lua/")

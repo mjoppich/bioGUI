@@ -1,0 +1,164 @@
+#! Install graphmap (git)
+
+echo "Dependencies: unzip"
+if [ ! "$2" = "" ]; then
+	echo "Installing dependencies"
+	echo $2 | sudo -S apt-get update
+	echo $2 | sudo -S apt-get -y install git
+
+else
+	echo "No sudo password, not installing dependencies"
+fi
+
+## set all variables
+PROG=graphmap
+
+PROGDIR=$1
+if [ -z "${PROGDIR}" ]; then
+	PROGDIR=~/bioGUI/progs/
+fi
+
+PROGDIRESC=$(echo $PROGDIR | sed 's/ /\\ /g')
+
+
+## create progdir
+mkdir -p "$PROGDIR/$PROG"
+
+#install prog
+cd "$PROGDIR/"
+
+git clone https://github.com/isovic/graphmap.git $PROG
+cd $PROG
+make modules
+make
+
+if [ "$(uname)" == "Darwin" ]; then
+    GRAPHMAP_BIN_DIR_ESC="$PROGDIRESC/$PROG/bin/Mac/"
+    GRAPHMAP_BIN_DIR="$PROGDIR/$PROG/bin/Mac/"
+else
+    GRAPHMAP_BIN_DIR_ESC="$PROGDIRESC/$PROG/bin/Linux-x64/"
+    GRAPHMAP_BIN_DIR="$PROGDIR/$PROG/bin/Linux-x64/"
+fi
+
+if [ $# -gt 2 ]; then
+
+	if [ "$3" = "1" ]; then
+
+		if ! grep -q "$GRAPHMAP_BIN_DIR" ~/.bashrc; then
+			echo "export PATH=\"$GRAPHMAP_BIN_DIR:\$PATH\" " >> ~/.bashrc;
+		fi
+	fi
+
+fi
+
+if [ $# -eq 5 ]; then
+
+IP=$4
+PORT=$5
+
+nc $IP $PORT << EOF
+
+<template description="graphmap aligner" title="graphmap">
+<window title="graphmap aligner">
+<vgroup>
+    <group title="Input Files">
+        <grid cols="2">
+            <label>Run in WSL on Windows?</label><checkbox id="WSLsel" value="true" selectonwindows="true">Run in WSL?</checkbox>
+            <label>Reference input Index</label> <filedialog id="graphmap_index" output="false" folder="false">Select hisat2 index</filedialog>
+            <label>Input reads</label> <filedialog id="graphmap_reads" output="false" folder="false">Select output file</filedialog>
+            <label>Output Alignment</label> <filedialog id="graphmap_output" output="true" folder="false">Select output file</filedialog>
+        </grid>
+    </group>
+    <group title="Program Options">
+        <grid cols="2">
+            <label>Number of Threads</label><input id="graphmap_number_threads"></input>
+            <label>Error Rate</label> <input id="graphmap_error_rate"></input>
+        </grid>
+    </group>
+    <group title="Alignment Mode">
+        <group title="Options">
+            <grid cols="2">
+                <label>Transcriptome Alignments</label><filedialog id="graphmap_transcriptome" output="false" folder="false">Input GTF</filedialog>
+                <label>Alignment Algorithm</label><combobox id="graphmap_alignment_algorithm" selected="anchor">
+                    <comboitem value="anchor">Anchored alignment with end-to-end extension</comboitem>
+                    <comboitem value="sg">Myers bit-vector approach</comboitem>
+                    <comboitem value="sggotoh">Semiglobal gotoh with affine gaps</comboitem>
+                    <comboitem value="anchorgotoh">Gotoh global</comboitem>
+                </combobox>
+            </grid>
+        </group>
+        <group title="Command-line flags">
+            <grid cols="2">
+                <label>Additional command-line flags</label><input id="graphmap_align_add_cl_args"></input>
+            </grid>
+        </group>
+        <action program="graphmap_align">Align</action>
+    </group>
+    <group title="Overlap Mode">
+        <group title="Command-line flags">
+            <grid cols="2">
+                <label>Additional command-line flags</label><input id="graphmap_owler_add_cl_args"></input>
+            </grid>
+        </group>
+        <action program="graphmap_owler">Overlap</action>
+    </group>
+    <streambox id="output1">
+        <stream id="outputstream1">std out</stream>
+        <stream id="outputstream2">err out</stream>
+    </streambox>
+</vgroup>
+</window>
+
+<execution>
+    <const id="bindir">${GRAPHMAP_BIN_DIR}/</const>
+
+    <relocate id="graphmap_index_rel" from="\${graphmap_index}" wsl="\${WSLsel}"/>
+    <relocate id="graphmap_reads_rel" from="\${graphmap_reads}" wsl="\${WSLsel}"/>
+    <relocate id="graphmap_output_rel" from="\${graphmap_output}" wsl="\${WSLsel}"/>
+
+    <relocate id="graphmap_transcriptome_rel" from="\${graphmap_transcriptome}" wsl="\${WSLsel}"/>
+
+
+    <add id="graphmap_inputs" sep=" ">
+        <if comp="IS_SET" value1="graphmap_error_rate" sep=" "><const>-e</const><value from="\${graphmap_error_rate}"/></if>
+        <if comp="IS_SET" value1="graphmap_number_threads" sep=" "><const>-t</const><value from="\${graphmap_number_threads}"/></if>
+        <const>-r</const><value from="\${graphmap_index_rel}"/>
+        <const>-d</const><value from="\${graphmap_reads_rel}"/>
+        <const>-o</const><value from="\${graphmap_output_rel}"/>
+    </add>
+
+
+    <add id="clargs_align" sep=" ">
+        <const>align</const>
+        <if comp="IS_SET" value1="graphmap_align_add_cl_args" sep=" "><value from="\${graphmap_align_add_cl_args}"/></if>
+        <if comp="IS_SET" value1="graphmap_alignment_algorithm" sep=" "><const>-a</const><value from="\${graphmap_alignment_algorithm}"/></if>
+        <if comp="IS_SET" value1="graphmap_transcriptome_rel" sep=" "><const>--gtx</const><value from="\${graphmap_transcriptome_rel}"/></if>
+
+        <value from="\${graphmap_inputs}"/>
+    </add>
+
+    <add id="clargs_owler" sep=" ">
+        <const>owler</const>
+        <if comp="IS_SET" value1="graphmap_owler_add_cl_args" sep=" "><value from="\${graphmap_owler_add_cl_args}"/></if>
+        <value from="\${graphmap_inputs}"/>
+    </add>
+
+
+    <execute program="graphmap_align" param="\${clargs_align}" location="\${bindir}" exec="graphmap" wsl="WSLsel">
+        <output type="COUT" color="green" to="outputstream1" />
+        <output type="CERR" color="red" to="outputstream2" />
+    </execute>
+
+
+    <execute program="graphmap_owler" param="\${clargs_owler}" location="\${bindir}" exec="graphmap" wsl="WSLsel">
+        <output type="COUT" color="green" to="outputstream1" />
+        <output type="CERR" color="red" to="outputstream2" />
+    </execute>
+
+</execution>
+
+</template>
+
+EOF
+
+fi

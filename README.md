@@ -1,6 +1,7 @@
 # bioGUI: a universal GUI for CLI applications
 
 [![Documentation Status](https://readthedocs.org/projects/biogui/badge/?version=latest)](http://biogui.readthedocs.io/en/latest/?badge=latest)
+[![Build Status](https://travis-ci.org/mjoppich/bioGUI.svg?branch=master)](https://travis-ci.org/mjoppich/bioGUI)
 
 With bioGUI developers can easily build a graphical-user-interface (GUI) for their command-line only application.
 Such a GUI then enables many more people to use their software.

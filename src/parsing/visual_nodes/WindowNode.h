@@ -175,6 +175,11 @@ public:
             return vRetriever.size() > 0;
         }
 
+        void addRetriever( Retriever oRetriever )
+        {
+            vRetriever.push_back(oRetriever);
+        }
+
         void addRetriever(std::string sID,std::function<std::string()> oFunc )
         {
             vRetriever.push_back( {sID, oFunc} );

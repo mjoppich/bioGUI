@@ -51,6 +51,73 @@ public:
 
     }
 
+    static std::string relocateWSL(std::string sPaths, std::string sSeperator)
+    {
+
+        std::string sEmpty = "";
+        std::string sWSLPrefix = "/mnt/";
+
+        relocateGeneral(sPaths, sEmpty, sEmpty, sWSLPrefix, sSeperator, true);
+    }
+
+    static std::string relocateGeneral(std::string& sPaths, std::string& sFrom, std::string& sTo, std::string& sPrepend, std::string& sSeperator, bool bMakeUnix)
+    {
+        QString qsChildren(sPaths.c_str());
+
+        QStringList vChildren = qsChildren.split(',');
+        QStringList vOutput;
+
+        for (size_t i = 0; i < vChildren.size(); ++i)
+        {
+
+            QString sChild = vChildren.at(i);
+
+            if (sTo.size() > 0)
+            {
+                // replace from with to
+                if (sChild.startsWith(QString(sFrom.c_str()), Qt::CaseInsensitive))
+                {
+
+                    sChild.remove(0, sFrom.size());
+                    sChild.prepend(QString(sTo.c_str()));
+
+                }
+
+                // absolute path
+                if ((sChild.size() > 1) && (sChild.at(1) != ':'))
+                {
+                    QDir oPath(sChild);
+                    sChild = oPath.absolutePath();
+                }
+            }
+
+            if (bMakeUnix)
+            {
+                // assumes that we have a windows string
+                if (sChild.size() > 2)
+                {
+                    QChar cDrive = sChild.at(0);
+                    sChild.remove(0,2);
+                    sChild.prepend(QString("/") + cDrive.toLower());
+                }
+                sChild.replace("\\", "/");
+
+            }
+
+            if (sPrepend.size() > 0)
+                sChild.prepend( QString(sPrepend.c_str()) );
+
+            vOutput.append(sChild);
+
+        }
+
+        std::string sReturn = vOutput.join( QString(sSeperator.c_str()) ).toStdString();
+
+        std::cerr << "relocated from " << sPaths << " to " << sReturn << std::endl;
+
+        return sReturn;
+    }
+
     std::string evaluate( std::map< std::string, ExecutionNode*>* pID2Node,
                           std::map<std::string, std::string>* pInputID2Value,
                           std::map<std::string, WidgetFunctionNode*>* pInputID2FunctionWidget)
@@ -101,6 +168,14 @@ public:
 
         std::string sStart = sChildren;
 
+        if (bWSL)
+        {
+            return relocateWSL(sChildren, m_sSeperator);
+        } else {
+            return relocateGeneral(sChildren, m_sFrom, m_sTo, m_sPrepend, m_sSeperator, bMakeUnix);
+        }
+
+/*
         QString qsChildren(sChildren.c_str());
 
         QStringList vChildren = qsChildren.split(',');
@@ -158,9 +233,9 @@ public:
 
         std::string sReturn = vOutput.join( QString(m_sSeperator.c_str()) ).toStdString();
 
-        std::cerr << "relocated from " << sChildren << " to " << sReturn << std::endl;
 
         return sReturn;
+        */
 
     }
 

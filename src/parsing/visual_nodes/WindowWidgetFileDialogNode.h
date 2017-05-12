@@ -27,6 +27,8 @@
 #include <QtWidgets/QFileDialog>
 #include "WindowWidgetNode.h"
 
+#include "../nodes/ExecutionPathRelocateNode.h"
+
 class WindowWidgetFileDialogNode : public WindowWidgetNode {
 
 public:
@@ -80,11 +82,12 @@ public:
         bool bMultiples = (this->getQAttribute(pDOMElement, "multiples", "FALSE").compare("TRUE", Qt::CaseInsensitive) == 0);
         bool bOutput = (this->getQAttribute(pDOMElement, "output", "FALSE").compare("TRUE", Qt::CaseInsensitive) == 0);
         bool bFolder = (this->getQAttribute(pDOMElement, "folder", "FALSE").compare("TRUE", Qt::CaseInsensitive) == 0);
+        bool bWSLRelocate = (this->getQAttribute(pDOMElement, "relocateWSL", "FALSE").compare("TRUE", Qt::CaseInsensitive) == 0);
 
         QString sFileDelim = this->getQAttribute(pDOMElement, "multiples_delim", ";");
         QString sFileFilter = this->getQAttribute(pDOMElement, "filter", "");
 
-        pFileButton->connect(pFileButton,&QAbstractButton::clicked,[pLineEdit, bMultiples, bOutput, bFolder, sFileDelim, sFileFilter, sPathHint] (bool bChecked){
+        pFileButton->connect(pFileButton,&QAbstractButton::clicked,[pLineEdit, bMultiples, bOutput, bFolder, sFileDelim, sFileFilter, sPathHint, bWSLRelocate] (bool bChecked){
 
 
             QString sLocalPathHint = sPathHint;
@@ -169,6 +172,15 @@ public:
             }
 
 
+            bool bOnWindows = (QSysInfo::windowsVersion() != QSysInfo::WV_None);
+
+            if (bWSLRelocate && bOnWindows)
+            {
+                std::string sPath = pLineEdit->text().toStdString();
+                sPath = ExecutionPathRelocateNode::relocateWSL( sPath, sFileDelim.toStdString());
+                QString relocatedPath(sPath.c_str());
+                pLineEdit->setText( relocatedPath );
+            }
 
         });
 

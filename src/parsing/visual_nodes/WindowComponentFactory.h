@@ -70,6 +70,19 @@ public:
         return this->createWidgetElement(sTagName, pElement);
     }
 
+    WindowNode<QWidget>::CreatedElement createWidgetElement(QString& sID, QString& sWidgetDescription)
+    {
+
+        QDomDocument oSmallDoc;
+        oSmallDoc.setContent(sWidgetDescription, false);
+
+        QDomElement oWidgetElem = oSmallDoc.firstChild().toElement();
+        // overwrite any id
+        oWidgetElem.setAttribute("id", sID);
+
+        return createWidgetElement( &oWidgetElem );
+    }
+
     WindowNode<QWidget>::CreatedElement createWidgetElement(QString& sTag, QDomElement* pElement)
     {
         WindowWidgetNode* pWidgetNode = this->getCreatorForWidget(sTag);

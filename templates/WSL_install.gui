@@ -88,6 +88,7 @@
 <value from="localip"/>
 <const>33333</const>
 </if>
+<value from="prog#add"/>
 </add>
 
 <add id="template_path" sep="">

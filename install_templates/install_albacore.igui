@@ -23,7 +23,7 @@ else
 fi
 
 
-pip3 install --user $ALBACORE_WHEEL
+pip3 install $ALBACORE_WHEEL  --user
 
 PYTHON_BIN_DIR=`~/progs/anaconda3/bin/python3 -m site --user-base`
 PYTHON_BIN_DIR="$PYTHON_BIN_DIR/bin"
@@ -39,57 +39,74 @@ if [ $# -gt 2 ]; then
 
 fi
 
-if [ $# -eq 5 ]; then
+if [ $# -gt 4 ]; then
 
 IP=$4
 PORT=$5
 
 nc $IP $PORT << EOF
 
-<template description="albacore basecaller aligner" title="graphmap">
-<window title="graphmap aligner">
+<template description="albacore basecaller aligner" title="albacore (python)">
+<window title="albacore basecaller">
 <vgroup>
     <group title="Input Files">
         <grid cols="2">
             <label>Run in WSL on Windows?</label><checkbox id="WSLsel" value="true" selectonwindows="true">Run in WSL?</checkbox>
-            <label>Reference input Index</label> <filedialog id="graphmap_index" output="false" folder="false">Select hisat2 index</filedialog>
-            <label>Input reads</label> <filedialog id="graphmap_reads" output="false" folder="false">Select output file</filedialog>
-            <label>Output Alignment</label> <filedialog id="graphmap_output" output="true" folder="false">Select output file</filedialog>
+            <label>Input Reads/FAST5</label> <filedialog id="albacore_input" output="false" folder="false">Select input file</filedialog>
+            <label>Go through folder recursively?</label><checkbox id="albacore_recursive">Yes</checkbox>
+            <label>Output Folder</label> <filedialog id="albacore_output" output="true" folder="true">Select output folder</filedialog>
         </grid>
     </group>
     <group title="Program Options">
         <grid cols="2">
-            <label>Number of Threads</label><input id="graphmap_number_threads"></input>
-            <label>Error Rate</label> <input id="graphmap_error_rate"></input>
+            <label>Number of Threads</label><input id="albacore_threads" type="int">4</input>
         </grid>
     </group>
-    <group title="Alignment Mode">
-        <group title="Options">
+    <group title="Kit Options" exclusive="true">
+        <group title="Default kits" id="albacore_default_kit">
             <grid cols="2">
-                <label>Transcriptome Alignments</label><filedialog id="graphmap_transcriptome" output="false" folder="false">Input GTF</filedialog>
-                <label>Alignment Algorithm</label><combobox id="graphmap_alignment_algorithm" selected="anchor">
-                    <comboitem value="anchor">Anchored alignment with end-to-end extension</comboitem>
-                    <comboitem value="sg">Myers bit-vector approach</comboitem>
-                    <comboitem value="sggotoh">Semiglobal gotoh with affine gaps</comboitem>
-                    <comboitem value="anchorgotoh">Gotoh global</comboitem>
+                <label>Select your flowcell</label>
+                <combobox id="albacore_flowcell" selected="FLO-MIN106">
+                    <comboitem value="FLO-MIN106">FLO-MIN106</comboitem>
                 </combobox>
+                <label>Select your kit</label>
+                <combobox id="albacore_kit" selected="SQK-LSK208">
+                    <comboitem value="SQK-LSK108">SQK-LSK108</comboitem>
+                    <comboitem value="SQK-LSK208">SQK-LSK208</comboitem>
+                    <comboitem value="SQK-LWB001">SQK-LWB001 (barcoding)</comboitem>
+                    <comboitem value="SQK-LWP001">SQK-LWP001</comboitem>
+                    <comboitem value="SQK-RAB201">SQK-RAB201 (barcoding)</comboitem>
+                    <comboitem value="SQK-RAD002">SQK-RAD002</comboitem>
+                    <comboitem value="SQK-RAS201">SQK-RAS201</comboitem>
+                    <comboitem value="SQK-RBK001">SQK-RBK001 (barcoding)</comboitem>
+                    <comboitem value="SQK-RLB001">SQK-RLB001 (barcoding)</comboitem>
+                    <comboitem value="SQK-RLI001">SQK-RLI001</comboitem>
+                    <comboitem value="SQK-RNA001">SQK-RNA001</comboitem>
+                    <comboitem value="SQK-VBK001">SQK-VBK001</comboitem>
+                </combobox>
+
             </grid>
         </group>
-        <group title="Command-line flags">
+        <group title="Manual Kits">
             <grid cols="2">
-                <label>Additional command-line flags</label><input id="graphmap_align_add_cl_args"></input>
+                <label>Your flowcell:</label><input id="albacore_flowcell_man"></input>
+                <label>Your kit:</label><input id="albacore_kit_man"></input>
             </grid>
         </group>
-        <action program="graphmap_align">Align</action>
+        <label>See list of available flowcell + kit combinations</label>
+        <action program="albacore_list">Show List</action>
     </group>
     <group title="Overlap Mode">
+
         <group title="Command-line flags">
             <grid cols="2">
-                <label>Additional command-line flags</label><input id="graphmap_owler_add_cl_args"></input>
+                <label>Additional command-line flags</label><input id="albacore_commandline_args"></input>
             </grid>
         </group>
-        <action program="graphmap_owler">Overlap</action>
     </group>
+
+    <action program="albacore_basecall">Start Basecalling</action>
+
     <streambox id="output1">
         <stream id="outputstream1">std out</stream>
         <stream id="outputstream2">err out</stream>
@@ -100,39 +117,34 @@ nc $IP $PORT << EOF
 <execution>
     <const id="bindir">${PYTHON_BIN_DIR}/</const>
 
-    <relocate id="graphmap_index_rel" from="\${graphmap_index}" wsl="\${WSLsel}"/>
-    <relocate id="graphmap_reads_rel" from="\${graphmap_reads}" wsl="\${WSLsel}"/>
-    <relocate id="graphmap_output_rel" from="\${graphmap_output}" wsl="\${WSLsel}"/>
+    <relocate id="albacore_input_rel" from="\${albacore_input}" wsl="\${WSLsel}"/>
+    <relocate id="albacore_output_rel" from="\${albacore_output}" wsl="\${WSLsel}"/>
 
-    <relocate id="graphmap_transcriptome_rel" from="\${graphmap_transcriptome}" wsl="\${WSLsel}"/>
+    <if id="albacore_flowcell_select" comp="IS_SET" value1="\${albacore_default_kit}">
+        <const>-f</const>
+        <value from="\${albacore_flowcell}"/>
+        <const>-k</const>
+        <value from="\${albacore_flowcell}"/>
+    <else>
+        <const>-f</const>
+        <value from="\${albacore_kit}"/>
+        <const>-k</const>
+        <value from="\${albacore_kit_man}"/>
+    </else>
+    </if>
 
+    <add id="clargs" sep=" ">
+        <value from="\${albacore_flowcell_select}"/>
+        <if comp="IS_SET" value1="albacore_threads" sep=" "><const>-t</const><value from="\${albacore_threads}"/></if>
+        <if comp="IS_SET" value1="albacore_recursive" sep=" "><const>-r</const></if>
+        <value from="\${albacore_commandline_args}"/>
 
-    <add id="graphmap_inputs" sep=" ">
-        <if comp="IS_SET" value1="graphmap_error_rate" sep=" "><const>-e</const><value from="\${graphmap_error_rate}"/></if>
-        <if comp="IS_SET" value1="graphmap_number_threads" sep=" "><const>-t</const><value from="\${graphmap_number_threads}"/></if>
-        <const>-r</const><value from="\${graphmap_index_rel}"/>
-        <const>-d</const><value from="\${graphmap_reads_rel}"/>
-        <const>-o</const><value from="\${graphmap_output_rel}"/>
+        <const>-i</const><value from="\${albacore_input_rel}"/>
+        <const>-s</const><value from="\${albacore_output_rel}"/>
+
     </add>
 
-
-    <add id="clargs_align" sep=" ">
-        <const>align</const>
-        <if comp="IS_SET" value1="graphmap_align_add_cl_args" sep=" "><value from="\${graphmap_align_add_cl_args}"/></if>
-        <if comp="IS_SET" value1="graphmap_alignment_algorithm" sep=" "><const>-a</const><value from="\${graphmap_alignment_algorithm}"/></if>
-        <if comp="IS_SET" value1="graphmap_transcriptome_rel" sep=" "><const>--gtx</const><value from="\${graphmap_transcriptome_rel}"/></if>
-
-        <value from="\${graphmap_inputs}"/>
-    </add>
-
-    <add id="clargs_owler" sep=" ">
-        <const>owler</const>
-        <if comp="IS_SET" value1="graphmap_owler_add_cl_args" sep=" "><value from="\${graphmap_owler_add_cl_args}"/></if>
-        <value from="\${graphmap_inputs}"/>
-    </add>
-
-
-    <execute program="graphmap_align" param="\${clargs_align}" location="\${bindir}" exec="graphmap" wsl="WSLsel">
+    <execute program="albacore_list" param="-l" location="\${bindir}" exec="read_fast5_basecaller.py" wsl="WSLsel">
         <output type="COUT" color="green" to="outputstream1" />
         <output type="CERR" color="red" to="outputstream2" />
     </execute>

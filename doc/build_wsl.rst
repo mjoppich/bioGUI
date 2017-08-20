@@ -4,7 +4,25 @@
 How to setup WSL (Bash on Ubuntu)
 =================================
 
-Step 1: Activate WSL feature
+Step 1: Activate Developer Mode
+
+Since WSL/Bash on Ubuntu on Windows is a developer feature, first the developer mode has to be actived.
+Therefore we go into the Settings app and select *Update & Security*.
+
+.. image:: ./images/wsl/dev_mode_1.PNG
+   :scale: 30
+
+We further navigate into the *For developers* tab on the left.
+
+.. image:: ./images/wsl/dev_mode_2.PNG
+   :scale: 30
+
+In the *For developers* options we switch from *Windows Store apps* to *Developer mode*.
+
+.. image:: ./images/wsl/dev_mode_3.PNG
+   :scale: 30
+
+Step 2: Activate WSL feature
 -----------------------------
 
 First WSL has to be enabled from Windows features.
@@ -24,7 +42,7 @@ Finally apply the change and make sure to reboot your computer
 .. image:: ./images/wsl/restart_after_sel.PNG
    :scale: 30
 
-Step 2: Setup WSL
+Step 3: Setup WSL
 -----------------
 
 Despite the interest to hide any command line as much as possible from the user, the following initial setup can not be automised.

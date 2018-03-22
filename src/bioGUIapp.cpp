@@ -194,7 +194,8 @@ bioGUIapp::bioGUIapp(int& argc, char** argv)
 
     //pMainLayout->addLayout(pLeftLayout);
 
-    m_pApplicationWindowArea = new QScrollArea();
+    m_pApplicationWindowArea = new QVerticalScrollArea();
+
     //pMainLayout->addWidget(m_pApplicationWindowArea);
     pSplitter->addWidget(m_pApplicationWindowArea);
 

@@ -1,6 +1,9 @@
 #! Install albacore (pip wheel)
 ##<filedialog output="false" folder="false">Albacore wheel file</filedialog>
 
+# usage: scriptname sudopw addtopath ip port addinfo
+
+
 DEP_PACKAGES="python3 pip3"
 
 echo "Dependencies: $DEP_PACKAGES"
@@ -28,18 +31,14 @@ pip3 install $ALBACORE_WHEEL  --user
 PYTHON_BIN_DIR=`~/progs/anaconda3/bin/python3 -m site --user-base`
 PYTHON_BIN_DIR="$PYTHON_BIN_DIR/bin"
 
-if [ $# -gt 2 ]; then
+if [ "$3" = "1" ]; then
 
-	if [ "$3" = "1" ]; then
-
-		if ! grep -q "$PYTHON_BIN_DIR" ~/.bashrc; then
-			echo "export PATH=\"$PYTHON_BIN_DIR:\$PATH\" " >> ~/.bashrc;
-		fi
-	fi
-
+    if ! grep -q "$PYTHON_BIN_DIR" ~/.bashrc; then
+        echo "export PATH=\"$PYTHON_BIN_DIR:\$PATH\" " >> ~/.bashrc;
+    fi
 fi
 
-if [ $# -gt 4 ]; then
+if [ "$4" != "0" ]; then
 
 IP=$4
 PORT=$5
@@ -52,7 +51,7 @@ nc $IP $PORT << EOF
     <group title="Input Files">
         <grid cols="2">
             <label>Run in WSL on Windows?</label><checkbox id="WSLsel" value="true" selectonwindows="true">Run in WSL?</checkbox>
-            <label>Input Reads/FAST5</label> <filedialog id="albacore_input" output="false" folder="false">Select input file</filedialog>
+            <label>Input Reads/FAST5</label> <filedialog id="albacore_input" output="false" folder="true">Select input file</filedialog>
             <label>Go through folder recursively?</label><checkbox id="albacore_recursive">Yes</checkbox>
             <label>Output Folder</label> <filedialog id="albacore_output" output="true" folder="true">Select output folder</filedialog>
         </grid>
@@ -150,7 +149,7 @@ nc $IP $PORT << EOF
     </execute>
 
 
-    <execute program="graphmap_owler" param="\${clargs_owler}" location="\${bindir}" exec="graphmap" wsl="WSLsel">
+    <execute program="albacore_basecall" param="\${clargs}" location="\${bindir}" exec="read_fast5_basecaller.py" wsl="WSLsel">
         <output type="COUT" color="green" to="outputstream1" />
         <output type="CERR" color="red" to="outputstream2" />
     </execute>

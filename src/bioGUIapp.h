@@ -39,6 +39,7 @@
 #include <src/parsing/XMLParserExecution.h>
 #include <src/parsing/XMLParserWindow.h>
 #include <src/app/ExecutionRunThread.h>
+#include <src/app/QVerticalScrollArea.h>
 
 class bioGUIapp : public QApplication {
     Q_OBJECT
@@ -77,8 +78,6 @@ public:
     {
 
         m_pWindow->setMinimumSize(m_pWindow->sizeHint());
-
-
         m_pApplicationWindowArea->update();
     }
 
@@ -230,28 +229,34 @@ public:
 
         //m_pMainWindow->setMinimumSize( m_pApplicationWindowArea->minimumWidth() + m_pTemplateListWidget->width(), std::max(m_pApplicationWindowArea->minimumHeight()+20, m_pTemplateListWidget->height()) );
 
-        m_pApplicationWindowArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
-        m_pApplicationWindowArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+        m_pApplicationWindowArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+        m_pApplicationWindowArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+        m_pWindow->setMinimumSize(m_pWindow->size());
+        m_pWindow->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+
+
+        //m_pWindow->setParent(m_pApplicationWindowArea);
 
         // this also destroys the current window!
         m_pApplicationWindowArea->setWidget(m_pWindow);
         m_pApplicationWindowArea->setWidgetResizable(true);
+        m_pWindow->setBaseSize(m_pApplicationWindowArea->size());
 
+        //m_pApplicationWindowArea->setStyleSheet("background-color:red;");
+        //m_pWindow->setStyleSheet("background-color:green;");
         m_pMainMainWindow->setWindowTitle("bioGUI - " + m_pWindow->windowTitle());
+        m_pMainMainWindow->update();
 
-        //this->connect(m_pApplicationWindowArea, SIGNAL(resizeEvent(QResizeEvent*)), this, SLOT(resizeContent(QResizeEvent*)));
+        QSize newSize = m_pApplicationWindowArea->size();
+        newSize.setWidth(newSize.width()-1);
 
-        /*
-        std::cout << "spongebob " << m_pWindow->minimumWidth() << " " << m_pWindow->minimumHeight() << std::endl;
-        std::cout << "spongebob " << m_pMainWindow->minimumWidth() << " " << m_pMainWindow->minimumHeight() << std::endl;
-        std::cout << "spongebob " << m_pMainWindow->width() << " " << m_pMainWindow->height() << std::endl;
-        */
+        m_pApplicationWindowArea->update();
+        m_pApplicationWindowArea->resizeEvent(new QResizeEvent(newSize, m_pApplicationWindowArea->size()));
+
 
         std::string sTest = sFileName;
 
         QFileInfo oFileInfo(QString(sFileName.c_str()));
-        //m_pWindowParser->saveTemplate(oFileInfo.absoluteDir().absolutePath() + "/bla.gui");
-
     }
 
 
@@ -387,7 +392,7 @@ protected:
     QAbstractButton* m_pSaveTemplate = NULL;
     QAbstractButton* m_pReloadTemplates = NULL;
     QAbstractButton* m_pDownloadTemplates = NULL;
-    QScrollArea* m_pApplicationWindowArea = NULL;
+    QVerticalScrollArea* m_pApplicationWindowArea = NULL;
 
     QDir m_oTemplatePath;
 

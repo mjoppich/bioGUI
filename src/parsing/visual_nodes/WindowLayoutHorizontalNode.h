@@ -43,7 +43,7 @@ public:
     {
 
         QHBoxLayout *pLayout = new QOrderedHBoxLayout();
-        pLayout->setSizeConstraint(QLayout::SetFixedSize);
+        pLayout->setSizeConstraint(QLayout::SetDefaultConstraint); //SetFixedSize
 
         //pLayout->setAlignment(Qt::AlignHorizontal_Mask);
 

@@ -46,7 +46,7 @@ public:
         QVBoxLayout *pLayout = new QOrderedVBoxLayout();
 
         //pLayout->setAlignment(Qt::AlignVertical_Mask);
-        pLayout->setSizeConstraint(QLayout::SetFixedSize);
+        pLayout->setSizeConstraint(QLayout::SetDefaultConstraint); //SetFixedSize
 
 
         CreatedElement oReturn;

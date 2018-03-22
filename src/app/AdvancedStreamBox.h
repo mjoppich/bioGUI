@@ -154,8 +154,8 @@ public:
         qRegisterMetaType<QTextCursor>("QTextCursor");
         qRegisterMetaType<QString>("QString");
 
-        this->setResizeMode(QListWidget::Adjust);
-        this->setSizeAdjustPolicy(QListWidget::AdjustToContents);
+        this->setResizeMode(QListWidget::Fixed);
+        //this->setSizeAdjustPolicy(QListWidget::);
         this->setMinimumHeight(150);
 
         this->clear();

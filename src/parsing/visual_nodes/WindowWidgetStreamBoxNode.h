@@ -121,9 +121,17 @@ public:
 
         }
 
-        pGroupBox->setLayout(pLayout);
+        //pGroupBox->setLayout(pLayout);
 
-        oReturn.pElement = pGroupBox;
+        QWidget* pElemWidget = new QWidget();
+        pElemWidget->setLayout(pLayout);
+
+        QVerticalScrollArea* pArea = new QVerticalScrollArea();
+        pArea->setWidget(pElemWidget);
+        pArea->setWidgetResizable(true);
+        pElemWidget->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+
+        oReturn.pElement = pArea;
 
         bioGUIapp* pApp = m_pFactory->getApp();
         pLayout->setSizeConstraint(QLayout::SetFixedSize);
@@ -131,11 +139,11 @@ public:
         QObject::connect(pStreamOut, &AdvancedStreamBox::sizeChanged, [pApp, pLayout] () {
 
 
-            pLayout->activate();
-            pLayout->update();
+            //pLayout->activate();
+            //pLayout->update();
 
             //pApp->getMainWindow()->update();
-            pApp->reloadAppWindow();
+            //pApp->reloadAppWindow();
 
         });
 
@@ -149,6 +157,8 @@ public:
             m_pFactory->getApp()->getWindowParser()->addID2WidgetFunction( sID, pWidgetFuncNode, true );
 
         }
+
+
 
         return oReturn;
 

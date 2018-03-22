@@ -71,24 +71,31 @@
 
 
 <add id="cl" sep=" ">
-<value from="prog_wsl"/>
-<add sep="">
-<const>&quot;</const>
-<value from="user_instpath"/>
-<const>&quot;</const>
-</add>
+    <value from="prog_wsl"/>
+    <add sep="">
+    <const>&quot;</const>
+    <value from="user_instpath"/>
+    <const>&quot;</const>
+    </add>
 
-<add sep="">
-<const>&quot;</const>
-<value from="sudopw"/>
-<const>&quot;</const>
-</add>
-<value from="addtopath"/>
-<if id="templpath_sel_if" comp="EQUALS" value1="templpath_sel" value2="true" sep=" ">
-<value from="localip"/>
-<const>33333</const>
-</if>
-<value from="prog#add"/>
+    <add sep="">
+    <const>&quot;</const>
+    <value from="sudopw"/>
+    <const>&quot;</const>
+    </add>
+
+    <value from="addtopath"/>
+
+    <if id="templpath_sel_if" comp="EQUALS" value1="templpath_sel" value2="true" sep=" ">
+        <value from="localip"/>
+        <const>33333</const>
+        <else>
+            <const>""</const>
+            <const>0</const>
+        </else>
+    </if>
+
+    <value from="prog#add"/>
 </add>
 
 <add id="template_path" sep="">

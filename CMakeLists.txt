@@ -21,9 +21,19 @@ cmake_minimum_required(VERSION 3.0)
 # Add folder where are supportive functions
 LIST(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
+
+IF (FALSE)
+
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
+set (CMAKE_CXX_COMPILER clang++)
+set (CMAKE_C_COMPILER clang)
+set (CMAKE_TOOLCHAIN_PREFIX llvm-)
+
+ENDIF(FALSE)
+
 set (CMAKE_CXX_STANDARD 11)
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+
 
 MACRO(COPY_IF_DIFFERENT FROM_DIR TO_DIR FILES TARGETS TAGS)
     # Macro to implement copy_if_different for a list of files
@@ -92,7 +102,7 @@ if (UNIX AND NOT APPLE)
     message(STATUS ">>> Linux")
 
     set(Qt5_DIR "")
-    LIST(APPEND Qt5_DIR "~/Qt/5.8/gcc_64/" "~/Qt/5.7/gcc_64/" "/usr/local/qt/5.7/gcc_64/")
+    LIST(APPEND Qt5_DIR "~/Qt/5.8/gcc_64/" "~/Qt/5.7/gcc_64/" "/usr/local/qt/5.7/gcc_64/" "/home/mjoppich/qt/qt-everywhere-src-5.10.0/qtbase" "/opt/Qt5.10.0/5.10.0/gcc_64/")
 
     set(ENV{OPENSSL_ROOT_DIR} "/home/users/joppich/libs/openssl/lib/")
     set(ENV{LUA_DIR} "/home/users/joppich/libs/lua/")
@@ -445,7 +455,7 @@ endif()
         endif()
 
 
-        if (UNIX AND NOT APPLE)
+        if (UNIX AND NOT APPLE AND FALSE)
             get_filename_component(QT5GUI_DIR ${Qt5_GuiLocation} DIRECTORY)
 
             add_custom_command( TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${QT5GUI_DIR}/libicudata.so.56 ${PROJECT_BINARY_DIR})

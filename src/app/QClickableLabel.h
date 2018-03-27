@@ -29,7 +29,10 @@ public:
     QClickableLabel( const QString & text, QWidget * parent = 0 )
     : QLabel(text, parent)
     {
+        QFont font("Monospace");
+        font.setStyleHint(QFont::TypeWriter);
 
+        this->setFont(font);
     }
 
     ~QClickableLabel(){}

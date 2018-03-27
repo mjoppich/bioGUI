@@ -131,13 +131,9 @@ public:
         m_sParam = sParam;
         m_bWindowsProcNoHandle = bWindowsProcNoHandle;
 
-        if (!m_bWindowsProcNoHandle)
-        {
-            m_pProcess = new QProcess();
-        } else {
-            //m_pThread = NULL;//new ProcessThread(m_sProgram + " " + m_sParam);
-            m_pProcess = new QProcess();
-        }
+
+        m_pProcess = new QProcess();
+
     }
 
     void setProgram(QString sProg)

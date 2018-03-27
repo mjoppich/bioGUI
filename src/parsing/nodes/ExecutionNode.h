@@ -102,6 +102,11 @@ public:
 
     }
 
+    bool onWindows()
+    {
+        return (QSysInfo::windowsVersion() != QSysInfo::WV_None);
+    }
+
     bool checkWSL(QString& sWSLStr,
                   std::map< std::string, ExecutionNode*>* pID2Node,
                   std::map<std::string, std::string>* pInputID2Value,
@@ -117,7 +122,9 @@ public:
 
             std::string sValue = this->getNodeValueOrValue(sWSLStr.toStdString(), sWSLStr.toStdString(), pID2Node, pInputID2Value, pInputID2FunctionWidget );
 
-            if (QString(sValue.c_str()).compare("TRUE", Qt::CaseInsensitive) == 0)
+
+            // relocation must be demanded, and we must be on windows
+            if ((QString(sValue.c_str()).compare("TRUE", Qt::CaseInsensitive) == 0) && this->onWindows())
             {
                 bWSL = true;
             }
@@ -354,6 +361,11 @@ protected:
                           std::map<std::string, WidgetFunctionNode*>* pInputID2FunctionWidget)
     {
         Validable<std::string> oReturn("", false);
+
+
+        if ((sID.size() > 3) &&  (sID[0] == '$') && (sID[1] == '{') && (sID[sID.size()-1] == '}')) {
+            sID = sID.substr(2, sID.size() - 3);
+        }
 
         std::map<std::string, std::string>::iterator oIt = pInputID2Value->find( sID );
 

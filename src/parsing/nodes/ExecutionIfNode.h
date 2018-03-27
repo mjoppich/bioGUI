@@ -34,7 +34,7 @@ public:
 
         m_sNotSet = "#NOTSET#";
 
-        m_sCompareMode = this->getDomElementAttribute(pElement, "comp", "is_set").toStdString();
+        m_sCompareMode = this->getDomElementAttribute(pElement, "comp", "is_set").toUpper().toStdString();
         m_sValue1 = this->getDomElementAttribute(pElement, "value1", QString(m_sNotSet.c_str())).toStdString();
         m_sValue2 = this->getDomElementAttribute(pElement, "value2", QString(m_sNotSet.c_str())).toStdString();
 
@@ -43,7 +43,19 @@ public:
 
         m_vValidCompareModes.push_back("is_set");
         m_vValidCompareModes.push_back("equals");
-        m_vValidCompareModes.push_back("EQUALS");
+
+        int oldElemCount = m_vValidCompareModes.size();
+        for (int i = 0; i < oldElemCount; ++i)
+        {
+            std::string& sElem = m_vValidCompareModes.at(i);
+
+            std::string sElemUp = std::string(sElem);
+            std::transform(sElemUp.begin(), sElemUp.end(),sElemUp.begin(), ::toupper);
+
+            m_vValidCompareModes.push_back(sElemUp);
+
+        }
+
 
     }
 

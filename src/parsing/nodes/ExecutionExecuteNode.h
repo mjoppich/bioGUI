@@ -134,6 +134,7 @@ public:
         std::string sProgram = sLocation + m_sExecutable;
 
         bool bWSL = this->asBool(this->getNodeValueOrValue(m_sWSL, m_sWSL, pID2Node, pInputID2Value, pInputID2FunctionWidget));
+        bWSL = bWSL && this->onWindows();
 
         ProcessLauncher* pLauncher = new ProcessLauncher(QString(sProgram.c_str()), QString(sCLArg.c_str()), bWSL);
 

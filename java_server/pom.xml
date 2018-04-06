@@ -66,6 +66,12 @@
 			<artifactId>commons-io</artifactId>
 			<version>${commons-io}</version>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/javax.mail/mail -->
+		<dependency>
+			<groupId>javax.mail</groupId>
+			<artifactId>mail</artifactId>
+			<version>LATEST</version>
+		</dependency>
 
 		<dependency>
 			<groupId>mysql</groupId>

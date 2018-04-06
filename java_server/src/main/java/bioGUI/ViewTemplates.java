@@ -80,7 +80,7 @@ public class ViewTemplates {
 
 				oCatManager.setCategories(iAddTemplate, setTemplateCategories);
 
-				Messagebox.show("Template inserted.");
+				Messagebox.show("Template inserted and currently under review.");
 			} else {
 				Messagebox.show("Error adding template.");
 			}

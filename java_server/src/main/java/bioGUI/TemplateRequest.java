@@ -9,35 +9,17 @@ import java.util.Date;
 /**
  * Created by joppich on 10/4/16.
  */
-public class Template {
+public class TemplateRequest {
 
-    private int templateid, userid, type, timestamp;
+    private int type, timestamp;
     private boolean anonym;
-    private String displayname, typeStr, omictoolslink, categories;
-
-    public String getCategories()
-    {
-        return categories;
-    }
-
-    public void setCategories(String cats)
-    {
-        this.categories = cats;
-    }
+    private String displayname, typeStr, omictoolslink;
 
     public void setOmictoolslink(String omictoolslink) {
         this.omictoolslink = omictoolslink;
     }
     public String getOmictoolslink() {
         return this.omictoolslink;
-    }
-
-    public String getTemplate() {
-        return template;
-    }
-
-    public void setTemplate(String template) {
-        this.template = template;
     }
 
     public String getDisplayname() {
@@ -48,18 +30,9 @@ public class Template {
         this.displayname = displayname;
     }
 
-    public boolean isAnonym() {
-        return anonym;
-    }
-
-    public void setAnonym(boolean anonym) {
-        this.anonym = anonym;
-    }
-
     public int getTimestamp() {
         return timestamp;
     }
-
     public void setTimestamp(int timestamp) {
         this.timestamp = timestamp;
     }
@@ -92,78 +65,38 @@ public class Template {
         }
     }
 
-    public int getUserid() {
-        return userid;
-    }
-
-    public void setUserid(int userid) {
-        this.userid = userid;
-    }
 
     private String template;
 
     private User user = null;
 
-    public Template()
+    public User getUser()
     {
-        this.displayname = "";
-        this.template = "";
-
-    }
-
-    public int getTemplateid() {
-        return templateid;
-    }
-
-    public void setTemplateid(int templateid) {
-        this.templateid = templateid;
-    }
-
-    public Template(int iTemplateID, int iUserID, String sDisplayname, int iType, String sTemplate, int iTimestamp, boolean bAnonym, String sOmicTools) {
-
-        this.templateid = iTemplateID;
-        this.userid = iUserID;
-        this.displayname = sDisplayname;
-
-        this.setType(iType);
-
-        this.template = sTemplate;
-        this.timestamp = iTimestamp;
-        this.anonym = bAnonym;
-        this.omictoolslink = sOmicTools;
-
-    }
-
-    public String getTimestampDate()
-    {
-        Date oDate = new Date(1000L * timestamp);
-
-        return new SimpleDateFormat("yyyy-MM-dd").format(oDate);
-    }
-
-    public String getAuthor()
-    {
-        if ((!anonym) && (user != null))
-            return user.getName() + " " + user.getEmail();
-
-        return "Anonymous";
+        return user;
     }
 
     public void setUser(User oUser)
     {
-        user = oUser;
+        this.user = oUser;
     }
-    public User getUser() {return user;}
 
-    public String toString()
+    public TemplateRequest()
     {
-        String sDel = "\t";
+        this.displayname = "";
+        this.template = "";
+        this.user = new User();
+    }
 
-        String sUserPart = "" + userid;
-        if (user != null)
-            sUserPart = user.getName() + sDel + user.getEmail();
+    public TemplateRequest(String sDisplayname, int iType, String sTemplate, int iTimestamp, boolean bAnonym, String sOmicTools) {
 
-        return "" + templateid + sDel + sUserPart + sDel + displayname + sDel + timestamp + sDel + anonym;
+        this.displayname = sDisplayname;
+
+        this.setType(iType);
+        this.user = new User();
+        this.template = sTemplate;
+        this.timestamp = iTimestamp;
+        this.anonym = bAnonym;
+        this.omictoolslink = sOmicTools;
 
     }
 
@@ -196,10 +129,4 @@ public class Template {
 
         return oSB.toString();
     }
-
-    public String getFullTemplate()
-    {
-        return template;
-    }
-
 }

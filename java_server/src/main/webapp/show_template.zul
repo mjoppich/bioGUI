@@ -4,9 +4,6 @@
 
     <zscript>
         import bioGUI.TemplateManager;
-
-
-
     </zscript>
 
     <window apply="org.zkoss.bind.BindComposer" viewModel="@id('vt')@init('bioGUI.ViewTemplates')" validationMessages="@id('vtsgs')">
@@ -16,7 +13,7 @@
             <label class="h1" value="Existing Templates" />
 
 
-            <hlayout>Search: <textbox value="@bind(vt.filterText)" width="150px" tabindex="1" onClick="@command('changeFilter')"/> </hlayout>
+            <hlayout>Search: <textbox value="@bind(vt.filterText)" width="150px" tabindex="1" onChange="@command('changeFilter')"/> </hlayout>
 
 
             <listbox id="box" width="100%" mold="paging" pageSize="5" model="@load(vt.templates)">

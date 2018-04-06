@@ -1,10 +1,18 @@
 package bioGUI;
 
 import jdk.nashorn.internal.objects.Global;
+import org.zkoss.zul.Messagebox;
 
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 import javax.xml.transform.Result;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Properties;
 import java.util.Vector;
 
 /**
@@ -85,7 +93,13 @@ public class TemplateManager {
                 String sTemplate = resultSet.getString("template");
                 Timestamp iTimestamp = resultSet.getTimestamp("timestamp");
                 boolean bAnonym = resultSet.getBoolean("anonym");
+                boolean bVisible = resultSet.getBoolean("visible");
                 String sOmicTools = resultSet.getString("omictools");
+
+                if (!bVisible)
+                {
+                    continue;
+                }
 
                 long iSecsTo0 = iTimestamp.getTime() / 1000;
 
@@ -148,6 +162,8 @@ public class TemplateManager {
 
                 this.update();
 
+                this.notifyEmailNewTemplate(oTemp);
+
                 return iAdded;
             }
             else {
@@ -158,6 +174,35 @@ public class TemplateManager {
         } catch (Exception e)
         {
             return -1;
+        }
+
+    }
+
+    private void notifyEmailNewTemplate(Template oTemp) {
+
+        try {
+
+            String to = "joppich@bio.ifi.lmu.de";
+            String from = to;
+
+            String host = "localhost";
+            Properties properties = System.getProperties();
+            properties.setProperty("mail.smtp.host", host);
+
+            // Get the default Session object.
+            Session session = Session.getDefaultInstance(properties);
+
+            // Create a default MimeMessage object.
+            MimeMessage message = new MimeMessage(session);
+            message.setFrom(new InternetAddress(from));
+            message.addRecipient(Message.RecipientType.TO, new InternetAddress(to));
+
+            message.setSubject("New bioGUI template added!");
+            message.setText( oTemp.toMailText() );
+            Transport.send(message);
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
 
     }
@@ -199,13 +244,11 @@ public class TemplateManager {
             }
 
             if (!bInsert) {
-                if (oTemp.getTemplate().contains(sFilter))
+
+                if (oTemp.getAuthor().toUpperCase().contains(sFilter.toUpperCase()))
                     bInsert = true;
 
-                if (oTemp.getAuthor().contains(sFilter))
-                    bInsert = true;
-
-                if (oTemp.getDisplayname().contains(sFilter))
+                if (oTemp.getDisplayname().toUpperCase().contains(sFilter.toUpperCase()))
                     bInsert = true;
 
             }
@@ -220,4 +263,15 @@ public class TemplateManager {
 
     }
 
+    public static void main(String args [])
+    {
+        TemplateManager oTM = new TemplateManager();
+        oTM.update();
+
+        for (Template oTemp : oTM.getTemplates())
+        {
+            System.out.println(oTemp);
+        }
+
+    }
 }

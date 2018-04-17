@@ -16,9 +16,7 @@
     {
 
         String sLine = oCat.getID() + sDel + oCat.getCategory();
-
         o.getWriter().print( sLine + "\n");
-
     }
 
 

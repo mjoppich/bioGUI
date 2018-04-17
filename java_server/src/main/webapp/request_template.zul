@@ -1,0 +1,54 @@
+<zk>
+    <?taglib uri="http://www.zkoss.org/dsp/web/core" prefix="c"?>
+
+
+    <zscript>
+        import bioGUI.TemplateRequestManager
+
+
+    </zscript>
+
+    <window apply="org.zkoss.bind.BindComposer" viewModel="@id('vt')@init('bioGUI.TemplateRequestManager')" validationMessages="@id('vtsgs')">
+        <vlayout>
+            <radiogroup id="template_type" selectedItem="@bind(vt.templatecreation.typeStr)" />
+
+            <label class="h1" value="Request a New Template" />
+            <grid>
+                <columns>
+                    <column label=""/>
+                    <column label=""/>
+                </columns>
+
+                <rows>
+
+                    <row> Your name: <textbox value="@bind(vt.templatecreation.user.name)" width="150px" tabindex="1" /> </row>
+                    <row> Your eMail address*: <textbox type="email" value="@bind(vt.templatecreation.user.email)" width="150px" tabindex="2" /> </row>
+                    <row> Template Name*: <textbox value="@bind(vt.templatecreation.displayname)" width="150px" tabindex="4" /> </row>
+                    <row> omictools Link: <textbox value="@bind(vt.templatecreation.omictoolslink)" width="150px" constraint="${c:new('bioGUI.OmicToolsConstraint')}" tabindex="5" /> </row>
+                    <row>
+                        Template Type*:
+
+                        <vlayout>
+
+                            <radio id="ra1" label="Template" checked="True" value="0" radiogroup="template_type" tabindex="6" />
+                            <radio id="ra2" label="Install Template" value="1" radiogroup="template_type" tabindex="7"/>
+
+                        </vlayout>
+
+                    </row>
+
+                    <row ><cell colspan="2">Fields marked with * must be filled.</cell></row>
+                    <row><cell colspan="2">You will receive an eMail confirmation of your request to the given eMail.</cell></row>
+                    <row><cell colspan="2">bioGUI Template requests unfortunately can not be guaranteed to be completed.</cell></row>
+
+                    <row><cell colspan="2"><button label="Submit Template Request" tabindex="8" onClick="@command('processRequest')"/></cell> </row>
+
+                </rows>
+
+            </grid>
+
+        </vlayout>
+
+
+    </window>
+</zk>

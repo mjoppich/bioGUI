@@ -47,6 +47,14 @@ public:
 
     }
 
+    virtual std::vector<std::string> inputs()
+    {
+        std::vector<std::string> vBase;
+        vBase.push_back(m_sGet.toStdString());
+
+        return vBase;
+    }
+
     QHostAddress getIPaddress( QAbstractSocket::NetworkLayerProtocol eProtocol )
     {
 

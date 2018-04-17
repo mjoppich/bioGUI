@@ -36,6 +36,24 @@ public:
 
     }
 
+    virtual std::vector<std::string> inputs()
+    {
+        std::vector<std::string> vBase;
+
+        for (int i = 0; i < m_vChildren.size(); ++i)
+        {
+
+            ExecutionNode* pChild = m_vChildren.at(i);
+
+            std::vector<std::string> vChildOuts = pChild->outputs();
+
+            vBase.insert(vBase.end(), vChildOuts.begin(), vChildOuts.end());
+
+        }
+
+        return vBase;
+    }
+
     std::string evaluate( std::map< std::string, ExecutionNode*>* pID2Node,
                           std::map<std::string, std::string>* pInputID2Value,
                           std::map<std::string, WidgetFunctionNode*>* pInputID2FunctionWidget)

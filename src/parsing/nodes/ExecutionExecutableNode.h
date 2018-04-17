@@ -57,6 +57,20 @@ public:
         return m_sProgramName;
     }
 
+    virtual std::string getID()
+    {
+
+        if (m_sID.size() > 0)
+            return m_sID;
+
+        const void * address = static_cast<const void*>(this);
+        std::stringstream ss;
+        ss << m_sProgramName << "_" << address;
+        std::string name = ss.str();
+
+        return name;
+    }
+
 signals:
 
     void finishedExecution();

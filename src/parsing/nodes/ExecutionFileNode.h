@@ -43,6 +43,22 @@ public:
 
     }
 
+    virtual std::vector<std::string> outputs()
+    {
+        std::vector<std::string> vBase;
+        vBase.push_back(m_sTo);
+
+        return vBase;
+    }
+
+    virtual std::vector<std::string> inputs()
+    {
+        std::vector<std::string> vBase;
+        vBase.push_back(m_sFrom);
+
+        return vBase;
+    }
+
     std::string evaluate( std::map< std::string, ExecutionNode*>* pID2Node,
                           std::map<std::string, std::string>* pInputID2Value,
                           std::map<std::string, WidgetFunctionNode*>* pInputID2FunctionWidget)

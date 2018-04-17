@@ -39,6 +39,19 @@ public:
 
     }
 
+    virtual std::vector<std::string> inputs()
+    {
+        std::vector<std::string> vBase;
+        vBase.push_back(m_sFrom);
+
+        if (m_sFor.size() > 0)
+        {
+            vBase.push_back(m_sFor);
+        }
+
+        return vBase;
+    }
+
     virtual ~ExecutionValueNode()
     {
 

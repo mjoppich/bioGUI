@@ -197,6 +197,10 @@ file(GLOB bioGUI_SRC
         "src/app/*.cpp"
         )
 
+file(GLOB DUKTAPE
+        "src/duktape/*"
+        )
+
 add_project_meta(META_FILES_TO_INCLUDE)
 
 set(RESOURCE_FILES "${PROJECT_NAME}.qrc")
@@ -224,7 +228,7 @@ endif()
 # source_group("UI Files" FILES ${UI_FILES})
 
 add_executable(${PROJECT_NAME} ${OS_BUNDLE} # Expands to WIN32 or MACOS_BUNDLE depending on OS
-    ${bioGUI_H} ${bioGUIapp_H} ${bioGUI_SRC} ${parsinglib_SRC} ${parsinglib_H} ${parsinglib_nodes_H} ${META_FILES_TO_INCLUDE} ${RESOURCE_FILES}
+    ${bioGUI_H} ${bioGUIapp_H} ${bioGUI_SRC} ${parsinglib_SRC} ${parsinglib_H} ${parsinglib_nodes_H} ${META_FILES_TO_INCLUDE} ${RESOURCE_FILES} ${DUKTAPE}
 )
 
 ADD_LIBRARY(mylibeay STATIC IMPORTED)

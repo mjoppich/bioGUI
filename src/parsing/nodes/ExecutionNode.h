@@ -30,6 +30,7 @@
 #include <iostream>
 #include <src/Validable.h>
 #include <src/parsing/visual_nodes/WidgetFunctionNode.h>
+#include <sstream>
 
 class QBufferTcpServer;
 
@@ -102,6 +103,25 @@ public:
 
     }
 
+
+    virtual std::vector<std::string> outputs() {
+
+        std::string sID = this->getID();
+
+        std::vector<std::string> vReturn;
+        vReturn.push_back(sID);
+
+        return vReturn;
+    }
+
+    std::vector<ExecutionNode*> getChildren()
+    {
+        return m_vChildren;
+    }
+
+
+    virtual std::vector<std::string> inputs() = 0;
+
     bool onWindows()
     {
         return (QSysInfo::windowsVersion() != QSysInfo::WV_None);
@@ -147,9 +167,18 @@ public:
         return vReturnAttribs;
     }
 
-    std::string getID()
+    virtual std::string getID()
     {
-        return m_sID;
+
+        if (m_sID.size() > 0)
+            return m_sID;
+
+        const void * address = static_cast<const void*>(this);
+        std::stringstream ss;
+        ss << address;
+        std::string name = ss.str();
+
+        return name;
     }
 
     std::string getTag()
@@ -181,16 +210,18 @@ public:
     void getNodeMap( std::map< std::string, ExecutionNode*>* pID2Node)
     {
 
-        if (m_sID.size() != 0)
+        std::string sID = this->getID();
+
+        if (sID.size() != 0)
         {
-            std::map< std::string, ExecutionNode*>::iterator oIt = pID2Node->find( m_sID );
+            std::map< std::string, ExecutionNode*>::iterator oIt = pID2Node->find( sID );
 
             if (oIt != pID2Node->end())
             {
-                LOGERROR("Duplicate node ids: " + m_sID);
+                LOGERROR("Duplicate node ids: " + sID);
             }
 
-            pID2Node->insert( std::pair<std::string, ExecutionNode*>(m_sID, this) );
+            pID2Node->insert( std::pair<std::string, ExecutionNode*>(sID, this) );
         }
 
         for (size_t i = 0; i < m_vChildren.size(); ++i)
@@ -201,6 +232,16 @@ public:
 
     }
 
+    std::string sIDFromVarRef(std::string sVarRef)
+    {
+        std::string sModID = sVarRef;
+        if ((sModID.find("${") == 0) and (sModID.at(sModID.size()-1) == '}'))
+        {
+            sModID = sModID.substr(2, sModID.size()-3);
+        }
+
+        return sModID;
+    }
 
     virtual std::string evaluateChildren( std::map< std::string, ExecutionNode*>* pID2Node,
                                   std::map<std::string, std::string>* pInputID2Value,
@@ -274,9 +315,31 @@ protected:
         return sCLArg;
     }
 
+    virtual std::vector<std::string> referencedInputs( std::string& sArgs, std::map< std::string, ExecutionNode*>* pID2Node,
+                                            std::map<std::string, std::string>* pInputID2Value,
+                                            std::map<std::string, WidgetFunctionNode*>* pInputID2FunctionWidget )
+    {
+
+        std::vector<std::string> refIDs;
+
+        if (sArgs.find("${") == std::string::npos)
+        {
+            return refIDs;
+        }
+
+        this->parseCommand(&sArgs, 0, pID2Node, pInputID2Value, pInputID2FunctionWidget, &refIDs);
+
+        return refIDs;
+
+
+    }
+
+
+
     virtual size_t parseCommand(std::string* pCommand, size_t iPos, std::map< std::string, ExecutionNode*>* pID2Node,
                         std::map<std::string, std::string>* pInputID2Value,
-                        std::map<std::string, WidgetFunctionNode*>* pInputID2FunctionWidget)
+                        std::map<std::string, WidgetFunctionNode*>* pInputID2FunctionWidget,
+                        std::vector<std::string>* pUsedIDs=NULL)
     {
 
         size_t iVarPos;
@@ -293,16 +356,27 @@ protected:
                 std::string sSuffix = pCommand->substr(iVarPos+1, pCommand->size());
                 std::string sID = pCommand->substr(iStartPos, iVarPos-iStartPos);
 
-                pCommand->clear();
-                pCommand->append(sPrefix);
+                if (pUsedIDs)
+                {
 
-                //std::string sValue = this->evaluateID(sID, pID2Node, pInputID2Value, pInputID2Widget);
-                std::string sValue = this->getNodeValueOrValue(sID, sID, pID2Node, pInputID2Value, pInputID2FunctionWidget);
+                    std::string sModID = this->sIDFromVarRef(sID);
 
-                std::cout << "id " << sID << " value " << sValue << std::endl;
-                pCommand->append(sValue);
+                    pUsedIDs->push_back(sModID);
+                }
 
-                pCommand->append(sSuffix);
+                std::string sValue = this->getNodeValueOrValue(sID, "__NO_VALUE", pID2Node, pInputID2Value, pInputID2FunctionWidget);
+
+                if (sValue.compare("__NO_VALUE") != 0)
+                {
+                    pCommand->clear();
+                    pCommand->append(sPrefix);
+
+                    //std::string sValue = this->evaluateID(sID, pID2Node, pInputID2Value, pInputID2Widget);
+
+                    //std::cout << "id " << sID << " value " << sValue << std::endl;
+                    pCommand->append(sValue);
+                    pCommand->append(sSuffix);
+                }
 
                 // uncommented because I might want to replace variables in variables :)
                 iPos = sPrefix.size() + sValue.size();
@@ -311,7 +385,7 @@ protected:
 
 
             } else {
-                iPos = this->parseCommand(pCommand, iVarPos+2, pID2Node, pInputID2Value, pInputID2FunctionWidget);
+                iPos = this->parseCommand(pCommand, iVarPos+2, pID2Node, pInputID2Value, pInputID2FunctionWidget, pUsedIDs);
             }
         }
 
@@ -330,27 +404,38 @@ protected:
 
         Validable<std::string> oReturn("", false);
 
-        std::map<std::string, std::string>::iterator oIt = pInputID2Value->find( sID );
 
-        // either the id is an input field
-        if (oIt != pInputID2Value->end())
+        if (pInputID2Value)
         {
-            oReturn.setValue(oIt->second);
+            std::map<std::string, std::string>::iterator oIt = pInputID2Value->find( sID );
+
+            // either the id is an input field
+            if (oIt != pInputID2Value->end())
+            {
+                oReturn.setValue(oIt->second);
+            }
         }
 
-        // or it also might be another node
-        std::map<std::string, ExecutionNode*>::iterator oJt = pID2Node->find( sID );
 
-        // either the id is an input field
-        if (oJt != pID2Node->end())
+        if (pID2Node)
         {
+            // or it also might be another node
+            std::map<std::string, ExecutionNode*>::iterator oJt = pID2Node->find( sID );
 
-            std::string sValue = oJt->second->evaluate(pID2Node, pInputID2Value, pInputID2FunctionWidget);
-            oReturn.setValue(sValue);
+            // either the id is an input field
+            if (oJt != pID2Node->end())
+            {
+
+                std::string sValue = oJt->second->evaluate(pID2Node, pInputID2Value, pInputID2FunctionWidget);
+                oReturn.setValue(sValue);
+            }
         }
+
 
         if (!oReturn.valid())
-            LOGERROR("In node: "+ m_sID + " : Neither node nor node value: " + sID);
+        {
+            //LOGERROR("In node: "+ m_sID + " : Neither node nor node value: " + sID);
+        }
 
         return oReturn;
 
@@ -385,7 +470,9 @@ protected:
         }
 
         if (!oReturn.valid())
+        {
             LOGERROR("In node: "+ m_sID + " : id not found: " + sID);
+        }
 
         return oReturn;
     }

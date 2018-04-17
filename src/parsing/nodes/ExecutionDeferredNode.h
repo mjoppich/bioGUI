@@ -22,6 +22,12 @@ public:
 
     }
 
+    virtual std::vector<std::string> inputs()
+    {
+        std::vector<std::string> vBase;
+        return vBase;
+    }
+
     virtual std::string evaluateDeferred( std::map< std::string, ExecutionNode*>* pID2Node,
                                   std::map<std::string, std::string>* pInputID2Value,
                                   std::map<std::string, WidgetFunctionNode*>* pInputID2FunctionWidget,

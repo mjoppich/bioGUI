@@ -46,6 +46,15 @@ public:
 
     }
 
+    virtual std::vector<std::string> inputs()
+    {
+        std::vector<std::string> vBase;
+        vBase.push_back(m_sFrom);
+        vBase.push_back(m_sTo);
+
+        return vBase;
+    }
+
     virtual ~ExecutionPathRelocateNode()
     {
 

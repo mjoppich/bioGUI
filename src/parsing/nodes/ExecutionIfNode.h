@@ -64,6 +64,37 @@ public:
 
     }
 
+    virtual std::vector<std::string> inputs()
+    {
+        std::vector<std::string> vBase;
+
+        for (int i = 0; i < m_vChildren.size(); ++i)
+        {
+
+            ExecutionNode* pChild = m_vChildren.at(i);
+            std::vector<std::string> vChildOuts = pChild->outputs();
+            vBase.insert(vBase.end(), vChildOuts.begin(), vChildOuts.end());
+
+        }
+
+
+        if (m_pElseNode)
+        {
+            std::vector<ExecutionNode*> vChildren = m_pElseNode->getChildren();
+            for (int i = 0; i < vChildren.size(); ++i)
+            {
+
+                ExecutionNode* pChild = vChildren.at(i);
+                std::vector<std::string> vChildOuts = pChild->outputs();
+                vBase.insert(vBase.end(), vChildOuts.begin(), vChildOuts.end());
+
+            }
+        }
+
+
+        return vBase;
+    }
+
     virtual void finishedCreation()
     {
         // find else node, stop on first found node

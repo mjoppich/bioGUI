@@ -120,7 +120,30 @@ public:
     }
 
 
+    virtual std::vector<std::string> inputs()
+    {
+        std::vector<std::string> vCLArgs = this->referencedInputs(m_sCLArg, NULL, NULL, NULL);
+        std::vector<std::string> vExecArgs = this->referencedInputs(m_sExecLocation, NULL, NULL, NULL);
 
+
+        vCLArgs.insert(vCLArgs.end(), vExecArgs.begin(), vExecArgs.end());
+
+        return vCLArgs;
+    }
+
+    virtual std::vector<std::string> outputs()
+    {
+        std::vector<std::string> vBase;
+        for (int i = 0; i < m_vChildren.size(); ++i)
+        {
+
+            ExecutionNode* pChild = m_vChildren.at(i);
+            std::string childID = pChild->getID();
+            vBase.push_back(childID);
+
+        }
+        return vBase;
+    }
 
 
     virtual std::string evaluate( std::map< std::string, ExecutionNode*>* pID2Node,

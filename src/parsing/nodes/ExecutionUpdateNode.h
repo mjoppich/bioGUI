@@ -40,6 +40,16 @@ public:
 
     }
 
+    virtual std::vector<std::string> inputs()
+    {
+        std::vector<std::string> vBase;
+        vBase.push_back(m_sValue);
+        vBase.push_back(m_sTarget.toStdString());
+
+
+        return vBase;
+    }
+
     virtual ~ExecutionUpdateNode()
     {
 

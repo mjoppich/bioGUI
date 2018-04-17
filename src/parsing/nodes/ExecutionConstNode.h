@@ -34,13 +34,50 @@ public:
         m_sTag = "const";
 
         if (pElement != NULL)
+        {
             m_sValue = pElement->text().toStdString();
+        }
+
+        m_sValue = m_sValue;
 
     }
 
     virtual ~ExecutionConstNode()
     {
 
+    }
+
+    std::string getID()
+    {
+
+        if (m_sID.size() > 0)
+            return m_sID;
+
+        const void * address = static_cast<const void*>(this);
+        std::stringstream ss;
+        ss << address;
+        std::string name = ss.str();
+
+        return name;
+    }
+
+    virtual std::vector<std::string> outputs() {
+
+        std::string sID = this->getID();
+
+        std::vector<std::string> vReturn;
+        vReturn.push_back(sID);
+
+        return vReturn;
+    }
+
+
+    virtual std::vector<std::string> inputs()
+    {
+        std::vector<std::string> vBase;
+        vBase.push_back(this->getID() + "_" + m_sValue);
+
+        return vBase;
     }
 
     std::string evaluate( std::map< std::string, ExecutionNode*>* pID2Node,

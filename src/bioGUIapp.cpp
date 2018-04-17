@@ -189,7 +189,8 @@ bioGUIapp::bioGUIapp(int& argc, char** argv)
 
     QWidget* pLeft = new QWidget;
     pLeft->setLayout(pLeftLayout);
-
+    pLeft->setMinimumWidth(250);
+    pLeft->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
     pSplitter->addWidget(pLeft);
 
     //pMainLayout->addLayout(pLeftLayout);
@@ -199,20 +200,20 @@ bioGUIapp::bioGUIapp(int& argc, char** argv)
     //pMainLayout->addWidget(m_pApplicationWindowArea);
     pSplitter->addWidget(m_pApplicationWindowArea);
 
+    pSplitter->setCollapsible(0, false);
+    pSplitter->setCollapsible(1, false);
+
     QGridLayout* pGridLayout = new QGridLayout();
     pGridLayout->addWidget(pSplitter, 0,0);
     m_pMainWindow->setLayout(pGridLayout);
-
-    //m_pMainWindow->setLayout(pMainLayout);
-    //m_pMainWindow->show();
-
     m_pMainMainWindow = new QMainWindow();
     m_pMainMainWindow->setCentralWidget(pSplitter);
     m_pMainMainWindow->show();
-
-    pLeft->setMinimumWidth(250);
     m_pMainMainWindow->setMinimumSize(700, 500);
 
+    QList<int> sizeList;
+    sizeList << 250 << m_pMainMainWindow->width()-250;
+    pSplitter->setSizes(sizeList);
     // For testing purposes only
     //this->runProgram();
 

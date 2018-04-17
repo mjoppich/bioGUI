@@ -51,6 +51,13 @@ public:
 
     }
 
+    virtual std::vector<std::string> inputs()
+    {
+        std::string sValue = m_sValue.toStdString();
+        std::vector<std::string> vCLArgs = this->referencedInputs(sValue, NULL, NULL, NULL);
+        return vCLArgs;
+    }
+
     virtual std::string evaluateDeferred( std::map< std::string, ExecutionNode*>* pID2Node,
                                           std::map<std::string, std::string>* pInputID2Value,
                                           std::map<std::string, WidgetFunctionNode*>* pInputID2FunctionWidget,

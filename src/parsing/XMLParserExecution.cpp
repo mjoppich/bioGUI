@@ -50,7 +50,7 @@ ExecutionNode *XMLParserExecution::getExecutionNodes(QDomElement* pElement ) {
 
             QString sText = pElement->text();
 
-            if (sText.size() > 0)
+            if ((sText.size() > 0) && (pNode->getQTag().compare("const", Qt::CaseInsensitive) != 0))
             {
 
                 ExecutionConstNode* pConstNode = new ExecutionConstNode(NULL);

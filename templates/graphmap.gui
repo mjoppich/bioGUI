@@ -1,0 +1,64 @@
+<!--<?xml version="1.0" encoding="UTF-8")>-->
+<template description="graphmap - long-read aligner" title="Graphmap">
+    <window width="500" height="1000" title="Graphmap">
+        <vgroup>
+            <group>
+                <hgroup>
+                    <label>Run Program in WSL?</label>
+                    <checkbox id="WSLsel" value="true" selectonwindows="true">WSL</checkbox>
+                </hgroup>
+            </group>
+
+            <group title="graphmap mode" exclusive="true">
+                <group id="aligngroup" title="the entire GraphMap pipeline (align)" checkable="true">
+                    <grid cols="2">
+                        <label>Reference Genome (FASTA format)</label><filedialog id="align_ref" location="" multiple="false">Select File</filedialog>
+                        <label>Reads File (FASTQ format)</label><filedialog id="align_reads" location="" multiple="false">Select File</filedialog>
+                        <label>Output File (SAM format)</label><filedialog id="align_output" location="" output="true">Select File</filedialog>
+                        <label>Additional Arguments</label><input id="align_cl"></input>
+                        <label></label><action program="aligner" hint="Click here to run program">run program</action>
+                    </grid>
+                </group>
+                <group program="ovlgroup" title="Overlapping With Long Erroneous Reads (owler)" checkable="true">
+
+                    <grid cols="2">
+                        <label>Reference Genome (FASTA format)</label><filedialog id="ovler_ref" location="" multiple="false">Select File</filedialog>
+                        <label>Reads File (FASTQ format)</label><filedialog id="ovler_reads" location="" multiple="false">Select File</filedialog>
+                        <label>Output File (SAM format)</label><filedialog id="ovler_output" location="" output="true">Select File</filedialog>
+                        <label>Additional Arguments</label><input id="ovler_cl"></input>
+                        <label></label><action program="ovler" hint="Click here to run program">run program</action>
+                    </grid>
+
+
+                </group>
+            </group>
+
+            <streambox id="output1">
+                <stream id="outputstream1">Output</stream>
+                <stream id="outputstream2">Error Output</stream>
+            </streambox>
+
+        </vgroup>
+    </window>
+    <execution>
+        <const id="progdir">/home/mjoppich/progs/graphmap/bin/Linux-x64/</const>
+        <relocate id="align_ref_rel" wsl="${WSLsel}" from="${align_ref}"/>
+        <relocate id="align_reads_rel" wsl="${WSLsel}" from="${align_reads}"/>
+        <relocate id="align_output_rel" wsl="${WSLsel}" from="${align_output}"/>
+
+        <relocate id="ovler_ref_rel" wsl="${WSLsel}" from="${ovler_ref}"/>
+        <relocate id="ovler_reads_rel" wsl="${WSLsel}" from="${ovler_reads}"/>
+        <relocate id="ovler_output_rel" wsl="${WSLsel}" from="${ovler_output}"/>
+
+        <execute program="aligner" location="${bindir}" exec="graphmap align -r ${align_ref_rel} -d ${align_reads_rel} -o ${align_output_rel} ${align_cl}" wsl="WSLsel">
+            <output type="COUT" color="green" to="outputstream1" />
+            <output type="CERR" color="red" to="outputstream2" />
+        </execute>
+
+        <execute program="ovler" location="${bindir}" exec="graphmap owler -r ${ovler_ref_rel} -d ${ovler_reads_rel} -o ${ovler_output_rel} ${ovler_cl}" wsl="WSLsel">
+            <output type="COUT" color="green" to="outputstream1" />
+            <output type="CERR" color="red" to="outputstream2" />
+        </execute>
+
+    </execution>
+</template>

@@ -20,14 +20,16 @@
 #ifndef BIOGUI_EXECUTIONNETWORK_H
 #define BIOGUI_EXECUTIONNETWORK_H
 
-
+#include <set>
+#include <map>
 #include <functional>
+#include <QObject>
 #include <src/parsing/visual_nodes/WidgetFunctionNode.h>
-#include "ExecutionNode.h"
-#include "ExecutionExecuteNode.h"
-#include "ExecutionIfNode.h"
+
+
 
 class QWidget;
+class ExecutionNode;
 
 class ExecutionNetwork : public QObject{
  Q_OBJECT
@@ -37,6 +39,7 @@ public:
                      std::map< std::string, WidgetFunctionNode* >* pInputID2FunctionWidget )
     {
         this->setMaps(pID2Value, pInputID2FunctionWidget);
+
     }
 
     ~ExecutionNetwork()
@@ -46,6 +49,12 @@ public:
         //delete m_pInputID2Widget;
 
     }
+
+    void printNetworkAddNode(std::ofstream* pOut, const std::string sNodeID, std::string sNodeDesc, int iNodeType, std::set<std::string>* pContainedIDs);
+
+    void printNetworkAddEdge(std::ofstream* pOut, const std::string sSource, const std::string sTarget, size_t iEdgeID);
+
+    void printNetwork();
 
     void setMaps(std::map< std::string, std::function< std::string () > >* pID2Value,
                  std::map< std::string, WidgetFunctionNode* >* pInputID2FunctionWidget)
@@ -57,52 +66,10 @@ public:
     int execute( std::string& sProgramToRun )
     {
 
-        mInputID2Value.clear();
-        mID2Node.clear();
+        this->printNetwork();
 
-        // fill inputid2value
-        std::map<std::string, std::function< std::string () > >::iterator oIt = m_pID2Value->begin();
 
-        for ( ; oIt != m_pID2Value->end(); ++oIt)
-        {
-
-            std::string sResult = oIt->second();
-
-            //std::cout << "inputid2value " << oIt->first << " " << sResult << std::endl;
-
-            mInputID2Value.insert( std::pair<std::string, std::string>( oIt->first, sResult ) );
-
-        }
-
-        std::vector< ExecutionNode*> vExecNodes;
-
-        for (size_t i = 0; i < m_vNodes.size(); ++i)
-        {
-
-            ExecutionNode* pNode = m_vNodes.at(i);
-            pNode->getNodeMap( &mID2Node );
-
-            if (ExecutionExecuteNode* pExecNode = dynamic_cast<ExecutionExecuteNode*>( pNode ))
-            {
-
-                if ((sProgramToRun.size() == 0) || (sProgramToRun.compare( pExecNode->getProgramName() ) == 0))
-                {
-                    m_vExecNodes.push_back(pExecNode);
-                }
-
-            }
-
-            if (ExecutionIfNode* pExecNode = dynamic_cast<ExecutionIfNode*>( pNode ))
-            {
-
-                if ((sProgramToRun.size() == 0) || (sProgramToRun.compare( pExecNode->getProgramName() ) == 0))
-                {
-                    m_vExecNodes.push_back(pExecNode);
-                }
-
-            }
-
-        }
+        this->prepareAllNodeLists(&sProgramToRun);
 
         if (m_vExecNodes.size() == 0)
         {
@@ -115,6 +82,8 @@ public:
 
     }
 
+    void prepareAllNodeLists(std::string* pProgToRun);
+
     void setNodes(ExecutionNode* pNode)
     {
         m_vNodes.push_back(pNode);
@@ -125,39 +94,7 @@ public:
         m_vNodes.insert(m_vNodes.end(), vNodes.begin(), vNodes.end());
     }
 
-    int performExecution()
-    {
-
-        std::vector<ExecutionNode*>::iterator oIt = m_vExecNodes.begin();
-
-        if (oIt == m_vExecNodes.end())
-        {
-            LOGERROR("EXECUTION FINISHED!")
-
-            emit executionFinished();
-            return 0;
-        }
-
-        ExecutionNode* pNode = *oIt;
-
-        // this should never be called again :)
-        m_vExecNodes.erase(oIt);
-
-        if (ExecutionExecutableNode* pExecNode = dynamic_cast<ExecutionExecutableNode*>( pNode ))
-        {
-
-            // when node is finished, we start the next execution
-            this->connect( pExecNode,&ExecutionExecutableNode::finishedExecution, this, &ExecutionNetwork::performExecution );
-
-            std::cout << "evaluate " << pExecNode->getID() << std::endl;
-
-            pExecNode->evaluate( &mID2Node, &mInputID2Value, m_pInputID2FunctionWidget, true );
-
-        }
-
-        return 0;
-
-    }
+    int performExecution();
 
 signals:
 

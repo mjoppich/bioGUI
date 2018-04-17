@@ -127,6 +127,12 @@ public:
 
     }
 
+    virtual std::vector<std::string> inputs()
+    {
+        std::vector<std::string> vCLArgs = this->referencedInputs(m_sCLArg, NULL, NULL, NULL);
+        return vCLArgs;
+    }
+
     virtual std::string evaluate( std::map< std::string, ExecutionNode*>* pID2Node,
                                   std::map<std::string, std::string>* pInputID2Value,
                                   std::map<std::string, WidgetFunctionNode*>* pInputID2FunctionWidget, bool bEmitSignal = false)

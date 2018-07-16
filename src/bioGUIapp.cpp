@@ -49,7 +49,6 @@ bioGUIapp::bioGUIapp(int& argc, char** argv)
         }
     }
 
-
     //QMessageBox::warning(NULL, sApplicationDir, sApplicationDir); 
     //QMessageBox::warning(NULL, sCurrentDir, sCurrentDir);
 

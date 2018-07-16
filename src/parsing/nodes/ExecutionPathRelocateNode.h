@@ -66,7 +66,7 @@ public:
         std::string sEmpty = "";
         std::string sWSLPrefix = "/mnt/";
 
-        relocateGeneral(sPaths, sEmpty, sEmpty, sWSLPrefix, sSeperator, true);
+        return relocateGeneral(sPaths, sEmpty, sEmpty, sWSLPrefix, sSeperator, true);
     }
 
     static std::string relocateGeneral(std::string& sPaths, std::string& sFrom, std::string& sTo, std::string& sPrepend, std::string& sSeperator, bool bMakeUnix)

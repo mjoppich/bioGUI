@@ -1,0 +1,175 @@
+#! Install canu (github)
+
+echo "This tool will not compile in folders where the absolute path contains spaces!"
+echo "Dependencies: None"
+
+if [ ! "$2" = "" ]; then
+	echo "Installing dependencies"
+  #echo $2 | sudo -S apt-get update
+  #echo $2 | sudo -S apt-get -y install csh
+
+else
+	echo "No sudo password, not installing dependencies"
+fi
+
+
+
+## set all variables
+PROG=canu
+PROGDIR=$1
+
+
+
+if [ -z "${PROGDIR}" ]; then
+	PROGDIR=~/bioGUI/progs/
+fi
+
+
+PROGDIRESC=$(echo $PROGDIR | sed 's/ /\\ /g')
+APPBINARYDIR=${PROGDIRESC}/${PROG}/Linux-amd64/bin/
+
+if [ -d "$PROGDIR/$PROG" ]; then
+    echo "Removing Folder $PROGDIR/$PROG"
+    #rm -rf $PROGDIR/$PROG
+fi
+
+## create progdir
+mkdir -p "$PROGDIR/$PROG"
+
+echo "Fetching $PROG - this may take a while."
+
+#download and unzip
+#git clone https://github.com/marbl/canu.git $PROGDIR/$PROG
+
+cd "$PROGDIR/$PROG/src"
+
+make -j 2
+
+
+if [ $# -gt 2 ]; then
+	if [ "$3" = "1" ]; then
+
+		if ! grep -q "$APPBINARYDIR" ~/.bashrc; then
+			echo "export PATH=\"$APPBINARYDIR:\$PATH\" " >> ~/.bashrc;
+		fi
+	fi
+fi
+
+
+
+if [ $# -eq 5 ]; then
+
+IP=$4
+PORT=$5
+       
+echo "Sending Template to $IP at $PORT"
+
+nc -q 0 $IP $PORT <<EOF
+
+<!--<?xml version="1.0" encoding="UTF-8")>-->
+
+<template description="canu ($PROG)" title="canu">
+
+
+
+<window width="500" height="1000" title="canu">
+
+  <vgroup>
+
+
+    <group title="Assembly Options">
+    
+        
+                
+        <label>Input Reads (PacBio)</label> <filedialog id="canu_pacbio" output="false">Select Input Reads (PacBio)</filedialog>
+        <label>Input Reads (Oxford)</label> <filedialog id="canu_oxford" output="false">Select Input Reads (Oxford)</filedialog>
+      
+        <label>Assembly Output</label> <filedialog id="canu_tmp_folder" output="true" foler="true">Select Assembly Folder</filedialog>
+        <label>Assembly Prefix</label><input id="canu_assembly_prefix"></input>
+        
+        <label>Expected Genome Size</label><input id="canu_genome_size" type="float"></input>
+        <label>Read Error Rate</label><input id="canu_error_rate" min="0.0" max="1.0" type="float"></input>
+        
+        <label>Additional Options</label><input id="canu_options"></input>
+    
+    
+        <action program="canu" hint="click here to run program">Run canu</action>  
+    </group>
+
+
+    <group title="General Options">
+       <label>Run in WSL on Windows?</label><checkbox id="WSLsel" value="true" selectonwindows="true">Run in WSL?</checkbox>
+    </group>
+  
+    <streambox id="output1">
+      <stream id="outputstream1">OS1</stream>
+      <stream id="outputstream2">OS2</stream>
+    </streambox>
+ 
+
+  </vgroup>
+
+</window>
+
+
+
+<execution>
+
+    <const id="bindir">${APPBINARYDIR}/</const>
+    
+    
+    <relocate id="canu_pacbio_rel" from="\${canu_pacbio}" wsl="\${WSLsel}"/>
+    <relocate id="canu_oxford_rel" from="\${canu_oxford}" wsl="\${WSLsel}"/>
+    <relocate id="canu_tmp_folder_rel" from="\${canu_tmp_folder}" wsl="\${WSLsel}"/>
+
+    <add id="args">
+    
+            <value from="\${canu_options}"/>
+
+        <if comp="IS_SET" value1="\${canu_assembly_prefix}">
+            <const>-p</const>
+            <value from="\${canu_assembly_prefix}"/>
+        </if>      
+        
+        <if comp="IS_SET" value1="\${canu_tmp_folder_rel}">
+            <const>-d</const>
+            <value from="\${canu_tmp_folder_rel}"/>
+        </if>      
+
+        <if comp="IS_SET" value1="\${canu_error_rate}">
+            <const>errorRate=</const>
+            <value from="\${canu_error_rate}"/>
+        </if>
+        
+        <if comp="IS_SET" value1="\${canu_genome_size}">
+            <const>genomeSize=</const>
+            <value from="\${canu_genome_size}"/>
+            <const>m</const>
+        </if>                
+
+        <if comp="IS_SET" value1="\${canu_pacbio_rel}">
+            <const>-pacbio-raw</const>
+            <value from="\${canu_pacbio_rel}"/>
+        </if>
+
+        <if comp="IS_SET" value1="\${canu_oxford}">
+            <const>-oxford-raw</const>
+            <value from="\${canu_oxford}"/>
+        </if>         
+
+    </add>
+    
+    <execute program="canu" param="\${args}" location="\${bindir}" exec="canu" wsl="WSLsel">
+        <output type="COUT" color="green" to="outputstream1" />
+        <output type="CERR" color="red" to="outputstream2" />
+    </execute>
+
+  
+
+</execution>
+</template>
+
+
+EOF
+
+fi

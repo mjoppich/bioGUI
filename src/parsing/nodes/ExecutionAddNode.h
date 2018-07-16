@@ -71,12 +71,17 @@ public:
         for (size_t i = 0; i < m_vChildren.size(); ++i)
         {
 
-            if (i > 0)
+            std::string sNewVal = m_vChildren.at(i)->evaluate(pID2Node, pInputID2Value, pInputID2FunctionWidget);
+
+            if ((sReturn.size() > 0) && (sNewVal.size() > 0))
             {
-                sReturn = sReturn + m_sSeperator;
+                sReturn += m_sSeperator;
             }
 
-            sReturn = sReturn + m_vChildren.at(i)->evaluate(pID2Node, pInputID2Value, pInputID2FunctionWidget);
+            if (sNewVal.size() > 0)
+            {
+                sReturn += sNewVal;
+            }
 
         }
 

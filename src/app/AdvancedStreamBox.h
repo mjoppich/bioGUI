@@ -174,6 +174,11 @@ public:
 
     }
 
+    ~AdvancedStreamBox()
+    {
+        std::cerr << "Deleting Advanced Stream Box" << std::endl;
+    }
+
 
 
     virtual QSize sizeHint()
@@ -276,9 +281,10 @@ public:
 
         LOGERROR("Finishing thread: " + std::to_string((uint64_t) pThread));
 
+        /*
         if (pThread == NULL)
             return;
-
+        */
 
         std::map<ExecuteThread*, std::vector<ExtendedThreadBuffer*> >::iterator oJt = m_mThreadToBuffer.find(pThread);
 

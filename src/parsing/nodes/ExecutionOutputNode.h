@@ -237,6 +237,7 @@ public:
 
                 if (m_sType.compare("TCP") == 0)
                 {
+                    std::cerr << "Adding TCP Buffer for thread " << pThread << " on port " << m_iPort << std::endl;
                     pTextEdit->addTCPBuffer( pThread, m_sHost, m_iPort, QString(m_sTo.c_str()), oColor );
                 }
 
@@ -246,6 +247,11 @@ public:
 
                 pTextEdit->finishProcess(pProcess);
                 pTextEdit->finishThread(pThread);
+
+                if (m_sType.compare("TCP") == 0)
+                {
+                    pTextEdit->finishThread(0);
+                }
 
                 if (m_sType.compare("FILE") == 0)
                 {

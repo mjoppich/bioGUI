@@ -34,6 +34,8 @@
 #endif
 #endif
 
+#include <QDir>
+#include <QSettings>
 #include <cstdint>
 #if INTPTR_MAX == INT32_MAX
     #define __BIOGUI__32
@@ -131,7 +133,6 @@ public:
         m_sParam = sParam;
         m_bWindowsProcNoHandle = bWindowsProcNoHandle;
 
-
         m_pProcess = new QProcess();
 
     }
@@ -186,6 +187,21 @@ public:
         return sOut;
     }
 
+    QString getWSLPath()
+    {
+        QString sConfigFilePath = QDir::currentPath() + "/config.ini";
+
+        QSettings* pSettings = new QSettings(sConfigFilePath, QSettings::IniFormat);
+
+        QStringList allKeys = pSettings->allKeys();
+        QString sWSLBashLocation = pSettings->value("bash/location", "C:\\Windows\\sysnative\\bash").toString();
+
+        delete pSettings;
+
+        return sWSLBashLocation;
+
+    }
+
     bool start()
     {
 
@@ -212,8 +228,15 @@ public:
 
         if (m_bWindowsProcNoHandle)
         {
-            sProgram = "C:\\Windows\\sysnative\\bash";
-            oArgs << "-ic" << m_sProgram + " " + m_sParam;
+            sProgram = this->getWSLPath();//"C:\\Windows\\sysnative\\bash";
+            QStringList oProgArgs = ProcessLauncher::stringToArguments(m_sParam.toStdString(), '\"');
+
+            oArgs << "--" << m_sProgram;
+
+            for (int i = 0; i < oProgArgs.size(); ++i)
+            {
+                oArgs.append( oProgArgs.at(i) );
+            }
 
 
         } else {
@@ -222,9 +245,11 @@ public:
 
             if (m_sParam.size() > 0)
                 oArgs = ProcessLauncher::stringToArguments(m_sParam.toStdString(), '\"');
+        }
 
-            for (int i = 0; i < oArgs.size(); ++i)
-                std::cerr << oArgs.at(i).toStdString() << std::endl;
+        for (int i = 0; i < oArgs.size(); ++i)
+        {
+            std::cerr << i << "\t" << oArgs.at(i).toStdString() << std::endl;
         }
 
         LOGLVL( sProgram.toStdString(), Logging::ERR );

@@ -42,8 +42,10 @@ if [ "$4" != "0" ]; then
 
 IP=$4
 PORT=$5
+       
+echo "Sending Template to $IP at $PORT"
 
-nc $IP $PORT << EOF
+nc -q 0 $IP $PORT <<EOF
 
 <template description="albacore basecaller aligner" title="albacore (python)">
 <window title="albacore basecaller">
@@ -123,10 +125,10 @@ nc $IP $PORT << EOF
         <const>-f</const>
         <value from="\${albacore_flowcell}"/>
         <const>-k</const>
-        <value from="\${albacore_flowcell}"/>
+        <value from="\${albacore_kit}"/>
     <else>
         <const>-f</const>
-        <value from="\${albacore_kit}"/>
+        <value from="\${albacore_flowcell_man}"/>
         <const>-k</const>
         <value from="\${albacore_kit_man}"/>
     </else>

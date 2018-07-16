@@ -89,6 +89,7 @@ public:
 
         QStringList allKeys = pSettings->allKeys();
         m_sDownloadServerLocation = pSettings->value("server/location", "localhost").toString();
+        m_sWSLBashLocation = pSettings->value("bash/location", "C:\\Windows\\sysnative\\bash").toString();
 
         delete pSettings;
 
@@ -400,6 +401,7 @@ protected:
     XMLParserWindow* m_pWindowParser = NULL;
 
     QString m_sDownloadServerLocation = "";
+    QString m_sWSLBashLocation = "";
 
 
     /** TEST PLAYGROUND **/

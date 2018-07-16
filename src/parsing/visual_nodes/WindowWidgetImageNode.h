@@ -26,6 +26,11 @@
 #include <QDebug>
 #include "WindowWidgetNode.h"
 #include <iostream>
+#include <src/app/AdvancedStreamBox.h>
+#include <QDir>
+#include <QGroupBox>
+#include <QPushButton>
+#include <src/bioGUIapp.h>
 
 class QZoomableGraphicsView : public QGraphicsView
 {

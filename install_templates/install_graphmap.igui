@@ -1,58 +1,176 @@
-#! Install graphmap
+#! Install graphmap (github))
 
-# usage: scriptname sudopw addtopath ip port addinfo
+echo "This tool will not compile in folders where the absolute path contains spaces!"
+echo "Dependencies: None"
 
-
-DEP_PACKAGES="python3 pip3"
-
-echo "Dependencies: $DEP_PACKAGES"
 if [ ! "$2" = "" ]; then
 	echo "Installing dependencies"
-	echo "no dependencies needed"
-	#echo $2 | sudo -S apt-get update
-	#echo $2 | sudo -S apt-get -y $DEP_PACKAGES
+  #echo $2 | sudo -S apt-get update
+  #echo $2 | sudo -S apt-get -y install csh
 
 else
 	echo "No sudo password, not installing dependencies"
 fi
 
+
+
 ## set all variables
 PROG=graphmap
 PROGDIR=$1
+
+
 
 if [ -z "${PROGDIR}" ]; then
 	PROGDIR=~/bioGUI/progs/
 fi
 
+
 PROGDIRESC=$(echo $PROGDIR | sed 's/ /\\ /g')
-APPBINARYDIR=${PROGDIRESC}/${PROG}/
+APPBINARYDIR=${PROGDIRESC}/${PROG}/bin/Linux-x64/
+
+if [ -d "$PROGDIR/$PROG" ]; then
+    echo "Removing Folder $PROGDIR/$PROG"
+    #rm -rf $PROGDIR/$PROG
+fi
 
 ## create progdir
-mkdir -p "$PROGDIR/"
+mkdir -p "$PROGDIR/$PROG"
 
 #download and unzip
-cd $PROGDIR
-git clone https://github.com/isovic/graphmap.git $PROG
+#git clone https://github.com/isovic/graphmap.git $PROGDIR/$PROG
 
-cd $PROG
+cd "$PROGDIR/$PROG"
+
 make modules
 make
 
-BINDIR="$PROGDIR/$PROG/bin/Linux-x64/"
 
-if [ "$3" = "1" ]; then
-    if ! grep -q "$BINDIR" ~/.bashrc; then
-        echo "export PATH=\"$BINDIR/$PROG:\$PATH\" " >> ~/.bashrc;
-    fi
+if [ $# -gt 2 ]; then
+	if [ "$3" = "1" ]; then
+
+		if ! grep -q "$PROGDIRESC/$PROG/bin/Linux-x64/" ~/.bashrc; then
+			echo "export PATH=\"$PROGDIRESC/$PROG/bin/Linux-x64/:\$PATH\" " >> ~/.bashrc;
+		fi
+	fi
 fi
 
-if [ "$4" != "0" ]; then
+
+
+if [ $# -eq 5 ]; then
 
 IP=$4
 PORT=$5
+       
+echo "Sending Template to $IP at $PORT"
 
-nc $IP $PORT << EOF
+nc -q 0 $IP $PORT <<EOF
 
+<!--<?xml version="1.0" encoding="UTF-8")>-->
+
+<template description="graphmap ($PROG)" title="graphmap">
+
+
+
+<window width="500" height="1000" title="graphmap">
+
+  <vgroup>
+
+
+    <group title="Alignment Options">
+    
+    
+        <label>Program Mode (not all options used in all modes)</label>
+        <combobox id="graphmap_mode" selected="align">
+            <comboitem value="align">Alignment-Mode</comboitem>
+            <comboitem value="owler">Overlap-Mode</comboitem>
+        </combobox>
+                
+        <label>Input Reference</label> <filedialog id="graphmap_align_reference" output="false">Select Input Reference (fa)</filedialog>
+        <label>Input Reads</label> <filedialog id="graphmap_align_reads" output="false">Select Input Reads (fq)</filedialog>
+        
+        <label>Input Transcriptome</label> <filedialog id="graphmap_align_gtf" output="false">Select Input Annotation (gtf)</filedialog>
+        
+        <label>Alignment Output</label> <filedialog id="graphmap_align_output" output="true">Select Output Sam-File</filedialog>
+        
+        <label>Alignment Algorithm</label>
+        <combobox id="graphmap_align_mode" selected="anchor">
+            <comboitem value="anchor">Anchored alignment with end-to-end extension</comboitem>
+            <comboitem value="anchorgotoh">Anchored alignment with Gotoh</comboitem>
+            <comboitem value="sg">Myers' bit-vector approach. Semiglobal.</comboitem>
+            <comboitem value="sggotoh">Gotoh alignment (semi-global) with affine gaps.</comboitem>
+
+        </combobox>
+        
+        <label>Additional Options</label><input id="graphmap_options"></input>
+    
+    
+        <action program="graphmap" hint="click here to run program">Run Graphmap</action>  
+    </group>
+
+
+    <group title="General Options">
+       <label>Run in WSL on Windows?</label><checkbox id="WSLsel" value="true" selectonwindows="true">Run in WSL?</checkbox>
+       <label>Threads</label><input id="graphmap_threads" type="int">4</input>
+    </group>
+  
+    <streambox id="output1">
+      <stream id="outputstream1">OS1</stream>
+      <stream id="outputstream2">OS2</stream>
+    </streambox>
+ 
+
+  </vgroup>
+
+</window>
+
+
+
+<execution>
+
+    <const id="bindir">${APPBINARYDIR}/</const>
+    
+    
+    <relocate id="graphmap_align_reference_rel" from="\${graphmap_align_reference}" wsl="\${WSLsel}"/>
+    <relocate id="graphmap_align_reads_rel" from="\${graphmap_align_reads}" wsl="\${WSLsel}"/>
+    <relocate id="graphmap_align_gtf_rel" from="\${graphmap_align_gtf}" wsl="\${WSLsel}"/>
+    <relocate id="graphmap_align_output_rel" from="\${graphmap_align_output}" wsl="\${WSLsel}"/>
+
+    <add id="args">
+        <value from="\${graphmap_mode}"/>
+        <if comp="IS_SET" value1="\${graphmap_align_reference_rel}">
+            <const>-r</const>
+            <value from="\${graphmap_align_reference_rel}"/>
+        </if>
+
+        <if comp="IS_SET" value1="\${graphmap_align_gtf}">
+            <const>--gtf</const>
+            <value from="\${graphmap_align_gtf_rel}"/>
+        </if>
+
+        <if comp="IS_SET" value1="\${graphmap_align_reads_rel}">
+            <const>-d</const>
+            <value from="\${graphmap_align_reads_rel}"/>
+        </if>        
+
+
+        <value from="\${graphmap_options}"/>
+        
+        <if comp="IS_SET" value1="\${graphmap_align_output_rel}">
+            <const>-o</const>
+            <value from="\${graphmap_align_output_rel}"/>
+        </if>         
+
+    </add>
+    
+    <execute program="graphmap" param="\${args}" location="\${bindir}" exec="graphmap" wsl="WSLsel">
+        <output type="COUT" color="green" to="outputstream1" />
+        <output type="CERR" color="red" to="outputstream2" />
+    </execute>
+
+  
+
+</execution>
+</template>
 
 
 EOF

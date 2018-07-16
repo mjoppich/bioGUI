@@ -90,10 +90,22 @@ endif()
 if (WIN32)
 
     message(STATUS ">>> WIN32")
-    set(ENV{LUA_DIR} "D:/libraries/lua-5.3.3/;C:/lua53/")
-    message(STATUS "IN MINGW")
-    set(Qt5_DIR "C:/Qt/5.8/mingw53_32;C:/Qt/5.8/mingw53_32")
-    set(ENV{OPENSSL_ROOT_DIR} "C:/OpenSSL-Win32/lib/")
+    set(ENV{LUA_DIR} "${CMAKE_CURRENT_SOURCE_DIR}/extlib/lua")
+
+    if (MINGW)
+        message(STATUS "IN MINGW")
+    else()
+        set(MINGW 1)
+    endif()
+
+    if (MINGW)
+        message(STATUS "IN MINGW")
+    endif()
+
+    set(Qt5_DIR "C:/Qt/5.11.1/mingw53_32")
+    set(ENV{OPENSSL_ROOT_DIR} "${CMAKE_CURRENT_SOURCE_DIR}/extlib/openssl/")
+    set(OPENSSL_ROOT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/extlib/openssl/")
+    message(STATUS $ENV{OPENSSL_ROOT_DIR})
 
 endif()
 
@@ -104,7 +116,7 @@ if (UNIX AND NOT APPLE)
     set(Qt5_DIR "")
     LIST(APPEND Qt5_DIR "~/Qt/5.8/gcc_64/" "~/Qt/5.7/gcc_64/" "/usr/local/qt/5.7/gcc_64/" "/home/mjoppich/qt/qt-everywhere-src-5.10.0/qtbase" "/opt/Qt5.10.0/5.10.0/gcc_64/")
 
-    set(ENV{OPENSSL_ROOT_DIR} "/home/users/joppich/libs/openssl/lib/")
+    set(ENV{OPENSSL_ROOT_DIR} "/home/users/joppich/libs/openssl/")
     set(ENV{LUA_DIR} "/home/users/joppich/libs/lua/")
 
     set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
@@ -154,7 +166,8 @@ message(STATUS "   *** Lua lib: ${LUA_LIBRARY}")
 message(STATUS "   *** Lua DLL dir: ${LUA_DLL_DIR}")
 
 # Search OpenSSL
-find_package(OpenSSL REQUIRED)
+set(OPENSSL_USE_STATIC_LIBS True)
+find_package(OpenSSL)
 
 if( OPENSSL_FOUND )
 
@@ -165,8 +178,13 @@ if( OPENSSL_FOUND )
     message(STATUS "SSL LIBRARY ${OPENSSL_SSL_LIBRARY}")
     message(STATUS "CRYPTO LIBRARY ${OPENSSL_CRYPTO_LIBRARY}")
 
+    get_filename_component(OPENSSL_DIR ${OPENSSL_SSL_LIBRARY} DIRECTORY)
+
+    message(STATUS "OpenSSL DIR ${OPENSSL_DIR}")
+
 else()
     # Error; with REQUIRED, pkg_search_module() will throw an error by it's own
+      message( FATAL_ERROR "OPENSSL NOT FOUND" )
 endif()
 
 file(GLOB parsinglib_H
@@ -227,9 +245,14 @@ endif()
 
 # source_group("UI Files" FILES ${UI_FILES})
 
+set(CMAKE_EXE_LINKER_FLAGS "-static-libgcc -static-libstdc++ -static")
+
+
 add_executable(${PROJECT_NAME} ${OS_BUNDLE} # Expands to WIN32 or MACOS_BUNDLE depending on OS
-    ${bioGUI_H} ${bioGUIapp_H} ${bioGUI_SRC} ${parsinglib_SRC} ${parsinglib_H} ${parsinglib_nodes_H} ${META_FILES_TO_INCLUDE} ${RESOURCE_FILES} ${DUKTAPE}
+    ${bioGUI_H} ${bioGUIapp_H} ${bioGUI_SRC} ${parsinglib_SRC} ${parsinglib_H} ${parsinglib_nodes_H} ${META_FILES_TO_INCLUDE} ${RESOURCE_FILES}
+    ${DUKTAPE}
 )
+
 
 ADD_LIBRARY(mylibeay STATIC IMPORTED)
 SET_TARGET_PROPERTIES(mylibeay PROPERTIES IMPORTED_LOCATION "${OPENSSL_SSL_LIBRARY}")
@@ -237,15 +260,18 @@ SET_TARGET_PROPERTIES(mylibeay PROPERTIES IMPORTED_LOCATION "${OPENSSL_SSL_LIBRA
 ADD_LIBRARY(myssleay STATIC IMPORTED)
 SET_TARGET_PROPERTIES(myssleay PROPERTIES IMPORTED_LOCATION "${OPENSSL_CRYPTO_LIBRARY}")
 
+#ADD_LIBRARY(lualib STATIC IMPORTED IMPORTED_LOCATION "${LUA_LIBRARY}")
+#SET_TARGET_PROPERTIES(lualib PROPERTIES IMPORTED_LOCATION "${LUA_LIBRARY}")
+
 ADD_LIBRARY(lualib STATIC IMPORTED)
-SET_TARGET_PROPERTIES(lualib PROPERTIES IMPORTED_LOCATION "${LUA_LIBRARY}")
+SET_TARGET_PROPERTIES(lualib PROPERTIES IMPORTED_LOCATION ${LUA_LIBRARY})
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+TARGET_LINK_LIBRARIES(${PROJECT_NAME} mylibeay myssleay m ${CMAKE_DL_LIBS})
+TARGET_LINK_LIBRARIES(${PROJECT_NAME} lualib)
 
-TARGET_LINK_LIBRARIES(${PROJECT_NAME} mylibeay myssleay lualib ${CMAKE_DL_LIBS})
 
 qt5_use_modules(${PROJECT_NAME} Core Gui Widgets Network Xml XmlPatterns)
-
 install(TARGETS ${PROJECT_NAME} DESTINATION ${CMAKE_INSTALL_PREFIX} )
 
 message(STATUS "files to copy ${META_FILES_TO_INCLUDE}")
@@ -262,16 +288,17 @@ install(FILES ${biogui_files} DESTINATION ${CMAKE_INSTALL_PREFIX})
 
 if (NOT APPLE)
 
-file(GLOB biogui_ini_files
-        "config.ini"
-        )
+    file(GLOB biogui_ini_files
+            "config.ini"
+            )
 
-install(FILES ${biogui_ini_files} DESTINATION ${CMAKE_INSTALL_PREFIX})
+    install(FILES ${biogui_ini_files} DESTINATION ${CMAKE_INSTALL_PREFIX})
 
-file(GLOB biogui_templates
-        "${CMAKE_CURRENT_SOURCE_DIR}/templates/WSL_install.gui"
-)
-install(FILES ${biogui_templates} DESTINATION ${CMAKE_INSTALL_PREFIX}/templates)
+    file(GLOB biogui_templates
+            "${CMAKE_CURRENT_SOURCE_DIR}/templates/WSL_install.gui"
+    )
+    install(FILES ${biogui_templates} DESTINATION ${CMAKE_INSTALL_PREFIX}/templates)
+    install(DIRECTORY DESTINATION ${CMAKE_INSTALL_PREFIX}/install_templates)
 
     add_custom_command( TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E make_directory ${PROJECT_BINARY_DIR})
     add_custom_command( TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E make_directory ${PROJECT_BINARY_DIR}/templates)

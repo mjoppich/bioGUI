@@ -79,6 +79,8 @@ public:
 
         //this->stopTransmissions();
 
+        std::cerr << "Requesting TCP Buffer to be deleted on Port " << m_iPort << std::endl;
+
         m_pServer->deleteLater();
 
     }

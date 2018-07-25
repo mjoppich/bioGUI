@@ -14,15 +14,14 @@ before_install:
  - wget http://download.qt.io/official_releases/qt/5.11/5.11.1/qt-opensource-linux-x64-5.11.1.run
  - chmod u+x qt-opensource-linux-x64-5.11.1.run
  - sudo ./qt-opensource-linux-x64-5.11.1.run --verbose -platform minimal --script /home/travis/build/mjoppich/bioGUI/silent_qt_install.qs
- - ls /usr/local/qt/
- - ls /opt/Qt/5.11.1/
- - export PATH=/usr/local/qt/5.11.1/gcc_64/bin/:$PATH
+ - ls /opt/Qt5.11.1/
+ - export PATH=/opt/Qt5.11.1/5.11.1/gcc_64/bin/:$PATH
  - cd /home/travis/build/mjoppich/bioGUI
  
 
 before_script:
   - mkdir build
   - cd build
-  - PATH=/usr/local/qt/5.11.1/gcc_64/bin/:$PATH cmake ..
+  - PATH=/opt/Qt5.11.1/5.11.1/gcc_64/bin/:$PATH cmake ..
 
 script: make

@@ -119,6 +119,26 @@ public:
 
     }
 
+    virtual void saveInQDomElement(QDomElement* pDOMElement,
+                                   std::map<std::string, std::function< std::string() > >* pID2Value,
+                                   QDomDocument* pDoc)
+    {
+
+        std::string sID = this->getAttribute(pDOMElement, "ID", "");
+        std::map<std::string, std::function< std::string() > >::iterator oFind = pID2Value->find(sID);
+
+        if (oFind != pID2Value->end())
+        {
+
+            std::string sValue = oFind->second();
+
+            QDomText t = pDoc->createTextNode(QString(sValue.c_str()));
+
+            pDOMElement->appendChild(t);
+        }
+
+    }
+
 
 protected:
 

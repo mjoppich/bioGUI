@@ -25,6 +25,8 @@
 #include <QtCore/QFileInfo>
 #include <QtWidgets/QComboBox>
 #include <QtCore/QDir>
+#include <QGroupBox>
+#include <QVBoxLayout>
 #include <iostream>
 #include <QtCore/QDirIterator>
 #include <QtCore/QTextStream>
@@ -45,6 +47,22 @@ public:
 
     }
 
+    virtual void saveInQDomElement(QDomElement* pDOMElement,
+                                   std::map<std::string, std::function< std::string() > >* pID2Value,
+                                   QDomDocument* pDoc)
+    {
+
+        std::string sID = this->getAttribute(pDOMElement, "ID", "");
+        std::map<std::string, std::function< std::string() > >::iterator oFind = pID2Value->find(sID);
+
+        if (oFind != pID2Value->end())
+        {
+            std::string sValue = oFind->second();
+            pDOMElement->setAttribute("selected", QString(sValue.c_str()));
+        }
+
+    }
+
     virtual CreatedElement getWindowElement( QDomElement* pDOMElement )
     {
 
@@ -58,6 +76,8 @@ public:
         QString sCurrentPath = this->m_pFactory->getApp()->getAppPath();
         QString sSearchPath = this->getQAttribute(pDOMElement, "path", sCurrentPath + "/install_templates/");
         bool bHasInputs = this->getQAttribute(pDOMElement, "check_inputs", "false").compare("TRUE", Qt::CaseInsensitive) == 0;
+
+        QString sSelected = this->getQAttribute(pDOMElement, "selected", "");
 
         bool bHasPathSet = this->hasAttribute(pDOMElement, "path");
 
@@ -95,6 +115,8 @@ public:
                                    QDirIterator::NoIteratorFlags );
 
         int iCurrentIndex = 0;
+
+        int iSelIndex = -1;
 
         while (oDirIterator.hasNext()) {
 
@@ -168,6 +190,11 @@ public:
             QComboItem* pNewItem = new QComboItem( sFileName, sFilePath);
             pComboBox->addItem( pNewItem->getValue(), pNewItem->getData() );
 
+            if (sSelected.compare(sFilePath, Qt::CaseInsensitive) == 0)
+            {
+                iSelIndex = iCurrentIndex;
+            }
+
             ++iCurrentIndex;
 
         }
@@ -223,6 +250,11 @@ public:
 
 
         });
+
+        if (iSelIndex >=0)
+        {
+            pComboBox->setCurrentIndex(iSelIndex);
+        }
 
         std::map<int, std::vector<Retriever>> mAddRetriever = this->m_mAddRetriever;
 

@@ -24,6 +24,8 @@
 #include <src/parsing/visual_nodes/WidgetFunctionNode.h>
 #include "ExecutionNode.h"
 
+class bioGUIapp;
+
 class ExecutionExecutableNode : public QObject, public ExecutionNode
 {
     Q_OBJECT
@@ -39,6 +41,11 @@ public:
     virtual ~ExecutionExecutableNode()
     {
 
+    }
+
+    void setApp(bioGUIapp* pApp)
+    {
+        m_pApp = pApp;
     }
 
     virtual std::string evaluate( std::map< std::string, ExecutionNode*>* pID2Node,
@@ -84,6 +91,7 @@ protected:
     }
 
     std::string m_sProgramName = "";
+    bioGUIapp* m_pApp;
 
 };
 

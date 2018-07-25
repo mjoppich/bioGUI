@@ -40,8 +40,8 @@ public:
     WindowComponentFactory(bioGUIapp* pApp);
 
 
-    WindowLayoutNode* getCreatorForLayout(QString& sTag);
-    WindowWidgetNode* getCreatorForWidget(QString& sTag);
+    WindowLayoutNode* getCreatorForLayout(const QString& sTag);
+    WindowWidgetNode* getCreatorForWidget(const QString& sTag);
 
     WindowNode<QLayout>::CreatedElement createLayoutElement(QDomElement* pElement)
     {

@@ -219,3 +219,40 @@ bioGUIapp::bioGUIapp(int& argc, char** argv)
     this->reloadTemplates();
 
 }
+
+void bioGUIapp::runProgram(std::string& sProgramToRun)
+{
+
+    if (m_pExecThread != NULL)
+    {
+        LOGERROR("QUIT");
+        m_pExecThread->quit();
+        LOGERROR("WAIT");
+        m_pExecThread->wait();
+        LOGERROR("DELETE");
+        m_pExecThread->deleteLater();
+
+        m_pExecThread = NULL;
+    }
+
+
+    this->disableActions();
+
+    XMLParserExecution* pParseExecution = new XMLParserExecution();
+    std::string sCurrentFilePath = m_pWindowParser->getCurrentDocumentPath();
+    pParseExecution->initializeFile(sCurrentFilePath);
+
+    m_pExecThread = new ExecutionRunThread(m_pWindowParser, pParseExecution, sProgramToRun, this);
+    bioGUIapp* pApp = this;
+
+    this->connect(m_pExecThread, &QThread::started, m_pExecThread, &ExecutionRunThread::startExecution);
+    this->connect(m_pExecThread, &ExecutionRunThread::executionFinished, [pApp] () {
+
+        pApp->programFinished();
+
+    });
+    //this->connect(pThread, &ExecutionRunThread::executionFinished, pThread, &ExecutionRunThread::deleteLater);
+
+    m_pExecThread->start();
+
+}

@@ -37,6 +37,8 @@
 #include <QDir>
 #include <QSettings>
 #include <cstdint>
+
+#include <src/bioGUIapp.h>
 #if INTPTR_MAX == INT32_MAX
     #define __BIOGUI__32
 #elif INTPTR_MAX == INT64_MAX
@@ -123,19 +125,13 @@ protected:
 
 */
 
+class bioGUIapp;
+
 class ProcessLauncher : public QObject
 {
     Q_OBJECT
 public:
-    ProcessLauncher(QString sProgram, QString sParam, bool bWindowsProcNoHandle)
-    {
-        m_sProgram = sProgram;
-        m_sParam = sParam;
-        m_bWindowsProcNoHandle = bWindowsProcNoHandle;
-
-        m_pProcess = new QProcess();
-
-    }
+    ProcessLauncher(QString sProgram, QString sParam, bool bWindowsProcNoHandle, bioGUIapp* pApp=NULL);
 
     void setProgram(QString sProg)
     {
@@ -202,117 +198,9 @@ public:
 
     }
 
-    bool start()
-    {
-
-        /*
-        if (m_bWindowsProcNoHandle)
-        {
-
-            m_pThread->setCMD(m_sProgram + " " + m_sParam);
-
-            this->connect(m_pThread, &ExecuteThread::executionFinished, this, &ProcessLauncher::executionFinished);
-
-            m_pThread->start();
-
-        }
-        */
-
-        QIODevice::OpenMode eMode = QIODevice::ReadWrite;
-
-        std::cout << "Running QProcess for: " << m_sProgram.toStdString() << " " << m_sParam.toStdString() << std::endl;
-        std::cerr << "Running in WSL mode? " << m_bWindowsProcNoHandle << std::endl;
-
-        QString sProgram;
-        QStringList oArgs;
-
-        if (m_bWindowsProcNoHandle)
-        {
-            sProgram = this->getWSLPath();//"C:\\Windows\\sysnative\\bash";
-            QStringList oProgArgs = ProcessLauncher::stringToArguments(m_sParam.toStdString(), '\"');
-
-            oArgs << "--" << m_sProgram;
-
-            for (int i = 0; i < oProgArgs.size(); ++i)
-            {
-                oArgs.append( oProgArgs.at(i) );
-            }
+    bool start();
 
 
-        } else {
-
-            sProgram = m_sProgram;
-
-            if (m_sParam.size() > 0)
-                oArgs = ProcessLauncher::stringToArguments(m_sParam.toStdString(), '\"');
-        }
-
-        for (int i = 0; i < oArgs.size(); ++i)
-        {
-            std::cerr << i << "\t" << oArgs.at(i).toStdString() << std::endl;
-        }
-
-        LOGLVL( sProgram.toStdString(), Logging::ERR );
-        LOGLVL( oArgs.join(',').toStdString(), Logging::ERR);
-
-        QProcess* pProcess = m_pProcess;
-        QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
-        pProcess->setProcessEnvironment(env);
-
-
-        this->connect(m_pProcess, static_cast<void(QProcess::*)(QProcess::ProcessError)>(&QProcess::errorOccurred),
-                           [pProcess, this](QProcess::ProcessError errorCode){
-
-                               std::cerr << "Process Errored !" << std::endl;
-                               std::cerr << "Process Error Code: " << errorCode << std::endl;
-
-                               std::string sError = pProcess->errorString().toStdString();
-                               std::cerr << "Error: " << sError << std::endl;
-
-                               std::string sProgram = pProcess->program().toStdString();
-                               std::cerr << "Program: " << sProgram << std::endl;
-
-                               for (int i = 0; i < pProcess->arguments().size(); ++i)
-                               {
-                                   std::string sArgument = pProcess->arguments().at(i).toStdString();
-
-                                   std::cerr << "Argument " << i << " : " << sArgument << std::endl;
-                               }
-
-                               std::cout << "errored: " << pProcess << std::endl;
-
-                               emit this->finished();
-                           });
-
-        this->connect(m_pProcess, static_cast<void(QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished),
-                           [pProcess, this](int exitCode, QProcess::ExitStatus exitStatus){
-
-                                LOGERROR( "Exit Code: " + std::to_string(exitCode) );
-                                LOGERROR( "Exit Status: " + std::to_string(exitStatus) );
-                                LOGERROR( "Error: " + pProcess->errorString().toStdString() );
-                                LOGERROR( "Program: " + pProcess->program().toStdString() );
-
-                               for (int i = 0; i < pProcess->arguments().size(); ++i)
-                               {
-                                   std::string sArgument = pProcess->arguments().at(i).toStdString();
-
-                                   std::cerr << "Argument " << i << " : " << sArgument << std::endl;
-
-                                   LOGERROR( "Argument " + std::to_string(i) + ": " + pProcess->arguments().at(i).toStdString() );
-
-                               }
-
-                               LOGERROR( "Process ID: " + std::to_string(pProcess->processId()) );
-                               LOGERROR( "Process: " + std::to_string((uint64_t) pProcess) );
-
-                               emit this->finished();
-                           });
-
-        m_pProcess->start( sProgram, oArgs, eMode );
-
-        return true;
-
-    }
 
 signals:
 
@@ -423,6 +311,8 @@ protected:
     bool m_bWindowsProcNoHandle = false;
     QString m_sProgram;
     QString m_sParam;
+
+    bioGUIapp* m_pApp;
 
 };
 

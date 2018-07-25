@@ -219,6 +219,7 @@ int ExecutionNetwork::performExecution() {
 
     if (ExecutionExecutableNode* pExecNode = dynamic_cast<ExecutionExecutableNode*>( pNode ))
     {
+        pExecNode->setApp(this->m_pApp);
 
         // when node is finished, we start the next execution
         this->connect( pExecNode,&ExecutionExecutableNode::finishedExecution, this, &ExecutionNetwork::performExecution );
@@ -231,4 +232,9 @@ int ExecutionNetwork::performExecution() {
 
     return 0;
 
+}
+
+void ExecutionNetwork::setApp(bioGUIapp* pApp)
+{
+    this->m_pApp = pApp;
 }

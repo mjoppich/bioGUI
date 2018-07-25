@@ -38,6 +38,32 @@ public:
 
     }
 
+    virtual void saveInQDomElement(QDomElement* pDOMElement,
+                                   std::map<std::string, std::function< std::string() > >* pID2Value,
+                                   QDomDocument* pDoc)
+    {
+
+        std::string sID = this->getAttribute(pDOMElement, "ID", "");
+        std::map<std::string, std::function< std::string() > >::iterator oFind = pID2Value->find(sID);
+
+        if (oFind != pID2Value->end())
+        {
+            std::string sValue = oFind->second();
+
+            QString sButtonValue = this->getQAttribute(pDOMElement, "value", "");
+
+            if (sButtonValue.compare(QString(sValue.c_str()), Qt::CaseInsensitive) == 0)
+            {
+                pDOMElement->setAttribute("selected", "true");
+            } else {
+                pDOMElement->setAttribute("selected", "false");
+            }
+
+
+        }
+
+    }
+
     virtual CreatedElement getWindowElement( QDomElement* pDOMElement )
     {
 

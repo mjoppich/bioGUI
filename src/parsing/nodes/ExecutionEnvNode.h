@@ -23,7 +23,6 @@
 #include <QNetworkInterface>
 #include <QAbstractSocket>
 #include <QtCore/QStandardPaths>
-#include <src/app/ProcessLauncher.h>
 #include <QtCore/QCoreApplication>
 
 #include "ExecutionNode.h"

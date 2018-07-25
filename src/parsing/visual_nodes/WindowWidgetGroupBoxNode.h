@@ -21,6 +21,7 @@
 
 #include <src/app/QAbstractButtonItem.h>
 #include <src/app/QExtGridLayout.h>
+#include <QButtonGroup>
 #include "WindowWidgetNode.h"
 #include "WindowWidgetGeneralGroupNode.h"
 
@@ -39,11 +40,28 @@ public:
 
     }
 
+    virtual void saveInQDomElement(QDomElement* pDOMElement,
+                                   std::map<std::string, std::function< std::string() > >* pID2Value,
+                                   QDomDocument* pDoc)
+    {
+
+        std::string sID = this->getAttribute(pDOMElement, "ID", "");
+        std::map<std::string, std::function< std::string() > >::iterator oFind = pID2Value->find(sID);
+
+        if (oFind != pID2Value->end())
+        {
+            std::string sValue = oFind->second();
+            pDOMElement->setAttribute("selected", QString(sValue.c_str()));
+        }
+
+    }
+
     virtual CreatedElement getWindowElement( QDomElement* pDOMElement )
     {
 
         QString sTag = pDOMElement->tagName();
         QString sValue = pDOMElement->text();
+
 
         CreatedElement oReturn;
 

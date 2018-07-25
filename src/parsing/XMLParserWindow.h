@@ -196,6 +196,35 @@ public:
         }
     }
 
+
+    void saveAllDocumentElems(QDomElement* pElement, QList<QDomElement>* pList, QDomDocument* pDoc)
+    {
+
+        QDomNodeList oChildren = pElement->childNodes();
+
+        QString sTag = pElement->tagName().toUpper();
+        WindowWidgetNode* pNodeCreator = this->m_pWidgetNodeFactory->getCreatorForWidget( sTag );
+
+        if (pNodeCreator != NULL)
+        {
+
+            pNodeCreator->saveInQDomElement(pElement, m_pID2Value, pDoc);
+
+        }
+
+
+        for (size_t i = 0; i < oChildren.length(); ++i)
+        {
+            QDomElement oChild = oChildren.item(i).toElement();
+
+            this->saveAllDocumentElems( &oChild, pList, pDoc);
+
+        }
+
+
+    }
+
+
     void saveTemplate(QString sFileName)
     {
 
@@ -203,20 +232,23 @@ public:
 
         QDomDocument oSaveDocument = m_pDocument->toDocument();
 
-        std::map<std::string, std::function< std::string()> >::iterator oIt = m_pID2Value->begin();
+        std::map<std::string, std::function< std::string() > >::iterator oIt = m_pID2Value->begin();
 
+        QDomElement oRoot = oSaveDocument.documentElement();
 
+        QList<QDomElement>* pList = new QList<QDomElement>();
+
+        this->saveAllDocumentElems(&oRoot, pList, &oSaveDocument);
+
+        /*
 
         for (size_t iTags = 0; iTags < m_pKnownTags->size(); ++iTags)
         {
 
             std::string sTag = m_pKnownTags->at(iTags);
 
-            // Get the "Root" element
-            QDomElement docElem = oSaveDocument.documentElement();
-
             // Find elements with tag name "firstchild"
-            QDomNodeList nodes = docElem.elementsByTagName( QString(sTag.c_str()) );
+            QDomNodeList nodes = oSaveDocument.elementsByTagName( QString(sTag.c_str()) );
 
             // Iterate through all we found
             for(int i=0; i<nodes.count(); i++)
@@ -236,48 +268,14 @@ public:
                     if (oIt != m_pID2Value->end())
                     {
 
-
-                        if ( element.tagName().compare("input", Qt::CaseInsensitive) == 0)
-                        {
-
-                            QDomText t = element.firstChild().toText();
-
-                            if (!t.isNull())
-                            { // inputs
-                                QString sReplace = QString(oIt->second().c_str());
-
-                                // Print out the original text
-                                qDebug() << "Old text in " << sElementID << " of type " << element.tagName() << " was " << t.data() << " now is " << sReplace;
-                                // Set the new text
-                                t.setData( sReplace );
-                            }
+                        // set qelement as needed
+                        WindowWidgetNode* pNodeCreator = this->m_pWidgetNodeFactory->getCreatorForWidget( element.tagName() );
+                        pNodeCreator->saveInQDomElement(&element, m_pID2Value);
 
 
-                        } else if ( ( element.tagName().compare("groupbox", Qt::CaseInsensitive) == 0) ||
-                                    ( element.tagName().compare("combobox", Qt::CaseInsensitive) == 0) ||
-                                    ( element.tagName().compare("group", Qt::CaseInsensitive) == 0) )
-                        {
+                    } else {
 
-                            std::string sValue = oIt->second();
-                            QString sqValue(sValue.c_str());
-
-                            element.setAttribute("selected", sqValue );
-
-                            qDebug() << "Old text in " << sElementID << " of type " << element.tagName() << " was " << " now is " << sqValue;
-
-
-                        } else if ( element.tagName().compare("filedialog", Qt::CaseInsensitive) == 0)
-                        {
-
-                            std::string sValue = oIt->second();
-                            QString sqValue(sValue.c_str());
-
-                            element.setAttribute("location", sqValue );
-
-                            qDebug() << "Old text in " << sElementID << " of type " << element.tagName() << " was " << " now is " << sqValue;
-
-
-                        }
+                        // no id, no change needed :)
 
                     }
 
@@ -288,7 +286,7 @@ public:
 
         }
 
-        qDebug() << oSaveDocument.toString();
+        */
 
 
         QFile file( sFileName );

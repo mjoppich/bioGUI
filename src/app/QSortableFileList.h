@@ -31,7 +31,7 @@ class QSortableFileList : public QWidget {
 
 public:
 
-    QSortableFileList(QString sPathHint, QString sFileFilter, QString sDelimeter)
+    QSortableFileList(QString sPathHint, QString sFileFilter, QString sDelimeter, QStringList* pSelList=NULL)
     : QWidget()
     {
 
@@ -56,6 +56,17 @@ public:
 
         m_pListWidget = new QListWidget(this);
 
+        if (pSelList)
+        {
+            for (int i = 0; i < pSelList->size(); ++i)
+            {
+                if (this->fileExists(pSelList->at(i)))
+                {
+                    this->addFile(pSelList->at(i));
+                }
+            }
+        }
+
 
         /*
          * ARRANGE ELEMENTS
@@ -77,6 +88,16 @@ public:
 
         this->setLayout(pLayout);
 
+    }
+
+    bool fileExists(QString path) {
+        QFileInfo check_file(path);
+        // check if file exists and if yes: Is it really a file and no directory?
+        if (check_file.exists() && check_file.isFile()) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     QString evaluate()
@@ -119,7 +140,7 @@ protected:
 
     }
 
-    void addFile(QString& sFile)
+    void addFile(const QString& sFile)
     {
 
         m_pListWidget->addItem(sFile);

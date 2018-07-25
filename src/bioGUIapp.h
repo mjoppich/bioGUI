@@ -31,6 +31,7 @@
 #include <QWidget>
 #include <QDesktopWidget>
 #include <QSplitter>
+#include <QListWidget>
 
 #include <iostream>
 #include <src/app/TemplateListDelegate.h>
@@ -261,49 +262,40 @@ public:
     }
 
 
-    void runProgram(std::string& sProgramToRun)
+    void runProgram(std::string& sProgramToRun);
+
+    void addRunningProcess(QProcess* pProcess)
     {
-
-        ExecutionNetwork* pNetwork = NULL;
-
-        if (m_pExecThread != NULL)
-        {
-            LOGERROR("QUIT");
-            m_pExecThread->quit();
-            LOGERROR("WAIT");
-            m_pExecThread->wait();
-            LOGERROR("DELETE");
-            m_pExecThread->deleteLater();
-
-            m_pExecThread = NULL;
-        }
-
-
-        this->disableActions();
-
-        XMLParserExecution* pParseExecution = new XMLParserExecution();
-        std::string sCurrentFilePath = m_pWindowParser->getCurrentDocumentPath();
-        pParseExecution->initializeFile(sCurrentFilePath);
-
-        m_pExecThread = new ExecutionRunThread(m_pWindowParser, pParseExecution, sProgramToRun);
-        bioGUIapp* pApp = this;
-
-        this->connect(m_pExecThread, &QThread::started, m_pExecThread, &ExecutionRunThread::startExecution);
-        this->connect(m_pExecThread, &ExecutionRunThread::executionFinished, [pApp] () {
-
-            pApp->programFinished();
-
-        });
-        //this->connect(pThread, &ExecutionRunThread::executionFinished, pThread, &ExecutionRunThread::deleteLater);
-
-        m_pExecThread->start();
-
+        m_vProcessList.append(pProcess);
     }
 
     void programFinished()
     {
 
         this->enableActions();
+
+    }
+
+    void killAllProcesses()
+    {
+        std::cerr << "Trying to kill " << m_vProcessList.size() << " process" << std::endl;
+
+        for (auto& val: m_vProcessList)
+        {
+            QProcess* pProc = val;
+
+            std::cerr << "Process " << pProc << std::endl;
+
+            if (pProc->state() == QProcess::Running)
+            {
+                std::cerr << "Killing process " << pProc << std::endl;
+                //pProc->terminate();
+                pProc->kill();
+            }
+
+        }
+
+        //m_vProcessList.clear();
 
     }
 
@@ -396,6 +388,8 @@ protected:
     QVerticalScrollArea* m_pApplicationWindowArea = NULL;
 
     QDir m_oTemplatePath;
+
+    QList<QProcess*> m_vProcessList;
 
     QWidget* m_pWindow = NULL;
     XMLParserWindow* m_pWindowParser = NULL;

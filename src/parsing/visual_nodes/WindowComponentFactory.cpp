@@ -150,7 +150,7 @@ void WindowComponentFactory::initializeWidgets() {
 }
 
 
-WindowLayoutNode* WindowComponentFactory::getCreatorForLayout(QString &sTag) {
+WindowLayoutNode* WindowComponentFactory::getCreatorForLayout(const QString &sTag) {
 
     std::string sUpperTag = sTag.toUpper().toStdString();
     std::map<std::string, std::function<WindowLayoutNode*()>>::iterator oFind = m_mLayoutNodeMap.find(sUpperTag);
@@ -164,7 +164,7 @@ WindowLayoutNode* WindowComponentFactory::getCreatorForLayout(QString &sTag) {
 
 }
 
-WindowWidgetNode* WindowComponentFactory::getCreatorForWidget(QString &sTag) {
+WindowWidgetNode* WindowComponentFactory::getCreatorForWidget(const QString &sTag) {
 
     std::string sUpperTag = sTag.toUpper().toStdString();
     std::map<std::string, std::function<WindowWidgetNode*()>>::iterator oFind = m_mWidgetNodeMap.find(sUpperTag);

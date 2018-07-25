@@ -18,3 +18,40 @@
  */
 
 #include "ExecutionExecuteNode.h"
+#include <src/app/ProcessLauncher.h>
+
+std::string ExecutionExecuteNode::evaluate( std::map< std::string, ExecutionNode*>* pID2Node,
+                      std::map<std::string, std::string>* pInputID2Value,
+                      std::map<std::string, WidgetFunctionNode*>* pInputID2FunctionWidget, bool bEmitSignal)
+{
+
+    std::string sCLArg = this->parseDynamicValues(m_sCLArg, pID2Node, pInputID2Value, pInputID2FunctionWidget);
+    std::string sLocation = this->parseDynamicValues(m_sExecLocation, pID2Node, pInputID2Value, pInputID2FunctionWidget);
+
+    std::string sProgram = sLocation + m_sExecutable;
+
+    bool bWSL = this->asBool(this->getNodeValueOrValue(m_sWSL, m_sWSL, pID2Node, pInputID2Value, pInputID2FunctionWidget));
+    bWSL = bWSL && this->onWindows();
+
+    ProcessLauncher* pLauncher = new ProcessLauncher(QString(sProgram.c_str()), QString(sCLArg.c_str()), bWSL, m_pApp);
+
+    this->evaluateChildren(pID2Node, pInputID2Value, pInputID2FunctionWidget, pLauncher->getProcess(), NULL, false); //
+
+    pLauncher->connect(pLauncher, &ProcessLauncher::finished,
+            [pLauncher, pID2Node, pInputID2Value, pInputID2FunctionWidget, bEmitSignal, this](){
+
+                this->evaluateChildren(pID2Node, pInputID2Value, pInputID2FunctionWidget, pLauncher->getProcess(), NULL, true);
+                pLauncher->deleteLater();
+
+                // calculation finished!
+                if (bEmitSignal == true)
+                    emit finishedExecution();
+
+            });
+
+
+    pLauncher->start( );
+
+    return "";
+
+}

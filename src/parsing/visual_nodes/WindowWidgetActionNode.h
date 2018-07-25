@@ -48,6 +48,7 @@ public:
         CreatedElement oReturn;
 
         QPushButton *pAction = new QPushButton( sValue );
+        QPushButton *pAbortAction = new QPushButton( "Cancel " + sValue );
 
         std::string sProgramToRun = this->getAttribute(pDOMElement, "program", "");
 
@@ -61,7 +62,21 @@ public:
 
         });
 
-        oReturn.pElement = pAction;
+        pAbortAction->connect(pAbortAction,&QAbstractButton::clicked,[pApp] (bool bChecked){
+
+            pApp->killAllProcesses();
+
+        });
+
+        QWidget* pDisplayElement = new QWidget();
+        QHBoxLayout* pLayout = new QOrderedHBoxLayout();
+        pLayout->addWidget(pAction);
+        pLayout->addWidget(pAbortAction);
+
+        pDisplayElement->setLayout( pLayout );
+
+
+        oReturn.pElement = pDisplayElement;
         oReturn.pWidgetFuncNode = new WidgetFunctionNode(pAction);
 
         m_pFactory->getApp()->getWindowParser()->addAction(pAction);

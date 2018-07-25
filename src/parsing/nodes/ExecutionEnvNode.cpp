@@ -19,6 +19,7 @@
 
 #include "ExecutionEnvNode.h"
 
+#include <src/app/ProcessLauncher.h>
 #include <src/bioGUIapp.h>
 
 std::string ExecutionEnvNode::evaluate(std::map<std::string, ExecutionNode *> *pID2Node,

@@ -177,7 +177,7 @@ public:
             if (bWSLRelocate && bOnWindows)
             {
                 std::string sPath = pLineEdit->text().toStdString();
-                sPath = ExecutionPathRelocateNode::relocateWSL( sPath, sFileDelim.toStdString());
+                sPath = ExecutionPathRelocateNode::relocateWSL( sPath, sFileDelim.toStdString(), sFileDelim.toStdString());
                 QString relocatedPath(sPath.c_str());
                 pLineEdit->setText( relocatedPath );
             }
@@ -202,6 +202,22 @@ public:
         oReturn.pElement = pLineButton;
 
         return oReturn;
+
+    }
+
+    virtual void saveInQDomElement(QDomElement* pDOMElement,
+                                   std::map<std::string, std::function< std::string() > >* pID2Value,
+                                   QDomDocument* pDoc)
+    {
+
+        std::string sID = this->getAttribute(pDOMElement, "ID", "");
+        std::map<std::string, std::function< std::string() > >::iterator oFind = pID2Value->find(sID);
+
+        if (oFind != pID2Value->end())
+        {
+            std::string sValue = oFind->second();
+            pDOMElement->setAttribute("location", QString(sValue.c_str()));
+        }
 
     }
 

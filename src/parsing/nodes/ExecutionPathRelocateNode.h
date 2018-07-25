@@ -44,6 +44,10 @@ public:
         m_sToWSL = this->getDomElementAttribute(pElement, "wsl", "false");
         m_bHasWSLAttrib = this->hasDomElementAttribute(pElement, "wsl");
 
+
+        m_sSeperator = this->getDomElementAttribute(pElement, "sep", QString(m_sSeperator.c_str())).toStdString();
+        m_sInSeperator = this->getDomElementAttribute(pElement, "insep", QString(m_sSeperator.c_str())).toStdString();
+
     }
 
     virtual std::vector<std::string> inputs()
@@ -60,20 +64,20 @@ public:
 
     }
 
-    static std::string relocateWSL(std::string sPaths, std::string sSeperator)
+    static std::string relocateWSL(std::string sPaths, std::string sSeparator, std::string sInSeparator)
     {
 
         std::string sEmpty = "";
         std::string sWSLPrefix = "/mnt/";
 
-        return relocateGeneral(sPaths, sEmpty, sEmpty, sWSLPrefix, sSeperator, true);
+        return relocateGeneral(sPaths, sEmpty, sEmpty, sWSLPrefix, sSeparator, sInSeparator, true);
     }
 
-    static std::string relocateGeneral(std::string& sPaths, std::string& sFrom, std::string& sTo, std::string& sPrepend, std::string& sSeperator, bool bMakeUnix)
+    static std::string relocateGeneral(std::string& sPaths, std::string& sFrom, std::string& sTo, std::string& sPrepend, std::string& sSeparator, std::string& sInSeparator, bool bMakeUnix)
     {
         QString qsChildren(sPaths.c_str());
 
-        QStringList vChildren = qsChildren.split(',');
+        QStringList vChildren = qsChildren.split( sInSeparator.c_str() );
         QStringList vOutput;
 
         for (size_t i = 0; i < vChildren.size(); ++i)
@@ -120,7 +124,7 @@ public:
 
         }
 
-        std::string sReturn = vOutput.join( QString(sSeperator.c_str()) ).toStdString();
+        std::string sReturn = vOutput.join( QString(sSeparator.c_str()) ).toStdString();
 
         std::cerr << "relocated from " << sPaths << " to " << sReturn << std::endl;
 
@@ -179,9 +183,9 @@ public:
 
         if (bWSL)
         {
-            return relocateWSL(sChildren, m_sSeperator);
+            return relocateWSL(sChildren, m_sSeperator, m_sInSeperator);
         } else {
-            return relocateGeneral(sChildren, m_sFrom, m_sTo, m_sPrepend, m_sSeperator, bMakeUnix);
+            return relocateGeneral(sChildren, m_sFrom, m_sTo, m_sPrepend, m_sSeperator, m_sInSeperator, bMakeUnix);
         }
 
 /*
@@ -263,6 +267,7 @@ protected:
     std::string m_sFrom;
     std::string m_sTo;
     std::string m_sPrepend;
+    std::string m_sInSeperator;
 
     bool m_bMakeUnix = true;
     bool m_bHasWSLAttrib = true;

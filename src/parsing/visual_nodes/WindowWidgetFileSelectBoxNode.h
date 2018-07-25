@@ -38,6 +38,22 @@ public:
 
     }
 
+    virtual void saveInQDomElement(QDomElement* pDOMElement,
+                                   std::map<std::string, std::function< std::string() > >* pID2Value,
+                                   QDomDocument* pDoc)
+    {
+
+        std::string sID = this->getAttribute(pDOMElement, "ID", "");
+        std::map<std::string, std::function< std::string() > >::iterator oFind = pID2Value->find(sID);
+
+        if (oFind != pID2Value->end())
+        {
+            std::string sValue = oFind->second();
+            pDOMElement->setAttribute("selected", QString(sValue.c_str()));
+        }
+
+    }
+
     virtual CreatedElement getWindowElement( QDomElement* pDOMElement )
     {
         QString sValue = pDOMElement->text();
@@ -48,7 +64,16 @@ public:
         QString sFilePath = this->getQAttribute(pDOMElement, "location", "");
         QString sDelimeter = this->getQAttribute(pDOMElement, "delim", " ");
 
-        QSortableFileList *pList = new QSortableFileList( sFilePath, sFileFilter, sDelimeter );
+        QString sSelected = this->getQAttribute(pDOMElement, "selected", "");
+        QStringList vSelected;
+
+        if (sSelected.size() > 0)
+        {
+            vSelected = sSelected.split(sDelimeter);
+        }
+
+        QSortableFileList *pList = new QSortableFileList( sFilePath, sFileFilter, sDelimeter, &vSelected );
+
 
 
         oReturn.pElement = pList;

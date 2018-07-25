@@ -22,8 +22,13 @@
 #include "../parsing/XMLParserWindow.h"
 #include "../parsing/XMLParserExecution.h"
 #include "../parsing/nodes/ExecutionNetwork.h"
+#include "../bioGUIapp.h"
 
-ExecutionRunThread::ExecutionRunThread(XMLParserWindow* pWindowParser, XMLParserExecution* pExecution, std::string& sProgramToRun) {
+ExecutionRunThread::ExecutionRunThread(
+        XMLParserWindow* pWindowParser,
+        XMLParserExecution* pExecution,
+        std::string& sProgramToRun,
+        bioGUIapp* pApp) {
 
     m_pExecutionParser = pExecution;
     m_pWindowParser = pWindowParser;
@@ -31,6 +36,8 @@ ExecutionRunThread::ExecutionRunThread(XMLParserWindow* pWindowParser, XMLParser
     m_pNetwork = m_pExecutionParser->getExecutionNetwork();
 
     m_sProgramToRun = sProgramToRun;
+
+    m_pApp = pApp;
 }
 
 ExecutionRunThread::~ExecutionRunThread()
@@ -57,6 +64,8 @@ void ExecutionRunThread::startExecution()
     m_pWindowParser->printRetrieverIDs();
 
     m_pNetwork->setMaps( m_pWindowParser->getID2Value(), m_pWindowParser->getID2Widget() );
+    m_pNetwork->setApp(this->m_pApp);
+
     int iExitCode = m_pNetwork->execute( m_sProgramToRun );
 
     switch (iExitCode)

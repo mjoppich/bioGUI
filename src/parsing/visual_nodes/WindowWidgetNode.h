@@ -38,6 +38,13 @@ public:
 
     virtual CreatedElement getWindowElement( QDomElement* pDOMElement ) = 0;
 
+    virtual void saveInQDomElement(QDomElement* pDOMElement,
+                                   std::map<std::string, std::function< std::string() > >* pID2Value,
+                                   QDomDocument* pDoc)
+    {
+        // nothing to do
+    }
+
 protected:
 
     virtual void addNodeAttributes(std::vector<std::string>& vAttributes) = 0;

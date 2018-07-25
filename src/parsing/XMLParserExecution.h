@@ -38,6 +38,9 @@
 #include "nodes/ExecutionNode.h"
 #include "nodes/ExecutionScriptNode.h"
 #include "nodes/ExecutionNetwork.h"
+#include "nodes/ExecutionEnvNode.h"
+#include "nodes/ExecutionHTTPExecuteNode.h"
+
 #include "XMLParser.h"
 
 

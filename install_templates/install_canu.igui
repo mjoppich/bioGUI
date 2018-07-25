@@ -122,37 +122,37 @@ nc -q 0 $IP $PORT <<EOF
     <relocate id="canu_oxford_rel" from="\${canu_oxford}" wsl="\${WSLsel}"/>
     <relocate id="canu_tmp_folder_rel" from="\${canu_tmp_folder}" wsl="\${WSLsel}"/>
 
-    <add id="args">
+    <add id="args" sep=" ">
     
             <value from="\${canu_options}"/>
 
-        <if comp="IS_SET" value1="\${canu_assembly_prefix}">
+        <if comp="IS_SET" value1="\${canu_assembly_prefix}" sep=" ">
             <const>-p</const>
             <value from="\${canu_assembly_prefix}"/>
         </if>      
         
-        <if comp="IS_SET" value1="\${canu_tmp_folder_rel}">
+        <if comp="IS_SET" value1="\${canu_tmp_folder_rel}" sep=" ">
             <const>-d</const>
             <value from="\${canu_tmp_folder_rel}"/>
         </if>      
 
-        <if comp="IS_SET" value1="\${canu_error_rate}">
+        <if comp="IS_SET" value1="\${canu_error_rate}" sep=" ">
             <const>errorRate=</const>
             <value from="\${canu_error_rate}"/>
         </if>
         
-        <if comp="IS_SET" value1="\${canu_genome_size}">
+        <if comp="IS_SET" value1="\${canu_genome_size}" sep=" ">
             <const>genomeSize=</const>
             <value from="\${canu_genome_size}"/>
             <const>m</const>
         </if>                
 
-        <if comp="IS_SET" value1="\${canu_pacbio_rel}">
+        <if comp="IS_SET" value1="\${canu_pacbio_rel}" sep=" ">
             <const>-pacbio-raw</const>
             <value from="\${canu_pacbio_rel}"/>
         </if>
 
-        <if comp="IS_SET" value1="\${canu_oxford}">
+        <if comp="IS_SET" value1="\${canu_oxford}" sep=" ">
             <const>-oxford-raw</const>
             <value from="\${canu_oxford}"/>
         </if>         

@@ -30,6 +30,7 @@
 
 class QWidget;
 class ExecutionNode;
+class bioGUIapp;
 
 class ExecutionNetwork : public QObject{
  Q_OBJECT
@@ -62,6 +63,8 @@ public:
         m_pID2Value = pID2Value;
         m_pInputID2FunctionWidget = pInputID2FunctionWidget;
     }
+
+    void setApp(bioGUIapp* pApp);
 
     int execute( std::string& sProgramToRun )
     {
@@ -118,6 +121,7 @@ protected:
     std::vector<ExecutionNode*> m_vExecNodes;
 
 
+    bioGUIapp* m_pApp;
 
 };
 

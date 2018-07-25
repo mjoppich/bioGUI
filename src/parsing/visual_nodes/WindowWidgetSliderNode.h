@@ -46,6 +46,22 @@ public:
 
     }
 
+    virtual void saveInQDomElement(QDomElement* pDOMElement,
+                                   std::map<std::string, std::function< std::string() > >* pID2Value,
+                                   QDomDocument* pDoc)
+    {
+
+        std::string sID = this->getAttribute(pDOMElement, "ID", "");
+        std::map<std::string, std::function< std::string() > >::iterator oFind = pID2Value->find(sID);
+
+        if (oFind != pID2Value->end())
+        {
+            std::string sValue = oFind->second();
+            pDOMElement->setAttribute("selected", QString(sValue.c_str()));
+        }
+
+    }
+
     virtual CreatedElement getWindowElement( QDomElement* pDOMElement ) {
 
         QString sTag = pDOMElement->tagName();
@@ -57,9 +73,13 @@ public:
         pSlider->setFocusPolicy(Qt::StrongFocus);
         pSlider->setTickPosition(QSlider::TicksBelow);
 
+        QString sSelected = this->getQAttribute(pDOMElement, "selected", "");
+
+
         if (pDOMElement->hasChildNodes()) {
 
             std::vector<std::pair<QString, QString> > vValues;
+            int iSelected = -1;
 
             QDomNodeList oChildren = pDOMElement->childNodes();
             for (size_t i = 0; i < oChildren.size(); ++i) {
@@ -81,10 +101,20 @@ public:
                 QString sValue = this->getQAttribute(&oChildNode, "value", "");
                 QString sDisplay = this->getQAttribute(&oChildNode, "display", sValue);
 
+                if (sValue.compare(sSelected, Qt::CaseInsensitive) == 0)
+                {
+                    iSelected = i;
+                }
+
                 vValues.push_back(std::pair<QString, QString>(sValue, sDisplay));
             }
 
             pSlider->setRange(1, vValues.size());
+
+            if (iSelected >= 0)
+            {
+                pSlider->setValue(iSelected);
+            }
 
             QGridLayout *pGLayout = new QGridLayout();
             pGLayout->addWidget(pSlider, 0, 0, 1, vValues.size(), Qt::AlignCenter);
@@ -167,6 +197,7 @@ public:
             pLineEdit->setMaxLength(std::ceil(log10(fMax) + log10(iMaxFactor) + log10(fStep) + log10(iStepFactor)) + 1);
             pLineEdit->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
 
+
             QObject::connect(pSlider, &QSlider::valueChanged, [pLineEdit, iFactor, pSlider]() {
 
                 float fValue = (float) pSlider->value() / (float) iFactor;
@@ -186,6 +217,8 @@ public:
                 pSlider->setValue(iPosition);
             });
 
+
+            pLineEdit->setText(sSelected);
 
 
             oReturn.addRetriever(this->getDomID(pDOMElement) , [pLineEdit]() { return pLineEdit->text().toStdString(); });

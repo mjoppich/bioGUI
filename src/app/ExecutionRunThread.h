@@ -23,6 +23,8 @@
 #include <QThread>
 #include <QMessageBox>
 
+
+class bioGUIapp;
 class XMLParserWindow;
 class XMLParserExecution;
 class ExecutionNetwork;
@@ -33,7 +35,7 @@ class ExecutionRunThread : public QThread
 
 public:
 
-    ExecutionRunThread(XMLParserWindow* pWindowParser, XMLParserExecution* pExecution, std::string& sProgramToRun);
+    ExecutionRunThread(XMLParserWindow* pWindowParser, XMLParserExecution* pExecution, std::string& sProgramToRun, bioGUIapp* pApp);
 
     ~ExecutionRunThread();
 
@@ -51,6 +53,7 @@ protected:
     XMLParserExecution* m_pExecutionParser;
     ExecutionNetwork* m_pNetwork;
     XMLParserWindow* m_pWindowParser;
+    bioGUIapp* m_pApp;
 
     std::string m_sProgramToRun = "";
 

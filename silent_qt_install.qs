@@ -41,7 +41,7 @@ Controller.prototype.ComponentSelectionPageCallback = function() {
 
     widget.deselectAll();
 
-//    widget.selectComponent("qt.592.gcc_64");
+    widget.selectComponent("qt.qt5.5111.gcc_64");
 
     gui.clickButton(buttons.NextButton);
 }

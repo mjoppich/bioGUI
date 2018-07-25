@@ -15,7 +15,7 @@ before_install:
  - chmod u+x qt-opensource-linux-x64-5.11.1.run
  - sudo ./qt-opensource-linux-x64-5.11.1.run --verbose -platform minimal --script /home/travis/build/mjoppich/bioGUI/silent_qt_install.qs
  - ls /usr/local/qt/
- - ls /usr/local/qt/5.11.1/
+ - ls /opt/Qt/5.11.1/
  - export PATH=/usr/local/qt/5.11.1/gcc_64/bin/:$PATH
  - cd /home/travis/build/mjoppich/bioGUI
  

@@ -147,6 +147,8 @@ set(COMPANY "LFE Bioinformatik")
 set(COPYRIGHT "Copyright (c) 2016 Markus Joppich. All rights reserved.")
 set(IDENTIFIER "de.lmu.ifi.bio.mjoppich")
 
+
+
 if (OPENMP_FOUND)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS} ")
@@ -157,6 +159,8 @@ else()
 
 endif()
 
+set(CMAKE_FIND_LIBRARY_SUFFIXES ".a")
+
 find_package(Lua 5.2 REQUIRED)
 include_directories(${LUA_INCLUDE_DIR})
 
@@ -164,6 +168,8 @@ message(STATUS "   *** Lua include: ${LUA_INCLUDE_DIR}")
 message(STATUS "   *** Lua libs: ${LUA_LIBRARIES}")
 message(STATUS "   *** Lua lib: ${LUA_LIBRARY}")
 message(STATUS "   *** Lua DLL dir: ${LUA_DLL_DIR}")
+
+set(CMAKE_FIND_LIBRARY_SUFFIXES ".so .a")
 
 # Search OpenSSL
 set(OPENSSL_USE_STATIC_LIBS True)

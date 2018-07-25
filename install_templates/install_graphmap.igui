@@ -135,19 +135,19 @@ nc -q 0 $IP $PORT <<EOF
     <relocate id="graphmap_align_gtf_rel" from="\${graphmap_align_gtf}" wsl="\${WSLsel}"/>
     <relocate id="graphmap_align_output_rel" from="\${graphmap_align_output}" wsl="\${WSLsel}"/>
 
-    <add id="args" sep=" ">
+    <add id="args">
         <value from="\${graphmap_mode}"/>
-        <if comp="IS_SET" value1="\${graphmap_align_reference_rel}" sep=" ">
+        <if comp="IS_SET" value1="\${graphmap_align_reference_rel}">
             <const>-r</const>
             <value from="\${graphmap_align_reference_rel}"/>
         </if>
 
-        <if comp="IS_SET" value1="\${graphmap_align_gtf}" sep=" ">
+        <if comp="IS_SET" value1="\${graphmap_align_gtf}">
             <const>--gtf</const>
             <value from="\${graphmap_align_gtf_rel}"/>
         </if>
 
-        <if comp="IS_SET" value1="\${graphmap_align_reads_rel}" sep=" ">
+        <if comp="IS_SET" value1="\${graphmap_align_reads_rel}">
             <const>-d</const>
             <value from="\${graphmap_align_reads_rel}"/>
         </if>        
@@ -155,7 +155,7 @@ nc -q 0 $IP $PORT <<EOF
 
         <value from="\${graphmap_options}"/>
         
-        <if comp="IS_SET" value1="\${graphmap_align_output_rel}" sep=" ">
+        <if comp="IS_SET" value1="\${graphmap_align_output_rel}">
             <const>-o</const>
             <value from="\${graphmap_align_output_rel}"/>
         </if>         

@@ -5,8 +5,8 @@ echo "Dependencies: None"
 
 if [ ! "$2" = "" ]; then
 	echo "Installing dependencies"
-  #echo $2 | sudo -S apt-get update
-  #echo $2 | sudo -S apt-get -y install csh
+  echo $2 | sudo -S apt-get update
+  echo $2 | sudo -S apt-get -y install gnuplot
 
 else
 	echo "No sudo password, not installing dependencies"
@@ -39,7 +39,7 @@ mkdir -p "$PROGDIR/$PROG"
 echo "Fetching $PROG - this may take a while."
 
 #download and unzip
-#git clone https://github.com/marbl/canu.git $PROGDIR/$PROG
+git clone https://github.com/marbl/canu.git $PROGDIR/$PROG
 
 cd "$PROGDIR/$PROG/src"
 
@@ -81,10 +81,10 @@ nc -q 0 $IP $PORT <<EOF
     
         
                 
-        <label>Input Reads (PacBio)</label> <filedialog id="canu_pacbio" output="false">Select Input Reads (PacBio)</filedialog>
-        <label>Input Reads (Oxford)</label> <filedialog id="canu_oxford" output="false">Select Input Reads (Oxford)</filedialog>
+        <label>Input Reads (PacBio)</label> <filedialog id="canu_pacbio" output="false" multiples="true" multiples_delim=" ">Select Input Reads (PacBio)</filedialog>
+        <label>Input Reads (Oxford)</label> <filedialog id="canu_oxford" output="false" multiples="true" multiples_delim=" ">Select Input Reads (Oxford)</filedialog>
       
-        <label>Assembly Output</label> <filedialog id="canu_tmp_folder" output="true" foler="true">Select Assembly Folder</filedialog>
+        <label>Assembly Output</label> <filedialog id="canu_tmp_folder" output="true" folder="true">Select Assembly Folder</filedialog>
         <label>Assembly Prefix</label><input id="canu_assembly_prefix"></input>
         
         <label>Expected Genome Size</label><input id="canu_genome_size" type="float"></input>
@@ -118,34 +118,35 @@ nc -q 0 $IP $PORT <<EOF
     <const id="bindir">${APPBINARYDIR}/</const>
     
     
-    <relocate id="canu_pacbio_rel" from="\${canu_pacbio}" wsl="\${WSLsel}"/>
-    <relocate id="canu_oxford_rel" from="\${canu_oxford}" wsl="\${WSLsel}"/>
+    <relocate id="canu_pacbio_rel" from="\${canu_pacbio}" sep=" " wsl="\${WSLsel}"/>
+    <relocate id="canu_oxford_rel" from="\${canu_oxford}" sep=" " wsl="\${WSLsel}"/>
     <relocate id="canu_tmp_folder_rel" from="\${canu_tmp_folder}" wsl="\${WSLsel}"/>
 
     <add id="args" sep=" ">
-    
-            <value from="\${canu_options}"/>
+              
+        <if comp="IS_SET" value1="\${canu_tmp_folder_rel}" sep=" ">
+            <const>-d</const>
+            <value from="\${canu_tmp_folder_rel}"/>
+        </if>   
 
         <if comp="IS_SET" value1="\${canu_assembly_prefix}" sep=" ">
             <const>-p</const>
             <value from="\${canu_assembly_prefix}"/>
-        </if>      
-        
-        <if comp="IS_SET" value1="\${canu_tmp_folder_rel}" sep=" ">
-            <const>-d</const>
-            <value from="\${canu_tmp_folder_rel}"/>
-        </if>      
+        </if>         
 
-        <if comp="IS_SET" value1="\${canu_error_rate}" sep=" ">
+        <if comp="IS_SET" value1="\${canu_error_rate}">
             <const>errorRate=</const>
             <value from="\${canu_error_rate}"/>
         </if>
         
-        <if comp="IS_SET" value1="\${canu_genome_size}" sep=" ">
+        <if comp="IS_SET" value1="\${canu_genome_size}">
             <const>genomeSize=</const>
             <value from="\${canu_genome_size}"/>
             <const>m</const>
-        </if>                
+        </if>              
+        
+        <const>useGrid=false</const>
+        <value from="\${canu_options}"/>  
 
         <if comp="IS_SET" value1="\${canu_pacbio_rel}" sep=" ">
             <const>-pacbio-raw</const>
@@ -153,8 +154,8 @@ nc -q 0 $IP $PORT <<EOF
         </if>
 
         <if comp="IS_SET" value1="\${canu_oxford}" sep=" ">
-            <const>-oxford-raw</const>
-            <value from="\${canu_oxford}"/>
+            <const>-nanopore-raw</const>
+            <value from="\${canu_oxford_rel}"/>
         </if>         
 
     </add>

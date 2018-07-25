@@ -53,7 +53,7 @@ if [ $# -eq 5 ]; then
 IP=$4
 PORT=$5
 
-nc $IP $PORT << EOF
+nc -q 0 $IP $PORT <<EOF
 
 <template description="rMATS replicate MATS" title="$PROGNICE">
  <window title="$PROGNICE">

@@ -46,7 +46,7 @@ if [ $# -eq 5 ]; then
 IP=$4
 PORT=$5
 
-nc $IP $PORT << EOF
+nc -q 0 $IP $PORT <<EOF
 <template rootid="blubb" intatt="111" description="Jellyfish ($PROG)" title="Jellyfish">
 
 <window width="500" height="1900" title="Jellyfish">

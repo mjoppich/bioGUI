@@ -122,7 +122,7 @@ if [ $# -eq 5 ]; then
 IP=$4
 PORT=$5
 
-nc $IP $PORT << EOF
+nc -q 0 $IP $PORT <<EOF
 
 <template description="Ballgown: Isoform-level differential expression analysis in R." title="${PROGNICE}">
 <window title="${PROGNICE}">

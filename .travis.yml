@@ -8,27 +8,21 @@ compiler: gcc
 before_install:
  - pwd
  - sudo apt-get -qq update
- - sudo apt-get install -y build-essential git libssl-dev liblua5.2-dev libgl1-mesa-dev wget libfontconfig1 libdbus-1-dev libglu1-mesa-dev g++-4.8 gcc-4.8
- - sudo apt-get purge cmake
- - mkdir -p ~/cmake/ && cd ~/cmake && wget https://cmake.org/files/v3.7/cmake-3.7.2.tar.gz
- - tar xf cmake-3.7.2.tar.gz
- - cd cmake-3.7.2
- - ./configure
- - sudo make install
+ - sudo apt-get install -y build-essential git libssl-dev liblua5.2-dev libgl1-mesa-dev wget libfontconfig1 libdbus-1-dev libglu1-mesa-dev g++-4.8 gcc-4.8 cmake
  - cd ~
  - pwd
- - wget http://download.qt.io/official_releases/qt/5.7/5.7.0/qt-opensource-linux-x64-5.7.0.run
- - chmod u+x qt-opensource-linux-x64-5.7.0.run
- - sudo ./qt-opensource-linux-x64-5.7.0.run --verbose -platform minimal --script /home/travis/build/mjoppich/bioGUI/silent_qt_install.qs
+ - wget http://download.qt.io/official_releases/qt/5.11/5.11.1/qt-opensource-linux-x64-5.11.1.run
+ - chmod u+x qt-opensource-linux-x64-5.11.1.run
+ - sudo ./qt-opensource-linux-x64-5.11.1.run --verbose -platform minimal --script /home/travis/build/mjoppich/bioGUI/silent_qt_install.qs
  - ls /usr/local/qt/
- - ls /usr/local/qt/5.7/
- - export PATH=/usr/local/qt/5.7/gcc_64/bin/:$PATH
+ - ls /usr/local/qt/5.11.1/
+ - export PATH=/usr/local/qt/5.11.1/gcc_64/bin/:$PATH
  - cd /home/travis/build/mjoppich/bioGUI
  
 
 before_script:
   - mkdir build
   - cd build
-  - PATH=/usr/local/qt/5.7/gcc_64/bin/:$PATH cmake ..
+  - PATH=/usr/local/qt/5.11.1/gcc_64/bin/:$PATH cmake ..
 
 script: make

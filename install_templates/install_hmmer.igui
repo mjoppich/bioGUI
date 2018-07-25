@@ -52,7 +52,7 @@ if [ $# -eq 5 ]; then
 IP=$4
 PORT=$5
 
-nc $IP $PORT << EOF
+nc -q 0 $IP $PORT <<EOF
 <template rootid="hmmerroot" description="HMMER ($PROG)" title="HMMER">
 
 <window width="500" height="800" title="HMMER">

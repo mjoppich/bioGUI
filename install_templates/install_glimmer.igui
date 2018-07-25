@@ -65,7 +65,7 @@ echo "sending template"
 IP=$4
 PORT=$5
 
-nc $IP $PORT << EOF
+nc -q 0 $IP $PORT <<EOF
 <!--<?xml version="1.0" encoding="UTF-8")>-->
 <template description="Glimmer3 scripts ($PROG)" title="Glimmer3">
 

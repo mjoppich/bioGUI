@@ -314,6 +314,8 @@ if (NOT APPLE)
 
 
 
+
+
     # find the release *.dll file
     get_target_property(Qt5_CoreLocation Qt5::Core LOCATION_RELEASE)
     get_target_property(Qt5_CoreSOName Qt5::Core "IMPORTED_SONAME_RELEASE")
@@ -460,6 +462,9 @@ if (NOT APPLE)
     install(FILES $<$<CONFIG:Debug>:${Qt5_NetworkLocation_Debug}>$<$<NOT:$<CONFIG:Debug>>:${Qt5_NetworkLocation}> DESTINATION ${CMAKE_INSTALL_PREFIX} RENAME ${Qt5_NetworkSOName})
     install(FILES $<$<CONFIG:Debug>:${Qt5_GuiLocation_Debug}>$<$<NOT:$<CONFIG:Debug>>:${Qt5_GuiLocation}> DESTINATION ${CMAKE_INSTALL_PREFIX} RENAME ${Qt5_GuiSOName})
 endif()
+
+get_filename_component(QT5GUI_DIR ${Qt5_GuiLocation} DIRECTORY)
+install(DIRECTORY ${QT5GUI_DIR}/../plugins/platforms/ DESTINATION platforms)
 
     if (MINGW)
 

@@ -134,6 +134,12 @@ public:
 
             QDomText t = pDoc->createTextNode(QString(sValue.c_str()));
 
+            while(pDOMElement->hasChildNodes())
+            {
+                QDomNode oChild = pDOMElement->firstChild();
+                pDOMElement->removeChild(oChild);
+            }
+
             pDOMElement->appendChild(t);
         }
 

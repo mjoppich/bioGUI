@@ -16,19 +16,19 @@
 
     <groupbox id="user_sel_instpath" title="Install Location" exclusive="true">
 
-        <checkbox id="loc_datadir" value="data" selected="true">Install programs in User Data Dir</checkbox>
+        <checkbox id="loc_datadir" value="data" selected="true">Install programs in User Data Dir (default)</checkbox>
         <checkbox id="loc_spec" value="spec"> <input id="loc_spec_user">/usr/local/</input></checkbox>
 
     </groupbox>
 
 
-    <label>sudo Password</label>
+    <label>Linux User Password / sudo Password</label>
     <input id="sudopw" type="password"></input>
 
-	<checkbox id="addtopath" value="1" value-unselected="0" selected="true">Add program folder to PATH in &#126;/.bashrc?</checkbox>
+	<checkbox id="addtopath" value="1" value-unselected="0" selected="true">Add program folder to PATH in &#126;/.bashrc? (default: yes)</checkbox>
   </group>
 
-  <group id="templpath_sel" checkable="true" title="Store template?">
+  <group id="templpath_sel" checkable="true" title="Store template?" selected="true">
        <filedialog id="templpath" output="true" filter="*.gui" location="${APPDIR}/templates/">Save Template to</filedialog>
   </group>
 
@@ -105,6 +105,14 @@
 function evaluate(gvnPath, appdir)
 
         ext=".gui"
+        
+        if (gvnPath == "") then
+        
+        	for i = 1, 10 do
+        		gvnPath = gvnPath .. string.char(math.random(97, 122))
+        	end
+          
+        end
 
         if ( string.sub(gvnPath, math.min(string.len(gvnPath), string.len(appdir)))~=appdir) then
                 gvnPath = appdir .. gvnPath

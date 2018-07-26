@@ -251,12 +251,10 @@ endif()
 
 # source_group("UI Files" FILES ${UI_FILES})
 
-set(CMAKE_EXE_LINKER_FLAGS "-static-libgcc -static-libstdc++ -static")
-
 
 add_executable(${PROJECT_NAME} ${OS_BUNDLE} # Expands to WIN32 or MACOS_BUNDLE depending on OS
     ${bioGUI_H} ${bioGUIapp_H} ${bioGUI_SRC} ${parsinglib_SRC} ${parsinglib_H} ${parsinglib_nodes_H} ${META_FILES_TO_INCLUDE} ${RESOURCE_FILES}
-    ${DUKTAPE}
+    ${DUKTAPE}                           
 )
 
 
@@ -270,11 +268,10 @@ SET_TARGET_PROPERTIES(myssleay PROPERTIES IMPORTED_LOCATION "${OPENSSL_CRYPTO_LI
 #SET_TARGET_PROPERTIES(lualib PROPERTIES IMPORTED_LOCATION "${LUA_LIBRARY}")
 
 ADD_LIBRARY(lualib STATIC IMPORTED)
-SET_TARGET_PROPERTIES(lualib PROPERTIES IMPORTED_LOCATION ${LUA_LIBRARY})
+SET_TARGET_PROPERTIES(lualib PROPERTIES IMPORTED_LOCATION "${LUA_LIBRARY}")
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
-TARGET_LINK_LIBRARIES(${PROJECT_NAME} mylibeay myssleay m ${CMAKE_DL_LIBS})
-TARGET_LINK_LIBRARIES(${PROJECT_NAME} lualib)
+TARGET_LINK_LIBRARIES(${PROJECT_NAME} mylibeay myssleay m lualib ${CMAKE_DL_LIBS})
 
 
 qt5_use_modules(${PROJECT_NAME} Core Gui Widgets Network Xml XmlPatterns)

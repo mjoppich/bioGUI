@@ -8,7 +8,7 @@ bioGUI & Qt
 *bioGUI* is licenced under GPL v3 (also due to its Qt dependancy).
 Thus for *bioGUI* and *Qt* the following GNU General Public License version 3 is relevant.
 
-.. code-block:: html
+.. code-block:: none
 
                         GNU GENERAL PUBLIC LICENSE
                         Version 3, 29 June 2007

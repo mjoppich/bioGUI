@@ -60,7 +60,13 @@ bool ProcessLauncher::start()
         sProgram = this->getWSLPath();//"C:\\Windows\\sysnative\\bash";
         QStringList oProgArgs = ProcessLauncher::stringToArguments(m_sParam.toStdString(), '\"');
 
-        oArgs << "--" << m_sProgram;
+        QString sRunSignal = this->getWSLSuffix();
+
+        if (sRunSignal.size() > 0)
+        {
+            oArgs << sRunSignal;
+        }
+        oArgs << m_sProgram;
 
         for (int i = 0; i < oProgArgs.size(); ++i)
         {

@@ -9,6 +9,8 @@ How this is done is explained at the end of this page.
 
 For all recent versions of Windows 10 you can start with step 1.
 
+.. warning:: Some antivirus software (e.g. Kaspersky) disable internet access for unknown/new programs. Make sure bioGUI can access the internet!
+
 Step 1: Activate WSL feature
 -----------------------------
 

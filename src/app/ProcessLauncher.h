@@ -198,6 +198,21 @@ public:
 
     }
 
+    QString getWSLSuffix()
+    {
+        QString sConfigFilePath = QDir::currentPath() + "/config.ini";
+
+        QSettings* pSettings = new QSettings(sConfigFilePath, QSettings::IniFormat);
+
+        QStringList allKeys = pSettings->allKeys();
+        QString sWSLSuffix = pSettings->value("bash/runsignal", "").toString();
+
+        delete pSettings;
+
+        return sWSLSuffix;
+
+    }
+
     bool start();
 
 

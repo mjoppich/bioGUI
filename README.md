@@ -18,6 +18,28 @@ With bioGUI one also does not need any knowledge about the command line, because
 
 It is not about generating a GUI by its own.
 
+# Where can I get bioGUI?
+
+bioGUI is available either as source from github, or as prebuilt-binary distribution from [github releases](https://github.com/mjoppich/bioGUI/releases).
+*End-users* will probably prefer to download and unzip the [prebuilt binaries](https://github.com/mjoppich/bioGUI/releases).
+
+After downloading the zip-archive, please unzip the archive to a location of your preference. Then simply start the executable (bioGUI.exe on Windows, or bioGUI on linux).
+
+On Windows, please follow the steps on [how to setup WSL](http://biogui.readthedocs.io/en/latest/build_wsl.html).
+
+On any aptitude supported platform (Windows with WSL, Ubuntu), please execute the "First Time ... Setup" from the list of available templates.
+
+Unfortunately, there currently is no binary available for Mac OS X.
+
+## I want to know more about available modules
+
+If you want to know which modules are already available, please visit the supporting information [website](https://www.bio.ifi.lmu.de/software/biogui/index.html). There you can see a list of available modules, submit your own or request new template.
+If you have any problem, or you want to request a new template, you may also use the github issue tracker right in this repository!
+
+## I want to know more about bioGUI
+
+You can find a detailed documentation of bioGUI at [readthedocs](http://biogui.readthedocs.io/en/latest).
+
 # About using/building bioGUI
 ## How to obtain bioGUI?
 

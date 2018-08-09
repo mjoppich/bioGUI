@@ -2,10 +2,14 @@
 
 [![Documentation Status](https://readthedocs.org/projects/biogui/badge/?version=latest)](http://biogui.readthedocs.io/en/latest/?badge=latest)
 [![Build Status](https://travis-ci.org/mjoppich/bioGUI.svg?branch=master)](https://travis-ci.org/mjoppich/bioGUI)
+[![DOI](https://zenodo.org/badge/78450741.svg)](https://zenodo.org/badge/latestdoi/78450741)
+
 
 With bioGUI developers can easily build a graphical-user-interface (GUI) for their command-line only application.
 Such a GUI then enables many more people to use their software.
 Especially in biology, the domain experts are often computer novices and have difficulties using tools written for them by bioinformaticiens/computer scientists.
+
+You can find the corresponding [preprint at PeerJ](https://peerj.com/preprints/27095/).
 
 ## Who is bioGUI for?
 

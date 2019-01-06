@@ -5,7 +5,7 @@ if [ ! "$2" = "" ]; then
     if [ "$(uname)" == "Darwin" ]; then
 
         echo "Installing Dependencies (mac)"
-        brew install cmake
+        brew install cmake gcc
     else
 
         echo "Installing Dependencies (aptitude/Ubuntu)"
@@ -62,7 +62,12 @@ cd "$PROGDIR/$PROG"
 git clone https://github.com/isovic/graphmap.git graphmap  
 cd graphmap  
 make modules  
-make
+
+if [ "$(uname)" == "Darwin" ]; then
+	make GCC=g++-8
+else
+	make
+fi
 
 MINIMAP2BIN="$PROGDIRESC/$PROG/minimap2/minimap2"
 MINIASMBIN="$PROGDIRESC/$PROG/miniasm/miniasm"

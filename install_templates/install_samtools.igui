@@ -60,7 +60,16 @@ PORT=$5
        
 echo "Sending Template to $IP at $PORT"
 
-nc -q 0 $IP $PORT <<EOF
+NCCMD=""
+
+if [ "$(uname)" == "Darwin" ]; then
+	NCCMD="nc -c $IP $PORT"
+else
+	NCCMD="nc -q 0 $IP $PORT"
+fi
+
+
+$NCCMD <<EOF
 
 <template description="Samtools" title="${PROGNICE}">
 <window title="Samtools 1.3.1">

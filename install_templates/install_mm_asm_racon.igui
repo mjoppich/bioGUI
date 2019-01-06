@@ -1,0 +1,194 @@
+#! Install minimap2/miniasm/racon (github))
+
+if [ ! "$2" = "" ]; then
+
+    if [ "$(uname)" == "Darwin" ]; then
+
+        echo "Installing Dependencies (mac)"
+        brew install cmake
+    else
+
+        echo "Installing Dependencies (aptitude/Ubuntu)"
+        echo $2 | sudo -S apt-get update
+        echo $2 | sudo -S apt-get -y install cmake
+
+    fi
+
+else
+   echo "No sudo password, not installing dependencies"
+fi
+
+## set all variables
+PROG=MIMIRA
+PROGDIR=$1
+
+if [ -z "${PROGDIR}" ]; then
+	PROGDIR=~/bioGUI/progs/
+fi
+
+
+PROGDIRESC=$(echo $PROGDIR | sed 's/ /\\ /g')
+APPBINARYDIR=${PROGDIRESC}/${PROG}/bin/Linux-x64/
+
+if [ -d "$PROGDIR/$PROG" ]; then
+    echo "Removing Folder $PROGDIR/$PROG"
+    rm -rf $PROGDIR/$PROG
+fi
+
+## create progdir
+mkdir -p "$PROGDIR/$PROG"
+
+wget -O "$PROGDIR/$PROG/assemble.sh" https://gist.githubusercontent.com/mjoppich/18b7a07074b59bd34056df6fe7b08d05/raw/505494921348d6dc952148ac6c6d86568c49fe79/mmr_assemble.sh
+
+
+cd "$PROGDIR/$PROG"
+git clone https://github.com/lh3/minimap2 minimap2
+cd minimap2 && make
+
+cd "$PROGDIR/$PROG"
+git clone https://github.com/lh3/miniasm miniasm
+cd miniasm  && make
+
+cd "$PROGDIR/$PROG"
+git clone --recursive https://github.com/isovic/racon.git racon
+cd racon
+mkdir build
+cd build
+cmake -DCMAKE_BUILD_TYPE=Release ..
+make
+
+cd "$PROGDIR/$PROG"
+
+git clone https://github.com/isovic/graphmap.git graphmap  
+cd graphmap  
+make modules  
+make
+
+MINIMAP2BIN="$PROGDIRESC/$PROG/minimap2/minimap2"
+MINIASMBIN="$PROGDIRESC/$PROG/miniasm/miniasm"
+RACONBIN="$PROGDIRESC/$PROG/racon/build/bin/racon"
+GRAPHMAPBIN="$PROGDIRESC/$PROG/graphmap/bin/Linux-x64/graphmap"
+
+cd "$PROGDIR/$PROG"
+
+sed -i -e 's/^MINIMAP2/$MINIMAP2BIN/g' "$PROGDIR/$PROG/assemble.sh"
+sed -i -e 's/^MINIASM/$MINIASMBIN/g' "$PROGDIR/$PROG/assemble.sh"
+sed -i -e 's/^RACON/$RACONBIN/g' "$PROGDIR/$PROG/assemble.sh"
+sed -i -e 's/^GRAPHMAP/$GRAPHMAPBIN/g' "$PROGDIR/$PROG/assemble.sh"  
+
+
+
+if [ $# -gt 2 ]; then
+	if [ "$3" = "1" ]; then
+
+		if ! grep -q "$PROGDIRESC/$PROG/minimap2" ~/.bashrc; then
+			echo "export PATH=\"$PROGDIRESC/$PROG/minimap2/:\$PATH\" " >> ~/.bashrc;
+		fi
+    
+   	if ! grep -q "$PROGDIRESC/$PROG/miniasm" ~/.bashrc; then
+			echo "export PATH=\"$PROGDIRESC/$PROG/miniasm/:\$PATH\" " >> ~/.bashrc;
+		fi
+
+		if ! grep -q "$PROGDIRESC/$PROG/racon/build/bin" ~/.bashrc; then
+			echo "export PATH=\"$PROGDIRESC/$PROG/racon/build/bin/:\$PATH\" " >> ~/.bashrc;
+		fi
+    
+		if ! grep -q "$PROGDIRESC/$PROG/graphmap/bin/Linux-x64" ~/.bashrc; then
+			echo "export PATH=\"$PROGDIRESC/$PROG/graphmap/bin/Linux-x64/:\$PATH\" " >> ~/.bashrc;
+		fi
+    
+	fi
+fi
+
+
+
+if [ $# -eq 5 ]; then
+
+IP=$4
+PORT=$5
+       
+echo "Sending Template to $IP at $PORT"
+
+NCCMD=""
+
+if [ "$(uname)" == "Darwin" ]; then
+	NCCMD="nc -c $IP $PORT"
+else
+	NCCMD="nc -q 0 $IP $PORT"
+fi
+
+
+$NCCMD <<EOF
+
+<!--<?xml version="1.0" encoding="UTF-8")>-->
+
+<template description="minimap/miniasm/racon assembly pipeline" title="graphmap">
+
+<window width="500" height="1000" title="MiMiRa">
+
+  <vgroup>
+
+
+    <group title="Assembly Options">
+    
+                
+        <label>Input Reads</label> <filedialog id="assembly_reads" output="false">Select Input Reference (fq)</filedialog>
+        <label>Input Folder</label> <filedialog id="assembly_dir" output="false" folder="true">Select Assembly Folder</filedialog>
+        
+        <label>Assembly Prefix</label><input id="assembly_prefix"></input>
+  
+        <action program="assembly" hint="Click Here to Start Assembly">Start Assembly</action>  
+    </group>
+
+
+    <group title="General Options">
+       <label>Run in WSL on Windows?</label><checkbox id="WSLsel" value="true" selectonwindows="true">Run in WSL?</checkbox>
+       <label>Threads</label><input id="assembly_threads" type="int">4</input>
+    </group>
+  
+    <streambox id="output1">
+      <stream id="outputstream1">OS1</stream>
+      <stream id="outputstream2">OS2</stream>
+    </streambox>
+ 
+
+  </vgroup>
+
+</window>
+
+
+
+<execution>
+
+    <const id="bindir">${APPBINARYDIR}/</const>
+    
+    
+    <relocate id="assembly_reads_rel" from="\${assembly_reads}" wsl="\${WSLsel}"/>
+    <relocate id="assembly_dir_rel" from="\${assembly_dir}" wsl="\${WSLsel}"/>
+
+    <add id="args">
+
+        <value from="\${assembly_reads}"/>
+        <value from="\${assembly_dir}"/>
+        <value from="\${assembly_prefix}"/>
+        
+        <if comp="IS_SET" value1="\${assembly_threads}">
+            <value from="\${assembly_threads}"/>
+        </if>             
+
+    </add>
+    
+    <execute program="graphmap" param="\${args}" location="\${bindir}" exec="graphmap" wsl="WSLsel">
+        <output type="COUT" color="green" to="outputstream1" />
+        <output type="CERR" color="red" to="outputstream2" />
+    </execute>
+
+  
+
+</execution>
+</template>
+
+
+EOF
+
+fi

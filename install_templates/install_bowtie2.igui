@@ -57,7 +57,16 @@ if [ $# -eq 5 ]; then
 IP=$4
 PORT=$5
 
-nc -q 0 $IP $PORT <<EOF
+NCCMD=""
+
+if [ "$(uname)" == "Darwin" ]; then
+	NCCMD="nc -c $IP $PORT"
+else
+	NCCMD="nc -q 0 $IP $PORT"
+fi
+
+
+$NCCMD <<EOF
 
 <template description="bowtie2 2.0.4 aligner" title="bowtie2 2.0.4">
 <window title="bowtie2 2.0.4 aligner">

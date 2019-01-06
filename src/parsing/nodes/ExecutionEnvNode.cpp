@@ -81,13 +81,26 @@ std::string ExecutionEnvNode::evaluate(std::map<std::string, ExecutionNode *> *p
     if (m_sGet.compare("DATADIR", Qt::CaseInsensitive) == 0)
     {
 
-        if (!bWSL)
+        if (this->getOS().compare("LINUX") == 0)
             return QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation).toStdString();
 
-        // we are on WSL
-        ProcessLauncher* pLauncher = new ProcessLauncher("echo", "~", true);
-        QString sQHome = pLauncher->startBlocking().trimmed();
-
+        
+        QString sQHome;
+        if (this->getOS().compare("MAC") == 0)
+        {
+            sQHome = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
+            
+            if (sQHome.contains(" "))
+            {
+                sQHome = QString("/usr/local/share/");
+            }
+        } else {
+            
+            // we are on WSL
+            ProcessLauncher* pLauncher = new ProcessLauncher("echo", "~", bWSL);
+            sQHome = pLauncher->startBlocking().trimmed();
+        }
+        
         // exec in WSL "echo ~"
         std::string sHome = sQHome.toStdString() + "/";
 

@@ -80,10 +80,12 @@ message(STATUS "Detected OS:")
 if (APPLE)
 
     message(STATUS ">>> Apple")
-    set(Qt5_DIR "/Users/joppich/Qt/5.7/clang_64/")
-    set(ENV{OPENSSL_ROOT_DIR} "/usr/local/opt/openssl")
-    set(ENV{LUA_DIR} "/usr/local/opt/lua")
+    set(Qt5_DIR "/Users/markus/Qt/5.12.0/clang_64/")
+    #set(ENV{OPENSSL_ROOT_DIR} "/usr/local/opt/openssl")
+    #set(ENV{LUA_DIR} "/usr/local/opt/lua")
 
+    set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+    set(CMAKE_INSTALL_RPATH "./")
 
 endif()
 
@@ -244,6 +246,8 @@ if (APPLE)
 
     set(BIOGUI_INSTALL_TEMPLATES_GUI "${CMAKE_CURRENT_SOURCE_DIR}/templates/WSL_install.gui")
     set_source_files_properties(${BIOGUI_INSTALL_TEMPLATES_GUI} PROPERTIES MACOSX_PACKAGE_LOCATION MacOS/templates/)
+    set_source_files_properties(${BIOGUI_INSTALL_TEMPLATES_GUI} PROPERTIES MACOSX_PACKAGE_LOCATION MacOS/install_templates/)
+
     LIST(APPEND META_FILES_TO_INCLUDE "${BIOGUI_INSTALL_TEMPLATES_GUI}")
 
 endif()
@@ -461,10 +465,12 @@ if (NOT APPLE)
     install(FILES $<$<CONFIG:Debug>:${Qt5_XmlPatternsLocation_Debug}>$<$<NOT:$<CONFIG:Debug>>:${Qt5_XmlPatternsLocation}> DESTINATION ${CMAKE_INSTALL_PREFIX} RENAME ${Qt5_XmlPatternsSOName})
     install(FILES $<$<CONFIG:Debug>:${Qt5_NetworkLocation_Debug}>$<$<NOT:$<CONFIG:Debug>>:${Qt5_NetworkLocation}> DESTINATION ${CMAKE_INSTALL_PREFIX} RENAME ${Qt5_NetworkSOName})
     install(FILES $<$<CONFIG:Debug>:${Qt5_GuiLocation_Debug}>$<$<NOT:$<CONFIG:Debug>>:${Qt5_GuiLocation}> DESTINATION ${CMAKE_INSTALL_PREFIX} RENAME ${Qt5_GuiSOName})
-endif()
 
 get_filename_component(QT5GUI_DIR ${Qt5_GuiLocation} DIRECTORY)
 install(DIRECTORY ${QT5GUI_DIR}/../plugins/platforms/ DESTINATION platforms)
+endif()
+
+
 
     if (MINGW)
 

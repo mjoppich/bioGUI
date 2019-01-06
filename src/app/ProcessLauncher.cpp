@@ -148,6 +148,11 @@ bool ProcessLauncher::start()
                            emit this->finished();
                        });
 
+    
+    QProcessEnvironment sysenv = QProcessEnvironment::systemEnvironment();
+    m_pProcess->setProcessEnvironment(sysenv);
+
+    
     m_pProcess->start( sProgram, oArgs, eMode );
 
     return true;

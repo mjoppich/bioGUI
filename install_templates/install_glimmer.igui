@@ -1,15 +1,25 @@
 #! Install glimmer302b
 
-echo "This tool will not compile in folders where the absolute path contains spaces!"
 
 echo "Dependencies: csh"
 if [ ! "$2" = "" ]; then
-	echo "Installing dependencies"
-	echo $2 | sudo -S apt-get update
-	echo $2 | sudo -S apt-get -y install csh
-	
+
+    if [ "$(uname)" == "Darwin" ]; then
+
+        echo "This tool will not compile if install directory path contains spaces!"
+
+    else
+
+        echo "Installing Dependencies (aptitude/Ubuntu)"
+
+        echo "Installing dependencies"
+        echo $2 | sudo -S apt-get update
+        echo $2 | sudo -S apt-get -y install csh
+
+    fi
+
 else
-	echo "No sudo password, not installing dependencies"
+   echo "No sudo password, not installing dependencies"
 fi
 
 ## set all variables
@@ -17,11 +27,14 @@ PROG=glimmer302b
 PROGDIR=$1
 
 if [ -z "${PROGDIR}" ]; then
-	PROGDIR=~/bioGUI/progs/
+   PROGDIR=~/bioGUI/progs/
 fi
 
-PROGDIRESC=$(echo $PROGDIR | sed 's/ /\\ /g')
-APPBINARYDIR=${PROGDIRESC}/${PROG}/
+PROGDIRESC=$(echo "$PROGDIR" | sed 's/ /\\ /g')
+
+echo "PROGDIRESC $PROGDIRESC"
+
+APPBINARYDIR="${PROGDIRESC}/${PROG}/"
 
 ## create progdir
 mkdir -p "$PROGDIR/$PROG"
@@ -35,16 +48,27 @@ tar -xzf "$PROG.tar.gz" --strip 1 -C "$PROGDIR/$PROG"
 #install prog
 cd "$PROGDIR/$PROG/src"
 
+
+# this fixes some issues on mac, not all
+for script in **/Makefile; do
+
+echo "Escaping $script"
+sed -i.bak "s/cd \.\.\/\.\.\; pwd/cd \.\.\/\.\.\; pwd \| sed \'s\/ \/\\\\\\\\ \/g\'/g" $script
+
+done
+
+sed -i.bak "s/cd \.\.\; pwd/cd \.\.; pwd \| sed \'s\/ \/\\\\\\\\ \/g\'/g" Makefile
+
 make
 
 if [ $# -gt 2 ]; then
 
-	if [ "$3" = "1" ]; then
+   if [ "$3" = "1" ]; then
 
-		if ! grep -q "$PROGDIRESC/$PROG" ~/.bashrc; then
-			echo "export PATH=\"$PROGDIRESC/$PROG:\$PATH\" " >> ~/.bashrc;
-		fi
-	fi
+      if ! grep -q "$PROGDIRESC/$PROG" ~/.bashrc; then
+         echo "export PATH=\"$PROGDIRESC/$PROG:\$PATH\" " >> ~/.bashrc;
+      fi
+   fi
 
 fi
 
@@ -52,7 +76,7 @@ if [ $# -eq 5 ]; then
 
 # fix scripts
 
-for script in $PROGDIR/$PROG/scripts/*.csh; do
+for script in $PROGDIRESC/$PROG/scripts/*.csh; do
 
 sed -i "/set awkpath = /c\set awkpath = $PROGDIRESC/$PROG/scripts/" $script
 sed -i "/set glimmerpath = /c\set glimmerpath = $PROGDIRESC/$PROG/bin/" $script
@@ -65,7 +89,17 @@ echo "sending template"
 IP=$4
 PORT=$5
 
-nc -q 0 $IP $PORT <<EOF
+NCCMD=""
+
+if [ "$(uname)" == "Darwin" ]; then
+	NCCMD="nc -c $IP $PORT"
+else
+	NCCMD="nc -q 0 $IP $PORT"
+fi
+
+
+$NCCMD <<EOF
+
 <!--<?xml version="1.0" encoding="UTF-8")>-->
 <template description="Glimmer3 scripts ($PROG)" title="Glimmer3">
 
@@ -74,7 +108,7 @@ nc -q 0 $IP $PORT <<EOF
 
    <label>Run Program in WSL?</label>
    <checkbox id="WSLsel" value="true" selectonwindows="true">WSL</checkbox>
-      
+
     <group title="Operation" exclusive="true">
 
 <group id="fromscratch" title="From Scratch" checkable="true">
@@ -97,14 +131,14 @@ nc -q 0 $IP $PORT <<EOF
 
 
 
-    <action id="runprog" hint="click here to run program">run program</action>  
-  
+    <action id="runprog" hint="click here to run program">run program</action>
+
     <streambox id="output1">
       <stream id="outputstream1">OS1</stream>
       <stream id="outputstream2">OS2</stream>
     </streambox>
 
-  
+
   </vgroup>
 </window>
 
@@ -132,7 +166,7 @@ nc -q 0 $IP $PORT <<EOF
     <output type="STD" color="green" to="outputstream1" />
 </execute>
 </if>
-  
+
 </execution>
 </template>
 

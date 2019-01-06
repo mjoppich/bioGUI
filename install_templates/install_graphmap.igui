@@ -1,17 +1,26 @@
 #! Install graphmap (github))
 
-echo "This tool will not compile in folders where the absolute path contains spaces!"
-echo "Dependencies: None"
+
 
 if [ ! "$2" = "" ]; then
-	echo "Installing dependencies"
-  #echo $2 | sudo -S apt-get update
-  #echo $2 | sudo -S apt-get -y install csh
+
+    if [ "$(uname)" == "Darwin" ]; then
+
+        echo "Installing brew gcc"
+        brew install gcc
+
+        alias gcc='gcc-8'
+        alias g++='g++-8'
+
+    else
+
+        echo "No dependencies"
+
+    fi
 
 else
-	echo "No sudo password, not installing dependencies"
+   echo "No sudo password, not installing dependencies"
 fi
-
 
 
 ## set all variables
@@ -21,37 +30,42 @@ PROGDIR=$1
 
 
 if [ -z "${PROGDIR}" ]; then
-	PROGDIR=~/bioGUI/progs/
+   PROGDIR=~/bioGUI/progs/
 fi
 
 
 PROGDIRESC=$(echo $PROGDIR | sed 's/ /\\ /g')
-APPBINARYDIR=${PROGDIRESC}/${PROG}/bin/Linux-x64/
+APPBINARYDIR=${PROGDIR}/${PROG}/bin/Linux-x64/
 
 if [ -d "$PROGDIR/$PROG" ]; then
     echo "Removing Folder $PROGDIR/$PROG"
-    #rm -rf $PROGDIR/$PROG
+    rm -rf "$PROGDIR/$PROG"
 fi
 
 ## create progdir
 mkdir -p "$PROGDIR/$PROG"
 
 #download and unzip
-#git clone https://github.com/isovic/graphmap.git $PROGDIR/$PROG
+git clone https://github.com/isovic/graphmap.git "$PROGDIR/$PROG"
 
 cd "$PROGDIR/$PROG"
 
 make modules
-make
+
+if [ "$(uname)" == "Darwin" ]; then
+	make GCC=g++-8
+else
+	make
+fi
 
 
 if [ $# -gt 2 ]; then
-	if [ "$3" = "1" ]; then
+   if [ "$3" = "1" ]; then
 
-		if ! grep -q "$PROGDIRESC/$PROG/bin/Linux-x64/" ~/.bashrc; then
-			echo "export PATH=\"$PROGDIRESC/$PROG/bin/Linux-x64/:\$PATH\" " >> ~/.bashrc;
-		fi
-	fi
+      if ! grep -q "$PROGDIRESC/$PROG/bin/Linux-x64/" ~/.bashrc; then
+         echo "export PATH=\"$PROGDIRESC/$PROG/bin/Linux-x64/:\$PATH\" " >> ~/.bashrc;
+      fi
+   fi
 fi
 
 
@@ -60,10 +74,20 @@ if [ $# -eq 5 ]; then
 
 IP=$4
 PORT=$5
-       
+
 echo "Sending Template to $IP at $PORT"
 
-nc -q 0 $IP $PORT <<EOF
+
+NCCMD=""
+
+if [ "$(uname)" == "Darwin" ]; then
+	NCCMD="nc -c $IP $PORT"
+else
+	NCCMD="nc -q 0 $IP $PORT"
+fi
+
+
+$NCCMD <<EOF
 
 <!--<?xml version="1.0" encoding="UTF-8")>-->
 

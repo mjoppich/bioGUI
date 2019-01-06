@@ -1,17 +1,23 @@
 #! Install canu (github)
 
-echo "This tool will not compile in folders where the absolute path contains spaces!"
-echo "Dependencies: None"
-
 if [ ! "$2" = "" ]; then
-	echo "Installing dependencies"
-  echo $2 | sudo -S apt-get update
-  echo $2 | sudo -S apt-get -y install gnuplot
+
+    if [ "$(uname)" == "Darwin" ]; then
+
+        echo "Installing brew gnuplot"
+        brew install gnuplot --with-cairo
+
+    else
+
+        echo "Installing dependencies"
+        echo $2 | sudo -S apt-get update
+        echo $2 | sudo -S apt-get -y install gnuplot
+
+    fi
 
 else
-	echo "No sudo password, not installing dependencies"
+   echo "No sudo password, not installing dependencies"
 fi
-
 
 
 ## set all variables
@@ -26,7 +32,16 @@ fi
 
 
 PROGDIRESC=$(echo $PROGDIR | sed 's/ /\\ /g')
-APPBINARYDIR=${PROGDIRESC}/${PROG}/Linux-amd64/bin/
+APPBINARYDIR=${PROGDIR}/${PROG}/Linux-amd64/bin/
+
+
+if [ "$(uname)" == "Darwin" ]; then
+    APPBINARYDIR=${PROGDIR}/${PROG}/Darwin-amd64/bin/
+else
+    APPBINARYDIR=${PROGDIR}/${PROG}/Linux-amd64/bin/
+fi
+
+
 
 if [ -d "$PROGDIR/$PROG" ]; then
     echo "Removing Folder $PROGDIR/$PROG"
@@ -64,7 +79,16 @@ PORT=$5
        
 echo "Sending Template to $IP at $PORT"
 
-nc -q 0 $IP $PORT <<EOF
+NCCMD=""
+
+if [ "$(uname)" == "Darwin" ]; then
+	NCCMD="nc -c $IP $PORT"
+else
+	NCCMD="nc -q 0 $IP $PORT"
+fi
+
+
+$NCCMD <<EOF
 
 <!--<?xml version="1.0" encoding="UTF-8")>-->
 

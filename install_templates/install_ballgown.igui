@@ -1,23 +1,32 @@
 #! Install Ballgown 1.0.1
 
-DEP_PACKAGES="R zlibc zlib1g zlib1g-dev libxml2-dev libcurl4-openssl-dev"
-
-echo "Dependencies: $DEP_PACKAGES R: devtools, RSkittleBrewer, ballgown"
 if [ ! "$2" = "" ]; then
 
-	echo $2 | sudo -S apt-get update
-	echo $2 | sudo -S apt-get install $DEP_PACKAGES
-	
-	RLIBSUSER=`Rscript -e "cat(Sys.getenv('R_LIBS_USER'))"`
-	mkdir -p $RLIBUSER
-	
-	Rscript -e "source(\"http://bioconductor.org/biocLite.R\"); install.packages(\"devtools\"); devtools::install_github('alyssafrazee/RSkittleBrewer'); biocLite(\"ballgown\", lib.loc=Sys.getenv('R_LIBS_USER'), lib=Sys.getenv('R_LIBS_USER'));"
+    if [ "$(uname)" == "Darwin" ]; then
+
+        echo "Installing brew gnuplot"
+        brew install r libxml2 libxml2 zlib
+
+    else
+
+        DEP_PACKAGES="R zlibc zlib1g zlib1g-dev libxml2-dev libcurl4-openssl-dev"
+
+        echo "Dependencies: $DEP_PACKAGES R: devtools, RSkittleBrewer, ballgown"
+        echo $2 | sudo -S apt-get update
+        echo $2 | sudo -S apt-get install $DEP_PACKAGES
+
+    fi
 
 else
-	echo "No sudo password, not installing dependencies"
-	echo "Did not install ballgown. Hoping for the best!"
-
+   echo "No sudo password, not installing dependencies"
 fi
+
+echo "options(repos = c(CRAN = "https://cran.rstudio.com"))" > ~/.Rprofile
+
+RLIBSUSER=`Rscript -e "cat(Sys.getenv('R_LIBS_USER'))"`
+mkdir -p $RLIBUSER
+
+Rscript -e "source(\"http://bioconductor.org/biocLite.R\"); install.packages(\"devtools\"); devtools::install_github('alyssafrazee/RSkittleBrewer'); biocLite(\"ballgown\", lib.loc=Sys.getenv('R_LIBS_USER'), lib=Sys.getenv('R_LIBS_USER'));"
 
 RSCRIPT=`which Rscript`
 
@@ -30,8 +39,8 @@ if [ -z "${PROGDIR}" ]; then
 	PROGDIR=~/bioGUI/progs/
 fi
 
-PROGDIRESC=$(echo $PROGDIR | sed 's/ /\\ /g')
-APPBINARYDIR=${PROGDIRESC}/${PROG}/
+PROGDIRESC=$(echo "$PROGDIR" | sed 's/ /\\ /g')
+APPBINARYDIR="${PROGDIR}/${PROG}/"
 
 ## create progdir
 mkdir -p "$PROGDIR/$PROG"
@@ -122,7 +131,16 @@ if [ $# -eq 5 ]; then
 IP=$4
 PORT=$5
 
-nc -q 0 $IP $PORT <<EOF
+NCCMD=""
+
+if [ "$(uname)" == "Darwin" ]; then
+	NCCMD="nc -c $IP $PORT"
+else
+	NCCMD="nc -q 0 $IP $PORT"
+fi
+
+
+$NCCMD <<EOF
 
 <template description="Ballgown: Isoform-level differential expression analysis in R." title="${PROGNICE}">
 <window title="${PROGNICE}">

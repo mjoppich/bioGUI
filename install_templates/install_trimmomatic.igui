@@ -1,12 +1,20 @@
 #! Install Trimmomatic 0.36
 
-echo "Dependencies: java (openjdk)"
 if [ ! "$2" = "" ]; then
-	echo "Installing dependencies"
-	echo $2 | sudo -S apt-get update
-	echo $2 | sudo -S apt-get -y install openjdk-9-jre
+
+    if [ "$(uname)" == "Darwin" ]; then
+
+        echo "PLEASE INSTALL JAVA PRIOR USING TRIMMOMATIC!"
+
+    else
+
+		echo "Installing dependencies: openjdk 9"
+		echo $2 | sudo -S apt-get update
+		echo $2 | sudo -S apt-get -y install openjdk-9-jre
+    fi
+
 else
-	echo "No sudo password, not installing dependencies"
+   echo "No sudo password, not installing dependencies"
 fi
 
 ## set all variables
@@ -27,15 +35,11 @@ echo "Creating $PROGDIR"
 mkdir -p "$PROGDIR"
 
 #download and unzip
-if [ ! -f "$PROGDIR/$PROG.zip" ]; then
-echo "Downloading program"
-	wget http://www.usadellab.org/cms/uploads/supplementary/Trimmomatic/$PROGNICE.zip -O "$PROGDIR/$PROG.zip"
-fi
+echo "Downloading Trimmomatic"
+wget http://www.usadellab.org/cms/uploads/supplementary/Trimmomatic/$PROGNICE.zip -O "$PROGDIR/$PROG.zip"
 
-if [ ! -d "$PROGDIR/$PROG" ]; then
 unzip -o "$PROGDIR/$PROG.zip" -d "$PROGDIR/$PROG"
 mv "$PROGDIR/$PROG/"*/* "$PROGDIR/$PROG"
-fi
 
 if [ $# -gt 2 ]; then
 

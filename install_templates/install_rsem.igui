@@ -1,5 +1,11 @@
 #! Install RSEM 1.3.0
 
+if [ "$(uname)" == "Darwin" ]; then
+
+	echo "This Install Module is not compatible with Mac OS. If desperately needed, contact bioGUI authors."
+	exit
+fi
+
 echo "Dependencies: perl r-base python numpy scipy pysam"
 if [ ! "$2" = "" ]; then
 	echo "Installing dependencies"

@@ -30,7 +30,7 @@ fi
 #install prog
 cd "$PROGDIR/$PROG"
 
-./configure# -prefix="$PROGDIR/$PROG"
+./configure #-prefix="$PROGDIR/$PROG"
 make
 #make check
 # does not really work on mac os

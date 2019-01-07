@@ -1,16 +1,27 @@
 #! Install rMATS-3.2.5
 
+
+
+if [ "$(uname)" == "Darwin" ]; then
+
+	echo "This Install Module is not compatible with Mac OS. If desperately needed, contact bioGUI authors."
+	exit
+fi
+
+
 echo "Dependencies: python2.7 python-pip zlib1g-dev numpy scipy pysam"
+
 if [ ! "$2" = "" ]; then
+
 	echo "Installing dependencies"
 	echo $2 | sudo -S apt-get update
 	echo $2 | sudo -S apt-get -y install python2.7 python-pip zlib1g-dev
-	
-	pip install numpy scipy pysam
-	
+
 else
-	echo "No sudo password, not installing dependencies"
+   echo "No sudo password, not installing dependencies"
 fi
+
+pip install numpy scipy pysam
 
 ## set all variables
 PROG=rMATS.3.2.5
@@ -27,9 +38,7 @@ PROGDIRESC=$(echo $PROGDIR | sed 's/ /\\ /g')
 mkdir -p "$PROGDIR"
 
 #download and unzip
-if [ ! -f "$PROGDIR/$PROG.tgz" ]; then
-	wget https://sourceforge.net/projects/rnaseq-mats/files/MATS/rMATS.3.2.5.tgz/download -O "$PROGDIR/$PROG.tgz"
-fi
+wget https://sourceforge.net/projects/rnaseq-mats/files/MATS/rMATS.3.2.5.tgz/download -O "$PROGDIR/$PROG.tgz"
 
 
 if [ ! -d "$PROGDIR/$PROG" ]; then

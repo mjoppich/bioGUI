@@ -1,17 +1,24 @@
 #! Install hisat2-2.0.5
 
-echo "Dependencies: unzip"
 if [ ! "$2" = "" ]; then
-	echo "Installing dependencies"
-	echo $2 | sudo -S apt-get update
-	echo $2 | sudo -S apt-get -y install unzip
-	
+
+    if [ "$(uname)" == "Darwin" ]; then
+
+        echo "Installing brew gcc"
+        brew install gcc
+
+    else
+
+        echo "No dependencies"
+
+    fi
+
 else
-	echo "No sudo password, not installing dependencies"
+   echo "No sudo password, not installing dependencies"
 fi
 
 ## set all variables
-PROG=hisat2-2.0.5
+PROG=hisat2-2.1.0
 
 PROGDIR=$1
 if [ -z "${PROGDIR}" ]; then
@@ -25,16 +32,8 @@ PROGDIRESC=$(echo $PROGDIR | sed 's/ /\\ /g')
 mkdir -p "$PROGDIR"
 
 #download and unzip
-if [ ! -f "$PROGDIR/$PROG.zip" ]; then
-	wget ftp://ftp.ccb.jhu.edu/pub/infphilo/hisat2/downloads/hisat2-2.0.5-source.zip -O "$PROGDIR/$PROG.zip"
-fi
-
-if [ ! -d "$PROGDIR/$PROG" ]; then
 cd "$PROGDIR"
-
-
-unzip $PROG.zip -d "$PROGDIR/"
-fi
+git clone https://github.com/infphilo/hisat2.git $PROG
 
 #install prog
 cd "$PROGDIR/$PROG"
@@ -72,8 +71,8 @@ fi
 
 $NCCMD <<EOF
 
-<template description="hisat2 2.0.5 aligner" title="hisat2 2.0.5">
-<window title="hisat2 2.0.5 aligner">
+<template description="hisat2 2.1.0 aligner" title="hisat2 2.1.0">
+<window title="hisat2 2.1.0 aligner">
 <vgroup>
 
   <group title="Alignment Information">

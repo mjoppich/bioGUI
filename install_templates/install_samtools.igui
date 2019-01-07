@@ -1,12 +1,22 @@
 #! Install samtools-1.3.1
 
-echo "Dependencies: libncurses5-dev"
+
 if [ ! "$2" = "" ]; then
-	echo "Installing dependencies"
-	echo $2 | sudo -S apt-get update
-	echo $2 | sudo -S apt-get -y install libncurses5-dev zlib1g-dev
+
+    if [ "$(uname)" == "Darwin" ]; then
+
+        echo "Installing brew gcc"
+        brew install gcc zlib 
+
+    else
+
+		echo "Installing dependencies"
+		echo $2 | sudo -S apt-get update
+		echo $2 | sudo -S apt-get -y install libncurses5-dev zlib1g-dev
+    fi
+
 else
-	echo "No sudo password, not installing dependencies"
+   echo "No sudo password, not installing dependencies"
 fi
 
 ## set all variables

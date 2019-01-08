@@ -35,6 +35,14 @@ On any aptitude supported platform (Windows with WSL, Ubuntu), please execute th
 
 Unfortunately, there currently is no binary available for Mac OS X.
 
+## Setup First Time Use
+
+![Setup First Time Use](doc/images/bioGUI_wsl_setup.gif?raw=true "First Time Use")
+
+## Install an install module
+
+![Install Module](doc/images/bioGUI_graphmap.gif?raw=true "Graphmap Install")
+
 ## I want to know more about available modules
 
 If you want to know which modules are already available, please visit the supporting information [website](https://www.bio.ifi.lmu.de/software/biogui/index.html). There you can see a list of available modules, submit your own or request new template.

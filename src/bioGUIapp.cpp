@@ -208,7 +208,8 @@ bioGUIapp::bioGUIapp(int& argc, char** argv)
     m_pMainMainWindow = new QMainWindow();
     m_pMainMainWindow->setCentralWidget(pSplitter);
     m_pMainMainWindow->show();
-    m_pMainMainWindow->setMinimumSize(700, 500);
+    m_pMainMainWindow->setMinimumSize(1024,900);
+
 
     QList<int> sizeList;
     sizeList << 250 << m_pMainMainWindow->width()-250;

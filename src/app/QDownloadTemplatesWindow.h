@@ -54,7 +54,7 @@ public:
 
         m_sTargetDirectory = sTemplateDir;
 
-        //this->setMinimumSize(200,200);
+        this->setMinimumSize(900,600);
 
         QLayout* pLayout = new QVBoxLayout();
 

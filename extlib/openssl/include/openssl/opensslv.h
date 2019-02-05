@@ -1,12 +1,3 @@
-/*
- * Copyright 1999-2018 The OpenSSL Project Authors. All Rights Reserved.
- *
- * Licensed under the OpenSSL license (the "License").  You may not use
- * this file except in compliance with the License.  You can obtain a copy
- * in the file LICENSE in the source distribution or at
- * https://www.openssl.org/source/license.html
- */
-
 #ifndef HEADER_OPENSSLV_H
 # define HEADER_OPENSSLV_H
 
@@ -39,17 +30,13 @@ extern "C" {
  * (Prior to 0.9.5a beta1, a different scheme was used: MMNNFFRBB for
  *  major minor fix final patch/beta)
  */
-# define OPENSSL_VERSION_NUMBER  0x1010008fL
+# define OPENSSL_VERSION_NUMBER  0x1000208fL
 # ifdef OPENSSL_FIPS
-#  define OPENSSL_VERSION_TEXT    "OpenSSL 1.1.0h-fips  27 Mar 2018"
+#  define OPENSSL_VERSION_TEXT    "OpenSSL 1.0.2h-fips  3 May 2016"
 # else
-#  define OPENSSL_VERSION_TEXT    "OpenSSL 1.1.0h  27 Mar 2018"
+#  define OPENSSL_VERSION_TEXT    "OpenSSL 1.0.2h  3 May 2016"
 # endif
-
-#define OPENSSL_MAKE_VERSION(maj,min,fix,patch) ((0x10000000L)+((maj&0xff)<<20)+((min&0xff)<<12)+((fix&0xff)<<4)+patch)
-
-/* use this for #if tests, should never depend upon fix/patch */
-#define OPENSSL_VERSION_AT_LEAST(maj,min) (OPENSSL_MAKE_VERSION(maj,min, 0, 0) >= OPENSSL_VERSION_NUMBER)
+# define OPENSSL_VERSION_PTEXT   " part of " OPENSSL_VERSION_TEXT
 
 /*-
  * The macros below are to be used for shared library (.so, .dll, ...)
@@ -62,7 +49,7 @@ extern "C" {
  *
  *      libcrypto.so.0.9
  *
- * Some unixen also make a softlink with the major version number only:
+ * Some unixen also make a softlink with the major verson number only:
  *
  *      libcrypto.so.0
  *
@@ -101,7 +88,7 @@ extern "C" {
  * should only keep the versions that are binary compatible with the current.
  */
 # define SHLIB_VERSION_HISTORY ""
-# define SHLIB_VERSION_NUMBER "1.1"
+# define SHLIB_VERSION_NUMBER "1.0.0"
 
 
 #ifdef  __cplusplus

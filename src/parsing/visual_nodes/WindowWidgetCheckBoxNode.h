@@ -50,9 +50,9 @@ public:
         {
             std::string sValue = oFind->second();
 
-            QString sButtonValue = this->getQAttribute(pDOMElement, "value", "");
+            QString sButtonValue = this->getQAttribute(pDOMElement, "selected", "");
 
-            if (sButtonValue.compare(QString(sValue.c_str()), Qt::CaseInsensitive) == 0)
+            if ((sButtonValue.size() > 0) && (sButtonValue.compare(QString(sValue.c_str()), Qt::CaseInsensitive) == 0))
             {
                 pDOMElement->setAttribute("selected", "true");
             } else {

@@ -104,7 +104,7 @@ if (WIN32)
         message(STATUS "IN MINGW")
     endif()
 
-    set(Qt5_DIR "C:/Qt/5.11.1/mingw53_32")
+    set(Qt5_DIR "D:/Qt/5.12.0/mingw73_64")
     set(ENV{OPENSSL_ROOT_DIR} "${CMAKE_CURRENT_SOURCE_DIR}/extlib/openssl/")
     set(OPENSSL_ROOT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/extlib/openssl/")
     message(STATUS $ENV{OPENSSL_ROOT_DIR})
@@ -139,14 +139,14 @@ endforeach()
 #set(CMAKE_FRAMEWORK_PATH "${Qt5_DIR}/lib/cmake")
 
 # Basic information about project
-project(bioGUI VERSION 1.0)
+project(bioGUI VERSION 1.1)
 
 # Set PROJECT_VERSION_PATCH and PROJECT_VERSION_TWEAK to 0 if not present, needed by add_project_meta
 fix_project_version()
 
 # Set additional project information
 set(COMPANY "LFE Bioinformatik")
-set(COPYRIGHT "Copyright (c) 2016 Markus Joppich. All rights reserved.")
+set(COPYRIGHT "Copyright (c) 2019 Markus Joppich. All rights reserved.")
 set(IDENTIFIER "de.lmu.ifi.bio.mjoppich")
 
 
@@ -174,11 +174,10 @@ message(STATUS "   *** Lua DLL dir: ${LUA_DLL_DIR}")
 set(CMAKE_FIND_LIBRARY_SUFFIXES ".so .a")
 
 # Search OpenSSL
-set(OPENSSL_USE_STATIC_LIBS True)
+set(OPENSSL_USE_STATIC_LIBS TRUE)
 find_package(OpenSSL)
 
 if( OPENSSL_FOUND )
-
     include_directories(${OPENSSL_INCLUDE_DIRS})
 
     message(STATUS "Using OpenSSL ${OPENSSL_VERSION}")
@@ -262,21 +261,19 @@ add_executable(${PROJECT_NAME} ${OS_BUNDLE} # Expands to WIN32 or MACOS_BUNDLE d
 )
 
 
-ADD_LIBRARY(mylibeay STATIC IMPORTED)
-SET_TARGET_PROPERTIES(mylibeay PROPERTIES IMPORTED_LOCATION "${OPENSSL_SSL_LIBRARY}")
+ADD_LIBRARY(openssl_crypto STATIC IMPORTED)
+SET_TARGET_PROPERTIES(openssl_crypto PROPERTIES IMPORTED_LOCATION "${OPENSSL_CRYPTO_LIBRARY}")
 
-ADD_LIBRARY(myssleay STATIC IMPORTED)
-SET_TARGET_PROPERTIES(myssleay PROPERTIES IMPORTED_LOCATION "${OPENSSL_CRYPTO_LIBRARY}")
+ADD_LIBRARY(openssl_ssl STATIC IMPORTED)
+SET_TARGET_PROPERTIES(openssl_ssl PROPERTIES IMPORTED_LOCATION "${OPENSSL_SSL_LIBRARY}")
 
-#ADD_LIBRARY(lualib STATIC IMPORTED IMPORTED_LOCATION "${LUA_LIBRARY}")
-#SET_TARGET_PROPERTIES(lualib PROPERTIES IMPORTED_LOCATION "${LUA_LIBRARY}")
+LINK_DIRECTORIES( ${LINK_DIRECTORIES} "${CMAKE_CURRENT_SOURCE_DIR}/extlib/ssl/")
 
 ADD_LIBRARY(lualib STATIC IMPORTED)
 SET_TARGET_PROPERTIES(lualib PROPERTIES IMPORTED_LOCATION "${LUA_LIBRARY}")
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
-TARGET_LINK_LIBRARIES(${PROJECT_NAME} mylibeay myssleay m lualib ${CMAKE_DL_LIBS})
-
+TARGET_LINK_LIBRARIES(${PROJECT_NAME} openssl_crypto openssl_ssl lualib ${CMAKE_DL_LIBS} )
 
 qt5_use_modules(${PROJECT_NAME} Core Gui Widgets Network Xml XmlPatterns)
 install(TARGETS ${PROJECT_NAME} DESTINATION ${CMAKE_INSTALL_PREFIX} )
@@ -476,22 +473,33 @@ endif()
 
             get_filename_component(MINGW_BUILD_BIN ${CMAKE_CXX_COMPILER} PATH)
 
-            add_custom_command( TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MINGW_BUILD_BIN}/libgcc_s_dw2-1.dll ${PROJECT_BINARY_DIR})
+            add_custom_command( TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MINGW_BUILD_BIN}/libgcc_s_seh-1.dll ${PROJECT_BINARY_DIR})
             add_custom_command( TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MINGW_BUILD_BIN}/libstdc++-6.dll ${PROJECT_BINARY_DIR})
             add_custom_command( TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MINGW_BUILD_BIN}/libwinpthread-1.dll ${PROJECT_BINARY_DIR})
+
+            add_custom_command( TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/extlib/openssl/libeay32.dll ${PROJECT_BINARY_DIR})
+            add_custom_command( TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/extlib/openssl/ssleay32.dll ${PROJECT_BINARY_DIR})
+            add_custom_command( TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/extlib/lua/lua53.dll ${PROJECT_BINARY_DIR})
 			
-			    file(GLOB biogui_win_libs
-					${MINGW_BUILD_BIN}/libgcc_s_dw2-1.dll
-					${MINGW_BUILD_BIN}/libstdc++-6.dll
-					${MINGW_BUILD_BIN}/libwinpthread-1.dll
-					)
+
+            message(STATUS "CURRENT SOURCE DIR")
+            message(STATUS "${CMAKE_CURRENT_SOURCE_DIR}")
+
+            file(GLOB biogui_win_libs
+                        ${MINGW_BUILD_BIN}/libgcc_s_seh-1.dll
+                        ${MINGW_BUILD_BIN}/libstdc++-6.dll
+                        ${MINGW_BUILD_BIN}/libwinpthread-1.dll
+                        ${CMAKE_CURRENT_SOURCE_DIR}/extlib/openssl/libeay32.dll
+                        ${CMAKE_CURRENT_SOURCE_DIR}/extlib/openssl/ssleay32.dll
+                        ${CMAKE_CURRENT_SOURCE_DIR}/extlib/lua/lua53.dll
+                        )
 
             foreach (_file ${biogui_win_libs})
                 get_filename_component(_resolvedFile "${_file}" REALPATH)
                 get_filename_component(_originalName "${_file}" NAME)
                 get_filename_component(_originalExt "${_file}" EXT)
 
-                #message(STATUS "${_resolvedFile} ${_originalName} ${_originalExt}")
+                message(STATUS "${_resolvedFile} ${_originalName} ${_originalExt}")
 
                 install(FILES ${_resolvedFile} DESTINATION ${CMAKE_INSTALL_PREFIX} RENAME "${_originalName}")
             endforeach()

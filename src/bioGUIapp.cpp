@@ -29,6 +29,9 @@ bioGUIapp::bioGUIapp(int& argc, char** argv)
     std::cerr << "Launching " << QCoreApplication::applicationName().toStdString() << std::endl;
     std::cerr << "Main Application currently in dir: " << std::endl;
 
+    qDebug() <<"ssl:" << QSslSocket::sslLibraryBuildVersionString();
+
+
     QString sApplicationDir = QCoreApplication::applicationDirPath() + QDir::separator();
     QDir::setCurrent(sApplicationDir);
 
@@ -208,7 +211,6 @@ bioGUIapp::bioGUIapp(int& argc, char** argv)
     m_pMainMainWindow = new QMainWindow();
     m_pMainMainWindow->setCentralWidget(pSplitter);
     m_pMainMainWindow->show();
-    m_pMainMainWindow->setMinimumSize(1024,900);
 
 
     QList<int> sizeList;

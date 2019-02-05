@@ -40,9 +40,9 @@ cd "$PROGDIR/$PROG"
 
 make
 
-#now fix spaces in path
-perl -pi -e 's/my \$align_prog_s= File::Spec->catpath\(\$vol\,\$script_path\,\$align_bin_s\);/my \$align_prog_s= "\\\"".File::Spec->catpath(\$vol,\$script_path,\$align_bin_s).\"\\\"\";/' hisat2
-perl -pi -e 's/my \$align_prog_l= File::Spec->catpath\(\$vol\,\$script_path\,\$align_bin_l\);/my \$align_prog_l= "\\\"".File::Spec->catpath(\$vol,\$script_path,\$align_bin_l).\"\\\"\";/' hisat2
+#now fix spaces in path - no longer works/necessary
+#perl -pi -e 's/my \$align_prog_s= File::Spec->catpath\(\$vol\,\$script_path\,\$align_bin_s\);/my \$align_prog_s= "\\\"".File::Spec->catpath(\$vol,\$script_path,\$align_bin_s).\"\\\"\";/' hisat2
+#perl -pi -e 's/my \$align_prog_l= File::Spec->catpath\(\$vol\,\$script_path\,\$align_bin_l\);/my \$align_prog_l= "\\\"".File::Spec->catpath(\$vol,\$script_path,\$align_bin_l).\"\\\"\";/' hisat2
 
 if [ $# -gt 2 ]; then
 

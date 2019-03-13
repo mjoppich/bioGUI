@@ -1,0 +1,192 @@
+#! Install featureCounts (github)
+
+
+
+if [ ! "$2" = "" ]; then
+
+    if [ "$(uname)" == "Darwin" ]; then
+
+        echo "Installing brew gcc"
+        brew install gcc
+
+        alias gcc='gcc-8'
+        alias g++='g++-8'
+
+    else
+
+        echo "No dependencies"
+
+    fi
+
+else
+   echo "No sudo password, not installing dependencies"
+fi
+
+
+## set all variables
+PROG=featureCounts
+PROGDIR=$1
+
+
+
+if [ -z "${PROGDIR}" ]; then
+   PROGDIR=~/bioGUI/progs/
+fi
+
+
+PROGDIRESC=$(echo $PROGDIR | sed 's/ /\\ /g')
+APPBINARYDIR=${PROGDIR}/${PROG}/bin/
+
+if [ -d "$PROGDIR/$PROG" ]; then
+    echo "Removing Folder $PROGDIR/$PROG"
+    rm -rf "$PROGDIR/$PROG"
+fi
+
+## create progdir
+mkdir -p "$PROGDIR/$PROG"
+
+#download and unzip
+#wget https://sourceforge.net/projects/subread/files/subread-1.6.3/subread-1.6.3-source.tar.gz/download -O subread.tar.gz
+
+tar xfz subread.tar.gz -C "$PROGDIR/$PROG/"
+
+cd "$PROGDIR"/$PROG/
+
+mv */* .
+
+cd "$PROGDIR/$PROG/src"
+
+if [ "$(uname)" == "Darwin" ]; then
+	make -f Makefile.MacOS
+else
+	make -f Makefile.Linux
+fi
+
+
+if [ $# -gt 2 ]; then
+   if [ "$3" = "1" ]; then
+
+      if ! grep -q "$PROGDIRESC/$PROG/bin/" ~/.bashrc; then
+         echo "export PATH=\"$PROGDIRESC/$PROG/bin/:\$PATH\" " >> ~/.bashrc;
+      fi
+   fi
+fi
+
+
+
+if [ $# -eq 5 ]; then
+
+IP=$4
+PORT=$5
+
+echo "Sending Template to $IP at $PORT"
+
+
+NCCMD=""
+
+if [ "$(uname)" == "Darwin" ]; then
+	NCCMD="nc -c $IP $PORT"
+else
+	NCCMD="nc -q 0 $IP $PORT"
+fi
+
+
+$NCCMD <<EOF
+
+<template description="featureCounts (subread)" title="featureCounts">
+
+<window width="500" height="1000" title="featureCounts">
+
+  <vgroup>
+
+
+    <group title="Alignment Options">
+    
+                    
+        <label>Input Annotation</label> <filedialog id="featureCounts_annotation" output="false">Select Input Annotation (GTF/GFF)</filedialog>
+        <label>Output File</label> <filedialog id="featureCounts_output" output="true">Select Output Count-File</filedialog>
+        
+        <label>Input Files</label> <filedialog id="featureCounts_input" output="false" multiples="true" multiples_delim=";">Select Input Files (sam or bam)</filedialog>
+        
+        <label>Program Mode (not all options used in all modes)</label>
+        <combobox id="featureCounts_annot_format" selected="GTF">
+            <comboitem value="GTF">GTF or compatible GFF</comboitem>
+            <comboitem value="SAF">SAF format</comboitem>
+        </combobox>
+        
+
+        <label>Feature type</label><input id="featureCounts_feature_type">exon</input>
+
+
+        <label>Additional Options</label><input id="featureCounts_options"></input>
+    
+    
+        <action program="featureCounts" hint="click here to run program">Run featureCounts</action>  
+    </group>
+
+
+    <group title="General Options">
+       <label>Run in WSL on Windows?</label><checkbox id="WSLsel" value="true" selectonwindows="true">Run in WSL?</checkbox>
+       <label>Threads</label><input id="featureCounts_threads" type="int">1</input>
+    </group>
+  
+    <streambox id="output1">
+      <stream id="outputstream1">OS1</stream>
+      <stream id="outputstream2">OS2</stream>
+    </streambox>
+ 
+
+  </vgroup>
+
+</window>
+
+
+
+<execution>
+
+    <const id="bindir">${APPBINARYDIR}/</const>
+    
+    
+    <relocate id="featureCounts_annotation_rel" from="\${featureCounts_annotation}" wsl="\${WSLsel}"/>
+    <relocate id="featureCounts_output_rel" from="\${featureCounts_output}" wsl="\${WSLsel}"/>
+    <relocate id="featureCounts_input_rel" from="\${featureCounts_input}" sep=" " insep=";" wsl="\${WSLsel}"/>
+
+    <add id="args" sep=" ">
+        <if comp="IS_SET" value1="\${featureCounts_feature_type}" sep=" ">
+            <const>-t</const>
+            <value from="\${featureCounts_feature_type}"/>
+        </if>        
+
+        <const>-F</const>
+        <value from="\${featureCounts_annot_format}"/>
+
+        <value from="\${featureCounts_options}"/>
+
+        <if comp="IS_SET" value1="\${featureCounts_annotation_rel}" sep=" ">
+            <const>-a</const>
+            <value from="\${featureCounts_annotation_rel}"/>
+        </if>
+
+        <if comp="IS_SET" value1="\${featureCounts_output_rel}" sep=" ">
+            <const>-o</const>
+            <value from="\${featureCounts_output_rel}"/>
+        </if>
+        
+        <value from="\${featureCounts_input_rel}"/>     
+
+    </add>
+    
+    <execute program="featureCounts" param="\${args}" location="\${bindir}" exec="featureCounts" wsl="WSLsel">
+        <output type="COUT" color="green" to="outputstream1" />
+        <output type="CERR" color="red" to="outputstream2" />
+    </execute>
+
+  
+
+</execution>
+</template>
+
+
+EOF
+
+fi

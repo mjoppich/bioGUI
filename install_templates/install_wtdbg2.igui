@@ -1,0 +1,234 @@
+#! Install wtdbg2 (from github)
+
+if [ ! "$2" = "" ]; then
+
+    if [ "$(uname)" == "Darwin" ]; then
+
+        echo "No dependencies needed"
+
+    else
+
+        echo "No dependencies needed"
+
+    fi
+
+else
+   echo "No sudo password"
+   echo "No dependencies needed"
+fi
+
+
+## set all variables
+PROG=wtdbg2
+PROGDIR=$1
+
+
+
+if [ -z "${PROGDIR}" ]; then
+	PROGDIR=~/bioGUI/progs/
+fi
+
+
+PROGDIRESC=$(echo $PROGDIR | sed 's/ /\\ /g')
+APPBINARYDIR=${PROGDIR}/${PROG}/Linux-amd64/bin/
+
+
+APPBINARYDIR=${PROGDIR}/${PROG}/
+
+if [ -d "$PROGDIR/$PROG" ]; then
+    echo "Removing Folder $PROGDIR/$PROG"
+    rm -rf $PROGDIR/$PROG
+fi
+
+## create progdir
+mkdir -p "$PROGDIR/$PROG"
+
+echo "Fetching $PROG - this may take a while."
+
+#download and unzip
+git clone https://github.com/ruanjue/wtdbg2 $PROGDIR/$PROG
+
+cd "$PROGDIR/$PROG/"
+
+make
+
+
+if [ $# -gt 2 ]; then
+	if [ "$3" = "1" ]; then
+
+		if ! grep -q "$APPBINARYDIR" ~/.bashrc; then
+			echo "export PATH=\"$APPBINARYDIR:\$PATH\" " >> ~/.bashrc;
+		fi
+	fi
+fi
+
+
+
+if [ $# -eq 5 ]; then
+
+IP=$4
+PORT=$5
+       
+echo "Sending Template to $IP at $PORT"
+
+NCCMD=""
+
+if [ "$(uname)" == "Darwin" ]; then
+	NCCMD="nc -c $IP $PORT"
+else
+	NCCMD="nc -q 0 $IP $PORT"
+fi
+
+
+$NCCMD <<EOF
+
+<!--<?xml version="1.0" encoding="UTF-8")>-->
+
+<template description="wtdbg2 ($PROG)" title="wtdbg2">
+
+
+
+<window width="500" height="1000" title="wtdbg2">
+
+  <vgroup>
+
+    <group title="Assembly Options">
+    
+        <label>Sequencing Technology</label>
+        <combobox id="seqtec" selected="ont">
+            <comboitem value="ont">Oxford Nanopore</comboitem>
+            <comboitem value="rs">PacBio RSII</comboitem>
+            <comboitem value="sq">PacBio Sequel</comboitem>
+            <comboitem value="ccs">PacBio CCS</comboitem>
+        </combobox>
+        
+        <label>Expected genome size (in giga-bases)</label>
+        <input id="expected_genome_size" type="float"></input>
+                
+        <label>Number of threads</label>
+        <input id="thread_num" type="int">4</input>
+
+        <label>Input Reads (fasta)</label> <filedialog id="input_reads" output="false" multiples="false">Select Input Reads</filedialog>
+      
+        <label>Assembly Output (folder)</label> <filedialog id="output_file" output="true" folder="true">Select Output Folder</filedialog>
+        <label>Assembly Output (name)</label> <input id="output_name">prefix</input>
+        
+        <label>Additional Options</label><input id="wtdbg2_options"></input>
+    
+        <action program="wtdbg2" hint="click here to run program">Run wtdbg2</action>  
+    </group>
+
+    <group title="Consensus Caller (wtpoa-cns)">
+                
+        <label>Number of threads</label>
+        <input id="thread_num_wtpoa" type="int">4</input>
+
+        <label>Input Contig Layout</label> <filedialog id="input_reads_wtpoa" output="false" multiples="false">Select Input Reads</filedialog>
+      
+        <label>Assembly Output (folder)</label> <filedialog id="output_file_wtpoa" output="true" folder="false">Select Output File</filedialog>
+        
+        <label>Additional Options</label><input id="option_wtpoa"></input>
+    
+        <action program="wtpoa-cns" hint="click here to run program">Run wtpoa-cns</action>  
+    </group>
+
+
+    <group title="General Options">
+       <label>Run in WSL on Windows?</label><checkbox id="WSLsel" value="true" selectonwindows="true">Run in WSL?</checkbox>
+    </group>
+  
+    <streambox id="output1">
+      <stream id="outputstream1">OS1</stream>
+      <stream id="outputstream2">OS2</stream>
+    </streambox>
+ 
+
+  </vgroup>
+
+</window>
+
+<execution>
+
+    <const id="bindir">${APPBINARYDIR}/</const>
+    
+    
+    <relocate id="output_file_rel" from="\${output_file}" sep=" " wsl="\${WSLsel}"/>
+    <relocate id="input_reads_rel" from="\${input_reads}" sep=" " wsl="\${WSLsel}"/>
+    
+
+    <add id="args" sep=" ">
+              
+        <if comp="IS_SET" value1="\${seqtec}" sep=" ">
+            <const>-x</const>
+            <value from="\${seqtec}"/>
+        </if>   
+
+        <if comp="IS_SET" value1="\${expected_genome_size}" sep=" ">
+            <const>-g</const>
+            <value from="\${expected_genome_size}"/>
+        </if>         
+
+        <if comp="IS_SET" value1="\${thread_num}">
+            <const>-t</const>
+            <value from="\${thread_num}"/>
+        </if>
+     
+        
+        <value from="\${wtdbg2_options}"/>  
+
+        <if comp="IS_SET" value1="\${input_reads_rel}" sep=" ">
+            <const>-i</const>
+            <value from="\${input_reads_rel}"/>
+        </if>   
+
+        <if comp="IS_SET" value1="\${output_file_rel}" sep=" ">
+            <const>-fo</const>
+            <add sep="/">
+                <value from="\${output_file_rel}"/>
+                <value from="\${output_name}"/>
+            </add>
+        </if>         
+
+    </add>
+    
+    <execute program="wtdbg2" param="\${args}" location="\${bindir}" exec="wtdbg2" wsl="WSLsel">
+        <output type="COUT" color="green" to="outputstream1" />
+        <output type="CERR" color="red" to="outputstream2" />
+    </execute>
+
+    <relocate id="input_reads_wtpoa_rel" from="\${input_reads_wtpoa}" sep=" " wsl="\${WSLsel}"/>
+    <relocate id="output_file_wtpoa_rel" from="\${output_file_wtpoa}" sep=" " wsl="\${WSLsel}"/>
+    
+
+    <add id="args_wtpoa" sep=" ">
+                     
+
+        <if comp="IS_SET" value1="\${thread_num_wtpoa}">
+            <const>-t</const>
+            <value from="\${thread_num_wtpoa}"/>
+        </if>                 
+        
+        <if comp="IS_SET" value1="\${input_reads_wtpoa_rel}" sep=" ">
+            <const>-i</const>
+            <value from="\${input_reads_wtpoa_rel}"/>
+        </if>   
+
+        <if comp="IS_SET" value1="\${output_file_wtpoa_rel}" sep=" ">
+            <const>-i</const>
+            <value from="\${output_file_wtpoa_rel}"/>
+        </if>           
+
+    </add>
+    
+    <execute program="wtpoa-cns" param="\${args_wtpoa}" location="\${bindir}" exec="wtpoa-cns" wsl="WSLsel">
+        <output type="COUT" color="green" to="outputstream1" />
+        <output type="CERR" color="red" to="outputstream2" />
+    </execute>
+
+</execution>
+</template>
+
+
+EOF
+
+fi

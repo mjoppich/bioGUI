@@ -38,8 +38,6 @@ fi
 ## create progdir
 mkdir -p "$PROGDIR/$PROG"
 
-wget -O "$PROGDIR/$PROG/assemble.sh" https://gist.githubusercontent.com/mjoppich/18b7a07074b59bd34056df6fe7b08d05/raw/505494921348d6dc952148ac6c6d86568c49fe79/mmr_assemble.sh
-
 
 cd "$PROGDIR/$PROG"
 git clone https://github.com/lh3/minimap2 minimap2
@@ -105,6 +103,52 @@ if [ $# -gt 2 ]; then
 	fi
 fi
 
+APPBINARYDIR=${PROGDIRESC}/${PROG}/
+
+cat <<EOS > $APPBINARYDIR/assemble.sh
+#!/usr/bin/sh
+INREADS=\$1
+ASMFOLDER=\$2
+ASMPREFIX=\$3
+
+# path to used executables
+MINIMAP2BIN="\${4-minimap2}"
+MINIASMBIN="\${5-miniasm}"
+GRAPHMAPBIN="\${6-graphmap}"
+RACONBIN="\${7-racon}"
+
+THREADS="\${8-4}"
+
+#echo \$INREADS
+#echo \$ASMFOLDER
+#echo \$ASMPREFIX
+#echo \$MINIMAP2BIN
+#echo \$MINIASMBIN
+#echo \$GRAPHMAPBIN
+#echo \$RACONBIN
+
+# first we must overlap all reads with each other
+\$MINIMAP2BIN -x ava-ont -t\$THREADS \$INREADS $INREADS > \$ASMFOLDER/\$ASMPREFIX.paf
+
+# then miniasm can create alignment
+\$MINIASMBIN -f \$INREADS \$ASMFOLDER/\$ASMPREFIX.paf > \$ASMFOLDER/\$ASMPREFIX.gfa
+
+# extract unitigs from miniasm
+awk '\$1 ~/S/ {print ">"\$2"\n"\$3}' \$ASMFOLDER/\$ASMPREFIX.gfa > \$ASMFOLDER/\$ASMPREFIX.unitigs.fasta
+
+# align reads with unitigs
+\$MINIMAP2BIN \$ASMFOLDER/\$ASMPREFIX.unitigs.fasta \$INREADS > \$ASMFOLDER/\$ASMPREFIX.unitigs.paf
+
+# find contigs from unitigs
+\$RACONBIN \$INREADS \$ASMFOLDER/\$ASMPREFIX.unitigs.paf \$ASMFOLDER/\$ASMPREFIX.unitigs.fasta > \$ASMFOLDER/\$ASMPREFIX.contigs.fasta
+
+\$MINIMAP2BIN -x map-ont -a -t\$THREADS \$ASMFOLDER/\$ASMPREFIX.contigs.fasta \$INREADS > \$ASMFOLDER/\$ASMPREFIX.reads.mm2.sam
+\$GRAPHMAPBIN align -r \$ASMFOLDER/\$ASMPREFIX.contigs.fasta -d \$INREADS -o \$ASMFOLDER/\$ASMPREFIX.reads.gm.sam
+
+
+EOS
+
+
 
 
 if [ $# -eq 5 ]; then
@@ -125,9 +169,7 @@ fi
 
 $NCCMD <<EOF
 
-<!--<?xml version="1.0" encoding="UTF-8")>-->
-
-<template description="minimap/miniasm/racon assembly pipeline" title="graphmap">
+<template description="minimap/miniasm/racon assembly pipeline" title="MiMiRa">
 
 <window width="500" height="1000" title="MiMiRa">
 
@@ -137,8 +179,8 @@ $NCCMD <<EOF
     <group title="Assembly Options">
     
                 
-        <label>Input Reads</label> <filedialog id="assembly_reads" output="false">Select Input Reference (fq)</filedialog>
-        <label>Input Folder</label> <filedialog id="assembly_dir" output="false" folder="true">Select Assembly Folder</filedialog>
+        <label>Input Reads (Fastq)</label> <filedialog id="assembly_reads" output="false">Select Input Reference (fq)</filedialog>
+        <label>Assembly/Output Folder</label> <filedialog id="assembly_dir" output="false" folder="true">Select Assembly Folder</filedialog>
         
         <label>Assembly Prefix</label><input id="assembly_prefix"></input>
   
@@ -164,30 +206,42 @@ $NCCMD <<EOF
 
 
 <execution>
-
     <const id="bindir">${APPBINARYDIR}/</const>
     
     
     <relocate id="assembly_reads_rel" from="\${assembly_reads}" wsl="\${WSLsel}"/>
     <relocate id="assembly_dir_rel" from="\${assembly_dir}" wsl="\${WSLsel}"/>
-
     <add id="args">
-
-        <value from="\${assembly_reads}"/>
-        <value from="\${assembly_dir}"/>
-        <value from="\${assembly_prefix}"/>
+	<const>${APPBINARYDIR}/assemble.sh</const>
+    <value from="\${assembly_reads_rel}"/>
+    <value from="\${assembly_dir_rel}"/>
+    <value from="\${assembly_prefix}"/>
+	<add sep="/">
+		<value from="\${bindir}"/>
+		<const>minimap2/minimap2</const>
+	</add>
+	<add sep="/">
+		<value from="\${bindir}"/>
+		<const>miniasm/miniasm</const>
+	</add>
+	<add sep="/">
+		<value from="\${bindir}"/>
+		<const>graphmap/bin/Linux-x64/graphmap</const>
+	</add>
+	<add sep="/">
+		<value from="\${bindir}"/>
+		<const>racon/build/bin/racon</const>
+	</add>
         
         <if comp="IS_SET" value1="\${assembly_threads}">
             <value from="\${assembly_threads}"/>
         </if>             
-
     </add>
     
-    <execute program="graphmap" param="\${args}" location="\${bindir}" exec="graphmap" wsl="WSLsel">
+    <execute program="assembly" param="bash \${args}" location="/usr/bin/" exec="env" wsl="WSLsel">
         <output type="COUT" color="green" to="outputstream1" />
         <output type="CERR" color="red" to="outputstream2" />
     </execute>
-
   
 
 </execution>

@@ -26,14 +26,14 @@
 
 class bioGUIapp;
 
-class ExecutionExecutableNode : public QObject, public ExecutionNode
+class ExecutionExecutableNode : public ExecutionNode
 {
     Q_OBJECT
 
 public:
 
     ExecutionExecutableNode(QDomElement* pElement)
-        : QObject(NULL), ExecutionNode(pElement)
+        : ExecutionNode(pElement)
     {
         m_sProgramName = this->getDomElementAttribute(pElement, "program", "").toStdString();
     }

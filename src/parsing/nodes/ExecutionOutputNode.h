@@ -29,13 +29,16 @@
 #include <QtGui/qdesktopservices.h>
 #include <QtCore/qdir.h>
 #include <src/app/ExecuteThread.h>
+#include <src/app/ExtendedProcFileBuffer.h>
+#include <src/app/ExtendedThreadFileBuffer.h>
+#include <QObject>
 #include <fstream>
 
 #include "ExecutionNode.h"
 #include "ExecutionDeferredNode.h"
 
-class ExecutionOutputNode : public ExecutionDeferredNode {
-
+class ExecutionOutputNode : public  ExecutionDeferredNode {
+Q_OBJECT
 public:
     ExecutionOutputNode(QDomElement* pElement)
     : ExecutionDeferredNode(pElement)
@@ -82,6 +85,9 @@ public:
     virtual ~ExecutionOutputNode()
     {
 
+
+        LOGERROR("DESTRUCTOR EXECUTION OUTPUT NODE")
+
     }
 
     std::string evaluate( std::map< std::string, ExecutionNode*>* pID2Node,
@@ -90,6 +96,33 @@ public:
     {
         return evaluateDeferred(pID2Node, pInputID2Value, pInputID2FunctionWidget, NULL, NULL, false);
     }
+
+
+    ExtendedProcFileBuffer* createProcFileBuffer(QProcess* pProcess, QProcess::ProcessChannel eChannel)
+    {
+
+        ExtendedProcFileBuffer* pBuffer = new ExtendedProcFileBuffer(pProcess, eChannel);
+
+
+
+        QObject::connect(pBuffer, SIGNAL(sendText(QString)), this , SLOT(receiveText(QString)), Qt::QueuedConnection );
+
+        return pBuffer;
+    }
+
+    ExtendedThreadFileBuffer* createThreadFileBuffer(ExecuteThread* pThread, QProcess::ProcessChannel eChannel)
+    {
+
+        ExtendedThreadFileBuffer* pBuffer = new ExtendedThreadFileBuffer(pThread, eChannel);
+
+
+
+        QObject::connect(pBuffer, SIGNAL(sendText(QString)), this , SLOT(receiveText(QString)), Qt::QueuedConnection );
+
+        return pBuffer;
+    }
+
+
 
     std::string evaluateDeferred( std::map< std::string, ExecutionNode*>* pID2Node,
                           std::map<std::string, std::string>* pInputID2Value,
@@ -172,9 +205,6 @@ public:
         {
             pWidget = oIt->second->getWidget();
 
-        } else {
-            LOGERROR("invalid TO id given for node id " + m_sID);
-            return "";
         }
 
         /*
@@ -196,6 +226,13 @@ public:
 
                 if (pProcess != NULL)
                 {
+
+                    if (pTextEdit == NULL)
+                    {
+                        LOGERROR("invalid TO id given for node id " + m_sID);
+                        return "";
+                    }
+
                     if (m_sType.compare("STD") == 0)
                     {
                         pTextEdit->addProcessBuffer( pProcess, QProcess::StandardOutput, QString(m_sTo.c_str()), oColor );
@@ -211,6 +248,8 @@ public:
                     {
                         pTextEdit->addProcessBuffer( pProcess, QProcess::StandardError, QString(m_sTo.c_str()), oColor );
                     }
+
+
                 }
 
                 if (pThread != NULL)
@@ -232,6 +271,8 @@ public:
                         pTextEdit->addThreadBuffer( pThread, QProcess::StandardError, QString(m_sTo.c_str()), oColor );
                     }
 
+
+
                 }
 
 
@@ -245,8 +286,10 @@ public:
 
                 LOGERROR("Deferred Output Node");
 
-                pTextEdit->finishProcess(pProcess);
-                pTextEdit->finishThread(pThread);
+
+
+                this->finishProcessThread(pProcess, pThread, pTextEdit);
+
 
                 if (m_sType.compare("TCP") == 0)
                 {
@@ -282,6 +325,58 @@ public:
         }
 
 
+        if (bDeferred == false)
+        {
+            if (pProcess != NULL)
+            {
+                if (m_sType.compare("FILE_STD") == 0)
+                {
+
+                    std::string sLocation = this->getNodeValueOrValue(m_sLocation, m_sLocation, pID2Node, pInputID2Value, pInputID2FunctionWidget);
+                    m_pOutputStream = new std::ofstream(sLocation);
+
+                    ExtendedProcFileBuffer* pBuffer = this->createProcFileBuffer(pProcess, QProcess::StandardOutput);
+                    this->addProcBuffer(pProcess, pBuffer);
+                }
+            } else if (pThread != NULL)
+            {
+                if (m_sType.compare("FILE_STD") == 0)
+                {
+
+                    std::string sLocation = this->getNodeValueOrValue(m_sLocation, m_sLocation, pID2Node, pInputID2Value, pInputID2FunctionWidget);
+
+                    m_pOutputStream = new std::ofstream(sLocation);
+
+                    ExtendedThreadFileBuffer* pBuffer = this->createThreadFileBuffer(pThread, QProcess::StandardOutput);
+                    this->addThreadBuffer(pThread, pBuffer);
+                }
+
+            }
+        } else {
+
+            if (m_sType.compare("FILE_STD") == 0)
+            {
+                this->finishProcessThread(pProcess, pThread, pTextEdit);
+
+                if (m_pOutputStream)
+                {
+                    m_pOutputStream->flush();
+                    m_pOutputStream->close();
+
+                    m_pOutputStream = NULL;
+
+                }
+            }
+
+
+
+        }
+
+
+
+
+
+
         /*
          * TYPE FILE(image)
          *
@@ -308,6 +403,166 @@ public:
 
     }
 
+    void addProcBuffer(QProcess* pProcess, ExtendedProcFileBuffer* pBuffer)
+    {
+
+        std::map<QProcess*, std::vector<ExtendedProcFileBuffer*> >::iterator oIt = m_mProcToBuffer.find(pProcess);
+
+        if (oIt != m_mProcToBuffer.end())
+        {
+            oIt->second.push_back(pBuffer);
+        } else {
+            std::pair<QProcess*, std::vector<ExtendedProcFileBuffer*>> oPair(pProcess, std::vector<ExtendedProcFileBuffer*>());
+
+            oPair.second.push_back(pBuffer);
+            m_mProcToBuffer.insert( oPair );
+
+        }
+
+
+    }
+
+    void addThreadBuffer(ExecuteThread* pThread, ExtendedThreadFileBuffer* pBuffer)
+    {
+
+        std::map<ExecuteThread*, std::vector<ExtendedThreadFileBuffer*> >::iterator oIt = m_mThreadToBuffer.find(pThread);
+
+        if (oIt != m_mThreadToBuffer.end())
+        {
+            oIt->second.push_back(pBuffer);
+        } else {
+            std::pair<ExecuteThread*, std::vector<ExtendedThreadFileBuffer*>> oPair(pThread, std::vector<ExtendedThreadFileBuffer*>());
+
+            oPair.second.push_back(pBuffer);
+            m_mThreadToBuffer.insert( oPair );
+
+        }
+
+
+    }
+
+    void finishProcess(QProcess* pProcess)
+    {
+        std::map<QProcess*, std::vector<ExtendedProcFileBuffer*> >::iterator oIt = m_mProcToBuffer.find(pProcess);
+
+        if (oIt != m_mProcToBuffer.end())
+        {
+
+            for (size_t i = 0; i < oIt->second.size(); ++i)
+            {
+
+                ExtendedProcFileBuffer* pBuffer = oIt->second.at(i);
+
+                LOGERROR("Deleting PROC Buffer: " + std::to_string((uint64_t) pBuffer));
+
+                pBuffer->transferText("\n");
+                pBuffer->deleteLater();
+
+            }
+
+            m_mProcToBuffer.erase(oIt);
+
+
+        }
+    }
+
+    void finishThread( ExecuteThread* pThread )
+    {
+
+        LOGERROR("Finishing thread: " + std::to_string((uint64_t) pThread));
+
+        /*
+        if (pThread == NULL)
+            return;
+        */
+
+        std::map<ExecuteThread*, std::vector<ExtendedThreadFileBuffer*> >::iterator oJt = m_mThreadToBuffer.find(pThread);
+
+        if (oJt != m_mThreadToBuffer.end())
+        {
+
+            for (size_t i = 0; i < oJt->second.size(); ++i)
+            {
+
+                ExtendedThreadFileBuffer* pBuffer = oJt->second.at(i);
+                pBuffer->transferText("\n");
+                pBuffer->stopTransmissions();
+                pBuffer->deleteLater();
+
+            }
+
+            m_mThreadToBuffer.erase(oJt);
+
+        }
+
+    }
+
+
+    void finishProcessThread(QProcess* pProcess, ExecuteThread* pThread, AdvancedStreamBox* pTextEdit)
+    {
+        if (pTextEdit != NULL)
+        {
+            if (pProcess != NULL)
+            {
+                pTextEdit->finishProcess(pProcess);
+            }
+
+            if (pThread != NULL)
+            {
+                pTextEdit->finishThread(pThread);
+            }
+        }
+
+
+
+        if (pProcess != NULL)
+        {
+            std::map<QProcess*, std::vector<ExtendedProcFileBuffer*> >::iterator oIt = m_mProcToBuffer.find(pProcess);
+
+            if (oIt != m_mProcToBuffer.end())
+            {
+
+                for (size_t i = 0; i < oIt->second.size(); ++i)
+                {
+
+                    ExtendedProcFileBuffer* pBuffer = oIt->second.at(i);
+
+                    LOGERROR("Deleting PROC Buffer: " + std::to_string((uint64_t) pBuffer));
+
+                    pBuffer->transferText("\n");
+                    pBuffer->deleteLater();
+
+                }
+
+                m_mProcToBuffer.erase(oIt);
+
+
+            }
+        }
+
+        if (pThread != NULL)
+        {
+            std::map<ExecuteThread*, std::vector<ExtendedThreadFileBuffer*> >::iterator oJt = m_mThreadToBuffer.find(pThread);
+
+            if (oJt != m_mThreadToBuffer.end())
+            {
+
+                for (size_t i = 0; i < oJt->second.size(); ++i)
+                {
+
+                    ExtendedThreadFileBuffer* pBuffer = oJt->second.at(i);
+                    pBuffer->transferText("\n");
+                    pBuffer->stopTransmissions();
+                    pBuffer->deleteLater();
+
+                }
+
+                m_mThreadToBuffer.erase(oJt);
+
+            }
+        }
+
+    }
 
 
 protected:
@@ -335,8 +590,27 @@ protected:
     std::string m_sHost;
     int m_iPort;
 
+    std::map<QProcess*, std::vector<ExtendedProcFileBuffer*>> m_mProcToBuffer;
+    std::map<ExecuteThread*, std::vector<ExtendedThreadFileBuffer*>> m_mThreadToBuffer;
 
+    std::ofstream* m_pOutputStream=NULL;
 
+protected slots:
+
+    void receiveText(QString sString)
+    {
+
+        std::cerr << sString.toStdString();
+
+        if (m_pOutputStream)
+        {
+            (*m_pOutputStream) << sString.toStdString();
+            m_pOutputStream->flush();
+        } else {
+            std::cerr << "attempt to print after close";
+        }
+
+    }
 
 
 };

@@ -247,9 +247,10 @@ void bioGUIapp::runProgram(std::string& sProgramToRun)
 
     m_pExecThread = new ExecutionRunThread(m_pWindowParser, pParseExecution, sProgramToRun, this);
     bioGUIapp* pApp = this;
+    ExecutionRunThread* pExecThread = m_pExecThread;
 
     this->connect(m_pExecThread, &QThread::started, m_pExecThread, &ExecutionRunThread::startExecution);
-    this->connect(m_pExecThread, &ExecutionRunThread::executionFinished, [pApp] () {
+    this->connect(m_pExecThread, &ExecutionRunThread::executionFinished, [pApp, pExecThread] () {
 
         pApp->programFinished();
 

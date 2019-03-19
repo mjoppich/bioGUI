@@ -86,22 +86,26 @@ public:
 
                 if (pProcess != NULL)
                 {
+                    ExecutionNode* pNode = m_vChildren.at(i);
+                    ExecutionOutputNode* pOutNode = dynamic_cast<ExecutionOutputNode*>( pNode );
 
-                    if (ExecutionOutputNode* pOutPutnode = dynamic_cast<ExecutionOutputNode*>( m_vChildren.at(i) ))
+                    if (pOutNode)
                     {
-                        sReturn = sReturn + pOutPutnode->evaluateDeferred(pID2Node, pInputID2Value, pInputID2FunctionWidget, pProcess, pThread, bDeferred);
+                        sReturn = sReturn + pOutNode->evaluateDeferred(pID2Node, pInputID2Value, pInputID2FunctionWidget, pProcess, pThread, bDeferred);
                     } else {
-                        sReturn = sReturn + m_vChildren.at(i)->evaluate(pID2Node, pInputID2Value, pInputID2FunctionWidget);
+                        sReturn = sReturn + pNode->evaluate(pID2Node, pInputID2Value, pInputID2FunctionWidget);
 
                     }
 
                 } else {
+                    ExecutionNode* pNode = m_vChildren.at(i);
+                    ExecutionOutputNode* pOutNode = dynamic_cast<ExecutionOutputNode*>( pNode );
 
-                    if (ExecutionOutputNode* pOutPutnode = dynamic_cast<ExecutionOutputNode*>( m_vChildren.at(i) ))
+                    if (pOutNode)
                     {
-                        sReturn = sReturn + pOutPutnode->evaluateDeferred(pID2Node, pInputID2Value, pInputID2FunctionWidget, pProcess, pThread, bDeferred);
+                        sReturn = sReturn + pOutNode->evaluateDeferred(pID2Node, pInputID2Value, pInputID2FunctionWidget, pProcess, pThread, bDeferred);
                     } else {
-                        sReturn = sReturn + m_vChildren.at(i)->evaluate(pID2Node, pInputID2Value, pInputID2FunctionWidget);
+                        sReturn = sReturn + pNode->evaluate(pID2Node, pInputID2Value, pInputID2FunctionWidget);
 
                     }
 

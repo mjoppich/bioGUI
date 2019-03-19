@@ -24,6 +24,7 @@
 
 
 #include <QDomElement>
+#include <QObject>
 #include <QWidget>
 #include <vector>
 #include <map>
@@ -57,9 +58,15 @@ protected:
 };
 */
 
-class ExecutionNode {
+class ExecutionNode : public QObject {
 
 public:
+
+    ExecutionNode()
+        : QObject(NULL)
+    {
+
+    }
 
     enum NODE_TYPE {
 

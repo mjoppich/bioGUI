@@ -1,0 +1,214 @@
+#! Install SPAdes (v3.13.0)
+
+
+
+if [ ! "$2" = "" ]; then
+
+    if [ "$(uname)" == "Darwin" ]; then
+
+        echo "No dependencies"
+        echo "Requires Python 2.x with regex module"
+
+    else
+
+        echo $2 | sudo -S apt-get update
+        echo $2 | sudo -S apt-get -y install python python-pip
+        pip install regex
+    fi
+
+else
+   echo "No sudo password, not installing dependencies"
+   echo "No dependencies"
+fi
+
+
+## set all variables
+PROG=spades
+PROGDIR=$1
+
+
+
+if [ -z "${PROGDIR}" ]; then
+   PROGDIR=~/bioGUI/progs/
+fi
+
+
+PROGDIRESC=$(echo $PROGDIR | sed 's/ /\\ /g')
+APPBINARYDIR=${PROGDIR}/${PROG}/
+
+if [ -d "$PROGDIR/$PROG" ]; then
+    echo "Removing Folder $PROGDIR/$PROG"
+    rm -rf "$PROGDIR/$PROG"
+fi
+
+## create progdir
+mkdir -p "$PROGDIR/$PROG"
+cd "$PROGDIR"/$PROG/
+
+#download and unzip
+wget https://github.com/ablab/spades/releases/download/v3.13.0/SPAdes-3.13.0.tar.gz -O spades.tar.gz
+tar xfz spades.tar.gz -C "$PROGDIR/$PROG/"
+mv */* .
+
+cd "$PROGDIR/$PROG/"
+
+PREFIX="$PROGDIR/$PROG/" ./spades_compile.sh
+
+
+if [ $# -gt 2 ]; then
+   if [ "$3" = "1" ]; then
+
+      if ! grep -q "$PROGDIRESC/$PROG/" ~/.bashrc; then
+         echo "export PATH=\"$PROGDIRESC/$PROG/:\$PATH\" " >> ~/.bashrc;
+      fi
+   fi
+fi
+
+
+
+if [ $# -eq 5 ]; then
+
+IP=$4
+PORT=$5
+
+echo "Sending Template to $IP at $PORT"
+
+
+NCCMD=""
+
+if [ "$(uname)" == "Darwin" ]; then
+	NCCMD="nc -c $IP $PORT"
+else
+	NCCMD="nc -q 0 $IP $PORT"
+fi
+
+
+$NCCMD <<EOF
+
+<template description="SPAdes (source, 3.13.0)" title="SPAdes">
+
+<window width="500" height="1000" title="SPAdes">
+
+  <vgroup>
+
+     <group title="Input Reads" exclusive="true">
+        <hgroup>
+        <group id="pairedend" selected="false" title="Paired End" checkable="true">
+        <filedialog id="spades_paired_if1" location="1">Input File 1</filedialog>
+        <filedialog id="spades_paired_if2" location="2">Input File 2</filedialog>
+        </group>
+        <group id="singleend" selected="true" title="Single End" checkable="true">
+        <filedialog id="spades_single_if" location="">Input File 1</filedialog>
+        </group>
+        </hgroup>
+   </group>
+    <group title="Additional Input/Output Options">
+        <filedialog id="spades_nanopore_reads" location="">Input Reads Nanopore</filedialog>
+        <filedialog id="spades_output" location="" output="true" directory="true">Output Directory</filedialog>
+    </group>
+
+    <group title="Assembly Options">
+    	<checkbox id="spades_rna">Assembly is RNA</checkbox>
+
+                    
+        <label>Number of Threads</label><input id="spades_threads">4</input>
+        <label>Memory Limit (GB)</label><input id="spades_memory">16</input>
+
+        <label>k-mers (blank separated)</label><input id="spades_kmers">15 19</input>
+
+        <label>Additional Options</label><input id="spades_options"></input>
+    
+        <action program="SPAdes" hint="Run SPAdes assembly">Run SPAdes</action>  
+    </group>
+
+
+    <group title="General Options">
+       <label>Run in WSL on Windows?</label><checkbox id="WSLsel" value="true" selectonwindows="true">Run in WSL?</checkbox>
+    </group>
+  
+    <streambox id="output1">
+      <stream id="outputstream1">OS1</stream>
+      <stream id="outputstream2">OS2</stream>
+    </streambox>
+ 
+
+  </vgroup>
+
+</window>
+
+
+
+<execution>
+
+    <const id="bindir">${APPBINARYDIR}/</const>
+    
+    
+    <relocate id="spades_paired_if1_rel" from="\${spades_paired_if1}" wsl="\${WSLsel}"/>
+    <relocate id="spades_paired_if2_rel" from="\${spades_paired_if2}" wsl="\${WSLsel}"/>
+    <relocate id="spades_single_if_rel" from="\${spades_single_if}" wsl="\${WSLsel}"/>
+
+    <relocate id="spades_output_rel" from="\${spades_output}" wsl="\${WSLsel}"/>
+    <relocate id="spades_nanopore_reads_rel" from="\${spades_nanopore_reads}" wsl="\${WSLsel}"/>
+
+    <replace id="spades_kmers_repl" replace=" " replace-with="," from="\${spades_kmers}"/>
+    
+    <add id="args" sep=" ">
+
+        <value from="\${spades_options}"/>
+
+        <if sep=" " value1="\${pairedend}" comp="EQUALS" value2="true">
+            <const>-1</const>
+            <value from="\${spades_paired_if1_rel}"/>
+            <const>-2</const>
+            <value from="\${spades_paired_if2_rel}"/>
+        </if>
+        <if sep=" " value1="\${singleend}" comp="EQUALS" value2="true">
+            <const>-s</const>
+            <value from="\${spades_single_if_rel}"/>
+        </if>
+
+        <if comp="IS_SET" sep=" " value1="\${spades_nanopore_reads_rel}">
+            <const>--nanopore</const>
+            <value from="\${spades_nanopore_reads_rel}"/>
+        </if>
+
+        <if comp="IS_SET" sep=" " value1="\${spades_rna}">
+            <const>--rna</const>
+        </if>
+
+        <if comp="IS_SET" sep=" " value1="\${spades_threads}">
+            <const>-t</const>
+            <value from="\${spades_threads}"/>
+        </if>
+        <if comp="IS_SET" sep=" " value1="\${spades_memory}">
+            <const>-m</const>
+            <value from="\${spades_memory}"/>
+        </if>
+
+        <if comp="IS_SET" sep=" " value1="\${spades_kmers_repl}">
+            <const>-k</const>
+            <value from="\${spades_kmers_repl}"/>
+        </if>
+
+        <if comp="IS_SET" sep=" " value1="\${spades_output_rel}">
+            <const>-o</const>
+            <value from="\${spades_output_rel}"/>
+        </if>
+
+
+    </add>
+    
+    <execute program="SPAdes" param="\${args}" location="\${bindir}" exec="spades.py" wsl="WSLsel">
+        <output type="FILE_STD" color="green" location="\${spades_output_rel}" />
+        <output type="CERR" color="red" to="outputstream2" />
+    </execute>
+
+  
+
+</execution>
+</template>
+
+
+EOF
+
+fi

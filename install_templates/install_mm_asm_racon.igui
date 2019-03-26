@@ -128,7 +128,7 @@ THREADS="\${8-4}"
 #echo \$RACONBIN
 
 # first we must overlap all reads with each other
-\$MINIMAP2BIN -x ava-ont -t\$THREADS \$INREADS $INREADS > \$ASMFOLDER/\$ASMPREFIX.paf
+\$MINIMAP2BIN -c --cs -x ava-ont -t\$THREADS \$INREADS \$INREADS > \$ASMFOLDER/\$ASMPREFIX.paf
 
 # then miniasm can create alignment
 \$MINIASMBIN -f \$INREADS \$ASMFOLDER/\$ASMPREFIX.paf > \$ASMFOLDER/\$ASMPREFIX.gfa

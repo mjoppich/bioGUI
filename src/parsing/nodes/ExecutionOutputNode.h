@@ -333,6 +333,8 @@ public:
                 {
 
                     std::string sLocation = this->getNodeValueOrValue(m_sLocation, m_sLocation, pID2Node, pInputID2Value, pInputID2FunctionWidget);
+                    LOGERROR("Opening File")
+                    LOGERROR(sLocation)
                     m_pOutputStream = new std::ofstream(sLocation);
 
                     ExtendedProcFileBuffer* pBuffer = this->createProcFileBuffer(pProcess, QProcess::StandardOutput);
@@ -344,7 +346,8 @@ public:
                 {
 
                     std::string sLocation = this->getNodeValueOrValue(m_sLocation, m_sLocation, pID2Node, pInputID2Value, pInputID2FunctionWidget);
-
+                    LOGERROR("Opening File")
+                    LOGERROR(sLocation)
                     m_pOutputStream = new std::ofstream(sLocation);
 
                     ExtendedThreadFileBuffer* pBuffer = this->createThreadFileBuffer(pThread, QProcess::StandardOutput);
@@ -600,7 +603,7 @@ protected slots:
     void receiveText(QString sString)
     {
 
-        std::cerr << sString.toStdString();
+        //std::cerr << sString.toStdString();
 
         if (m_pOutputStream)
         {

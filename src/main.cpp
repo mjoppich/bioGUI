@@ -22,8 +22,23 @@
 #include <QApplication>
 #include "bioGUIapp.h"
 
+#include <iostream>
+#include <fstream>
+#include <string>
+
 int main(int argc, char **argv)
 {
+
+    std::ofstream out("log.txt");
+    std::streambuf *coutbuf = std::cout.rdbuf();
+    std::streambuf *cerrbuf = std::cerr.rdbuf();
+
+    std::cout.rdbuf(out.rdbuf());
+    std::cerr.rdbuf(out.rdbuf());
+
+    freopen("output.txt","w",stdout);
+
+
     bioGUIapp* pApp = new bioGUIapp(argc, argv);
     pApp->exec();
     delete pApp;

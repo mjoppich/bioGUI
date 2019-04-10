@@ -18,22 +18,19 @@ bioGUI specifically aims at Windows users, as Microsoft just introduced the Wind
 This system allows the usage of said sophisticated tools on a regular Windows computer as most people have.
 With bioGUI one also does not need any knowledge about the command line, because the task of executing a given tools becomes a point & click solution.
 
-### What is bioGUI not?
-
-It is not about generating a GUI by its own.
-
 # Where can I get bioGUI?
 
-bioGUI is available either as source from github, or as prebuilt-binary distribution from [github releases](https://github.com/mjoppich/bioGUI/releases).
-*End-users* will probably prefer to download and unzip the [prebuilt binaries](https://github.com/mjoppich/bioGUI/releases).
+bioGUI is available for *Windows*, *Mac OS* and *Linux* as prebuilt-binary distribution or source from [github releases](https://github.com/mjoppich/bioGUI/releases).
+The binary distribution (zip-files) are targeted for *end-users*: [prebuilt binaries](https://github.com/mjoppich/bioGUI/releases).
 
 After downloading the zip-archive, please unzip the archive to a location of your preference. Then simply start the executable (bioGUI.exe on Windows, or bioGUI on linux).
 
 On Windows, please follow the steps on [how to setup WSL](http://biogui.readthedocs.io/en/latest/build_wsl.html).
 
-On any aptitude supported platform (Windows with WSL, Ubuntu), please execute the "First Time ... Setup" from the list of available templates.
+On any aptitude supported platform (Windows with WSL, Ubuntu), please download the "First Time Ubuntu/WSL/apt-get Setup" from the list of available templates and install it via *Install Template Module* (install program: *First Time Ubuntu/WSL/apt-get setup*).
+For Mac OS, please execute download and execute *First Time Mac OS Setup*.
 
-Unfortunately, there currently is no binary available for Mac OS X.
+Please also refer to our [User Guide](http://biogui.readthedocs.io/en/latest/user_guide.html).
 
 ## Setup First Time Use
 
@@ -47,6 +44,15 @@ Unfortunately, there currently is no binary available for Mac OS X.
 
 If you want to know which modules are already available, please visit the supporting information [website](https://www.bio.ifi.lmu.de/software/biogui/index.html). There you can see a list of available modules, submit your own or request new template.
 If you have any problem, or you want to request a new template, you may also use the github issue tracker right in this repository!
+
+## Developer's Guides
+
+If you are a developer and want to write a *bioGUI* (install template), there's good news: it's fairly easy.
+
+Please follow [this guide](http://biogui.readthedocs.io/en/latest/biogui_idea.html) for information on how to write the *install module*.
+Within the *install module* you need to embed/write your actual GUI definition. This is explained in the [install template example](http://biogui.readthedocs.io/en/latest/install_template_example.html).
+
+From my experience in writing *install modules*, it is best to copy an existing install template and modify this, for both the install part, as well as the *GUI* part.
 
 ## I want to know more about bioGUI
 

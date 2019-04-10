@@ -47,7 +47,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'bioGUI'
-copyright = '2017, Markus Joppich'
+copyright = '2017-2019, Markus Joppich'
 author = 'Markus Joppich'
 
 

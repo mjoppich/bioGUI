@@ -41,18 +41,28 @@ The text after the shebang is shown as title in the *Install template Module*.
 
 .. code:: bash
 
-    echo "Dependencies: unzip"
     if [ ! "$2" = "" ]; then
-        echo "Installing dependencies"
-        echo $2 | sudo -S apt-get update
-        echo $2 | sudo -S apt-get -y install unzip
-        
+
+        if [ "$(uname)" == "Darwin" ]; then
+
+            echo "Installing brew gcc"
+            brew install gcc
+
+        else
+
+            echo "No dependencies"
+            echo $2 | sudo -S apt-get update
+            echo $2 | sudo -S apt-get install build-essential
+        fi
+
     else
         echo "No sudo password, not installing dependencies"
     fi
 
 If a **sudo** password is supplied, dependencies are installed. This must be compatible with Ubuntu's aptitude, as this is what WSL runs on.
-Any developer is free to also support Mac OS and *brew*, for instance.
+Using the `uname` switch, *bioGUI* also supports Mac OS and *brew*, for instance.
+
+Since a lot of harm can be done using the super-user account, install modules are manually curated after submission.
 
 .. code:: bash
 
@@ -109,12 +119,6 @@ For reasons of parsimony, this is only done when the expected file or folder doe
 After downloading and unzipping, the application can be built in the target directory.
 Finally, if wanted, the path to the application's executable is added to the $PATH variable.
 
-.. code:: bash
-
-    #now fix spaces in path
-    perl -pi -e 's/my \$align_prog_s= File::Spec->catpath\(\$vol\,\$script_path\,\$align_bin_s\);/my \$align_prog_s= "\\\"".File::Spec->catpath(\$vol,\$script_path,\$align_bin_s).\"\\\"\";/' hisat2
-    perl -pi -e 's/my \$align_prog_l= File::Spec->catpath\(\$vol\,\$script_path\,\$align_bin_l\);/my \$align_prog_l= "\\\"".File::Spec->catpath(\$vol,\$script_path,\$align_bin_l).\"\\\"\";/' hisat2
-
 Certain programs may need some fixes to work properly on Mac OS, Linux or WSL.
 This is the place where such fixes could go.
 
@@ -127,7 +131,16 @@ Finally we can send the template to *bioGUI*, if an IP address and port have bee
     IP=$4
     PORT=$5
 
-    nc $IP $PORT << EOF
+    NCCMD=""
+
+    if [ "$(uname)" == "Darwin" ]; then
+        NCCMD="nc -c $IP $PORT"
+    else
+        NCCMD="nc -q 0 $IP $PORT"
+    fi
+
+
+    $NCCMD <<EOF
 
     <template description="hisat2 2.0.5 aligner" title="hisat2 2.0.5">
         ...
@@ -143,7 +156,9 @@ Finally we can send the template to *bioGUI*, if an IP address and port have bee
 
     fi
 
-Make sure to use ``nc`` to send the content, as this will not work on Mac OS otherwise.
+Make sure to use ``nc`` to send the content back to *bioGUI*.
+Unfortunately the nc-programs differ on Mac OS and Ubuntu, hence the command must be altered according to the underlying OS.
+
 In order to customize the template inbetween the ``EOF``, bash variables to be replaced must be written as ``${var-name}``.
 This conflicts with how *bioGUI* expects variables. Therefore, make sure to escape the backslaash where you want to access variables in the *bioGUI* template!
 

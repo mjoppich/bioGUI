@@ -41,11 +41,64 @@ Most (install) templates will require you to have wget and netcat installed. Usi
 
 You can get brew from `here <http://brew.sh/>`_
 
-Downloading Templates
+
+.. _install_download_templates:
+
+Installing new software with Install Modules
+============================================
+
+After downloading an *Install Module*, the *Install Template Module* will list the downloaded install template (you might need to *reload* once).
+The screenshot below shows the *Install Template Module*.
+In the dropdown menu, the *hisat2* install template has been chosen.
+Since this module is executed on Windows, *WSL* is selected.
+*hisat2* is supposed to be installed into the *User Data Dir*, which is on *WSL* and linux usually ``~/.local/share/bioGUI``.
+This is the directory where *bioGUI* installs new programs.
+Advanced users may want to change this settings, but in general, it should be left.
+
+In order to automatically install dependencies, the sudo-password must be supplied.
+This is the password you set up during the installation of the *WSL* feature.
+This gives *bioGUI* administrative rights within *WSL* such that it can install dependencies automatically.
+
+Finally the path for the specific *GUI* template has to be set. *bioGUI* by default only searches the template directory besides the executable.
+*GUI* templates must have the file extension ``.gui``. If your entered template name does not end with this extension, the extension is appended to your filename.
+As a short-cut, if you just enter a name (e.g. mygui), *bioGUI* will save the new template in the template directoy with the filename `mygui.gui`.
+
+.. image:: ./images/usage/install_template.PNG
+   :scale: 50
+
+
+Use-case: Windows setup
+=======================
+The binary distribution (zip-files) are targeted for *end-users*: [prebuilt binaries](https://github.com/mjoppich/bioGUI/releases).
+Download the Windows version.
+
+Make sure that the Windows Subsystem for Linux (WSL) is installed.
+Please follow the steps on [how to setup WSL](http://biogui.readthedocs.io/en/latest/build_wsl.html).
+
+After downloading the zip-archive, please unzip the archive to a location of your preference. Then simply start the executable (bioGUI.exe on Windows).
+
+On any aptitude supported platform (e.g. Windows with WSL, Ubuntu), please download the "First Time Ubuntu/WSL/apt-get Setup" from the list of available templates and install it via *Install Template Module* (install program: *First Time Ubuntu/WSL/apt-get setup*).
+
+Below this process is shown by an animation.
+
+Setup First Time Use
+--------------------
+
+.. image:: ./images/bioGUI_wsl_setup.gif
+   :scale: 50
+
+Install an install module
+-------------------------
+
+.. image:: ./images/bioGUI_graphmap.gif
+   :scale: 50
+
+
+
+Adding Own Templates
 =====================
 
-
-Part of *bioGUI* is a user-friendly accessibility of templates for various programs.
+Part of *bioGUI* is a simple accessibility of templates for various programs.
 Therefore, application developers and sophisticated users can upload their templates to our website in order to make their template available to other users.
 The user has to submit his name, eMail address, a template name and the template itself.
 He can select whether he wants to be an anonymous user (user name is always hidden) and whether this is an installation script (which downloads and creates the \ac{GUI} template specifically for this installed application) or a regular template.
@@ -55,7 +108,7 @@ A screenshot of the template submission is shown below.
 .. image:: ./images/templates/template_submission.png
    :scale: 50
 
-Additionally the (`bioGUI website <https://www.bio.ifi.lmu.de/software/bioGUI>`_) also contains a searchable list of already available templates.
+Additionally the (`bioGUI website <https://www.bio.ifi.lmu.de/software/biogui>`_) also contains a searchable list of already available templates.
 Available templates are only shown and can be downloaded via the *bioGUI* application.
 
 .. image:: ./images/templates/existing_templates.png
@@ -67,22 +120,4 @@ Upon selecting one or multiple (keep ctrl-key down while clicking) rows and clic
 Since it is possible to copy or alter templates, *bioGUI* never overwrites existing templates, but will create a new copy.
 
 .. image:: ./images/templates/biogui_selection.png
-   :scale: 50
-
-.. _install_download_templates:
-
-Installing new software with Install Modules
---------------------------------------------
-
-After downloading an *Install Module*, the *Install Template Module* will list the downloaded install template.
-The screenshot below shows the *Install Template Module*.
-In the dropdown menu, the *hisat2* install template has been chosen.
-Since this module is executed on Windows, *WSL* is selected.
-*hisat2* is supposed to be installed into the *User Data Dir*, which is on *WSL* and linux usually ``~/.local/share/bioGUI``.
-In order to automatically install dependencies, the sudo-password is supplied, which has been set up during installing the *WSL* feature.
-Finally the path for the specific *GUI* template has to be set. *bioGUI* by default only searches the template directory besides the executable.
-*GUI* templates must have the file extension ``.gui``. If your entered template name does not end with this extension, the extension is appended to your filename.
-
-
-.. image:: ./images/usage/install_template.PNG
    :scale: 50

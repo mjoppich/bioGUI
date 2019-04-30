@@ -1,0 +1,233 @@
+#! Install bwa 0.7.17 (sourceforge)
+
+if [ ! "$2" = "" ]; then
+
+    if [ "$(uname)" == "Darwin" ]; then
+
+        echo "Installing brew gcc tbb"
+        brew install gcc tbb
+
+    else
+
+		echo "Installing dependencies"
+		echo $2 | sudo -S apt-get update
+		echo $2 | sudo -S apt-get -y install build_essential
+		
+    fi
+
+else
+   echo "No sudo password, not installing dependencies"
+fi
+
+## set all variables
+PROG=bwa_0_7_17
+PROGNICE=bwa-0.7.17
+PROGDIR=$1
+
+PROGDIRESC=$(echo $PROGDIR | sed 's/ /\\ /g')
+APPBINARYDIR=${PROGDIR}/${PROG}/
+
+if [ -z "${PROGDIR}" ]; then
+	PROGDIR=~/bioGUI/progs/
+fi
+
+## create progdir
+mkdir -p "$PROGDIR/"
+
+if [-z ${PROGDIR}/${PROG} ]; then
+    rm -rf ${PROGDIR}/${PROG}
+fi
+
+#download and unzip
+wget https://sourceforge.net/projects/bio-bwa/files/bwa-0.7.17.tar.bz2/download -O "$PROGDIR/$PROG.tar.bz2"
+
+cd "$PROGDIR"
+
+tar xfjv "$PROGDIR/$PROG.tar.bz2" -C "$PROGDIR/$PROG"
+cd "$PROGDIR/$PROG"
+
+mv */* .
+
+
+
+if [ "$(uname)" == "Darwin" ]; then
+	make CC=gcc-8 CPP=g++-8
+else
+	make
+fi
+
+if [ $# -gt 2 ]; then
+
+	if [ "$3" = "1" ]; then
+
+		if ! grep -q "$PROGDIRESC/$PROG" ~/.bashrc; then
+			echo "export PATH=\"$PROGDIRESC/$PROG:\$PATH\" " >> ~/.bashrc;
+		fi
+	fi
+
+fi
+
+if [ $# -eq 5 ]; then
+
+IP=$4
+PORT=$5
+
+NCCMD=""
+
+if [ "$(uname)" == "Darwin" ]; then
+	NCCMD="nc -c $IP $PORT"
+else
+	NCCMD="nc -q 0 $IP $PORT"
+fi
+
+
+$NCCMD <<EOF
+
+<template description="bwa 0.7.17 aligner" title="bwa 0.7.17">
+<window title="bwa 0.7.17 aligner">
+<vgroup>
+
+  <group title="Alignment Information">
+	<checkbox id="WSLsel" value="true" selectonwindows="true">run in WSL?</checkbox>
+	<label>bwa Index</label> <filedialog id="bwa_index" output="false" folder="false">Select bwa index</filedialog>
+	<label>output file</label> <filedialog id="bwa_output" output="true" folder="false">Select output file</filedialog>
+  </group>
+  
+   <group title="Input Data" exclusive="true">
+    <hgroup>
+     <group id="pairedend" selected="false" title="Paired End" checkable="true">
+      <filedialog id="bwa_paired_m1" location="1" multiple="true">Mate 1 files</filedialog>
+      <filedialog id="bwa_paired_m2" location="2" multiple="true">Mate 2 files</filedialog>
+     </group>
+     <group id="singleend" selected="true" title="Unpaired reads" checkable="true">
+      <filedialog id="bwa_unpaired_reads" location="">Input File 1</filedialog>
+     </group>
+    </hgroup>
+   </group>
+  
+  <group title="Input Options">
+	<checkbox id="bwa_input_p">Reads interleaved paired-end</checkbox>
+  </group>
+  
+  <group title="Alignment Options">
+    <label>Minimum Seed Length</label><input id="bwa_min_seed_length"></input>	  
+	<checkbox id="bwa_input_M" selected="true">Mark shorter split hits as secondary (for Picard compatibility)</checkbox>
+  </group>
+  
+  
+  <group title="Performance Options">
+  <label>Number of threads</label><input id="bwa_perf_threads" type="int">1</input> 
+  </group>
+    
+  <group title="Advanced">
+	<label>Additional command-line flags</label><input id="bwa_adv_specific_options"></input>
+  </group>
+  
+  
+  
+    <action program="bwa">Align!</action>
+
+	<group title="build index">
+		<label>Input Reference</label> <filedialog id="bwa_build_inref" output="false" folder="false">Select bwa index</filedialog>		
+		<label>bwa Index</label> <filedialog id="bwa_build_idx_out" output="true" folder="false">Select bwa index</filedialog>
+		<action program="bwaindex">Build Index</action>
+	</group>
+  
+    <streambox id="output1">
+    <stream id="outputstream1">std out</stream>
+    <stream id="outputstream2">err out</stream>
+   </streambox>
+
+</vgroup>
+</window>
+
+<execution>
+<const id="bindir">${PROGDIR}/${PROG}/</const>
+
+<relocate id="bwa_build_inref_rel" wsl="\${WSLsel}" from="\${bwa_build_inref}"/>
+<relocate id="bwa_build_idx_out_rel" wsl="\${WSLsel}" from="\${bwa_build_idx_out}"/>
+
+<add id="cl_idx" sep=" ">
+<const>index</const>
+<const>-p</const>
+<value from="bwa_build_idx_out_rel"/>
+<value from="bwa_build_inref_rel"/>
+</add>
+
+  <execute program="bwaindex" param="\${cl_idx}" location="\${bindir}/" exec="bwa" wsl="WSLsel">
+    <output type="COUT" color="green" to="outputstream1" />
+    <output type="CERR" color="red" to="outputstream2" />
+  </execute>
+
+<if id="bwa_index_rel_raw" comp="EQUALS" value1="WSLsel" value2="true">
+<relocate from="\${bwa_index}" wsl="true"/>
+<else>
+<value from="bwa_index"/>
+</else>
+</if>
+
+<script id="bwa_index_rel" argv="\${bwa_index_rel_raw}">
+<![CDATA[
+
+function evaluate(arg1)
+	
+	if (string.match(arg1, ".%d.bt2$")) then
+		return(string.sub(arg1, 0, arg1:find(".%d.bt2$")-1))
+	end
+
+    return(arg1)
+end
+
+
+]]>
+</script>
+
+<relocate id="bwa_paired_m1_rel" wsl="\${WSLsel}" from="\${bwa_paired_m1}"/>
+<relocate id="bwa_paired_m2_rel" wsl="\${WSLsel}" from="\${bwa_paired_m2}"/>
+<relocate id="bwa_unpaired_reads_rel" wsl="\${WSLsel}" from="\${bwa_unpaired_reads}"/>
+<relocate id="bwa_output_rel" wsl="\${WSLsel}" from="\${bwa_output}"/>
+
+<if id="input_files" sep=" " comp="EQUALS" value1="pairedend" value2="true">
+<value from="bwa_paired_m1_rel"/>
+<value from="bwa_paired_m2_rel"/>
+
+<else>
+<value from="bwa_unpaired_reads_rel"/>
+</else>
+</if>
+
+<add id="cl" sep=" ">
+    <const>mem</const>
+    <value from="\${bwa_adv_specific_options}"/>
+
+    <if comp="EQUALS" value1="\${bwa_input_p}" value2="TRUE" sep=" ">
+        <const>-p</const>
+    </if>
+    <if comp="EQUALS" value1="\${bwa_input_M}" value2="TRUE" sep=" ">
+        <const>-M</const>
+    </if>
+
+    <if comp="IS_SET" value1="\${bwa_min_seed_length}" sep=" ">
+        <const>-k</const>
+        <value from="\${bwa_min_seed_length}"/>
+    </if>  
+
+    <value from="\${bwa_index_rel}"/>
+    <value from="\${input_files}"/>
+
+</add>
+	
+  <execute program="bwa" param="\${cl}" location="\${bindir}" exec="bwa" wsl="WSLsel">
+    <output type="FILE_STD" location="\${bwa_output}" />
+    <output type="CERR" color="red" to="outputstream2" />
+  </execute>
+
+</execution>
+
+</template>
+
+
+EOF
+
+fi
+

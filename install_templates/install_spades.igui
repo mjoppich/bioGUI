@@ -199,7 +199,7 @@ $NCCMD <<EOF
     </add>
     
     <execute program="SPAdes" param="\${args}" location="\${bindir}" exec="spades.py" wsl="WSLsel">
-        <output type="FILE_STD" color="green" location="\${spades_output_rel}" />
+        <output type="COUT" color="green" location="outputstream1" />
         <output type="CERR" color="red" to="outputstream2" />
     </execute>
 

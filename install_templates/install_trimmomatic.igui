@@ -22,12 +22,12 @@ PROG=trimmomatic_0_36
 PROGNICE=Trimmomatic-0.36
 PROGDIR=$1
 
-PROGDIRESC=$(echo $PROGDIR | sed 's/ /\\ /g')
-APPBINARYDIR=${PROGDIRESC}/${PROG}/
-
 if [ -z "${PROGDIR}" ]; then
 	PROGDIR=~/bioGUI/progs/
 fi
+
+PROGDIRESC=$(echo $PROGDIR | sed 's/ /\\ /g')
+APPBINARYDIR=${PROGDIRESC}/${PROG}/
 
 echo "Creating $PROGDIR"
 
@@ -52,6 +52,37 @@ if [ $# -gt 2 ]; then
 
 fi
 
+APPBINARYESC="${PROGDIRESC}/${PROG}/"
+APPBINARY="${PROGDIRESC}/${PROG}/trimmomatic-0.36.jar"
+if [ -z "$(ls -A ${APPBINARYESC})" ] || [ ! -f ${APPBINARY} ]; then
+   (>&2 echo ${APPBINARYESC})
+   (>&2 ls ${APPBINARYESC})
+
+   (>&2 echo " \n \n \n")
+
+   (>&2 echo ${PROGDIRESC})
+   (>&2 ls ${PROGDIRESC})
+
+    (>&2 echo " \n \n \n")
+
+   (>&2 echo ${APPBINARY})
+   (>&2 ls ${APPBINARY})
+   
+   (>&2 echo " \n \n \n")
+
+   (>&2 echo "ERROR: The application directory is empty after installation.")
+   (>&2 echo "ERROR: If you experience problems please re-install the software and create an issue on https://github.com/mjoppich/bioGUI.")
+   (>&2 echo "ERROR: For creating the issue, please upload the log.txt file of your installation attempt.")
+
+    (>&2 echo " \n \n \n")
+
+else
+
+    echo "${PROG} has been installed into ${APPBINARYESC}"
+    echo "Binary location ${APPBINARY}"
+
+fi
+
 if [ $# -eq 5 ]; then
 
 IP=$4
@@ -69,258 +100,206 @@ fi
 $NCCMD <<EOF
 
 <template description="Trimming short RNA-Seq Reads" title="$PROGNICE">
- <window title="$PROGNICE">
-  <vgroup>
-  	<checkbox id="WSLsel" value="true" selectonwindows="true">Run in WSL?</checkbox>
-   <group title="Method" exclusive="true">
-    <hgroup>
-     <group id="pairedend" selected="false" title="Paired End" checkable="true">
-      <filedialog id="paired_if1" location="1">Input File 1</filedialog>
-      <filedialog id="paired_if2" location="2">Input File 2</filedialog>
-      <group title="Options">
-       <checkbox>Validate Pairs</checkbox>
-      </group>
-      <filedialog id="paired_of1p" location="" output="true">Output 1P</filedialog>
-      <filedialog id="paired_of1u" location="" output="true">Output 1U</filedialog>
-      <filedialog id="paired_of2p" location="" output="true">Output 2P</filedialog>
-      <filedialog id="paired_of2u" location="" output="true">Output 2U</filedialog>
-     </group>
-     <group id="singleend" selected="true" title="Single End" checkable="true">
-      <filedialog id="single_if1" location="">Input File 1</filedialog>
-      <filedialog id="single_of1" location="" output="true">Output</filedialog>
-     </group>
-    </hgroup>
-   </group>
-   <group ordered="true" id="orderedgroup" title="Step options">
-    <grid rows="3" cols="3">
-     <group id="adapters_sel" title="Adapters" checkable="true">
-	   <filelist id="illuminaclip_auto_file" allowempty="true" path="${APPBINARYDIR}/adapters/" ext="*.fa"/>
-       <filedialog id="illuminaclip_man_file" location="">Adapter Sequence</filedialog>
+    <window title="$PROGNICE">
+        <vgroup>
+            <checkbox id="WSLsel" value="true" selectonwindows="true">Run in WSL?</checkbox>
+            <group title="Method" exclusive="true">
+                <hgroup>
+                    <group id="pairedend" selected="false" title="Paired End" checkable="true">
+                        <filedialog id="paired_if1" location="1">Input File 1</filedialog>
+                        <filedialog id="paired_if2" location="2">Input File 2</filedialog>
+                        <group title="Options">
+                            <checkbox>Validate Pairs</checkbox>
+                        </group>
+                        <filedialog id="paired_of1p" location="" output="true">Output 1P</filedialog>
+                        <filedialog id="paired_of1u" location="" output="true">Output 1U</filedialog>
+                        <filedialog id="paired_of2p" location="" output="true">Output 2P</filedialog>
+                        <filedialog id="paired_of2u" location="" output="true">Output 2U</filedialog>
+                    </group>
+                    <group id="singleend" selected="true" title="Single End" checkable="true">
+                        <filedialog id="single_if1" location="">Input File 1</filedialog>
+                        <filedialog id="single_of1" location="" output="true">Output</filedialog>
+                    </group>
+                </hgroup>
+            </group>
+            <group ordered="true" id="orderedgroup" title="Step options">
+                <grid rows="3" cols="3">
+                    <group id="adapters_sel" title="Adapters" checkable="true">
+                        <filelist id="illuminaclip_auto_file" allowempty="true" path="${APPBINARYDIR}/adapters/" ext="*.fa"/>
+                        <filedialog id="illuminaclip_man_file" location="">Adapter Sequence</filedialog>
+                        <label>Seed Mismatches</label>
+                        <input type="int" id="illuminaclip_seed">2</input>
+                        <label>Palindrome Clip Threshold</label>
+                        <input type="int" id="illuminaclip_palin">30</input>
+                        <label>Simple Clip Threshold</label>
+                        <input type="int" id="illuminaclip_simple">10</input>
+                    </group>
+                    <group id="slidingwindow_opt" selected="false" title="Sliding Window" checkable="true">
+                        <label>Size</label>
+                        <input id="slidingwindow_size" type="int"/>
+                        <label>Quality</label>
+                        <input id="slidingwindow_quality" type="int"/>
+                    </group>
+                    <group id="leadingwindow_opt" selected="false" title="Leading Window" checkable="true">
+                        <hgroup>
+                            <label>Quality</label>
+                            <input id="leadingwindow_quality" type="int"/>
+                        </hgroup>
+                    </group>
+                    <group id="trailingwindow_opt" selected="false" title="Trailing Window" checkable="true">
+                        <hgroup>
+                            <label>Quality</label>
+                            <input id="trailingwindow_quality" type="int"/>
+                        </hgroup>
+                    </group>
+                    <group id="crop_opt" selected="false" title="Crop" checkable="true">
+                        <hgroup>
+                            <label>Length</label>
+                            <input id="crop_length" type="int"/>
+                        </hgroup>
+                    </group>
+                    <group id="headcrop_opt" selected="false" title="Headcrop" checkable="true">
+                        <hgroup>
+                            <label>Length</label>
+                            <input id="headcrop_length" type="int"/>
+                        </hgroup>
+                    </group>
+                    <group id="minlen_opt" selected="false" title="Min Len" checkable="true">
+                        <hgroup>
+                            <label>Length</label>
+                            <input id="minlen_length" type="int"/>
+                        </hgroup>
+                    </group>
+                    <group title="PHRED base">
+                        <combobox id="phred" selected="phred64">
+                            <comboitem>phred33</comboitem>
+                            <comboitem>phred64</comboitem>
+                        </combobox>
+                    </group>
+                </grid>
+            </group>
+            <group title="Options">
+                <checkbox>Quiet Mode</checkbox>
+            </group>
+            <streambox id="output1">
+                <stream id="outputstream1">OS1</stream>
+                <stream id="outputstream2">OS2</stream>
+            </streambox>
+            <group title="System Settings">
+                <label title="example 2">Threads</label>
+                <input id="threads_opt" hint="Amount of Threads">2</input>
+            </group>
+            <action id="runprog" hint="click here to run program">run program</action>
+        </vgroup>
+    </window>
+    <execution>
+        <if id="illuminaclip_file_tmp" value1="illuminaclip_auto_file" comp="is_set">
+            <value from="illuminaclip_man_file"/>
+            <else>
+                <value from="illuminaclip_man_file"/>
+            </else>
+        </if>
+        <if id="illuminaclip_file" comp="EQUALS" value1="WSLsel" value2="true">
+            <relocate from="\${illuminaclip_file_tmp}" wsl="true"/>
+            <else>
+                <value from="illuminaclip_file_tmp"/>
+            </else>
+        </if>
 
-	   <label>Seed Mismatches</label><input type="int" id="illuminaclip_seed">2</input>
-	   <label>Palindrome Clip Threshold</label><input type="int" id="illuminaclip_palin">30</input>
-	   <label>Simple Clip Threshold</label><input type="int" id="illuminaclip_simple">10</input>
-     </group>
-     <group id="slidingwindow_opt" selected="false" title="Sliding Window" checkable="true">
-      <label>Size</label>
-      <input id="slidingwindow_size" type="int"/>
-      <label>Quality</label>
-      <input id="slidingwindow_quality" type="int"/>
-     </group>
-     <group id="leadingwindow_opt" selected="false" title="Leading Window" checkable="true">
-      <hgroup>
-       <label>Quality</label>
-       <input id="leadingwindow_quality" type="int"/>
-      </hgroup>
-     </group>
-     <group id="trailingwindow_opt" selected="false" title="Trailing Window" checkable="true">
-      <hgroup>
-       <label>Quality</label>
-       <input id="trailingwindow_quality" type="int"/>
-      </hgroup>
-     </group>
-     <group id="crop_opt" selected="false" title="Crop" checkable="true">
-      <hgroup>
-       <label>Length</label>
-       <input id="crop_length" type="int"/>
-      </hgroup>
-     </group>
-     <group id="headcrop_opt" selected="false" title="Headcrop" checkable="true">
-      <hgroup>
-       <label>Length</label>
-       <input id="headcrop_length" type="int"/>
-      </hgroup>
-     </group>
-     <group id="minlen_opt" selected="false" title="Min Len" checkable="true">
-      <hgroup>
-       <label>Length</label>
-       <input id="minlen_length" type="int"/>
-      </hgroup>
-     </group>
-     <group title="PHRED base">
-      <combobox id="phred" selected="phred64">
-       <comboitem>phred33</comboitem>
-       <comboitem>phred64</comboitem>
-      </combobox>
-     </group>
-    </grid>
-   </group>
-   <group title="Options">
-    <checkbox>Quiet Mode</checkbox>
-   </group>
-   <streambox id="output1">
-    <stream id="outputstream1">OS1</stream>
-    <stream id="outputstream2">OS2</stream>
-   </streambox>
-   <group title="System Settings">
-    <label title="example 2">Threads</label>
-    <input id="threads_opt" hint="Amount of Threads">2</input>
-   </group>
-   <action id="runprog" hint="click here to run program">run program</action>
-  </vgroup>
- </window>
- <execution>
- 
-    <if id="illuminaclip_file_tmp" value1="illuminaclip_auto_file" comp="is_set">
-    <value from="illuminaclip_man_file"/>
-   <else>
-    <value from="illuminaclip_man_file"/>
-   </else>
-   </if>
-   
-   <if id="illuminaclip_file" comp="EQUALS" value1="WSLsel" value2="true">
-<relocate from="\${illuminaclip_file_tmp}" wsl="true"/>
-<else>
-<value from="illuminaclip_file_tmp"/>
-</else>
-</if>
+        <relocate id="paired_if1_rel" from="\${paired_if1}" sep=" " wsl="\${WSLsel}"/>
+        <relocate id="paired_if2_rel" from="\${paired_if2}" sep=" " wsl="\${WSLsel}"/>
+        <relocate id="paired_of1p_rel" from="\${paired_of1p}" sep=" " wsl="\${WSLsel}"/>
+        <relocate id="paired_of1u_rel" from="\${paired_of1u}" sep=" " wsl="\${WSLsel}"/>
+        <relocate id="paired_of2p_rel" from="\${paired_of2p}" sep=" " wsl="\${WSLsel}"/>
+        <relocate id="paired_of2u_rel" from="\${paired_of2u}" sep=" " wsl="\${WSLsel}"/>
+        <relocate id="single_if1_rel" from="\${single_if1}" sep=" " wsl="\${WSLsel}"/>
+        <relocate id="single_of1_rel" from="\${single_of1}" sep=" " wsl="\${WSLsel}"/>
 
-<if id="paired_if1_rel" comp="EQUALS" value1="WSLsel" value2="true">
-<relocate from="\${paired_if1}" wsl="true"/>
-<else>
-<value from="paired_if1"/>
-</else>
-</if>
-
-<if id="paired_if2_rel" comp="EQUALS" value1="WSLsel" value2="true">
-<relocate from="\${paired_if2}" wsl="true"/>
-<else>
-<value from="paired_if2"/>
-</else>
-</if>
-
-<if id="paired_of1p_rel" comp="EQUALS" value1="WSLsel" value2="true">
-<relocate from="\${paired_of1p}" wsl="true"/>
-<else>
-<value from="paired_of1p"/>
-</else>
-</if>
-
-<if id="paired_of1u_rel" comp="EQUALS" value1="WSLsel" value2="true">
-<relocate from="\${paired_of1u}" wsl="true"/>
-<else>
-<value from="paired_of1u"/>
-</else>
-</if>
-
-<if id="paired_of2p_rel" comp="EQUALS" value1="WSLsel" value2="true">
-<relocate from="\${paired_of2p}" wsl="true"/>
-<else>
-<value from="paired_of2p"/>
-</else>
-</if>
-
-<if id="paired_of2u_rel" comp="EQUALS" value1="WSLsel" value2="true">
-<relocate from="\${paired_of2u}" wsl="true"/>
-<else>
-<value from="paired_of2u"/>
-</else>
-</if>
-
-
-<if id="single_if1_rel" comp="EQUALS" value1="WSLsel" value2="true">
-<relocate from="\${single_if1}" wsl="true"/>
-<else>
-<value from="single_if1"/>
-</else>
-</if>
-
-<if id="single_of1_rel" comp="EQUALS" value1="WSLsel" value2="true">
-<relocate from="\${single_of1}" wsl="true"/>
-<else>
-<value from="single_of1"/>
-</else>
-</if>
- 
-  <add sep=":" id="illuminaclip">
-   <const>ILLUMINACLIP</const>
-   <value from="illuminaclip_file"/>
-   <value from="illuminaclip_seed"/>
-   <value from="illuminaclip_palin"/>
-   <value from="illuminaclip_simple"/>
-  </add>
-  
-  <add sep=":" id="slidingwindow">
-   <const>SLIDINGWINDOW</const>
-   <value from="slidingwindow_size"/>
-   <value from="slidingwindow_quality"/>
-  </add>
-  <add sep=":" id="leading">
-   <const>LEADING</const>
-   <value from="leadingwindow_quality"/>
-  </add>
-  <add sep=":" id="trailing">
-   <const>TRAILING</const>
-   <value from="trailingwindow_quality"/>
-  </add>
-  <add sep=":" id="crop">
-   <const>CROP</const>
-   <value from="crop_length"/>
-  </add>
-  <add sep=":" id="headcrop">
-   <const>HEADCROP</const>
-   <value from="headcrop_length"/>
-  </add>
-  <add sep=":" id="minlen">
-   <const>MINLEN</const>
-   <value from="minlen_length"/>
-  </add>
-  <orderedadd id="steps" from="orderedgroup" selected="true">
-   <value from="illuminaclip" for="adapters_sel"/>
-   <value from="slidingwindow" for="slidingwindow_opt"/>
-   <value from="leading" for="leadingwindow_opt"/>
-   <value from="trailing" for="trailingwindow_opt"/>
-   <value from="crop" for="crop_opt"/>
-   <value from="headcrop" for="headcrop_opt"/>
-   <value from="minlen" for="minlen_opt"/>
-  </orderedadd>
-  <add sep=" " id="files_pe">
-   <const>PE</const>
-   <value from="paired_if1_rel"/>
-   <value from="paired_if2_rel"/>
-   <value from="paired_of1p_rel"/>
-   <value from="paired_of1u_rel"/>
-   <value from="paired_of2p_rel"/>
-   <value from="paired_of2u_rel"/>
-  </add>
-  <add sep=" " id="files_se">
-   <const>SE</const>
-   <value from="single_if1_rel"/>
-   <value from="single_of1_rel"/>
-  </add>
-  <if id="files" value1="pairedend" comp="EQUALS" value2="true">
-   <value from="files_pe"/>
-   <else>
-    <value from="files_se"/>
-   </else>
-  </if>
-  <if id="threads" value1="threads_opt" comp="is_set">
-   <value from="threads_opt"/>
-   <else>
-    <const>1</const>
-   </else>
-  </if>
-  <add sep=" " id="cl">
-   <value from="files"/>
-   <add sep="">
-    <const>-threads </const>
-    <value from="threads"/>
-   </add>
-   <add sep="">
-    <const>-</const>
-    <value from="phred"/>
-   </add>
-   <value from="steps"/>
-  </add>
-  
-  <const id="bindir">${PROGDIR}/${PROG}/</const>
-
-  <execute location="" exec="java" param="-jar &quot;\${bindir}/trimmomatic-0.36.jar&quot; \${cl}" wsl="WSLsel">
-    <output type="COUT" color="green" to="outputstream1" />
-    <output type="CERR" color="red" to="outputstream2" />
-  </execute>
-
- </execution>
+        <add sep=":" id="illuminaclip">
+            <const>ILLUMINACLIP</const>
+            <value from="illuminaclip_file"/>
+            <value from="illuminaclip_seed"/>
+            <value from="illuminaclip_palin"/>
+            <value from="illuminaclip_simple"/>
+        </add>
+        <add sep=":" id="slidingwindow">
+            <const>SLIDINGWINDOW</const>
+            <value from="slidingwindow_size"/>
+            <value from="slidingwindow_quality"/>
+        </add>
+        <add sep=":" id="leading">
+            <const>LEADING</const>
+            <value from="leadingwindow_quality"/>
+        </add>
+        <add sep=":" id="trailing">
+            <const>TRAILING</const>
+            <value from="trailingwindow_quality"/>
+        </add>
+        <add sep=":" id="crop">
+            <const>CROP</const>
+            <value from="crop_length"/>
+        </add>
+        <add sep=":" id="headcrop">
+            <const>HEADCROP</const>
+            <value from="headcrop_length"/>
+        </add>
+        <add sep=":" id="minlen">
+            <const>MINLEN</const>
+            <value from="minlen_length"/>
+        </add>
+        <orderedadd id="steps" from="orderedgroup" selected="true">
+            <value from="illuminaclip" for="adapters_sel"/>
+            <value from="slidingwindow" for="slidingwindow_opt"/>
+            <value from="leading" for="leadingwindow_opt"/>
+            <value from="trailing" for="trailingwindow_opt"/>
+            <value from="crop" for="crop_opt"/>
+            <value from="headcrop" for="headcrop_opt"/>
+            <value from="minlen" for="minlen_opt"/>
+        </orderedadd>
+        <add sep=" " id="files_pe">
+            <const>PE</const>
+            <value from="paired_if1_rel"/>
+            <value from="paired_if2_rel"/>
+            <value from="paired_of1p_rel"/>
+            <value from="paired_of1u_rel"/>
+            <value from="paired_of2p_rel"/>
+            <value from="paired_of2u_rel"/>
+        </add>
+        <add sep=" " id="files_se">
+            <const>SE</const>
+            <value from="single_if1_rel"/>
+            <value from="single_of1_rel"/>
+        </add>
+        <if id="files" value1="pairedend" comp="EQUALS" value2="true">
+            <value from="files_pe"/>
+            <else>
+                <value from="files_se"/>
+            </else>
+        </if>
+        <if id="threads" value1="threads_opt" comp="is_set">
+            <value from="threads_opt"/>
+            <else>
+                <const>1</const>
+            </else>
+        </if>
+        <add sep=" " id="cl">
+            <value from="files"/>
+            <add sep="">
+                <const>-threads </const>
+                <value from="threads"/>
+            </add>
+            <add sep="">
+                <const>-</const>
+                <value from="phred"/>
+            </add>
+            <value from="steps"/>
+        </add>
+        <const id="bindir">${PROGDIR}/${PROG}/</const>
+        <execute location="" exec="java" param="-jar &quot;\${bindir}/trimmomatic-0.36.jar&quot; \${cl}" wsl="WSLsel">
+            <output type="COUT" color="green" to="outputstream1" />
+            <output type="CERR" color="red" to="outputstream2" />
+        </execute>
+    </execution>
 </template>
 
 

@@ -73,6 +73,8 @@ public:
         m_bFinished = bValue;
     }
 
+
+
     void appendText(QString sText)
     {
 
@@ -179,7 +181,10 @@ public:
         std::cerr << "Deleting Advanced Stream Box" << std::endl;
     }
 
-
+    void setWithLinebreaks(bool bValue)
+    {
+        m_bLineBreaks = bValue;
+    }
 
     virtual QSize sizeHint()
     {
@@ -477,15 +482,35 @@ protected slots:
     void receiveText(QString sString, QColor oColor, QString sStreamID)
     {
 
-        LOGERROR("AdvancedStreamBox received: " + std::to_string((uint64_t) this) + " for STREAM: " + sStreamID.toStdString());
-        LOGERROR( sString.toStdString() );
-        LOGERROR("RECEIVE END");
+        //LOGERROR("AdvancedStreamBox received: " + std::to_string((uint64_t) this) + " for STREAM: " + sStreamID.toStdString());
+        //LOGERROR( sString.toStdString() );
+        //LOGERROR("RECEIVE END");
 
         AdvancedListWidgetItem* pLastStream = this->getLastItemForStream(&sStreamID);
 
         bool bLastIsFinished = false;
         if ((sString.size() > 0) && (sString[sString.size()-1] == '\n'))
             bLastIsFinished = true;
+
+        if ((m_bLineBreaks) && (sString.size() > 0))
+        {
+            if (sString.at(sString.size()-1) != '\n')
+            {
+                sString.append('\n');
+            }
+
+            QStringList vList = sString.split("\n");
+
+            for (size_t i = 0; i < vList.size(); ++i)
+            {
+                pLastStream = new AdvancedListWidgetItem( vList.at(i), sStreamID );
+                pLastStream->setForeground(oColor);
+                pLastStream->setFinished(true);
+
+                this->addItem(pLastStream);
+            }
+            return;
+        }
 
         QStringList vList = sString.split("\n");
 
@@ -513,6 +538,7 @@ protected slots:
         for (size_t i = 1; i < vList.size(); ++i)
         {
 
+            //std::cerr << i << " " << vList.at(i).toStdString() << std::endl;
             //std::cout << "more: '" << vList.at(i).toStdString() << "'" << std::endl;
 
             if (vList.at(i).length() > 0)
@@ -569,6 +595,7 @@ protected:
     std::map<ExecuteThread*, std::vector<ExtendedThreadBuffer*>> m_mThreadToBuffer;
 
     std::map<std::string, QAbstractButton*> m_mStreamID2Button;
+    bool m_bLineBreaks;
 
 
 };

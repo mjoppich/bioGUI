@@ -80,6 +80,10 @@ public:
         QStringList vChildren = qsChildren.split( sInSeparator.c_str() );
         QStringList vOutput;
 
+        std::cerr << "General Relocator: from " << sFrom << std::endl;
+        std::cerr << "General Relocator: to " << sTo << std::endl;
+
+
         for (size_t i = 0; i < vChildren.size(); ++i)
         {
 
@@ -126,7 +130,7 @@ public:
 
         std::string sReturn = vOutput.join( QString(sSeparator.c_str()) ).toStdString();
 
-        std::cerr << "relocated from " << sPaths << " to " << sReturn << std::endl;
+        std::cerr << "General Relocator: relocated from " << sPaths << " to " << sReturn << std::endl;
 
         return sReturn;
     }
@@ -144,11 +148,8 @@ public:
 
         /*What should be relocated?
          * */
-        if (m_sFrom.size() == 0)
+        if (m_sFrom.size() >= 2)
         {
-            sChildren = this->evaluateChildren(pID2Node, pInputID2Value, pInputID2FunctionWidget);
-        } else {
-
             if (m_sFrom[0] == '$' and m_sFrom[1] == '{' and m_sFrom[m_sFrom.size()-1] == '}')
             {
                 std::string sDynID = "";
@@ -160,17 +161,14 @@ public:
                     sDynID = m_sFrom.substr(2, m_sFrom.size()-3);
                 }
 
-                sChildren = this->getNodeValueOrValue(sDynID, sDynID, pID2Node, pInputID2Value, pInputID2FunctionWidget);
-            } else {
-                sChildren = m_sFrom;
+                m_sFrom = this->getNodeValueOrValue(sDynID, sDynID, pID2Node, pInputID2Value, pInputID2FunctionWidget);
             }
         }
 
-        if (sChildren.size() == 0)
-            return sChildren;
 
         if ((m_bHasWSLAttrib) && (bWSL == false))
         {
+            // nothing to be done
             return sChildren;
         }
 
@@ -179,14 +177,22 @@ public:
             bMakeUnix = true;
         }
 
-        std::string sStart = sChildren;
 
         if (bWSL)
         {
-            return relocateWSL(sChildren, m_sSeperator, m_sInSeperator);
+            if (m_sFrom.size() == 0)
+            {
+                return "";
+            }
+
+            return relocateWSL(m_sFrom, m_sSeperator, m_sInSeperator);
         } else {
-            return relocateGeneral(sChildren, m_sFrom, m_sTo, m_sPrepend, m_sSeperator, m_sInSeperator, bMakeUnix);
+
+            std::string sPaths = this->evaluateChildren(pID2Node, pInputID2Value, pInputID2FunctionWidget);
+            return relocateGeneral(sPaths, m_sFrom, m_sTo, m_sPrepend, m_sSeperator, m_sInSeperator, bMakeUnix);
         }
+
+        // should never reach this line
 
 /*
         QString qsChildren(sChildren.c_str());

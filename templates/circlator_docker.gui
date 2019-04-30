@@ -1,0 +1,86 @@
+<template description="Circlator (docker)" title="Circlator">
+<window width="500" height="1000" title="SPAdes">
+  <vgroup>
+
+    <group title="Information">
+        <label>Curclator needs docker to be installed and within your PATH!.</label>
+        <label>You can test whether docker is working by executing Docker Status.</label>
+        <label></label>
+        <label>Please make sure to login with your docker id (NOT your eMail address) before pulling a container.</label>
+        <label>You should ensure that the Docker VM has at least 6GB of RAM available!</label>
+    </group>
+
+    <group title="Docker Status">
+        <action program="docker_status" hint="Docker Status">Docker Status</action>         
+    </group>
+
+    <group title="Pull Circlator from Docker Hub">
+        <action program="circlator_pull" hint="Docker Pull Circlator">Docker Pull Circlator</action>         
+    </group>
+
+    <group title="Circlator Prog Check">
+        <label>Test your Circlator installation.</label>
+        <action program="circlator_progcheck" hint="Docker Pull Circlator">Circlator Progcheck</action>         
+    </group>
+
+    <group title="Circlator">
+
+        <label>Base folder to run analysis in. The base folder is mounted in the docker container.</label>
+        <label>Input FASTA, reads and output dir must be below this directory for this template to work properly.</label>
+        <label>Due to docker restrictions, all files must be on the same drive</label>
+        
+        <filedialog id="circlator_base" output="false" folder="true">Base Folder</filedialog>
+        
+        <label>Mode</label>
+        <combobox id="circlator_mode" selected="all">
+            <comboitem value="all">All</comboitem>
+        </combobox>
+
+        <filedialog id="circlator_assembly_fasta" output="false" folder="false">Assembly FASTA</filedialog>
+        <filedialog id="circlator_assembly_reads" output="false" folder="false">Assembly Reads</filedialog>
+
+        <label>The output directory must not yet exist!</label>
+        <filedialog id="circlator_outdir" output="true" folder="true">Output Directory</filedialog>
+
+        <label>Further command line options</label>
+        <input id="circlator_cls"></input>
+        <action program="circlator_run" hint="Docker Run Circlator">Circlator</action>         
+    </group>
+ 
+    <streambox id="output1">
+      <stream id="outputstream1">OS1</stream>
+      <stream id="outputstream2">OS2</stream>
+    </streambox>
+ 
+  </vgroup>
+</window>
+<execution>
+
+    <execute program="docker_status" param="info" location="" exec="docker">
+        <output type="COUT" color="green" to="outputstream1" />
+        <output type="CERR" color="red" to="outputstream2" />
+    </execute>
+  
+  
+    <execute program="circlator_pull" param="pull sangerpathogens/circlator" location="" exec="docker">
+        <output type="COUT" color="green" to="outputstream1" />
+        <output type="CERR" color="red" to="outputstream2" />
+    </execute>
+
+    <execute program="circlator_progcheck" param="run --rm sangerpathogens/circlator circlator progcheck" location="" exec="docker">
+        <output type="COUT" color="green" to="outputstream1" />
+        <output type="CERR" color="red" to="outputstream2" />
+    </execute>
+
+    <replace id="circlator_fasta_rel" from="${circlator_assembly_fasta}" replace="${circlator_base}" replace_with="/data/"/>
+    <replace id="circlator_reads_rel" from="${circlator_assembly_reads}" replace="${circlator_base}" replace_with="/data/"/>
+    <replace id="circlator_outdir_rel" from="${circlator_outdir}" replace="${circlator_base}" replace_with="/data/"/>
+
+
+    <execute program="circlator_run" param="run --rm -v ${circlator_base}:/data sangerpathogens/circlator circlator ${circlator_mode} ${circlator_cls} ${circlator_fasta_rel} ${circlator_reads_rel} ${circlator_outdir_rel}" location="" exec="docker">
+        <output type="COUT" color="green" to="outputstream1" />
+        <output type="CERR" color="red" to="outputstream2" />
+    </execute>
+
+</execution>
+</template>

@@ -55,6 +55,29 @@ class ExecutionStringReplaceNode : public ExecutionNode {
                               std::map<std::string, WidgetFunctionNode*>* pInputID2FunctionWidget)
         {
 
+            if (m_sReplace.size() >= 2)
+            {
+                if (m_sReplace[0] == '$' and m_sReplace[1] == '{' and m_sReplace[m_sReplace.size()-1] == '}')
+                {
+                    std::string sDynID = "";
+                    sDynID = m_sReplace.substr(2, m_sReplace.size()-3);
+
+                    m_sReplace = this->getNodeValueOrValue(sDynID, sDynID, pID2Node, pInputID2Value, pInputID2FunctionWidget);
+                }
+            }
+
+            if (m_sReplaceWith.size() >= 2)
+            {
+                if (m_sReplaceWith[0] == '$' and m_sReplaceWith[1] == '{' and m_sReplaceWith[m_sReplaceWith.size()-1] == '}')
+                {
+                    std::string sDynID = "";
+                    sDynID = m_sReplaceWith.substr(2, m_sReplaceWith.size()-3);
+
+                    m_sReplaceWith = this->getNodeValueOrValue(sDynID, sDynID, pID2Node, pInputID2Value, pInputID2FunctionWidget);
+                }
+            }
+
+
             std::string sChildren = "";
 
             if (m_sFrom.size() == 0)
@@ -68,6 +91,8 @@ class ExecutionStringReplaceNode : public ExecutionNode {
 
                 if (!oRet.valid())
                     return "";
+
+                sChildren = oRet.value();
 
             }
 

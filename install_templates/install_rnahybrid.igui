@@ -1,0 +1,175 @@
+#! Install rnahybrid (source)
+
+
+
+if [ ! "$2" = "" ]; then
+
+    if [ "$(uname)" == "Darwin" ]; then
+
+        echo "No dependencies"
+
+    else
+
+        echo "No dependencies"
+
+    fi
+
+else
+   echo "No sudo password, not installing dependencies"
+   echo "No dependencies"
+fi
+
+
+## set all variables
+PROG=rnahybrid
+PROGDIR=$1
+
+
+
+if [ -z "${PROGDIR}" ]; then
+   PROGDIR=~/bioGUI/progs/
+fi
+
+
+PROGDIRESC=$(echo $PROGDIR | sed 's/ /\\ /g')
+APPBINARYDIR=${PROGDIR}/${PROG}/src/
+
+if [ -d "$PROGDIR/$PROG" ]; then
+    echo "Removing Folder $PROGDIR/$PROG"
+    rm -rf "$PROGDIR/$PROG"
+fi
+
+## create progdir
+mkdir -p "$PROGDIR/$PROG"
+cd "$PROGDIR"/$PROG/
+
+#download and unzip
+wget https://bibiserv.cebitec.uni-bielefeld.de/applications/rnahybrid/resources/downloads/RNAhybrid-2.1.2.tar.gz -O rnahybrid.tar.gz
+
+tar xfz rnahybrid.tar.gz -C "$PROGDIR/$PROG/"
+
+cd "$PROGDIR/$PROG/"
+mv */* .
+
+./configure
+make
+
+
+if [ $# -gt 2 ]; then
+   if [ "$3" = "1" ]; then
+
+      if ! grep -q "$PROGDIRESC/$PROG/src/" ~/.bashrc; then
+         echo "export PATH=\"$PROGDIRESC/$PROG/src/:\$PATH\" " >> ~/.bashrc;
+      fi
+   fi
+fi
+
+
+
+if [ $# -eq 5 ]; then
+
+IP=$4
+PORT=$5
+
+echo "Sending Template to $IP at $PORT"
+
+
+NCCMD=""
+
+if [ "$(uname)" == "Darwin" ]; then
+	NCCMD="nc -c $IP $PORT"
+else
+	NCCMD="nc -q 0 $IP $PORT"
+fi
+
+
+$NCCMD <<EOF
+
+<template description="RNAhybrid (source, 2.2.1)" title="RNAhybrid">
+
+<window width="500" height="1000" title="RNAhybrid">
+
+  <vgroup>
+
+
+    <group title="Alignment Options">
+    
+                    
+        <label>Target Sequence (gene)</label> <filedialog id="rnahybrid_targetseq" output="false">Select Target Sequence</filedialog>
+        <label>Query Sequence (miRNA)</label> <filedialog id="rnahybrid_queryseq" output="false">Select Query Sequence Count-File</filedialog>
+        
+        <label>Output File</label> <filedialog id="rnahybrid_output" output="true">Select Input Files (sam or bam)</filedialog>
+        
+        <label>Set name</label>
+        <combobox id="rnahybrid_stat_base" selected="3utr_human">
+            <comboitem value="3utr_human">3utr_human</comboitem>
+            <comboitem value="3utr_worm">3utr_worm</comboitem>
+            <comboitem value="3utr_fly">3utr_fly</comboitem>
+        </combobox>
+        
+        <label>Additional Options</label><input id="rnahybrid_options"></input>
+    
+    
+        <action program="RNAhybrid" hint="click here to run program">Run RNAhybrid</action>  
+    </group>
+
+
+    <group title="General Options">
+       <label>Run in WSL on Windows?</label><checkbox id="WSLsel" value="true" selectonwindows="true">Run in WSL?</checkbox>
+    </group>
+  
+    <streambox id="output1">
+      <stream id="outputstream1">OS1</stream>
+      <stream id="outputstream2">OS2</stream>
+    </streambox>
+ 
+
+  </vgroup>
+
+</window>
+
+
+
+<execution>
+
+    <const id="bindir">${APPBINARYDIR}/</const>
+    
+    
+    <relocate id="rnahybrid_targetseq_rel" from="\${rnahybrid_targetseq}" wsl="\${WSLsel}"/>
+    <relocate id="rnahybrid_queryseq_rel" from="\${rnahybrid_queryseq}" wsl="\${WSLsel}"/>
+    <relocate id="rnahybrid_output_rel" from="\${rnahybrid_output}" wsl="\${WSLsel}"/>
+
+    <add id="args" sep=" ">
+
+        <value from="\${rnahybrid_options}"/>
+
+        <if comp="IS_SET" value1="\${rnahybrid_stat_base}" sep=" ">
+            <const>-s</const>
+            <value from="\${rnahybrid_stat_base}"/>
+        </if>
+
+        <if comp="IS_SET" sep=" " value1="\${rnahybrid_targetseq_rel}">
+            <const>-t</const>
+            <value from="\${rnahybrid_targetseq_rel}"/>
+        </if>
+        <if comp="IS_SET" sep=" " value1="\${rnahybrid_queryseq_rel}">
+            <const>-q</const>
+            <value from="\${rnahybrid_queryseq_rel}"/>
+        </if>
+
+    </add>
+    
+    <execute program="RNAhybrid" param="\${args}" location="\${bindir}" exec="RNAhybrid" wsl="WSLsel">
+        <output type="FILE_STD" color="green" location="\${rnahybrid_output_rel}" />
+        <output type="CERR" color="red" to="outputstream2" />
+    </execute>
+
+  
+
+</execution>
+</template>
+
+
+EOF
+
+fi

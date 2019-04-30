@@ -55,6 +55,10 @@ public:
         QGroupBox* pGroupBox = new QGroupBox();
 
         AdvancedStreamBox* pStreamOut = new AdvancedStreamBox();
+
+        bool addLineBreaks = this->getQAttribute(pDOMElement, "linebreaks", "FALSE").compare("TRUE", Qt::CaseInsensitive) == 0;
+        pStreamOut->setWithLinebreaks(addLineBreaks);
+
         // this could also be a hboxlayout or a grid layout
         QLayout* pLayout = new QVBoxLayout();
 

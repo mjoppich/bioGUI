@@ -159,17 +159,17 @@ $NCCMD <<EOF
  </window>
  <execution>
  
-<relocate id="rsem_ref_fasta_rel" from="\${rsem_ref_fasta}" wsl="${WSLsel}"/>
-<relocate id="rsem_ref_path_rel" from="\${rsem_ref_path}" wsl="${WSLsel}"/>
-<relocate id="rsem_ref_fasta_rel" from="\${rsem_ref_fasta}" wsl="${WSLsel}"/>
+<relocate id="rsem_ref_fasta_rel" from="\${rsem_ref_fasta}" wsl="\${WSLsel}"/>
+<relocate id="rsem_ref_path_rel" from="\${rsem_ref_path}" wsl="\${WSLsel}"/>
+<relocate id="rsem_ref_fasta_rel" from="\${rsem_ref_fasta}" wsl="\${WSLsel}"/>
  
-<relocate id="rsem_calc_unpaired_reads_rel" from="\${rsem_calc_unpaired_reads}" wsl="${WSLsel}"/>
-<relocate id="rsem_calc_paired_up_rel" from="\${rsem_calc_paired_up}" wsl="${WSLsel}"/>
-<relocate id="rsem_calc_paired_down_rel" from="\${rsem_calc_paired_down}" wsl="${WSLsel}"/>
-<relocate id="rsem_calc_alignment_bam_rel" from="\${rsem_calc_alignment_bam}" wsl="${WSLsel}"/>
+<relocate id="rsem_calc_unpaired_reads_rel" from="\${rsem_calc_unpaired_reads}" wsl="\${WSLsel}"/>
+<relocate id="rsem_calc_paired_up_rel" from="\${rsem_calc_paired_up}" wsl="\${WSLsel}"/>
+<relocate id="rsem_calc_paired_down_rel" from="\${rsem_calc_paired_down}" wsl="\${WSLsel}"/>
+<relocate id="rsem_calc_alignment_bam_rel" from="\${rsem_calc_alignment_bam}" wsl="\${WSLsel}"/>
 
-<relocate id="rsem_calc_ref_name_rel" from="\${rsem_calc_ref_name}" wsl="${WSLsel}"/>
-<relocate id="rsem_calc_sample_path_rel" from="\${rsem_calc_sample_path}" wsl="${WSLsel}"/>
+<relocate id="rsem_calc_ref_name_rel" from="\${rsem_calc_ref_name}" wsl="\${WSLsel}"/>
+<relocate id="rsem_calc_sample_path_rel" from="\${rsem_calc_sample_path}" wsl="\${WSLsel}"/>
 
 <add id="rsem_calc_arguments">
 <if comp="EQUAL" value1="rsem_calc_unpaired" value2="true">

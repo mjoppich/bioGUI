@@ -116,7 +116,7 @@ if (UNIX AND NOT APPLE)
     message(STATUS ">>> Linux")
 
     set(Qt5_DIR "")
-    LIST(APPEND Qt5_DIR "~/Qt/5.8/gcc_64/" "~/Qt/5.7/gcc_64/" "/usr/local/qt/5.11.1/gcc_64/" "/home/mjoppich/qt/qt-everywhere-src-5.10.0/qtbase" "/opt/Qt5.11.1/5.11.1/gcc_64/" "/opt/Qt5.10.0/5.10.0/gcc_64/")
+    LIST(APPEND Qt5_DIR "/home/markus/Qt/5.12.3/gcc_64/" "~/Qt/5.8/gcc_64/" "~/Qt/5.7/gcc_64/" "/usr/local/qt/5.11.1/gcc_64/" "/home/mjoppich/qt/qt-everywhere-src-5.10.0/qtbase" "/opt/Qt5.11.1/5.11.1/gcc_64/" "/opt/Qt5.10.0/5.10.0/gcc_64/")
 
     set(ENV{OPENSSL_ROOT_DIR} "/home/users/joppich/libs/openssl/")
     set(ENV{LUA_DIR} "/home/users/joppich/libs/lua/")
@@ -230,12 +230,12 @@ add_project_meta(META_FILES_TO_INCLUDE)
 
 set(RESOURCE_FILES "${PROJECT_NAME}.qrc")
 
-find_package(Qt5Core REQUIRED)
-find_package(Qt5Gui REQUIRED)
-find_package(Qt5Widgets REQUIRED)
-find_package(Qt5Network REQUIRED)
-find_package(Qt5Xml REQUIRED)
-find_package(Qt5XmlPatterns REQUIRED)
+find_package(Qt5Core REQUIRED PATHS ${Qt5_DIR} NO_DEFAULT_PATH)
+find_package(Qt5Gui REQUIRED PATHS ${Qt5_DIR} NO_DEFAULT_PATH)
+find_package(Qt5Widgets REQUIRED PATHS ${Qt5_DIR} NO_DEFAULT_PATH)
+find_package(Qt5Network REQUIRED PATHS ${Qt5_DIR} NO_DEFAULT_PATH)
+find_package(Qt5Xml REQUIRED PATHS ${Qt5_DIR} NO_DEFAULT_PATH)
+find_package(Qt5XmlPatterns REQUIRED PATHS ${Qt5_DIR} NO_DEFAULT_PATH)
 
 
 if (APPLE)

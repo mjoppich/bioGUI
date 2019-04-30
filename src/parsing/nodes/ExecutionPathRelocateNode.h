@@ -64,13 +64,18 @@ public:
 
     }
 
-    static std::string relocateWSL(std::string sPaths, std::string sSeparator, std::string sInSeparator)
+    static std::string relocateWSL(std::string sPaths, std::string sSeparator, std::string sInSeparator, bool makeWSL=true)
     {
 
         std::string sEmpty = "";
         std::string sWSLPrefix = "/mnt/";
 
-        return relocateGeneral(sPaths, sEmpty, sEmpty, sWSLPrefix, sSeparator, sInSeparator, true);
+        if (!makeWSL)
+        {
+            sWSLPrefix = "";
+        }
+
+        return relocateGeneral(sPaths, sEmpty, sEmpty, sWSLPrefix, sSeparator, sInSeparator, makeWSL);
     }
 
     static std::string relocateGeneral(std::string& sPaths, std::string& sFrom, std::string& sTo, std::string& sPrepend, std::string& sSeparator, std::string& sInSeparator, bool bMakeUnix)
@@ -165,27 +170,14 @@ public:
             }
         }
 
-
-        if ((m_bHasWSLAttrib) && (bWSL == false))
-        {
-            // nothing to be done
-            return sChildren;
-        }
-
-        if (bWSL)
-        {
-            bMakeUnix = true;
-        }
-
-
-        if (bWSL)
+        if (m_bHasWSLAttrib)
         {
             if (m_sFrom.size() == 0)
             {
                 return "";
             }
 
-            return relocateWSL(m_sFrom, m_sSeperator, m_sInSeperator);
+            return relocateWSL(m_sFrom, m_sSeperator, m_sInSeperator, bWSL);
         } else {
 
             std::string sPaths = this->evaluateChildren(pID2Node, pInputID2Value, pInputID2FunctionWidget);

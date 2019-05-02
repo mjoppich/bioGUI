@@ -21,6 +21,8 @@ cmake_minimum_required(VERSION 3.0)
 # Add folder where are supportive functions
 LIST(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
+set (CMAKE_CXX_COMPILER g++)
+set (CMAKE_C_COMPILER gcc)
 
 IF (FALSE)
 
@@ -104,7 +106,7 @@ if (WIN32)
         message(STATUS "IN MINGW")
     endif()
 
-    set(Qt5_DIR "D:/Qt/5.12.0/mingw73_64")
+    set(Qt5_DIR "D:/Qt/5.12.2/mingw73_64")
     set(ENV{OPENSSL_ROOT_DIR} "${CMAKE_CURRENT_SOURCE_DIR}/extlib/openssl/")
     set(OPENSSL_ROOT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/extlib/openssl/")
     message(STATUS $ENV{OPENSSL_ROOT_DIR})
@@ -139,7 +141,7 @@ endforeach()
 #set(CMAKE_FRAMEWORK_PATH "${Qt5_DIR}/lib/cmake")
 
 # Basic information about project
-project(bioGUI VERSION 1.1)
+project(bioGUI VERSION 1.2)
 
 # Set PROJECT_VERSION_PATCH and PROJECT_VERSION_TWEAK to 0 if not present, needed by add_project_meta
 fix_project_version()

@@ -208,10 +208,10 @@ bioGUIapp::bioGUIapp(int& argc, char** argv)
     QGridLayout* pGridLayout = new QGridLayout();
     pGridLayout->addWidget(pSplitter, 0,0);
     m_pMainWindow->setLayout(pGridLayout);
+
     m_pMainMainWindow = new QMainWindow();
     m_pMainMainWindow->setCentralWidget(pSplitter);
-    m_pMainMainWindow->show();
-
+    //m_pMainMainWindow->show();
 
     QList<int> sizeList;
     sizeList << 250 << m_pMainMainWindow->width()-250;

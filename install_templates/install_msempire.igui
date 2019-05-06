@@ -17,7 +17,7 @@ if [ ! "$2" = "" ]; then
 
         echo "Installing dependencies"
         echo $2 | sudo -S apt-get update
-        echo $2 | sudo -S apt-get -y install r-base libssl-dev libcurl4-openssl-dev
+        echo $2 | sudo -S apt-get -y install r-base
     fi
 
 		

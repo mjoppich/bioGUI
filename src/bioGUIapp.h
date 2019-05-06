@@ -42,6 +42,9 @@
 #include <src/app/ExecutionRunThread.h>
 #include <src/app/QVerticalScrollArea.h>
 
+
+#include <dstyle/framelesswindow/framelesswindow.h>
+
 class bioGUIapp : public QApplication {
     Q_OBJECT
 public:
@@ -51,6 +54,11 @@ public:
     XMLParserWindow* getWindowParser()
     {
         return m_pWindowParser;
+    }
+
+    void setFLWindow(FramelessWindow* pWin)
+    {
+        this->m_pFramelessWindow = pWin;
     }
 
     QString getAppPath()
@@ -247,6 +255,12 @@ public:
         //m_pApplicationWindowArea->setStyleSheet("background-color:red;");
         //m_pWindow->setStyleSheet("background-color:green;");
         m_pMainMainWindow->setWindowTitle("bioGUI - " + m_pWindow->windowTitle());
+
+        if (m_pFramelessWindow != NULL)
+        {
+            m_pFramelessWindow->setWindowTitle("bioGUI - " + m_pWindow->windowTitle());
+        }
+
         m_pMainMainWindow->update();
 
         QSize newSize = m_pApplicationWindowArea->size();
@@ -400,7 +414,7 @@ protected:
 
     /** TEST PLAYGROUND **/
     ExecutionRunThread* m_pExecThread = NULL;
-
+    FramelessWindow* m_pFramelessWindow = NULL;
 
 };
 

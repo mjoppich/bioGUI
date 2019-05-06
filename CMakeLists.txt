@@ -228,6 +228,12 @@ file(GLOB DUKTAPE
         "src/duktape/*"
         )
 
+file(GLOB DSTYLE
+    "dstyle/*"
+    "dstyle/framelesswindow/*"
+    )
+
+
 add_project_meta(META_FILES_TO_INCLUDE)
 
 set(RESOURCE_FILES "${PROJECT_NAME}.qrc")
@@ -258,8 +264,8 @@ endif()
 
 
 add_executable(${PROJECT_NAME} ${OS_BUNDLE} # Expands to WIN32 or MACOS_BUNDLE depending on OS
-    ${bioGUI_H} ${bioGUIapp_H} ${bioGUI_SRC} ${parsinglib_SRC} ${parsinglib_H} ${parsinglib_nodes_H} ${META_FILES_TO_INCLUDE} ${RESOURCE_FILES}
-    ${DUKTAPE}                           
+    ${DSTYLE} ${bioGUI_H} ${bioGUIapp_H} ${bioGUI_SRC} ${parsinglib_SRC} ${parsinglib_H} ${parsinglib_nodes_H} ${META_FILES_TO_INCLUDE} ${RESOURCE_FILES}
+    ${DUKTAPE} "./dstyle/darkstyle.qrc" "./dstyle/framelesswindow.qrc"
 )
 
 
@@ -275,6 +281,9 @@ ADD_LIBRARY(lualib STATIC IMPORTED)
 SET_TARGET_PROPERTIES(lualib PROPERTIES IMPORTED_LOCATION "${LUA_LIBRARY}")
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(${PROJECT_NAME} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/dstyle")
+target_include_directories(${PROJECT_NAME} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/dstyle/framelesswindow")
+
 TARGET_LINK_LIBRARIES(${PROJECT_NAME} openssl_crypto openssl_ssl lualib ${CMAKE_DL_LIBS} )
 
 qt5_use_modules(${PROJECT_NAME} Core Gui Widgets Network Xml XmlPatterns)

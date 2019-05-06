@@ -42,8 +42,7 @@
 #include <src/app/ExecutionRunThread.h>
 #include <src/app/QVerticalScrollArea.h>
 
-
-#include <dstyle/framelesswindow/framelesswindow.h>
+class FramelessWindow;
 
 class bioGUIapp : public QApplication {
     Q_OBJECT
@@ -258,7 +257,7 @@ public:
 
         if (m_pFramelessWindow != NULL)
         {
-            m_pFramelessWindow->setWindowTitle("bioGUI - " + m_pWindow->windowTitle());
+            //m_pFramelessWindow->setWindowTitle("bioGUI - " + m_pWindow->windowTitle());
         }
 
         m_pMainMainWindow->update();

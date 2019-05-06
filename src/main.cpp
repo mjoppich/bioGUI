@@ -25,8 +25,6 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#include <framelesswindow.h>
-#include <dstyle/DarkStyle.h>
 
 int main(int argc, char **argv)
 {
@@ -39,21 +37,22 @@ int main(int argc, char **argv)
     std::cerr.rdbuf(out.rdbuf());
 
     bioGUIapp* pApp = new bioGUIapp(argc, argv);
-    pApp->setStyle(new DarkStyle);
 
-    // create frameless window (and set windowState or title)
-    FramelessWindow framelessWindow;
-    //framelessWindow.setWindowState(Qt::Wi);
-    framelessWindow.setWindowTitle("bioGUI");
-    framelessWindow.setWindowIcon(QIcon("./biogui_logo.png"));
+    QFile f(":qdarkstyle/style.qss");
+    if (!f.exists())
+    {
+        printf("Unable to set stylesheet, file not found\n");
+    }
+    else
+    {
+        f.open(QFile::ReadOnly | QFile::Text);
+        QTextStream ts(&f);
+        qApp->setStyleSheet(ts.readAll());
+    }
 
     // create our mainwindow instance
     QMainWindow *mainWindow = pApp->getMainWindow();
-
-    // add the mainwindow to our custom frameless window
-    framelessWindow.setContent(mainWindow);
-    framelessWindow.show();
-
+    mainWindow->show();
     pApp->exec();
     delete pApp;
 

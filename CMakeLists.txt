@@ -265,7 +265,7 @@ endif()
 
 add_executable(${PROJECT_NAME} ${OS_BUNDLE} # Expands to WIN32 or MACOS_BUNDLE depending on OS
     ${DSTYLE} ${bioGUI_H} ${bioGUIapp_H} ${bioGUI_SRC} ${parsinglib_SRC} ${parsinglib_H} ${parsinglib_nodes_H} ${META_FILES_TO_INCLUDE} ${RESOURCE_FILES}
-    ${DUKTAPE} "./dstyle/darkstyle.qrc" "./dstyle/framelesswindow.qrc"
+    ${DUKTAPE} "./darkstyle/style.qrc"
 )
 
 

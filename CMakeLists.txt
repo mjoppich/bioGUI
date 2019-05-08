@@ -82,9 +82,11 @@ message(STATUS "Detected OS:")
 if (APPLE)
 
     message(STATUS ">>> Apple")
-    set(Qt5_DIR "/Users/markus/Qt/5.12.0/clang_64/")
-    #set(ENV{OPENSSL_ROOT_DIR} "/usr/local/opt/openssl")
-    #set(ENV{LUA_DIR} "/usr/local/opt/lua")
+    set(Qt5_DIR "/Users/joppich/Qt/5.12.3/clang_64/")
+    set(OPENSSL_ROOT_DIR "/usr/local/Cellar/openssl/1.0.2r/")
+    set(LUA_DIR "/usr/local/Cellar/lua/5.3.5_1")
+    set(LUA_LIBRARIES "/usr/local/Cellar/lua/5.3.5_1/lib/liblua.5.3.5.dylib")
+    set(LUA_LIBRARY "/usr/local/Cellar/lua/5.3.5_1/lib/liblua.5.3.5.dylib")
 
     set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
     set(CMAKE_INSTALL_RPATH "./")
@@ -165,7 +167,7 @@ endif()
 
 set(CMAKE_FIND_LIBRARY_SUFFIXES ".a")
 
-find_package(Lua 5.2 REQUIRED)
+find_package(Lua 5.2.4 REQUIRED)
 include_directories(${LUA_INCLUDE_DIR})
 
 message(STATUS "   *** Lua include: ${LUA_INCLUDE_DIR}")
@@ -234,7 +236,6 @@ file(GLOB DSTYLE
     )
 
 
-add_project_meta(META_FILES_TO_INCLUDE)
 
 set(RESOURCE_FILES "${PROJECT_NAME}.qrc")
 
@@ -245,17 +246,32 @@ find_package(Qt5Network REQUIRED PATHS ${Qt5_DIR} NO_DEFAULT_PATH)
 find_package(Qt5Xml REQUIRED PATHS ${Qt5_DIR} NO_DEFAULT_PATH)
 find_package(Qt5XmlPatterns REQUIRED PATHS ${Qt5_DIR} NO_DEFAULT_PATH)
 
+add_project_meta(META_FILES_TO_INCLUDE)
+add_project_meta(META_FILES_TO_INCLUDE1)
+add_project_meta(META_FILES_TO_INCLUDE2)
+
 
 if (APPLE)
     set(BIOGUI_NETOWRK_INI "${CMAKE_CURRENT_SOURCE_DIR}/config.ini")
     set_source_files_properties(${BIOGUI_NETOWRK_INI} PROPERTIES MACOSX_PACKAGE_LOCATION MacOS)
     LIST(APPEND META_FILES_TO_INCLUDE "${BIOGUI_NETOWRK_INI}")
 
-    set(BIOGUI_INSTALL_TEMPLATES_GUI "${CMAKE_CURRENT_SOURCE_DIR}/templates/WSL_install.gui")
-    set_source_files_properties(${BIOGUI_INSTALL_TEMPLATES_GUI} PROPERTIES MACOSX_PACKAGE_LOCATION MacOS/templates/)
+    set(BIOGUI_TEMPLATES_GUI "${CMAKE_CURRENT_SOURCE_DIR}/templates/WSL_install.gui")
+    set_source_files_properties(${BIOGUI_TEMPLATES_GUI} PROPERTIES MACOSX_PACKAGE_LOCATION MacOS/templates/)
+    LIST(APPEND META_FILES_TO_INCLUDE1 "${BIOGUI_TEMPLATES_GUI}")
+
+    set(BIOGUI_TEMPLATES_CIRCLATOR_GUI "${CMAKE_CURRENT_SOURCE_DIR}/templates/circlator_docker.gui")
+    set_source_files_properties(${BIOGUI_TEMPLATES_CIRCLATOR_GUI} PROPERTIES MACOSX_PACKAGE_LOCATION MacOS/templates/)
+    LIST(APPEND META_FILES_TO_INCLUDE1 "${BIOGUI_TEMPLATES_GUI}")
+
+    set(BIOGUI_LOGO_FILE "${CMAKE_CURRENT_SOURCE_DIR}/biogui_logo.png")
+    set_source_files_properties(${BIOGUI_LOGO_FILE} PROPERTIES MACOSX_PACKAGE_LOCATION MacOS/)
+    LIST(APPEND META_FILES_TO_INCLUDE1 "${BIOGUI_TEMPLATES_GUI}")
+
+    set(BIOGUI_INSTALL_TEMPLATES_GUI "${CMAKE_CURRENT_SOURCE_DIR}/install_templates/empty")
     set_source_files_properties(${BIOGUI_INSTALL_TEMPLATES_GUI} PROPERTIES MACOSX_PACKAGE_LOCATION MacOS/install_templates/)
 
-    LIST(APPEND META_FILES_TO_INCLUDE "${BIOGUI_INSTALL_TEMPLATES_GUI}")
+    LIST(APPEND META_FILES_TO_INCLUDE2 "${BIOGUI_INSTALL_TEMPLATES_GUI}")
 
 endif()
 
@@ -264,7 +280,7 @@ endif()
 
 
 add_executable(${PROJECT_NAME} ${OS_BUNDLE} # Expands to WIN32 or MACOS_BUNDLE depending on OS
-    ${DSTYLE} ${bioGUI_H} ${bioGUIapp_H} ${bioGUI_SRC} ${parsinglib_SRC} ${parsinglib_H} ${parsinglib_nodes_H} ${META_FILES_TO_INCLUDE} ${RESOURCE_FILES}
+    ${DSTYLE} ${bioGUI_H} ${bioGUIapp_H} ${bioGUI_SRC} ${parsinglib_SRC} ${parsinglib_H} ${parsinglib_nodes_H} ${META_FILES_TO_INCLUDE} ${META_FILES_TO_INCLUDE1} ${META_FILES_TO_INCLUDE2}  ${RESOURCE_FILES}
     ${DUKTAPE} "./darkstyle/style.qrc"
 )
 
@@ -293,6 +309,7 @@ message(STATUS "files to copy ${META_FILES_TO_INCLUDE}")
 message(STATUS "exe location ${PROJECT_BINARY_DIR}")
 message(STATUS "to change install location set: -DCMAKE_INSTALL_PREFIX=/where/you/want/")
 message(STATUS "installing to: ${CMAKE_INSTALL_PREFIX}")
+message(STATUS APPLE)
 
 file(GLOB biogui_files
         "LICENSE"
@@ -302,6 +319,7 @@ file(GLOB biogui_files
 install(FILES ${biogui_files} DESTINATION ${CMAKE_INSTALL_PREFIX})
 
 if (NOT APPLE)
+    message(STATUS "IN NOT APPLE")
 
     file(GLOB biogui_ini_files
             "config.ini"
@@ -312,8 +330,11 @@ if (NOT APPLE)
     file(GLOB biogui_templates
             "${CMAKE_CURRENT_SOURCE_DIR}/templates/WSL_install.gui"
     )
-    install(FILES ${biogui_templates} DESTINATION ${CMAKE_INSTALL_PREFIX}/templates)
+
     install(DIRECTORY DESTINATION ${CMAKE_INSTALL_PREFIX}/install_templates)
+    install(DIRECTORY DESTINATION ${CMAKE_INSTALL_PREFIX}/templates)
+
+    install(FILES ${biogui_templates} DESTINATION ${CMAKE_INSTALL_PREFIX}/templates)
 
     add_custom_command( TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E make_directory ${PROJECT_BINARY_DIR})
     add_custom_command( TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E make_directory ${PROJECT_BINARY_DIR}/templates)

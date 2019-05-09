@@ -10,10 +10,10 @@ if [ "$(uname)" == "Darwin" ]; then
 		echo $2 | sudo -S easy_install pip
 		
 		echo "Installing brew"
-		yes "$2" | /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+		echo $2 | sudo -S echo "" | yes  | CI=1 /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 
-        echo "Installing wget and netcat"
-		brew install wget netcat
+        echo "Installing wget and netcat and python3"
+		brew install wget netcat python3
 
 		echo "Enjoy bioGUI!"
 	else

@@ -6,13 +6,27 @@ if [ "$(uname)" == "Darwin" ]; then
 
 	echo "Dependencies: pip "
 	if [ ! "$2" = "" ]; then
+
 		echo "Installing dependencies"
 		echo $2 | sudo -S easy_install pip
-		
-		echo "Installing brew"
-		echo $2 | sudo -S echo "" | yes  | CI=1 /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 
-        echo "Installing wget and netcat and python3"
+		HASBREW=`which brew`
+
+		if [ -z "$HASBREW" ]
+		then
+			echo "Must install brew"
+			cd ~
+
+			echo "Installing brew to ~/.linuxbrew/Homebrew"
+			git clone https://github.com/Homebrew/brew ~/.linuxbrew/Homebrew
+			mkdir ~/.linuxbrew/bin	
+			ln -s ../Homebrew/bin/brew ~/.linuxbrew/bin
+			eval $(~/.linuxbrew/bin/brew shellenv)
+		else
+		      echo "Found brew $HASBREW"
+		fi
+		
+        	echo "Installing wget and netcat and python3"
 		brew install wget netcat python3
 
 		echo "Enjoy bioGUI!"

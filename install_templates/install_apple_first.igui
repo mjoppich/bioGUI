@@ -4,31 +4,37 @@ echo "First Time Mac OS Setup"
 
 if [ "$(uname)" == "Darwin" ]; then
 
-	echo "Dependencies: pip "
+	echo "Installing Dependencies"
+
 	if [ ! "$2" = "" ]; then
 
-		HASPORTS=`which port`
-		if [ -z "$HASPORTS" ]
-		then
-			(>&2 echo "PLEASE INSTALL MACPORTS FIRST")
-			(>&2 echo "YOU CAN DOWNLOAD MACPORTS FROM")
-			(>&2 echo "")
-			(>&2 echo "https://www.macports.org/")
-			(>&2 echo "")
-		else
+		source ~/.bashrc
+		source ~/.bash_profile
 
-		echo "Installing dependencies: Mac pip, python36, pip36 as python3 and pip3"
-		echo $2 | sudo -S easy_install pip
+		HASBREW=`which brew`
+
+		if [ -z "$HASBREW" ]; then
 		
-		echo $2 | sudo -S port -N install python36 
-		echo $2 | sudo port select --set python3 python36
-	
-		echo $2 | sudo -S port -N install py36-pip
-		echo $2 | sudo -S port select --set pip3 pip36
+			(>&2 echo "PLEASE INSTALL homebrew FIRST")
+			(>&2 echo "YOU CAN DOWNLOAD homebrew FROM")
+			(>&2 echo "")
+			(>&2 echo "https://brew.sh")
+			(>&2 echo "")
+			(>&2 echo "If you installed homebrew and this warning persists run brew doctor")
+			(>&2 echo "and add brew to your PATH: echo \'export PATH=\"/usr/local/bin:\$PATH\"\' >> ~/.bash_profile")
+		else
+			echo "Installing dependencies: gcc@8, pip, python3, pip3"
+					
+			echo $2 | sudo -S mkdir -p /usr/local/lib 
+			echo $2 | sudo -S mkdir -p /usr/local/Frameworks
 
-		echo $2 | sudo -S port -N install wget gcc8
+			echo $2 |sudo chown -R $(whoami) $(brew --prefix)/*
+			brew install gcc@8 python3
 
-		echo "Enjoy bioGUI!"
+			curl https://bootstrap.pypa.io/get-pip.py -o /tmp/get-pip.py
+			python3 /tmp/get-pip.py
+
+			echo "Enjoy bioGUI!"
 
 		fi
 

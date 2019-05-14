@@ -1,9 +1,9 @@
 #! Install ms-EmpiRe
 
 if [ "$(uname)" == "Darwin" ]; then
-
-	echo "This Install Module is not compatible with Mac OS. If desperately needed, contact bioGUI authors."
-	exit
+	source ~/.bash_profile
+else
+  echo ""
 fi
 
 echo "Dependencies: r-base"
@@ -11,7 +11,12 @@ if [ ! "$2" = "" ]; then
 
     if [ "$(uname)" == "Darwin" ]; then
 
-        echo "No dependencies needed"
+        echo "Installing R and setting PATH for R libraries"
+        brew install gcc
+        brew link --overwrite gcc
+        brew install openblas
+        brew install libgit2
+        brew install r
 
     else
 
@@ -44,8 +49,11 @@ mkdir -p "$PROGDIR/$PROG"
 
 cd "$PROGDIR/$PROG"
 
-wget https://gist.githubusercontent.com/mjoppich/e4e9f0c706ac93737fdc0f64642b9ef1/raw/a8c03cf3ea0909a52e431c668d797482d1fd774b/runEmpire.R
+wget https://gist.githubusercontent.com/mjoppich/e4e9f0c706ac93737fdc0f64642b9ef1/raw/a6290310fd29a5a79336eb9748ccdb21d9350754/runEmpire.R
 
+LDFLAGS="-L/usr/local/opt/openblas/lib" CPPFLAGS="-I/usr/local/opt/openblas/include" Rscript runEmpire.R
+
+RSCRIPTPATH=`which Rscript`
 
 if [ $# -gt 2 ]; then
 
@@ -141,7 +149,7 @@ $NCCMD <<EOF
  
   <const id="bindir">${APPBINARYDIR}/</const>
 
-  <execute program="run_msempire" location="" exec="Rscript" param="\${bindir}/runEmpire.R \${msempire_expression_rel} \${msempire_pdata_rel} \${msempire_output_rel} \${msempire_sample_regex}" wsl="WSLsel">
+  <execute program="run_msempire" location="" exec="$RSCRIPTPATH" param="\${bindir}/runEmpire.R \${msempire_expression_rel} \${msempire_pdata_rel} \${msempire_output_rel} \${msempire_sample_regex}" wsl="WSLsel">
     <output type="COUT" color="green" to="outputstream1" />
     <output type="CERR" color="red" to="outputstream2" />
   </execute>

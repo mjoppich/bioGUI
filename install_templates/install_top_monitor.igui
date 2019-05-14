@@ -1,10 +1,18 @@
 #! Install Top Monitor (ssh example)
 
+if [ "$(uname)" == "Darwin" ]; then
+	source ~/.bash_profile
+else
+  echo ""
+fi
+
 if [ ! "$2" = "" ]; then
 
     if [ "$(uname)" == "Darwin" ]; then
 
-        echo "Please install sshpass"
+        echo "Installing sshpass manually. Use with care!"
+
+        brew install https://raw.githubusercontent.com/kadwanev/bigboybrew/master/Library/Formula/sshpass.rb
 
     else
 
@@ -39,10 +47,12 @@ mkdir -p "$PROGDIR/$PROG"
 
 APPBINARYDIR=${PROGDIRESC}/${PROG}/
 
+SSHPASSBIN=`which sshpass`
+
 cat <<EOS > $APPBINARYDIR/topmonitor.sh
 #!/usr/bin/sh
 
-sshpass -p \$3 ssh -p \$1 \$2@\$4 "ps -aux"
+$SSHPASSBIN -p \$3 ssh -o StrictHostKeyChecking=no -p \$1 \$2@\$4 "ps -aux"
 
 EOS
 

@@ -1,11 +1,17 @@
 #! Install Bowtie2 2.2.9
 
+if [ "$(uname)" == "Darwin" ]; then
+	source ~/.bash_profile
+else
+  echo ""
+fi
+
 if [ ! "$2" = "" ]; then
 
     if [ "$(uname)" == "Darwin" ]; then
 
-        echo "Installing brew gcc tbb"
-        brew install gcc tbb
+        echo "Installing brew wget gcc@8 tbb"
+        brew install wget gcc@8 tbb
 
 
     else

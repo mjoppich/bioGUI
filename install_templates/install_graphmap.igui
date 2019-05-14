@@ -1,13 +1,17 @@
 #! Install graphmap (github))
 
-
+if [ "$(uname)" == "Darwin" ]; then
+	source ~/.bash_profile
+else
+  echo ""
+fi
 
 if [ ! "$2" = "" ]; then
 
     if [ "$(uname)" == "Darwin" ]; then
 
         echo "Installing brew gcc"
-        brew install gcc
+        brew install gcc@8
 
         alias gcc='gcc-8'
         alias g++='g++-8'

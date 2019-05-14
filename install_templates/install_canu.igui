@@ -70,8 +70,8 @@ if [ $# -gt 2 ]; then
 	fi
 fi
 
-APPBINARYESC="${PROGDIRESC}/${PROG}/"
-APPBINARY="${PROGDIRESC}/${PROG}/canu"
+APPBINARYESC="${PROGDIRESC}/${PROG}/Linux-amd64/bin/"
+APPBINARY="${PROGDIRESC}/${PROG}/Linux-amd64/bin/canu"
 if [ -z "$(ls -A ${APPBINARYESC})" ] || [ ! -f ${APPBINARY} ]; then
    (>&2 echo ${APPBINARYESC})
    (>&2 ls ${APPBINARYESC})

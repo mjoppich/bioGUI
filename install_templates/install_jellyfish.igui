@@ -41,8 +41,8 @@ if [ $# -gt 2 ]; then
 
 fi
 
-APPBINARYESC="${PROGDIRESC}/${PROG}/"
-APPBINARY="${PROGDIRESC}/${PROG}/jellyfish"
+APPBINARYESC="${PROGDIRESC}/${PROG}/bin/"
+APPBINARY="${PROGDIRESC}/${PROG}/bin/jellyfish"
 if [ -z "$(ls -A ${APPBINARYESC})" ] || [ ! -f ${APPBINARY} ]; then
    (>&2 echo ${APPBINARYESC})
    (>&2 ls ${APPBINARYESC})

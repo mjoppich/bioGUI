@@ -67,19 +67,7 @@ else
 	make
 fi
 
-MINIMAP2BIN="$PROGDIRESC/$PROG/minimap2/minimap2"
-MINIASMBIN="$PROGDIRESC/$PROG/miniasm/miniasm"
-RACONBIN="$PROGDIRESC/$PROG/racon/build/bin/racon"
-GRAPHMAPBIN="$PROGDIRESC/$PROG/graphmap/bin/Linux-x64/graphmap"
-
 cd "$PROGDIR/$PROG"
-
-sed -i -e 's/^MINIMAP2/$MINIMAP2BIN/g' "$PROGDIR/$PROG/assemble.sh"
-sed -i -e 's/^MINIASM/$MINIASMBIN/g' "$PROGDIR/$PROG/assemble.sh"
-sed -i -e 's/^RACON/$RACONBIN/g' "$PROGDIR/$PROG/assemble.sh"
-sed -i -e 's/^GRAPHMAP/$GRAPHMAPBIN/g' "$PROGDIR/$PROG/assemble.sh"  
-
-
 
 if [ $# -gt 2 ]; then
 	if [ "$3" = "1" ]; then
@@ -104,6 +92,10 @@ if [ $# -gt 2 ]; then
 fi
 
 APPBINARYDIR=${PROGDIRESC}/${PROG}/
+MINIMAP2BIN="$PROGDIRESC/$PROG/minimap2/minimap2"
+MINIASMBIN="$PROGDIRESC/$PROG/miniasm/miniasm"
+RACONBIN="$PROGDIRESC/$PROG/racon/build/bin/racon"
+GRAPHMAPBIN="$PROGDIRESC/$PROG/graphmap/bin/Linux-x64/graphmap"
 
 cat <<EOS > $APPBINARYDIR/assemble.sh
 #!/usr/bin/sh
@@ -147,6 +139,11 @@ awk '\$1 ~/S/ {print ">"\$2"\n"\$3}' \$ASMFOLDER/\$ASMPREFIX.gfa > \$ASMFOLDER/\
 
 
 EOS
+
+#sed -i -e 's/^MINIMAP2/$MINIMAP2BIN/g' "$PROGDIR/$PROG/assemble.sh"
+#sed -i -e 's/^MINIASM/$MINIASMBIN/g' "$PROGDIR/$PROG/assemble.sh"
+#sed -i -e 's/^RACON/$RACONBIN/g' "$PROGDIR/$PROG/assemble.sh"
+#sed -i -e 's/^GRAPHMAP/$GRAPHMAPBIN/g' "$PROGDIR/$PROG/assemble.sh"  
 
 APPBINARYESC="${PROGDIRESC}/${PROG}/"
 APPBINARY="${PROGDIRESC}/${PROG}/"
@@ -267,7 +264,7 @@ $NCCMD <<EOF
         </if>             
     </add>
     
-    <execute program="assembly" param="bash \${args}" location="/usr/bin/" exec="env" wsl="WSLsel">
+    <execute program="assembly" param="sh \${args}" location="/usr/bin/" exec="env" wsl="WSLsel">
         <output type="COUT" color="green" to="outputstream1" />
         <output type="CERR" color="red" to="outputstream2" />
     </execute>

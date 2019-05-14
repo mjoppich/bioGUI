@@ -82,7 +82,7 @@ public:
         bool bMultiples = (this->getQAttribute(pDOMElement, "multiples", "FALSE").compare("TRUE", Qt::CaseInsensitive) == 0);
         bool bOutput = (this->getQAttribute(pDOMElement, "output", "FALSE").compare("TRUE", Qt::CaseInsensitive) == 0);
         bool bFolder = (this->getQAttribute(pDOMElement, "folder", "FALSE").compare("TRUE", Qt::CaseInsensitive) == 0);
-        bool bWSLRelocate = (this->getQAttribute(pDOMElement, "relocateWSL", "FALSE").compare("TRUE", Qt::CaseInsensitive) == 0);
+        bool  = (this->getQAttribute(pDOMElement, "relocateWSL", "FALSE").compare("TRUE", Qt::CaseInsensitive) == 0);
 
         QString sFileDelim = this->getQAttribute(pDOMElement, "multiples_delim", ";");
         QString sFileFilter = this->getQAttribute(pDOMElement, "filter", "");

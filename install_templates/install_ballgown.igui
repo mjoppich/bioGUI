@@ -21,7 +21,7 @@ else
    echo "No sudo password, not installing dependencies"
 fi
 
-echo "options(repos = c(CRAN = "https://cran.rstudio.com"))" > ~/.Rprofile
+echo "options(repos = c(CRAN = \"https://cran.rstudio.com\"))" > ~/.Rprofile
 
 RLIBSUSER=`Rscript -e "cat(Sys.getenv('R_LIBS_USER'))"`
 mkdir -p $RLIBUSER

@@ -1,5 +1,5 @@
 #! Install albacore (pip wheel)
-##<filedialog output="false" folder="false">Albacore wheel file</filedialog>
+##<filedialog output="false" folder="false" relocateWSL="true">Albacore wheel file</filedialog>
 
 # usage: scriptname sudopw addtopath ip port addinfo
 
@@ -16,8 +16,10 @@ else
 	echo "No sudo password, not installing dependencies"
 fi
 
-if [ -e "${@: -1}" ]; then
-    ALBACORE_WHEEL="${@: -1}"
+for i in $@; do :; done
+
+if [ -f "${i}" ]; then
+    ALBACORE_WHEEL="${i}"
     echo "Input file found: $ALBACORE_WHEEL"
 else
     echo "Input file not found: $ALBACORE_WHEEL"
@@ -28,7 +30,7 @@ fi
 
 pip3 install $ALBACORE_WHEEL  --user
 
-PYTHON_BIN_DIR=`~/progs/anaconda3/bin/python3 -m site --user-base`
+PYTHON_BIN_DIR=`/usr/bin/env python3 -m site --user-base`
 PYTHON_BIN_DIR="$PYTHON_BIN_DIR/bin"
 
 if [ "$3" = "1" ]; then
@@ -38,7 +40,7 @@ if [ "$3" = "1" ]; then
     fi
 fi
 
-APPBINARYESC="$PYTHON_BIN_DIR}/"
+APPBINARYESC="${PYTHON_BIN_DIR}/"
 APPBINARY="${PYTHON_BIN_DIR}/read_fast5_basecaller.py"
 if [ -z "$(ls -A ${APPBINARYESC})" ] || [ ! -f ${APPBINARY} ]; then
    (>&2 echo ${APPBINARYESC})
@@ -84,6 +86,7 @@ else
 	NCCMD="nc -q 0 $IP $PORT"
 fi
 
+#read_fast5_basecaller.py -l | grep "^FLO" | cut -d' ' -f 3 | sort | uniq | awk '{print "\<comboitem value=\""$1"\">"$1"\<\/comboitem\>"}'
 
 $NCCMD <<EOF
 
@@ -109,21 +112,34 @@ $NCCMD <<EOF
                 <label>Select your flowcell</label>
                 <combobox id="albacore_flowcell" selected="FLO-MIN106">
                     <comboitem value="FLO-MIN106">FLO-MIN106</comboitem>
+                    <comboitem value="FLO-MIN107">FLO-MIN107</comboitem>
                 </combobox>
                 <label>Select your kit</label>
-                <combobox id="albacore_kit" selected="SQK-LSK208">
+                <combobox id="albacore_kit" selected="SQK-RAD004">
+                    <comboitem value="SQK-DCS108">SQK-DCS108</comboitem>
+                    <comboitem value="SQK-LRK001">SQK-LRK001</comboitem>
                     <comboitem value="SQK-LSK108">SQK-LSK108</comboitem>
-                    <comboitem value="SQK-LSK208">SQK-LSK208</comboitem>
-                    <comboitem value="SQK-LWB001">SQK-LWB001 (barcoding)</comboitem>
+                    <comboitem value="SQK-LSK109">SQK-LSK109</comboitem>
+                    <comboitem value="SQK-LWB001">SQK-LWB001</comboitem>
                     <comboitem value="SQK-LWP001">SQK-LWP001</comboitem>
-                    <comboitem value="SQK-RAB201">SQK-RAB201 (barcoding)</comboitem>
+                    <comboitem value="SQK-PBK004">SQK-PBK004</comboitem>
+                    <comboitem value="SQK-PCS108">SQK-PCS108</comboitem>
+                    <comboitem value="SQK-PSK004">SQK-PSK004</comboitem>
+                    <comboitem value="SQK-RAB201">SQK-RAB201</comboitem>
+                    <comboitem value="SQK-RAB204">SQK-RAB204</comboitem>
                     <comboitem value="SQK-RAD002">SQK-RAD002</comboitem>
+                    <comboitem value="SQK-RAD003">SQK-RAD003</comboitem>
+                    <comboitem value="SQK-RAD004">SQK-RAD004</comboitem>
                     <comboitem value="SQK-RAS201">SQK-RAS201</comboitem>
-                    <comboitem value="SQK-RBK001">SQK-RBK001 (barcoding)</comboitem>
-                    <comboitem value="SQK-RLB001">SQK-RLB001 (barcoding)</comboitem>
+                    <comboitem value="SQK-RBK001">SQK-RBK001</comboitem>
+                    <comboitem value="SQK-RBK004">SQK-RBK004</comboitem>
+                    <comboitem value="SQK-RLB001">SQK-RLB001</comboitem>
                     <comboitem value="SQK-RLI001">SQK-RLI001</comboitem>
                     <comboitem value="SQK-RNA001">SQK-RNA001</comboitem>
-                    <comboitem value="SQK-VBK001">SQK-VBK001</comboitem>
+                    <comboitem value="SQK-RPB004">SQK-RPB004</comboitem>
+                    <comboitem value="VSK-VBK001">VSK-VBK001</comboitem>
+                    <comboitem value="VSK-VMK001">VSK-VMK001</comboitem>
+                    <comboitem value="VSK-VSK001">VSK-VSK001</comboitem>
                 </combobox>
 
             </grid>

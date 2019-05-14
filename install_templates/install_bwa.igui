@@ -43,12 +43,11 @@ wget https://sourceforge.net/projects/bio-bwa/files/bwa-0.7.17.tar.bz2/download 
 
 cd "$PROGDIR"
 
-tar xfjv "$PROGDIR/$PROG.tar.bz2" -C "$PROGDIR/$PROG"
+mkdir -p ./$PROG
+tar xfjv "$PROGDIR/$PROG.tar.bz2" -C "./$PROG"
 cd "$PROGDIR/$PROG"
 
-mv */* .
-
-
+mv bwa*/* .
 
 if [ "$(uname)" == "Darwin" ]; then
 	make CC=gcc-8 CPP=g++-8

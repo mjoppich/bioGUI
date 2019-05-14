@@ -1,0 +1,257 @@
+#! Install albacore (pip wheel)
+##<filedialog output="false" folder="false" relocateWSL="true">Guppy tar gz</filedialog>
+
+# usage: scriptname sudopw addtopath ip port addinfo
+
+
+DEP_PACKAGES="python3 pip3"
+
+echo "Dependencies: $DEP_PACKAGES"
+if [ ! "$2" = "" ]; then
+	echo "Installing dependencies"
+	echo $2 | sudo -S apt-get update
+	echo $2 | sudo -S apt-get -y $DEP_PACKAGES
+
+else
+	echo "No sudo password, not installing dependencies"
+fi
+
+for i in $@; do :; done
+
+
+if [ -f "${i}" ]; then
+    GUPPY_TARGZ="${i}"
+    echo "Input file found: $GUPPY_TARGZ"
+else
+    echo "Input file not found: $GUPPY_TARGZ"
+    echo "Aborting install."
+    exit -1;
+fi
+
+## set all variables
+PROG=guppy
+PROGNICE=guppy
+PROGDIR=$1
+
+
+if [ -z "${PROGDIR}" ]; then
+	PROGDIR=~/bioGUI/progs/
+fi
+
+PROGDIRESC=$(echo $PROGDIR | sed 's/ /\\ /g')
+APPBINARYDIR="${PROGDIR}/${PROG}/"
+
+mkdir -p "$APPBINARYDIR"
+
+cd "$PROGDIR"
+tar -xzf $GUPPY_TARGZ -C "$APPBINARYDIR"
+
+cd $PROG
+mv */* .
+
+## create progdir
+
+
+if [ $# -gt 2 ]; then
+
+	if [ "$3" = "1" ]; then
+
+		if ! grep -q "$PROGDIRESC/$PROG/bin" ~/.bashrc; then
+			echo "export PATH=\"$PROGDIRESC/$PROG/bin:\$PATH\" " >> ~/.bashrc;
+		fi
+	fi
+
+fi
+
+APPBINARYESC="${PYTHON_BIN_DIR}/bin/"
+APPBINARY="${PYTHON_BIN_DIR}/bin/guppy_basecaller"
+if [ -z "$(ls -A ${APPBINARYESC})" ] || [ ! -f ${APPBINARY} ]; then
+   (>&2 echo ${APPBINARYESC})
+   (>&2 ls ${APPBINARYESC})
+
+   (>&2 echo " \n \n \n")
+
+   (>&2 echo ${PROGDIRESC})
+   (>&2 ls ${PROGDIRESC})
+
+    (>&2 echo " \n \n \n")
+
+   (>&2 echo ${APPBINARY})
+   (>&2 ls ${APPBINARY})
+   
+   (>&2 echo " \n \n \n")
+
+   (>&2 echo "ERROR: The application directory is empty after installation.")
+   (>&2 echo "ERROR: If you experience problems please re-install the software and create an issue on https://github.com/mjoppich/bioGUI.")
+   (>&2 echo "ERROR: For creating the issue, please upload the log.txt file of your installation attempt.")
+
+    (>&2 echo " \n \n \n")
+
+else
+
+    echo "${PROG} has been installed into ${APPBINARYESC}"
+    echo "Binary location ${APPBINARY}"
+
+fi
+
+if [ "$4" != "0" ]; then
+
+IP=$4
+PORT=$5
+       
+echo "Sending Template to $IP at $PORT"
+
+NCCMD=""
+
+if [ "$(uname)" == "Darwin" ]; then
+	NCCMD="nc -c $IP $PORT"
+else
+	NCCMD="nc -q 0 $IP $PORT"
+fi
+
+#./bin/guppy_basecaller --print_workflows | grep "^FLO" | cut -d' ' -f 3 | sort | uniq | awk '{print "\<comboitem value=\""$1"\">"$1"\<\/comboitem\>"}'
+
+$NCCMD <<EOF
+
+<template description="guppy basecaller" title="albacore (python)">
+<window title="albacore basecaller">
+<vgroup>
+    <group title="Input Files">
+        <grid cols="2">
+            <label>Run in WSL on Windows?</label><checkbox id="WSLsel" value="true" selectonwindows="true">Run in WSL?</checkbox>
+            <label>Input Reads/FAST5</label> <filedialog id="guppy_input" output="false" folder="true">Select input file</filedialog>
+            <label>Go through folder recursively?</label><checkbox id="guppy_recursive">Yes</checkbox>
+            <label>Output Folder</label> <filedialog id="guppy_output" output="true" folder="true">Select output folder</filedialog>
+        </grid>
+    </group>
+    <group title="Program Options">
+        <grid cols="2">
+            <label>Number of Threads</label><input id="guppy_threads" type="int">4</input>
+        </grid>
+    </group>
+    <group title="Kit Options" exclusive="true">
+        <group title="Default kits" id="guppy_default_kit">
+            <grid cols="2">
+                <label>Select your flowcell</label>
+                <combobox id="guppy_flowcell" selected="FLO-MIN106">
+                    <comboitem value="FLO-MIN106">FLO-MIN106</comboitem>
+                    <comboitem value="FLO-MIN107">FLO-MIN107</comboitem>
+                </combobox>
+                <label>Select your kit</label>
+                <combobox id="guppy_kit" selected="SQK-RAD004">
+                    <comboitem value="SQK-16S024">SQK-16S024</comboitem>
+                    <comboitem value="SQK-DCS108">SQK-DCS108</comboitem>
+                    <comboitem value="SQK-DCS109">SQK-DCS109</comboitem>
+                    <comboitem value="SQK-LRK001">SQK-LRK001</comboitem>
+                    <comboitem value="SQK-LSK108">SQK-LSK108</comboitem>
+                    <comboitem value="SQK-LSK109">SQK-LSK109</comboitem>
+                    <comboitem value="SQK-LSK308">SQK-LSK308</comboitem>
+                    <comboitem value="SQK-LSK309">SQK-LSK309</comboitem>
+                    <comboitem value="SQK-LSK319">SQK-LSK319</comboitem>
+                    <comboitem value="SQK-LWB001">SQK-LWB001</comboitem>
+                    <comboitem value="SQK-LWP001">SQK-LWP001</comboitem>
+                    <comboitem value="SQK-PBK004">SQK-PBK004</comboitem>
+                    <comboitem value="SQK-PCS108">SQK-PCS108</comboitem>
+                    <comboitem value="SQK-PCS109">SQK-PCS109</comboitem>
+                    <comboitem value="SQK-PSK004">SQK-PSK004</comboitem>
+                    <comboitem value="SQK-RAB201">SQK-RAB201</comboitem>
+                    <comboitem value="SQK-RAB204">SQK-RAB204</comboitem>
+                    <comboitem value="SQK-RAD002">SQK-RAD002</comboitem>
+                    <comboitem value="SQK-RAD003">SQK-RAD003</comboitem>
+                    <comboitem value="SQK-RAD004">SQK-RAD004</comboitem>
+                    <comboitem value="SQK-RAS201">SQK-RAS201</comboitem>
+                    <comboitem value="SQK-RBK001">SQK-RBK001</comboitem>
+                    <comboitem value="SQK-RBK004">SQK-RBK004</comboitem>
+                    <comboitem value="SQK-RLB001">SQK-RLB001</comboitem>
+                    <comboitem value="SQK-RLI001">SQK-RLI001</comboitem>
+                    <comboitem value="SQK-RNA001">SQK-RNA001</comboitem>
+                    <comboitem value="SQK-RNA002">SQK-RNA002</comboitem>
+                    <comboitem value="SQK-RPB004">SQK-RPB004</comboitem>
+                    <comboitem value="VSK-VBK001">VSK-VBK001</comboitem>
+                    <comboitem value="VSK-VMK001">VSK-VMK001</comboitem>
+                    <comboitem value="VSK-VMK002">VSK-VMK002</comboitem>
+                    <comboitem value="VSK-VSK001">VSK-VSK001</comboitem>
+                    <comboitem value="VSK-VSK002">VSK-VSK002</comboitem>
+                </combobox>
+
+            </grid>
+        </group>
+        <group title="Manual Kits">
+            <grid cols="2">
+                <label>Your flowcell:</label><input id="guppy_flowcell_man"></input>
+                <label>Your kit:</label><input id="guppy_kit_man"></input>
+            </grid>
+        </group>
+        <label>See list of available flowcell + kit combinations</label>
+        <action program="guppy_list">Show List</action>
+    </group>
+    <group title="Additional Input">
+        <checkbox id="guppy_fast5_output">Output FAST5 Files</checkbox>
+        <label>Number of parallel basecallers:</label><input id="guppy_num_basecallers">4</input>
+        <group title="Command-line flags">
+            <grid cols="2">
+                <label>Additional command-line flags</label><input id="guppy_commandline_args"></input>
+            </grid>
+        </group>
+    </group>
+
+    <action program="guppy_basecall">Start Basecalling</action>
+
+    <streambox id="output1">
+        <stream id="outputstream1">std out</stream>
+        <stream id="outputstream2">err out</stream>
+    </streambox>
+</vgroup>
+</window>
+
+<execution>
+    <const id="bindir">${PYTHON_BIN_DIR}/</const>
+
+    <relocate id="guppy_input_rel" from="\${guppy_input}" wsl="\${WSLsel}"/>
+    <relocate id="guppy_output_rel" from="\${guppy_output}" wsl="\${WSLsel}"/>
+
+    <if id="guppy_flowcell_select" comp="IS_SET" value1="\${guppy_default_kit}">
+        <const>--flowcell</const>
+        <value from="\${guppy_flowcell}"/>
+        <const>--kit</const>
+        <value from="\${guppy_kit}"/>
+    <else>
+        <const>--flowcell</const>
+        <value from="\${guppy_flowcell_man}"/>
+        <const>--kit</const>
+        <value from="\${guppy_kit_man}"/>
+    </else>
+    </if>
+
+    <add id="clargs" sep=" ">
+        <value from="\${guppy_flowcell_select}"/>
+        <if comp="IS_SET" value1="guppy_threads" sep=" "><const>-t</const><value from="\${guppy_threads}"/></if>
+        <if comp="IS_SET" value1="guppy_recursive" sep=" "><const>-r</const></if>
+        <if comp="IS_SET" value1="guppy_fast5_output" sep=" "><const>--fast5_out</const></if>
+        <const>--num_callers</const>
+        <value from="\${guppy_num_basecallers}"/>
+        <value from="\${guppy_commandline_args}"/>
+
+        <const>-i</const><value from="\${guppy_input_rel}"/>
+        <const>-s</const><value from="\${guppy_output_rel}"/>
+
+    </add>
+
+    <execute program="guppy_list" param="--print_workflows" location="\${bindir}" exec="guppy_basecaller" wsl="WSLsel">
+        <output type="COUT" color="green" to="outputstream1" />
+        <output type="CERR" color="red" to="outputstream2" />
+    </execute>
+
+
+    <execute program="guppy_basecall" param="\${clargs}" location="\${bindir}" exec="guppy_basecaller" wsl="WSLsel">
+        <output type="COUT" color="green" to="outputstream1" />
+        <output type="CERR" color="red" to="outputstream2" />
+    </execute>
+
+</execution>
+
+</template>
+
+EOF
+
+fi

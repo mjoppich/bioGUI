@@ -64,8 +64,8 @@ if [ $# -gt 2 ]; then
    fi
 fi
 
-APPBINARYESC="${PROGDIRESC}/${PROG}/"
-APPBINARY="${PROGDIRESC}/${PROG}/RNAhybrid"
+APPBINARYESC="${PROGDIRESC}/${PROG}/src/"
+APPBINARY="${PROGDIRESC}/${PROG}/src/RNAhybrid"
 if [ -z "$(ls -A ${APPBINARYESC})" ] || [ ! -f ${APPBINARY} ]; then
    (>&2 echo ${APPBINARYESC})
    (>&2 ls ${APPBINARYESC})
@@ -166,7 +166,6 @@ $NCCMD <<EOF
     
     <relocate id="rnahybrid_targetseq_rel" from="\${rnahybrid_targetseq}" wsl="\${WSLsel}"/>
     <relocate id="rnahybrid_queryseq_rel" from="\${rnahybrid_queryseq}" wsl="\${WSLsel}"/>
-    <relocate id="rnahybrid_output_rel" from="\${rnahybrid_output}" wsl="\${WSLsel}"/>
 
     <add id="args" sep=" ">
 
@@ -189,7 +188,7 @@ $NCCMD <<EOF
     </add>
     
     <execute program="RNAhybrid" param="\${args}" location="\${bindir}" exec="RNAhybrid" wsl="WSLsel">
-        <output type="FILE_STD" color="green" location="\${rnahybrid_output_rel}" />
+        <output type="FILE_STD" color="green" location="\${rnahybrid_output}" />
         <output type="CERR" color="red" to="outputstream2" />
     </execute>
 

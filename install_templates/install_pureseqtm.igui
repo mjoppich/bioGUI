@@ -1,0 +1,180 @@
+#! Install pureSeqTM (github)
+
+if [ "$(uname)" == "Darwin" ]; then
+
+	echo "This Install Module is not compatible with Mac OS. If desperately needed, contact bioGUI authors."
+	exit
+fi
+
+echo "Dependencies: r-base"
+if [ ! "$2" = "" ]; then
+
+    if [ "$(uname)" == "Darwin" ]; then
+
+        echo "Installing brew gnuplot"
+        brew install gnuplot --with-cairo
+
+    else
+
+        echo "Installing dependencies"
+        
+        echo $2 | sudo -S dpkg --add-architecture i386
+        echo $2 | sudo -S apt-get update
+        echo $2 | sudo -S apt-get install libc6:i386 libncurses5:i386 libstdc++6:i386 gcc-multilib
+
+    fi
+
+		
+else
+	echo "No sudo password, not installing dependencies"
+fi
+
+## set all variables
+PROG=PURESEQTM
+PROGNICE=pureSeqTM
+PROGDIR=$1
+
+
+if [ -z "${PROGDIR}" ]; then
+	PROGDIR=~/bioGUI/progs/
+fi
+
+PROGDIRESC=$(echo $PROGDIR | sed 's/ /\\ /g')
+APPBINARYDIR="${PROGDIR}/${PROG}/"
+
+
+## create progdir
+mkdir -p "$PROGDIR/$PROG"
+
+cd "$PROGDIR"
+
+git clone https://github.com/PureseqTM/PureseqTM_Package.git $PROG
+
+cd $PROG
+
+wget http://melodi.ee.washington.edu/downloads/gmtk/gmtk-1.4.4.tar.gz
+
+tar xfz gmtk-1.4.4.tar.gz
+cd gmtk-1.4.4
+./configure CXXFLAGS='-std=c++11'
+make
+
+cp tksrc/gmtkJT ../bin/
+cd ..
+
+cd source_code
+make
+cd ..
+
+if [ $# -gt 2 ]; then
+
+	if [ "$3" = "1" ]; then
+
+		if ! grep -q "$PROGDIRESC/$PROG" ~/.bashrc; then
+			echo "export PATH=\"$PROGDIRESC/$PROG:\$PATH\" " >> ~/.bashrc;
+		fi
+	fi
+
+fi
+
+APPBINARYESC="${PROGDIRESC}/${PROG}/"
+APPBINARY="${PROGDIRESC}/${PROG}/PureseqTM.sh"
+if [ -z "$(ls -A ${APPBINARYESC})" ] || [ ! -f ${APPBINARY} ]; then
+   (>&2 echo ${APPBINARYESC})
+   (>&2 ls ${APPBINARYESC})
+
+   (>&2 echo " \n \n \n")
+
+   (>&2 echo ${PROGDIRESC})
+   (>&2 ls ${PROGDIRESC})
+
+    (>&2 echo " \n \n \n")
+
+   (>&2 echo ${APPBINARY})
+   (>&2 ls ${APPBINARY})
+   
+   (>&2 echo " \n \n \n")
+
+   (>&2 echo "ERROR: The application directory is empty after installation.")
+   (>&2 echo "ERROR: If you experience problems please re-install the software and create an issue on https://github.com/mjoppich/bioGUI.")
+   (>&2 echo "ERROR: For creating the issue, please upload the log.txt file of your installation attempt.")
+
+    (>&2 echo " \n \n \n")
+
+else
+
+    echo "${PROG} has been installed into ${APPBINARYESC}"
+    echo "Binary location ${APPBINARY}"
+
+fi
+
+if [ $# -eq 5 ]; then
+
+IP=$4
+PORT=$5
+
+NCCMD=""
+
+if [ "$(uname)" == "Darwin" ]; then
+	NCCMD="nc -c $IP $PORT"
+else
+	NCCMD="nc -q 0 $IP $PORT"
+fi
+
+
+$NCCMD <<EOF
+
+<template description="PureSeqTM" title="$PROGNICE">
+ <window title="$PROGNICE">
+  <vgroup>
+
+	<checkbox id="WSLsel" value="true" selectonwindows="true">Run in WSL?</checkbox>
+
+	<group title="Input Files Reference">
+	
+	<filedialog id="pureseqtm_input" output="false" multiple="false">Input Sequences</filedialog>
+    <filedialog id="pureseqtm_output" output="true" folder="true">Output Folder</filedialog>
+	<checkbox id="pureseqtm_plot" selected="true">Add Plot</checkbox>
+    
+    <action program="run_pureseqtm">Run $PROGNICE</action>
+	
+	</group>
+				
+  
+   <streambox id="output1">
+    <stream id="outputstream1">COUT</stream>
+    <stream id="outputstream2">CERR</stream>
+   </streambox>
+
+  </vgroup>
+ </window>
+ <execution>
+ 
+<relocate id="pureseq_fasta_rel" from="\${msempire_expression}" wsl="\${WSLsel}"/>
+
+    <relocate id="pureseqtm_input_rel" from="\${pureseqtm_input}" wsl="\${WSLsel}"/>
+    <relocate id="pureseqtm_output_rel" from="\${pureseqtm_output}" wsl="\${WSLsel}"/>
+
+ 
+  <const id="bindir">${APPBINARYDIR}/</const>
+
+  <add id="cl">
+    <const>-i</const>
+    <value from="\${pureseqtm_input_rel}"/>
+    <const>-o</const>
+    <value from="\${pureseqtm_output_rel}"/>
+    <if comp="IS_SET" value1="pureseqtm_plot" sep=" "><const>-P 1</const></if>
+  </add>
+
+  <execute program="run_pureseqtm" location="" exec="sh" param="\${bindir}/PureseqTM.sh \${cl} wsl="WSLsel">
+    <output type="FILE_STD" color="green" location="\${pureseqtm_output}" />
+    <output type="CERR" color="red" to="outputstream2" />
+  </execute>
+
+ </execution>
+</template>
+
+
+EOF
+
+fi

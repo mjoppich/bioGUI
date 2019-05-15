@@ -32,11 +32,24 @@ For Mac OS, please execute download and execute *First Time Mac OS Setup*.
 
 Please also refer to our [User Guide](http://biogui.readthedocs.io/en/latest/user_guide.html).
 
+## Requirements
+
+### Linux
+Ubuntu 18.04 or similar with aptitude (apt) package management.
+
+### Windows
+Microsoft Windows 10 (build 17763, Oct. 2018 update) with Windows Subsystem for Linux-Feature enabled and the Ubuntu 18.04-App installed.
+This page describes [how to setup WSL](http://biogui.readthedocs.io/en/latest/build_wsl.html).
+
+### Mac OS
+
+bioGUI has been tested on Mac OS X 10.15 Mojave.
+
 ## Setup First Time Use
 
 ![Setup First Time Use](doc/images/bioGUI_wsl_setup.gif?raw=true "First Time Use")
 
-## Install an install module
+## Install and use an install module
 
 ![Install Module](doc/images/bioGUI_graphmap.gif?raw=true "Graphmap Install")
 

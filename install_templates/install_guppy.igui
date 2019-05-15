@@ -1,4 +1,4 @@
-#! Install albacore (pip wheel)
+#! Install guppy (linux tar.gz)
 ##<filedialog output="false" folder="false" relocateWSL="true">Guppy tar gz</filedialog>
 
 # usage: scriptname sudopw addtopath ip port addinfo

@@ -7,10 +7,14 @@ if [ ! "$2" = "" ]; then
         echo "Installing brew gcc"
         brew install gcc
 
+        alias gcc='gcc-8'
+        alias g++='g++-8'
+
     else
 
-        echo "No dependencies"
-
+        echo "Installing dependencies: gcc/build-essential"
+        echo $2 | sudo -S apt-get update
+        echo $2 | sudo -S apt-get -y install build-essential
     fi
 
 else

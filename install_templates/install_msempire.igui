@@ -11,7 +11,8 @@ if [ ! "$2" = "" ]; then
 
     if [ "$(uname)" == "Darwin" ]; then
 
-        echo "No dependencies needed"
+        echo "Installing R"
+        brew install r
 
     else
 

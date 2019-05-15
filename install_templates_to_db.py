@@ -51,11 +51,14 @@ def createUser(cnx, cursor, username, usermail):
 
 def getUserID(cnx, cursor, args, simulate):
     findUser_template = ("select id from users where name = %s and email = %s")
-    cursor.execute(findUser_template, (args.user_name, args.user_email))
 
     setFoundUsers = set()
-    for (id, ) in cursor:
-        setFoundUsers.add(id)
+
+    if cnx != None:
+        cursor.execute(findUser_template, (args.user_name, args.user_email))
+
+        for (id, ) in cursor:
+            setFoundUsers.add(id)
 
     if len(setFoundUsers) == 0:
         if simulate:
@@ -83,6 +86,8 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
+    cnx = None
+    cursor = None
     try:
         cnx = mysql.connector.connect(user=args.user, password=args.password, host=args.host, database=args.database, port=args.port)
         cursor = cnx.cursor()
@@ -100,6 +105,8 @@ if __name__ == "__main__":
 
     anonym = 1 if args.anonymous == True else 0
 
+    templateList = open("./template_list", "w")
+
     for templateFile in install_templates:
         template = Template(templateFile)
 
@@ -109,6 +116,8 @@ if __name__ == "__main__":
         print("Inserting length          : " + str(len(insertdata[1])))
         print("Inserting for user        : " + str(insertdata[3]))
         print("Inserting anonymously     : " + str(insertdata[4]))
+
+        templateList.write(template.getName() + "\n")
 
         if args.simulate:
              continue
@@ -135,4 +144,5 @@ if __name__ == "__main__":
 
 
 
-    cnx.close()
+    if cnx != None:
+        cnx.close()

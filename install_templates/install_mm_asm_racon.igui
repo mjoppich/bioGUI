@@ -1,4 +1,4 @@
-#! Install minimap2/miniasm/racon (github))
+#! Install minimap2/miniasm/racon (github)
 
 if [ ! "$2" = "" ]; then
 

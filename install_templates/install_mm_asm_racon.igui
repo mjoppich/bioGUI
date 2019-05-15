@@ -50,7 +50,7 @@ git clone https://github.com/lh3/minimap2 minimap2
 cd minimap2
 
 if [ "$(uname)" == "Darwin" ]; then
-	make CC=g++-8
+	make CC=gcc-8
 else
 	make
 fi
@@ -60,7 +60,7 @@ git clone https://github.com/lh3/miniasm miniasm
 cd miniasm
 
 if [ "$(uname)" == "Darwin" ]; then
-	make CC=g++-8
+	make CC=gcc-8
 else
 	make
 fi

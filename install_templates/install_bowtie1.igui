@@ -10,19 +10,15 @@ if [ ! "$2" = "" ]; then
 
     if [ "$(uname)" == "Darwin" ]; then
 
-        echo "Installing brew wget gcc@8 tbb"
-        brew install wget gcc@8 tbb
-
-		    echo $2 | sudo -S pip install numpy scipy pysam
+        echo "bowtie1 install module is not compatible with Mac OS. Use bowtie2"
+        exit;
 
     else
 
-		echo "Installing dependencies"
-		echo $2 | sudo -S apt-get update
-		echo $2 | sudo -S apt-get -y install python
-		
-		echo $2 | sudo -S pip install numpy scipy pysam
-    fi
+      echo "Installing dependencies"
+      echo $2 | sudo -S apt-get update
+      echo $2 | sudo -S apt-get -y install libtbb-dev
+		fi
 
 else
    echo "No sudo password, not installing dependencies"
@@ -45,7 +41,7 @@ APPBINARYDIR=${PROGDIR}/${PROG}/
 mkdir -p "$PROGDIR"
 
 #download and unzip
-wget https://sourceforge.net/projects/bowtie-bio/files/bowtie/1.1.2/bowtie-1.1.2-src.zip/download -O "$PROGDIR/$PROG.zip"
+wget https://sourceforge.net/projects/bowtie-bio/files/bowtie/1.2.2/bowtie-1.2.2-src.zip/download -O "$PROGDIR/$PROG.zip"
 
 
 
@@ -70,7 +66,7 @@ if [ $# -gt 2 ]; then
 fi
 
 APPBINARYESC="${PROGDIRESC}/${PROG}/"
-APPBINARY="${PROGDIRESC}/${PROG}/bowtie"
+APPBINARY="${PROGDIRESC}/${PROG}/bowtie-align-s"
 if [ -z "$(ls -A ${APPBINARYESC})" ] || [ ! -f ${APPBINARY} ]; then
    (>&2 echo ${APPBINARYESC})
    (>&2 ls ${APPBINARYESC})

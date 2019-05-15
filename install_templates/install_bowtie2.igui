@@ -68,7 +68,7 @@ fi
 
 
 APPBINARYESC="${PROGDIRESC}/${PROG}/"
-APPBINARY="${PROGDIRESC}/${PROG}/bowtie2"
+APPBINARY="${PROGDIRESC}/${PROG}/bowtie2-align-s"
 if [ -z "$(ls -A ${APPBINARYESC})" ] || [ ! -f ${APPBINARY} ]; then
    (>&2 echo ${APPBINARYESC})
    (>&2 ls ${APPBINARYESC})

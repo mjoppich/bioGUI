@@ -202,18 +202,18 @@ $NCCMD <<EOF
 <relocate id="rsem_calc_ref_name_rel" from="\${rsem_calc_ref_name}" wsl="\${WSLsel}"/>
 <relocate id="rsem_calc_sample_path_rel" from="\${rsem_calc_sample_path}" wsl="\${WSLsel}"/>
 
-<add id="rsem_calc_arguments">
+<add id="rsem_calc_arguments" sep=" ">
 <if comp="EQUAL" value1="rsem_calc_unpaired" value2="true">
 <value from="rsem_calc_unpaired_reads_rel"/>
 </if>
 
-<if comp="EQUAL" value1="rsem_calc_paired" value2="true">
+<if comp="EQUAL" value1="rsem_calc_paired" value2="true" sep=" ">
 <const>--paired-end</const>
 <value from="rsem_calc_paired_up_rel"/>
 <value from="rsem_calc_paired_down_rel"/>
 </if>
 
-<if comp="EQUAL" value1="rsem_calc_alignment" value2="true">
+<if comp="EQUAL" value1="rsem_calc_alignment" value2="true" sep=" ">
 <const>--alignments</const>
 <value from="rsem_calc_alignment_paired"/>
 <value from="rsem_calc_paired_up_rel"/>
@@ -229,7 +229,7 @@ $NCCMD <<EOF
 
 </add>
 
-<add id="rsem_calc_options">
+<add id="rsem_calc_options" sep=" ">
 <const>-p</const>
 <value from="rsem_calc_num_threads"/>
 

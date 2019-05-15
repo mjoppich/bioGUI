@@ -93,7 +93,47 @@ Install an install module
 .. image:: ./images/bioGUI_graphmap.gif
    :scale: 50
 
+Use an install module
+---------------------
 
+After installing a software, e.g. graphmap, you can reload the list of available templates by pressing the reload button.
+
+Download the install module for graphmap as shown in the previous section.
+Next select the graphmap install module in the Install Templates template and fill out your *Linux User Password/sudo Password*. If you are on Windows, make sure that the *Use WSL?* checkbox is selected.
+
+.. image:: ./images/template_usage/graphmap_1.png
+    :scale: 50
+
+Enter the name of the template you would like to use in the input field within the *Store Template* group box (which you should have selected). In order for bioGUI to find a template it must reside in the *template* folder next to the bioGUI executable.
+Finally press *Install Program* and wait until the installation finishes.
+Besides the template being sent to bioGUI (in blue text), you should see the green message that your program has been installed correctly:
+
+.. image:: ./images/template_usage/graphmap_2.png
+    :scale: 50
+
+You can now *Reload* the templates again and will see a *graphmap* template on the left:
+
+.. image:: ./images/template_usage/graphmap_3.png
+    :scale: 50
+
+In this template you have to possibility to select the alignment mode (align or overlap/owler), specify the reference sequence, reads, gene annotation file (for splice-aware alignment) as well as the output file.
+To select files via a file dialog, click the corresponding button on the right.
+Using the *Additional Options* field, you can also enter command-line parameters directly.
+This may be necessary because the template is not complete, or new options have been added (or because you know shortcuts).
+
+Exemplarily we filled our some parameters:
+
+.. image:: ./images/template_usage/graphmap_4.png
+    :scale: 50
+
+Clicking on *Run Graphmap* will now execute graphmap via bioGUI. In this case, the called command-line tool is ``graphmap -r <reference> -d <reads> -o <output>``.
+
+Upon completion, the bioGUI options button (lower left) will become enabled again, as well as the *Run Graphmap* button. If you need to cancel the current process, click the *Cancel Run Graphmap* button.
+You will see all the intermediate output from graphmap and have the option to save the command-line output using the *Save log* button.
+If you want to save the inputs you made, using the *Save template* button of the bioGUI options, you can save the inputs you made. Save the template in the *template* directory in the same folder as bioGUI to see the template.
+
+.. image:: ./images/template_usage/graphmap_5.png
+    :scale: 50
 
 Adding Own Templates
 =====================

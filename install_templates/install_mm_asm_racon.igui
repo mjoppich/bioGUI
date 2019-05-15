@@ -255,7 +255,8 @@ $NCCMD <<EOF
     
     <relocate id="assembly_reads_rel" from="\${assembly_reads}" wsl="\${WSLsel}"/>
     <relocate id="assembly_dir_rel" from="\${assembly_dir}" wsl="\${WSLsel}"/>
-    <add id="args">
+    
+    <add id="args" sep=" ">
 	<const>${APPBINARYDIR}/assemble.sh</const>
     <value from="\${assembly_reads_rel}"/>
     <value from="\${assembly_dir_rel}"/>

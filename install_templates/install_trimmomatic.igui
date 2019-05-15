@@ -284,8 +284,8 @@ $NCCMD <<EOF
         </if>
         <add sep=" " id="cl">
             <value from="files"/>
-            <add sep="">
-                <const>-threads </const>
+            <add sep=" ">
+                <const>-threads</const>
                 <value from="threads"/>
             </add>
             <add sep="">

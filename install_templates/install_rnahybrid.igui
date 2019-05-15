@@ -1,13 +1,20 @@
 #! Install rnahybrid (source)
 
-
+if [ "$(uname)" == "Darwin" ]; then
+	source ~/.bash_profile
+else
+  echo ""
+fi
 
 if [ ! "$2" = "" ]; then
 
     if [ "$(uname)" == "Darwin" ]; then
 
-        echo "No dependencies"
+        echo "Installing brew gcc"
+        brew install gcc@8
 
+        alias gcc='gcc-8'
+        alias g++='g++-8'
     else
 
         echo "No dependencies"
@@ -51,7 +58,7 @@ tar xfz rnahybrid.tar.gz -C "$PROGDIR/$PROG/"
 cd "$PROGDIR/$PROG/"
 mv */* .
 
-./configure
+CC=gcc-8 CXX=g++-8 ./configure
 make
 
 

@@ -1,11 +1,17 @@
 #! Install bwa 0.7.17 (sourceforge)
 
+if [ "$(uname)" == "Darwin" ]; then
+	source ~/.bash_profile
+else
+  echo ""
+fi
+
 if [ ! "$2" = "" ]; then
 
     if [ "$(uname)" == "Darwin" ]; then
 
-        echo "Installing brew gcc tbb"
-        brew install gcc tbb
+        echo "Installing brew gcc@8"
+        brew install gcc@8
 
     else
 

@@ -1,13 +1,19 @@
 #! Install Bowtie1
 
+if [ "$(uname)" == "Darwin" ]; then
+	source ~/.bash_profile
+else
+  echo ""
+fi
 
 if [ ! "$2" = "" ]; then
 
     if [ "$(uname)" == "Darwin" ]; then
 
-        echo "Installing brew gcc"
-        brew install gcc
+        echo "Installing brew wget gcc@8 tbb"
+        brew install wget gcc@8 tbb
 
+		    echo $2 | sudo -S pip install numpy scipy pysam
 
     else
 
@@ -15,7 +21,7 @@ if [ ! "$2" = "" ]; then
 		echo $2 | sudo -S apt-get update
 		echo $2 | sudo -S apt-get -y install python
 		
-		pip install numpy scipy pysam
+		echo $2 | sudo -S pip install numpy scipy pysam
     fi
 
 else

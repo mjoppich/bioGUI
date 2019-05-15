@@ -1,5 +1,5 @@
 <template description="Circlator (docker)" title="Circlator">
-<window width="500" height="1000" title="SPAdes">
+<window width="500" height="1000" title="Circlator">
   <vgroup>
 
     <group title="Information">
@@ -46,6 +46,7 @@
         <input id="circlator_cls"></input>
         <action program="circlator_run" hint="Docker Run Circlator">Circlator</action>         
     </group>
+
  
     <streambox id="output1">
       <stream id="outputstream1">OS1</stream>
@@ -56,18 +57,27 @@
 </window>
 <execution>
 
-    <execute program="docker_status" param="info" location="" exec="docker">
+    <env id="gos" get="OS"/>
+
+    <if id="dockerexec" value1="${gos}" value2="MAC" comp="EQUALS">
+        <const>/usr/local/bin/docker</const>
+    <else>
+        <const>docker</const>
+    </else>
+    </if>
+
+    <execute program="docker_status" param="info" location="${dockerexec}" exec="">
         <output type="COUT" color="green" to="outputstream1" />
         <output type="CERR" color="red" to="outputstream2" />
     </execute>
   
   
-    <execute program="circlator_pull" param="pull sangerpathogens/circlator" location="" exec="docker">
+    <execute program="circlator_pull" param="pull sangerpathogens/circlator" location="${dockerexec}" exec="">
         <output type="COUT" color="green" to="outputstream1" />
         <output type="CERR" color="red" to="outputstream2" />
     </execute>
 
-    <execute program="circlator_progcheck" param="run --rm sangerpathogens/circlator circlator progcheck" location="" exec="docker">
+    <execute program="circlator_progcheck" param="run --rm sangerpathogens/circlator circlator progcheck" location="${dockerexec}" exec="">
         <output type="COUT" color="green" to="outputstream1" />
         <output type="CERR" color="red" to="outputstream2" />
     </execute>
@@ -76,8 +86,7 @@
     <replace id="circlator_reads_rel" from="${circlator_assembly_reads}" replace="${circlator_base}" replace_with="/data/"/>
     <replace id="circlator_outdir_rel" from="${circlator_outdir}" replace="${circlator_base}" replace_with="/data/"/>
 
-
-    <execute program="circlator_run" param="run --rm -v ${circlator_base}:/data sangerpathogens/circlator circlator ${circlator_mode} ${circlator_cls} ${circlator_fasta_rel} ${circlator_reads_rel} ${circlator_outdir_rel}" location="" exec="docker">
+    <execute program="circlator_run" param="run --rm -v ${circlator_base}:/data sangerpathogens/circlator circlator ${circlator_mode} ${circlator_cls} ${circlator_fasta_rel} ${circlator_reads_rel} ${circlator_outdir_rel}" location="${dockerexec}" exec="">
         <output type="COUT" color="green" to="outputstream1" />
         <output type="CERR" color="red" to="outputstream2" />
     </execute>

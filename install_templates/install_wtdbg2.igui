@@ -4,8 +4,8 @@ if [ ! "$2" = "" ]; then
 
     if [ "$(uname)" == "Darwin" ]; then
 
-        source ~/.bash_profile
-        echo "Need gcc"
+        echo "wtdbg2 is not Mac OS compatible";
+        exit;
 
 
     else
@@ -50,7 +50,7 @@ git clone https://github.com/ruanjue/wtdbg2 $PROGDIR/$PROG
 
 cd "$PROGDIR/$PROG/"
 
-make
+CC=clang CXX=clang++ make
 
 if [ $# -gt 2 ]; then
 	if [ "$3" = "1" ]; then

@@ -15,8 +15,10 @@ if [ ! "$2" = "" ]; then
         brew install gcc
         brew link --overwrite gcc
         brew install openblas
-        brew install libgit2
+        brew install libgit2 libxml2 openssl
         brew install r
+
+        CC=clang CXX=clang++ Rscript -e 'install.packages("git2r", repos="https://cran.cnr.berkeley.edu/")'
 
     else
 
@@ -43,13 +45,14 @@ fi
 PROGDIRESC=$(echo $PROGDIR | sed 's/ /\\ /g')
 APPBINARYDIR="${PROGDIR}/${PROG}/"
 
+rm -rf "$PROGDIR/$PROG"
 
 ## create progdir
 mkdir -p "$PROGDIR/$PROG"
 
 cd "$PROGDIR/$PROG"
 
-wget https://gist.githubusercontent.com/mjoppich/e4e9f0c706ac93737fdc0f64642b9ef1/raw/a6290310fd29a5a79336eb9748ccdb21d9350754/runEmpire.R
+wget https://gist.githubusercontent.com/mjoppich/e4e9f0c706ac93737fdc0f64642b9ef1/raw/a163610e0a7f1b3d70bdc594921b5a3a25294a2a/runEmpire.R
 
 LDFLAGS="-L/usr/local/opt/openblas/lib" CPPFLAGS="-I/usr/local/opt/openblas/include" Rscript runEmpire.R
 

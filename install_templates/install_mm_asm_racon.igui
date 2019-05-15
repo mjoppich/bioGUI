@@ -1,11 +1,17 @@
 #! Install minimap2/miniasm/racon (github))
 
+if [ "$(uname)" == "Darwin" ]; then
+	source ~/.bash_profile
+else
+  echo ""
+fi
+
 if [ ! "$2" = "" ]; then
 
     if [ "$(uname)" == "Darwin" ]; then
 
         echo "Installing Dependencies (mac)"
-        brew install cmake gcc
+        brew install cmake gcc@8
     else
 
         echo "Installing Dependencies (aptitude/Ubuntu)"
@@ -41,11 +47,23 @@ mkdir -p "$PROGDIR/$PROG"
 
 cd "$PROGDIR/$PROG"
 git clone https://github.com/lh3/minimap2 minimap2
-cd minimap2 && make
+cd minimap2
+
+if [ "$(uname)" == "Darwin" ]; then
+	make CC=g++-8
+else
+	make
+fi
 
 cd "$PROGDIR/$PROG"
 git clone https://github.com/lh3/miniasm miniasm
-cd miniasm  && make
+cd miniasm
+
+if [ "$(uname)" == "Darwin" ]; then
+	make CC=g++-8
+else
+	make
+fi
 
 cd "$PROGDIR/$PROG"
 git clone --recursive https://github.com/isovic/racon.git racon

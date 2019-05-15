@@ -93,13 +93,13 @@ Install an install module
 .. image:: ./images/bioGUI_graphmap.gif
    :scale: 50
 
-Use an install module
+Use an Install Module
 ---------------------
 
 After installing a software, e.g. graphmap, you can reload the list of available templates by pressing the reload button.
 
 Download the install module for graphmap as shown in the previous section.
-Next select the graphmap install module in the Install Templates template and fill out your *Linux User Password/sudo Password*. If you are on Windows, make sure that the *Use WSL?* checkbox is selected.
+Next select the *graphmap* install module in the *Install Templates* template and fill out your *Linux User Password/sudo Password*. If you are on Windows, make sure that the *Use WSL?* checkbox is selected.
 
 .. image:: ./images/template_usage/graphmap_1.png
     :scale: 50
@@ -124,7 +124,7 @@ This may be necessary because the template is not complete, or new options have 
 Exemplarily we filled our some parameters:
 
 .. image:: ./images/template_usage/graphmap_4.png
-    :scale: 50
+    :scale: 100
 
 Clicking on *Run Graphmap* will now execute graphmap via bioGUI. In this case, the called command-line tool is ``graphmap -r <reference> -d <reads> -o <output>``.
 
@@ -133,7 +133,7 @@ You will see all the intermediate output from graphmap and have the option to sa
 If you want to save the inputs you made, using the *Save template* button of the bioGUI options, you can save the inputs you made. Save the template in the *template* directory in the same folder as bioGUI to see the template.
 
 .. image:: ./images/template_usage/graphmap_5.png
-    :scale: 50
+    :scale: 100
 
 Adding Own Templates
 =====================

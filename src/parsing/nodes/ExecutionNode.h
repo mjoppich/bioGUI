@@ -329,12 +329,21 @@ protected:
 
         std::vector<std::string> refIDs;
 
+        //LOGLVL(sArgs, Logging::ERR)
+
+
         if (sArgs.find("${") == std::string::npos)
         {
+            //LOGLVL("LEAVING referencedInputs", Logging::ERR)
+
             return refIDs;
         }
 
+        //LOGLVL(sArgs, Logging::ERR)
+
         this->parseCommand(&sArgs, 0, pID2Node, pInputID2Value, pInputID2FunctionWidget, &refIDs);
+
+        //LOGLVL(sArgs, Logging::ERR)
 
         return refIDs;
 

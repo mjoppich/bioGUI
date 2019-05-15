@@ -1,11 +1,21 @@
 #! Install hisat2 (github)
 
+if [ "$(uname)" == "Darwin" ]; then
+	source ~/.bash_profile
+else
+  echo ""
+fi
+
 if [ ! "$2" = "" ]; then
 
     if [ "$(uname)" == "Darwin" ]; then
 
-        echo "Installing brew gcc"
-        brew install gcc
+        echo "Installing brew gcc gawk"
+        echo "Installing gawk only for libmpfr.4.dylib ..."
+        brew install gcc@8 gawk
+
+        alias gcc='gcc-8'
+        alias g++='g++-8'
 
         alias gcc='gcc-8'
         alias g++='g++-8'
@@ -106,8 +116,8 @@ fi
 
 $NCCMD <<EOF
 
-<template description="hisat2 2.1.0 aligner" title="hisat2 2.1.0">
-<window title="hisat2 2.1.0 aligner">
+<template description="hisat2 aligner (github)" title="hisat2 (github)">
+<window title="hisat2 aligner (github)">
 <vgroup>
 
   <group title="Alignment Information">

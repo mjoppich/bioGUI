@@ -29,7 +29,13 @@
 int main(int argc, char **argv)
 {
 
+#ifdef __APPLE__
+    std::ofstream out("/tmp/biogui_log.txt");
+#else
     std::ofstream out("log.txt");
+#endif
+
+
     std::streambuf *coutbuf = std::cout.rdbuf();
     std::streambuf *cerrbuf = std::cerr.rdbuf();
 
@@ -55,6 +61,10 @@ int main(int argc, char **argv)
     mainWindow->show();
     pApp->exec();
     delete pApp;
+
+    std::cout.rdbuf(coutbuf);
+    std::cerr.rdbuf(cerrbuf);
+    out.close();
 
     return 0;
 }

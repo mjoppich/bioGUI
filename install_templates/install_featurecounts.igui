@@ -1,16 +1,17 @@
 #! Install featureCounts (github)
 
-
+if [ "$(uname)" == "Darwin" ]; then
+	source ~/.bash_profile
+else
+  echo ""
+fi
 
 if [ ! "$2" = "" ]; then
 
     if [ "$(uname)" == "Darwin" ]; then
 
         echo "Installing brew gcc"
-        brew install gcc
-
-        alias gcc='gcc-8'
-        alias g++='g++-8'
+        brew install gcc@8
 
     else
 
@@ -57,7 +58,13 @@ mv */* .
 cd "$PROGDIR/$PROG/src"
 
 if [ "$(uname)" == "Darwin" ]; then
-	make -f Makefile.MacOS
+    echo "Compile MAC OS"
+
+    echo "Modifying Makefile.MacOS"
+    sed -i '' 's/CC \= gcc/CC \= \$\{GCC\}/g' Makefile.MacOS
+
+    echo "Compiling subread"
+    LDFLAGS="-L/usr/local/lib" CPPFLAGS="-I/usr/local/include/" make -f Makefile.MacOS GCC=gcc-8 CC_EXEC=gcc-8
 else
 	make -f Makefile.Linux
 fi

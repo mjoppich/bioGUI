@@ -1,22 +1,24 @@
 #! Install Bowtie1
 
+if [ "$(uname)" == "Darwin" ]; then
+	source ~/.bash_profile
+else
+  echo ""
+fi
 
 if [ ! "$2" = "" ]; then
 
     if [ "$(uname)" == "Darwin" ]; then
 
-        echo "Installing brew gcc"
-        brew install gcc
-
+        echo "bowtie1 install module is not compatible with Mac OS. Use bowtie2"
+        exit;
 
     else
 
-		echo "Installing dependencies"
-		echo $2 | sudo -S apt-get update
-		echo $2 | sudo -S apt-get -y install python
-		
-		pip install numpy scipy pysam
-    fi
+      echo "Installing dependencies"
+      echo $2 | sudo -S apt-get update
+      echo $2 | sudo -S apt-get -y install libtbb-dev
+		fi
 
 else
    echo "No sudo password, not installing dependencies"
@@ -64,7 +66,7 @@ if [ $# -gt 2 ]; then
 fi
 
 APPBINARYESC="${PROGDIRESC}/${PROG}/"
-APPBINARY="${PROGDIRESC}/${PROG}/bowtie"
+APPBINARY="${PROGDIRESC}/${PROG}/bowtie-align-s"
 if [ -z "$(ls -A ${APPBINARYESC})" ] || [ ! -f ${APPBINARY} ]; then
    (>&2 echo ${APPBINARYESC})
    (>&2 ls ${APPBINARYESC})

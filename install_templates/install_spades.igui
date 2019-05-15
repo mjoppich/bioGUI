@@ -1,6 +1,10 @@
 #! Install SPAdes (v3.13.0)
 
-
+if [ "$(uname)" == "Darwin" ]; then
+	source ~/.bash_profile
+else
+  echo ""
+fi
 
 if [ ! "$2" = "" ]; then
 
@@ -8,13 +12,13 @@ if [ ! "$2" = "" ]; then
 
         echo "No dependencies"
         echo "Requires Python 2.x with regex module"
-        pip install regex
+        echo $2 | sudo -S pip install regex
 
     else
 
         echo $2 | sudo -S apt-get update
-        echo $2 | sudo -S apt-get -y install build-essential python python-pip
-        pip install regex
+        echo $2 | sudo -S apt-get -y install python python-pip
+        echo $2 | sudo -S pip install regex
     fi
 
 else
@@ -53,8 +57,11 @@ mv */* .
 
 cd "$PROGDIR/$PROG/"
 
-PREFIX="$PROGDIR/$PROG/" ./spades_compile.sh
-
+if [ "$(uname)" == "Darwin" ]; then
+    CC=gcc-8 CXX=g++-8 PREFIX="$PROGDIR/$PROG/" ./spades_compile.sh
+else
+    PREFIX="$PROGDIR/$PROG/" ./spades_compile.sh
+fi
 
 if [ $# -gt 2 ]; then
    if [ "$3" = "1" ]; then

@@ -94,6 +94,15 @@ bool ProcessLauncher::start()
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
     pProcess->setProcessEnvironment(env);
 
+#ifdef __APPLE__
+    QStringList envlist = env.toStringList();
+    envlist.replaceInStrings(QRegularExpression("^(?i)PATH=(.*)"), "PATH=/opt/local/bin:/usr/local/bin:$HOME/bin:\\1");
+    pProcess->setEnvironment(envlist);
+#endif
+
+    LOGLVL(pProcess->environment().join(", ").toStdString(), Logging::ERR);
+
+
     if (m_pApp != NULL)
     {
         m_pApp->addRunningProcess(pProcess);

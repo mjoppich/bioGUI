@@ -20,7 +20,7 @@ if [ ! "$2" = "" ]; then
         
         echo $2 | sudo -S dpkg --add-architecture i386
         echo $2 | sudo -S apt-get update
-        echo $2 | sudo -S apt-get install libc6:i386 libncurses5:i386 libstdc++6:i386 gcc-multilib
+        echo $2 | sudo -S apt-get -y install libc6:i386 libncurses5:i386 libstdc++6:i386 gcc-multilib
 
     fi
 
@@ -166,7 +166,7 @@ $NCCMD <<EOF
     <if comp="IS_SET" value1="pureseqtm_plot" sep=" "><const>-P 1</const></if>
   </add>
 
-  <execute program="run_pureseqtm" location="" exec="sh" param="\${bindir}/PureseqTM.sh \${cl} wsl="WSLsel">
+  <execute program="run_pureseqtm" location="" exec="sh" param="\${bindir}/PureseqTM.sh" \${cl} wsl="WSLsel">
     <output type="FILE_STD" color="green" location="\${pureseqtm_output}" />
     <output type="CERR" color="red" to="outputstream2" />
   </execute>

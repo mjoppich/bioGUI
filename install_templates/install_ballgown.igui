@@ -13,7 +13,7 @@ if [ ! "$2" = "" ]; then
 
         echo "Dependencies: $DEP_PACKAGES R: devtools, RSkittleBrewer, ballgown"
         echo $2 | sudo -S apt-get update
-        echo $2 | sudo -S apt-get install $DEP_PACKAGES
+        echo $2 | sudo -S apt-get -y install r-base zlibc zlib1g zlib1g-dev libxml2-dev libcurl4-openssl-dev
 
     fi
 
@@ -26,7 +26,7 @@ echo "options(repos = c(CRAN = \"https://cran.rstudio.com\"))" > ~/.Rprofile
 RLIBSUSER=`Rscript -e "cat(Sys.getenv('R_LIBS_USER'))"`
 mkdir -p $RLIBUSER
 
-Rscript -e "source(\"http://bioconductor.org/biocLite.R\"); install.packages(\"devtools\"); devtools::install_github('alyssafrazee/RSkittleBrewer'); biocLite(\"ballgown\", lib.loc=Sys.getenv('R_LIBS_USER'), lib=Sys.getenv('R_LIBS_USER'));"
+Rscript -e "source(\"http://bioconductor.org/biocLite.R\"); install.packages(\"devtools\"); install.packages(\"dplyr\"); devtools::install_github('alyssafrazee/RSkittleBrewer'); biocLite(\"ballgown\", lib.loc=Sys.getenv('R_LIBS_USER'), lib=Sys.getenv('R_LIBS_USER'));"
 
 RSCRIPT=`which Rscript`
 

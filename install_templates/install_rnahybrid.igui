@@ -1,16 +1,21 @@
 #! Install rnahybrid (source)
 
-
+if [ "$(uname)" == "Darwin" ]; then
+	source ~/.bash_profile
+else
+  echo ""
+fi
 
 if [ ! "$2" = "" ]; then
 
     if [ "$(uname)" == "Darwin" ]; then
 
         echo "Installing brew gcc"
-        brew install gcc
+        brew install gcc@8
 
         alias gcc='gcc-8'
         alias g++='g++-8'
+    else
 
     else
 
@@ -56,9 +61,13 @@ tar xfz rnahybrid.tar.gz -C "$PROGDIR/$PROG/"
 cd "$PROGDIR/$PROG/"
 mv */* .
 
-./configure
-make
-
+if [ "$(uname)" == "Darwin" ]; then
+    CC=gcc-8 CXX=g++-8 ./configure
+    make
+else
+  ./configure
+  make
+fi
 
 if [ $# -gt 2 ]; then
    if [ "$3" = "1" ]; then

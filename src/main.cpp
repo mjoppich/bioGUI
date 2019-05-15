@@ -62,5 +62,9 @@ int main(int argc, char **argv)
     pApp->exec();
     delete pApp;
 
+    std::cout.rdbuf(coutbuf);
+    std::cerr.rdbuf(cerrbuf);
+    out.close();
+
     return 0;
 }

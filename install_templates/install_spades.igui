@@ -57,8 +57,11 @@ mv */* .
 
 cd "$PROGDIR/$PROG/"
 
-CC=gcc-8 CXX=g++-8 PREFIX="$PROGDIR/$PROG/" ./spades_compile.sh
-
+if [ "$(uname)" == "Darwin" ]; then
+    CC=gcc-8 CXX=g++-8 PREFIX="$PROGDIR/$PROG/" ./spades_compile.sh
+else
+    PREFIX="$PROGDIR/$PROG/" ./spades_compile.sh
+fi
 
 if [ $# -gt 2 ]; then
    if [ "$3" = "1" ]; then

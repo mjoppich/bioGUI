@@ -58,9 +58,13 @@ tar xfz rnahybrid.tar.gz -C "$PROGDIR/$PROG/"
 cd "$PROGDIR/$PROG/"
 mv */* .
 
-CC=gcc-8 CXX=g++-8 ./configure
-make
-
+if [ "$(uname)" == "Darwin" ]; then
+    CC=gcc-8 CXX=g++-8 ./configure
+    make
+else
+  ./configure
+  make
+fi
 
 if [ $# -gt 2 ]; then
    if [ "$3" = "1" ]; then

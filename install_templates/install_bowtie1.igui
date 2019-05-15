@@ -41,7 +41,7 @@ APPBINARYDIR=${PROGDIR}/${PROG}/
 mkdir -p "$PROGDIR"
 
 #download and unzip
-wget https://sourceforge.net/projects/bowtie-bio/files/bowtie/1.2.2/bowtie-1.2.2-src.zip/download -O "$PROGDIR/$PROG.zip"
+wget https://sourceforge.net/projects/bowtie-bio/files/bowtie/1.1.2/bowtie-1.1.2-src.zip/download -O "$PROGDIR/$PROG.zip"
 
 
 

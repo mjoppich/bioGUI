@@ -41,6 +41,8 @@ fi
 ## create progdir
 mkdir -p "$PROGDIR"
 
+rm -rf ${PROGDIR}/${PROG}/
+
 #download and unzip
 wget https://sourceforge.net/projects/bowtie-bio/files/bowtie2/2.3.4.3/bowtie2-2.3.4.3-source.zip/download -O "$PROGDIR/$PROG.zip"
 

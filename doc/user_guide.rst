@@ -22,7 +22,9 @@ Windows
 -------
 
 Extract the zip-File and place the contained bioGUI folder somewhere on your hard drives.
+
 **Please do not put bioGUI in your Program Files directory, as this is specially protected by Windows and may cause problems.**
+
 **Place bioGUI into a location which does not contain spaces in its name, e.g not `C:\Program Files\bioGUI` ! `C:\bioGUI` or `D:\bioGUI\` is fine though!**
 
 
@@ -115,7 +117,7 @@ If you do not see the message, but only blue text, like below, you need to scrol
 
 .. image:: ./images/template_usage/setup_2.png
    :scale: 50
-   
+
 If you do not see this message, (`raise an issue on GitHub <https://github.com/mjoppich/bioGUI/issues/>`_) with attaching the *log.txt* file in the bioGUI folder, or */tmp/log_biogui.txt* on Mac OS, as well as an screenshot of the attempt.
 
 Use an Install Module

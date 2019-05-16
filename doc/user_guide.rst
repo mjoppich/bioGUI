@@ -25,7 +25,9 @@ Extract the zip-File and place the contained bioGUI folder somewhere on your har
 
 **Please do not put bioGUI in your Program Files directory, as this is specially protected by Windows and may cause problems.**
 
-**Place bioGUI into a location which does not contain spaces in its name, e.g not** ``C:\\Program Files\\bioGUI`` **!** ``C:\\bioGUI\\`` or ``D:\\bioGUI\\`` **is fine though!**
+**Place bioGUI into a location which does not contain spaces in its name, e.g not** ``C:\Program Files\bioGUI`` **!**
+
+**You can put bioGUI for instance into the locations** ``C:\bioGUI\`` **or** ``D:\bioGUI\`` **!**
 
 
 Linux

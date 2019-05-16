@@ -128,9 +128,29 @@ end
 </script>
 </if>
 </add>
+
+<const>
+</const>
+<const id="d2ucheck">
+<![CDATA[
+if [ "$(uname)" != "Darwin" ]; then
+  echo "Converting install module to UNIX file endings in $(pwd).";
+
+  printf "echo 'converting' && sed -i 's/\r//' \\\$1 && echo 'converted' " > ./tounix
+else
+  echo "On Mac OS: no need to transform line-endings"
+fi
+]]>
+</const>
+
+<execute location="" exec="sh" param="-c '${d2ucheck}'" wsl="WSLsel">
+	<output type="STD" id="stdout" color="red" to="outputstream1" />
+	<output id="outcout2" type="CERR" color="red" to="outputstream2" />
+</execute>
   
-<execute location="" exec="dos2unix" param="${prog_wsl}" wsl="WSLsel">
-    <output type="STD" id="stdout" color="red" to="outputstream1" />
+<execute location="" exec="sh" param="./tounix ${prog_wsl}" wsl="WSLsel">
+	<output type="STD" id="stdout" color="red" to="outputstream1" />
+	<output id="outcout2" type="CERR" color="red" to="outputstream2" />
 </execute>
 
   <execute location="" exec="sh" wsl="WSLsel" param="${cl}">

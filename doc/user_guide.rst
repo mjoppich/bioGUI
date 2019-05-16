@@ -76,6 +76,7 @@ Make sure that the Windows Subsystem for Linux (WSL) is installed.
 Please follow the steps on [how to setup WSL](http://biogui.readthedocs.io/en/latest/build_wsl.html).
 
 After downloading the zip-archive, please unzip the archive to a location of your preference. Then simply start the executable (bioGUI.exe on Windows).
+*Place bioGUI into a location which does not contain spaces in its name, e.g not C:\Program Files\bioGUI !*  C:\bioGUI is fine though!
 
 On any aptitude supported platform (e.g. Windows with WSL, Ubuntu), please download the "First Time Ubuntu/WSL/apt-get Setup" from the list of available templates and install it via *Install Template Module* (install program: *First Time Ubuntu/WSL/apt-get setup*).
 
@@ -84,14 +85,35 @@ Below this process is shown by an animation.
 Setup First Time Use
 --------------------
 
+For the *First Time Use* setups, please make sure to insert your *sudo/user* password and deselect to save a template.
+
 .. image:: ./images/bioGUI_wsl_setup.gif
    :scale: 50
+
+Please make sure that bioGUI closes the setup with the following message:
+
+.. image:: ./images/template_usage/setup_1.png
+    :scale: 100
+
+If you do not see this message, (`raise an issue on GitHub <https://github.com/mjoppich/bioGUI/issues/>`_) with attaching the *log.txt* file in the bioGUI folder, or */tmp/log_biogui.txt* on Mac OS, as well as an screenshot of the attempt.
 
 Install an install module
 -------------------------
 
 .. image:: ./images/bioGUI_graphmap.gif
    :scale: 50
+
+After the install module has been installed, you will see a message stating that *bioGUI* installed the software:
+
+.. image:: ./images/template_usage/setup_3.png
+    :scale: 100
+
+If you do not see the message, but only blue text, like below, you need to scroll up:
+
+.. image:: ./images/template_usage/setup_2.png
+    :scale: 100
+
+If you do not see this message, (`raise an issue on GitHub <https://github.com/mjoppich/bioGUI/issues/>`_) with attaching the *log.txt* file in the bioGUI folder, or */tmp/log_biogui.txt* on Mac OS, as well as an screenshot of the attempt.
 
 Use an Install Module
 ---------------------

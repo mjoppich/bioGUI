@@ -329,6 +329,7 @@ if (NOT APPLE)
 
     file(GLOB biogui_templates
             "${CMAKE_CURRENT_SOURCE_DIR}/templates/WSL_install.gui"
+            "${CMAKE_CURRENT_SOURCE_DIR}/templates/circlator_docker.gui"
     )
 
     install(DIRECTORY DESTINATION ${CMAKE_INSTALL_PREFIX}/install_templates)

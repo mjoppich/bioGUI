@@ -11,6 +11,9 @@ Especially in biology, the domain experts are often computer novices and have di
 
 You can find the corresponding [preprint at PeerJ](https://peerj.com/preprints/27095/).
 
+![bioGUI](doc/images/biogui_pc.png?raw=true "bioGUI usage")
+
+
 ## Who is bioGUI for?
 
 With bioGUI domain experts, which have no clue about the command line, should be enabled to use highly sophisticated tools written for them.

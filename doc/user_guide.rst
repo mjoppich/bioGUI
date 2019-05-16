@@ -109,11 +109,13 @@ Install an install module
 After the install module has been installed, you will see a message stating that *bioGUI* installed the software:
 
 .. image:: ./images/template_usage/setup_3.png
+   :scale: 50
 
 If you do not see the message, but only blue text, like below, you need to scroll up:
 
 .. image:: ./images/template_usage/setup_2.png
-
+   :scale: 50
+   
 If you do not see this message, (`raise an issue on GitHub <https://github.com/mjoppich/bioGUI/issues/>`_) with attaching the *log.txt* file in the bioGUI folder, or */tmp/log_biogui.txt* on Mac OS, as well as an screenshot of the attempt.
 
 Use an Install Module

@@ -21,7 +21,10 @@ Binary packages/releases for the following operating system are provided on gith
 Windows
 -------
 
-Extract the zip-File and place the contained bioGUI folder somewhere on your hard drives. Please do not put bioGUI in your Program Files directory, as this is specially protected by Windows and may cause problems.
+Extract the zip-File and place the contained bioGUI folder somewhere on your hard drives.
+**Please do not put bioGUI in your Program Files directory, as this is specially protected by Windows and may cause problems.**
+**Place bioGUI into a location which does not contain spaces in its name, e.g not `C:\Program Files\bioGUI` ! `C:\bioGUI` or `D:\bioGUI\` is fine though!**
+
 
 Linux
 -----

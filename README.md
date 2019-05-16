@@ -26,7 +26,7 @@ The binary distribution (zip-files) are targeted for *end-users*: [prebuilt bina
 After downloading the zip-archive, please unzip the archive to a location of your preference. Then simply start the executable (bioGUI.exe on Windows, or bioGUI on linux).
 
 On Windows, please follow the steps on [how to setup WSL](http://biogui.readthedocs.io/en/latest/build_wsl.html).
-Place bioGUI into a location which does not contain spaces in its name, e.g not C:\Program Files\bioGUI ! C:\bioGUI is fine though!
+**Place bioGUI into a location which does not contain spaces in its name, e.g not `C:\Program Files\bioGUI` ! `C:\bioGUI` or `D:\bioGUI\` is fine though!**
 
 On any aptitude supported platform (Windows with WSL, Ubuntu), please download the "First Time Ubuntu/WSL/apt-get Setup" from the list of available templates and install it via *Install Template Module* (install program: *First Time Ubuntu/WSL/apt-get setup*).
 For Mac OS, please execute download and execute *First Time Mac OS Setup*.
@@ -41,6 +41,8 @@ Ubuntu 18.04 or similar with aptitude (apt) package management.
 ### Windows
 Microsoft Windows 10 (build 17763, Oct. 2018 update) with Windows Subsystem for Linux-Feature enabled and the Ubuntu 18.04-App installed.
 This page describes [how to setup WSL](http://biogui.readthedocs.io/en/latest/build_wsl.html).
+**Place bioGUI into a location which does not contain spaces in its name, e.g not `C:\Program Files\bioGUI` ! `C:\bioGUI` or `D:\bioGUI\` is fine though!**
+
 
 ### Mac OS
 

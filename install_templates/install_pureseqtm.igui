@@ -166,7 +166,7 @@ $NCCMD <<EOF
     <if comp="IS_SET" value1="pureseqtm_plot" sep=" "><const>-P 1</const></if>
   </add>
 
-  <execute program="run_pureseqtm" location="" exec="sh" param="\${bindir}/PureseqTM.sh" \${cl} wsl="WSLsel">
+  <execute program="run_pureseqtm" location="" exec="sh" param="\${bindir}/PureseqTM.sh \${cl}" wsl="WSLsel">
     <output type="FILE_STD" color="green" location="\${pureseqtm_output}" />
     <output type="CERR" color="red" to="outputstream2" />
   </execute>

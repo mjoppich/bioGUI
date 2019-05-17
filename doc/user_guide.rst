@@ -165,16 +165,20 @@ If you want to save the inputs you made, using the *Save template* button of the
     :scale: 100
 
 
-Use an Install Module
----------------------
+Use an Install Module (video tutorial)
+--------------------------------------
 
 If you prefer to understand these steps as part of a video, please have a look attaching
 
-.. image:: https://img.youtube.com/vi/Ym6EQJfmzBA/0.jpg
-   :target: https://www.youtube.com/watch?v=Ym6EQJfmzBA
+Installing graphmap (from install module) and using it:
 
 .. image:: https://img.youtube.com/vi/c7e2JKjpMIo/0.jpg
    :target: https://www.youtube.com/watch?v=c7e2JKjpMIo
+
+Using the circlator docker template:
+
+.. image:: https://img.youtube.com/vi/Ym6EQJfmzBA/0.jpg
+   :target: https://www.youtube.com/watch?v=Ym6EQJfmzBA
 
 Adding Own Templates
 =====================

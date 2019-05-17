@@ -13,6 +13,16 @@ You can find the corresponding [preprint at PeerJ](https://peerj.com/preprints/2
 
 ![bioGUI](doc/images/biogui_pc.png?raw=true "bioGUI usage")
 
+## Usage
+
+### After installing WSL, installing+using graphmap
+
+[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/Ym6EQJfmzBA/0.jpg)](https://www.youtube.com/watch?v=Ym6EQJfmzBA)
+
+### With a Docker Image
+
+[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/c7e2JKjpMIo/0.jpg)](https://www.youtube.com/watch?v=c7e2JKjpMIo)
+
 
 ## Who is bioGUI for?
 

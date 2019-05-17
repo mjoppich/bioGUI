@@ -40,8 +40,9 @@ fi
 ## create progdir
 mkdir -p "$PROGDIR/"
 
-if [-z ${PROGDIR}/${PROG} ]; then
-    rm -rf ${PROGDIR}/${PROG}
+if [ -d "$PROGDIR/$PROG" ]; then
+    echo "Removing Folder $PROGDIR/$PROG"
+    rm -rf "$PROGDIR/$PROG"
 fi
 
 #download and unzip

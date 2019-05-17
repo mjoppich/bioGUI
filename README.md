@@ -14,6 +14,8 @@ You can find the corresponding [preprint at PeerJ](https://peerj.com/preprints/2
 ![bioGUI](doc/images/biogui_pc.png?raw=true "bioGUI usage")
 
 
+
+
 ## Who is bioGUI for?
 
 With bioGUI domain experts, which have no clue about the command line, should be enabled to use highly sophisticated tools written for them.
@@ -50,7 +52,10 @@ This page describes [how to setup WSL](http://biogui.readthedocs.io/en/latest/bu
 
 ### Mac OS
 
-bioGUI has been tested on Mac OS X 10.15 Mojave.
+bioGUI requires Mac OS X 10.14 Mojave.
+Mac OS may bother you about running an app from a non-verified developer.
+In the ``Preferences->Security`` menu you can tell Mac OS to still run *bioGUI*.
+Please refer to the [User Guide](https://biogui.readthedocs.io/en/latest/user_guide.html#mac-os) for more instructions.
 
 ## Setup First Time Use
 
@@ -77,6 +82,16 @@ From my experience in writing *install modules*, it is best to copy an existing 
 ## I want to know more about bioGUI
 
 You can find a detailed documentation of bioGUI at [readthedocs](http://biogui.readthedocs.io/en/latest).
+
+## Instructional Videos
+
+### After installing WSL, installing+using graphmap
+
+[![bioGUI graphmap](https://img.youtube.com/vi/Ym6EQJfmzBA/0.jpg)](https://www.youtube.com/watch?v=Ym6EQJfmzBA)
+
+### With a Docker Image
+
+[![bioGUI docker](https://img.youtube.com/vi/c7e2JKjpMIo/0.jpg)](https://www.youtube.com/watch?v=c7e2JKjpMIo)
 
 # About using/building bioGUI
 ## How to obtain bioGUI?

@@ -34,20 +34,33 @@ Linux
 -----
 
 Extract the `tar.gz` file and place the contained bioGUI folder somewhere on your hard drives.
+On Ubuntu you can then execute the ``bioGUI.desktop`` file.
 
 Mac OS
 ------
 
 Download and open the provided dmg package. You can simply drag and drop the bioGUI.app into your Applications folder.
-In order to productively use bioGUI, it may be required to install the OSX command line tools as well as brew.
-Most (install) templates will require you to have wget and netcat installed. Using brew installation is simple:
+*bioGUI* has been built for Mac OS X 10.14 Mojave. Mac OS may bother your about running an app from a non-signed/verified developer.
+In the ``Preferences->Security`` menu you can tell Mac OS to still run *bioGUI*.
+
+In order to use bioGUI, it may be required to install the OSX command line tools as well as brew.
+For the command line tools, open a *Terminal* and enter ``xcode-select --install``.
+You can get brew from `here <http://brew.sh/>`_
+To test brew, simply run the following code:
 
 .. code:: bash
     
     brew install wget netcat
 
-You can get brew from `here <http://brew.sh/>`_
+Make sure to have brew in your path.
 
+From the terminal, run:
+
+.. code:: bash
+    
+    echo "export PATH=/usr/local/bin/:\$PATH" >> ~/.bash_profile
+
+This will tell Mac OS to look for (unix) applications also under ``/usr/local/bin/``. This is where brew installs itself.
 
 .. _install_download_templates:
 
@@ -163,6 +176,25 @@ If you want to save the inputs you made, using the *Save template* button of the
 
 .. image:: ./images/template_usage/graphmap_5.png
     :scale: 100
+
+
+.. _video_tutorial:
+
+
+Use an Install Module (video tutorial)
+--------------------------------------
+
+If you prefer to understand these steps as part of a video, please have a look attaching
+
+Installing graphmap (from install module) and using it:
+
+.. image:: https://img.youtube.com/vi/c7e2JKjpMIo/0.jpg
+   :target: https://www.youtube.com/watch?v=c7e2JKjpMIo
+
+Using the circlator docker template:
+
+.. image:: https://img.youtube.com/vi/Ym6EQJfmzBA/0.jpg
+   :target: https://www.youtube.com/watch?v=Ym6EQJfmzBA
 
 Adding Own Templates
 =====================

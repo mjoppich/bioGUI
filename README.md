@@ -53,6 +53,9 @@ This page describes [how to setup WSL](http://biogui.readthedocs.io/en/latest/bu
 ### Mac OS
 
 bioGUI requires Mac OS X 10.14 Mojave.
+Mac OS may bother you about running an app from a non-verified developer.
+In the ``Preferences->Security`` menu you can tell Mac OS to still run *bioGUI*.
+Please refer to the [User Guide](https://biogui.readthedocs.io/en/latest/user_guide.html#mac-os) for more instructions.
 
 ## Setup First Time Use
 

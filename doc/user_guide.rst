@@ -40,16 +40,27 @@ Mac OS
 ------
 
 Download and open the provided dmg package. You can simply drag and drop the bioGUI.app into your Applications folder.
-*bioGUI* has been built for Mac OS X 10.14 Mojave.
-In order to productively use bioGUI, it may be required to install the OSX command line tools as well as brew.
-Most (install) templates will require you to have wget and netcat installed. Using brew installation is simple:
+*bioGUI* has been built for Mac OS X 10.14 Mojave. Mac OS may bother your about running an app from a non-signed/verified developer.
+In the ``Preferences->Security`` menu you can tell Mac OS to still run *bioGUI*.
+
+In order to use bioGUI, it may be required to install the OSX command line tools as well as brew.
+For the command line tools, open a *Terminal* and enter ``xcode-select --install``.
+You can get brew from `here <http://brew.sh/>`_
+To test brew, simply run the following code:
 
 .. code:: bash
     
     brew install wget netcat
 
-You can get brew from `here <http://brew.sh/>`_
+Make sure to have brew in your path.
 
+From the terminal, run:
+
+.. code:: bash
+    
+    echo "export PATH=/usr/local/bin/:\$PATH" >> ~/.bash_profile
+
+This will tell Mac OS to look for (unix) applications also under ``/usr/local/bin/``. This is where brew installs itself.
 
 .. _install_download_templates:
 

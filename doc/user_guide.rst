@@ -165,11 +165,11 @@ If you want to save the inputs you made, using the *Save template* button of the
     :scale: 100
 
 
-Use an Install Module (video tutorial)
---------------------------------------
-
 .. _video_tutorial:
 
+
+Use an Install Module (video tutorial)
+--------------------------------------
 
 If you prefer to understand these steps as part of a video, please have a look attaching
 

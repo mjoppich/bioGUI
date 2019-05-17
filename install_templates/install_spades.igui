@@ -11,6 +11,9 @@ if [ ! "$2" = "" ]; then
     if [ "$(uname)" == "Darwin" ]; then
 
         echo "No dependencies"
+        echo "Installing brew gcc"
+        brew install gcc@8 
+
         echo "Requires Python 2.x with regex module"
         echo $2 | sudo -S pip install regex
 

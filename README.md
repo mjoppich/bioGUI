@@ -52,7 +52,7 @@ This page describes [how to setup WSL](http://biogui.readthedocs.io/en/latest/bu
 
 ### Mac OS
 
-bioGUI has been tested on Mac OS X 10.15 Mojave.
+bioGUI requires Mac OS X 10.14 Mojave.
 
 ## Setup First Time Use
 

@@ -34,11 +34,13 @@ Linux
 -----
 
 Extract the `tar.gz` file and place the contained bioGUI folder somewhere on your hard drives.
+On Ubuntu you can then execute the ``bioGUI.desktop`` file.
 
 Mac OS
 ------
 
 Download and open the provided dmg package. You can simply drag and drop the bioGUI.app into your Applications folder.
+*bioGUI* has been built for Mac OS X 10.14 Mojave.
 In order to productively use bioGUI, it may be required to install the OSX command line tools as well as brew.
 Most (install) templates will require you to have wget and netcat installed. Using brew installation is simple:
 

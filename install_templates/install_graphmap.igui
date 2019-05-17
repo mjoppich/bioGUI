@@ -1,4 +1,4 @@
-#! Install graphmap (github))
+#! Install graphmap (github)
 
 if [ "$(uname)" == "Darwin" ]; then
 	source ~/.bash_profile

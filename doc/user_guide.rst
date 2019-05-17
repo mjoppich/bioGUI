@@ -23,6 +23,8 @@ Windows
 
 Extract the zip-File and place the contained bioGUI folder somewhere on your hard drives.
 
+Follow the instructions to setup WSL: :ref:`build_wsl_intro`.
+
 **Please do not put bioGUI in your Program Files directory, as this is specially protected by Windows and may cause problems.**
 
 **Place bioGUI into a location which does not contain spaces in its name, e.g not** ``C:\Program Files\bioGUI`` **!**
@@ -34,7 +36,8 @@ Linux
 -----
 
 Extract the `tar.gz` file and place the contained bioGUI folder somewhere on your hard drives.
-On Ubuntu you can then execute the ``bioGUI.desktop`` file.
+On Ubuntu you can then execute the ``bioGUI.desktop`` file, e.g. from your Explorer equivalent, or being in the bioGUI folder, the command-line: ``dex bioGUI.desktop`` (you may need to install *dex* first: ``sudo apt-get install dex``).
+Alternatively you can also simply execute ``sh ./bioGUI.sh``.
 
 Mac OS
 ------

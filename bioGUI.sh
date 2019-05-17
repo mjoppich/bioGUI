@@ -1,0 +1,4 @@
+#!/usr/bin/env sh
+CURDIR=`dirname $SCRIPT`
+
+LD_LIBRARY_PATH=$CURDIR:$LD_LIBRARY_PATH ./bioGUI

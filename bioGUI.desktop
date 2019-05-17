@@ -2,6 +2,6 @@
 Type=Application
 Name=bioGUI
 Comment=bioGUI
-Exec=./bioGUI
+Exec=./bioGUI.sh
 Icon=./biogui_logo.png
 Categories=Office;

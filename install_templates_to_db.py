@@ -97,7 +97,7 @@ if __name__ == "__main__":
 
     userid = getUserID(cnx, cursor, args, args.simulate)
 
-    add_template = ("insert into templates (displayname, template, type, user, anonym) values (%s, %s, %s, %s, %s)")
+    add_template = ("insert into templates (displayname, template, type, user, anonym, omictools) values (%s, %s, %s, %s, %s, '')")
     delete_existing_template = ("delete from templates where user = %s and type = %s and displayname = %s")
 
     install_templates = listTemplates(True)

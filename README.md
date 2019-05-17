@@ -13,15 +13,7 @@ You can find the corresponding [preprint at PeerJ](https://peerj.com/preprints/2
 
 ![bioGUI](doc/images/biogui_pc.png?raw=true "bioGUI usage")
 
-## Usage
 
-### After installing WSL, installing+using graphmap
-
-[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/Ym6EQJfmzBA/0.jpg)](https://www.youtube.com/watch?v=Ym6EQJfmzBA)
-
-### With a Docker Image
-
-[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/c7e2JKjpMIo/0.jpg)](https://www.youtube.com/watch?v=c7e2JKjpMIo)
 
 
 ## Who is bioGUI for?
@@ -87,6 +79,16 @@ From my experience in writing *install modules*, it is best to copy an existing 
 ## I want to know more about bioGUI
 
 You can find a detailed documentation of bioGUI at [readthedocs](http://biogui.readthedocs.io/en/latest).
+
+## Instructional Videos
+
+### After installing WSL, installing+using graphmap
+
+[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/Ym6EQJfmzBA/0.jpg)](https://www.youtube.com/watch?v=Ym6EQJfmzBA)
+
+### With a Docker Image
+
+[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/c7e2JKjpMIo/0.jpg)](https://www.youtube.com/watch?v=c7e2JKjpMIo)
 
 # About using/building bioGUI
 ## How to obtain bioGUI?

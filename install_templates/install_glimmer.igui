@@ -36,6 +36,11 @@ echo "PROGDIRESC $PROGDIRESC"
 
 APPBINARYDIR="${PROGDIRESC}/${PROG}/"
 
+if [ -d "$PROGDIR/$PROG" ]; then
+    echo "Removing Folder $PROGDIR/$PROG"
+    rm -rf "$PROGDIR/$PROG"
+fi
+
 ## create progdir
 mkdir -p "$PROGDIR/$PROG"
 

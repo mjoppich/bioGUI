@@ -43,12 +43,13 @@ mkdir -p "$PROGDIR"
 #download and unzip
 wget https://sourceforge.net/projects/bowtie-bio/files/bowtie/1.1.2/bowtie-1.1.2-src.zip/download -O "$PROGDIR/$PROG.zip"
 
+if [ -d "$PROGDIR/$PROG" ]; then
+    echo "Removing Folder $PROGDIR/$PROG"
+    rm -rf "$PROGDIR/$PROG"
+fi
 
-
-if [ ! -d "$PROGDIR/$PROG" ]; then
 unzip -d "$PROGDIR/$PROG" "$PROGDIR/$PROG.zip"
 mv "$PROGDIR/$PROG/"*/* "$PROGDIR/$PROG"
-fi
 
 cd "$PROGDIR/$PROG"
 

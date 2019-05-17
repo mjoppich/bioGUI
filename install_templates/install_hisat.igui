@@ -41,9 +41,13 @@ fi
 
 PROGDIRESC=$(echo $PROGDIR | sed 's/ /\\ /g')
 
-
 ## create progdir
 mkdir -p "$PROGDIR"
+
+if [ -d "$PROGDIR/$PROG" ]; then
+    echo "Removing Folder $PROGDIR/$PROG"
+    rm -rf "$PROGDIR/$PROG"
+fi
 
 #download and unzip
 cd "$PROGDIR"

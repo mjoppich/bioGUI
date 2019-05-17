@@ -41,7 +41,11 @@ fi
 ## create progdir
 mkdir -p "$PROGDIR"
 
-rm -rf ${PROGDIR}/${PROG}/
+
+if [ -d "$PROGDIR/$PROG" ]; then
+    echo "Removing Folder $PROGDIR/$PROG"
+    rm -rf "$PROGDIR/$PROG"
+fi
 
 #download and unzip
 wget https://sourceforge.net/projects/bowtie-bio/files/bowtie2/2.3.4.3/bowtie2-2.3.4.3-source.zip/download -O "$PROGDIR/$PROG.zip"

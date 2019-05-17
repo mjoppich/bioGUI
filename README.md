@@ -84,11 +84,11 @@ You can find a detailed documentation of bioGUI at [readthedocs](http://biogui.r
 
 ### After installing WSL, installing+using graphmap
 
-[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/Ym6EQJfmzBA/0.jpg)](https://www.youtube.com/watch?v=Ym6EQJfmzBA)
+[![bioGUI graphmap](https://img.youtube.com/vi/Ym6EQJfmzBA/0.jpg)](https://www.youtube.com/watch?v=Ym6EQJfmzBA)
 
 ### With a Docker Image
 
-[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/c7e2JKjpMIo/0.jpg)](https://www.youtube.com/watch?v=c7e2JKjpMIo)
+[![bioGUI docker](https://img.youtube.com/vi/c7e2JKjpMIo/0.jpg)](https://www.youtube.com/watch?v=c7e2JKjpMIo)
 
 # About using/building bioGUI
 ## How to obtain bioGUI?

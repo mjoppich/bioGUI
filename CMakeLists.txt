@@ -323,6 +323,8 @@ if (NOT APPLE)
 
     file(GLOB biogui_ini_files
             "config.ini"
+            "bioGUI.desktop"
+            "biogui_logo.png"
             )
 
     install(FILES ${biogui_ini_files} DESTINATION ${CMAKE_INSTALL_PREFIX})

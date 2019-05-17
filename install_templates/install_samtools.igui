@@ -53,7 +53,12 @@ fi
 
 cd "$PROGDIR/$PROG"
 
-CC=gcc-8 CXX=g++-8 ./configure
+if [ "$(uname)" == "Darwin" ]; then
+  CC=gcc-8 CXX=g++-8 ./configure
+else
+	./configure
+fi
+
 make
 make prefix=. install
 

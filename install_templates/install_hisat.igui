@@ -14,12 +14,6 @@ if [ ! "$2" = "" ]; then
         echo "Installing gawk only for libmpfr.4.dylib ..."
         brew install gcc@8 gawk
 
-        alias gcc='gcc-8'
-        alias g++='g++-8'
-
-        alias gcc='gcc-8'
-        alias g++='g++-8'
-
     else
 
         echo "Installing dependencies: gcc/build-essential"
@@ -52,7 +46,11 @@ git clone https://github.com/infphilo/hisat2.git $PROG
 #install prog
 cd "$PROGDIR/$PROG"
 
-make
+if [ "$(uname)" == "Darwin" ]; then
+	make CC=gcc-8 CXX=g++-8
+else
+	make
+fi
 
 #now fix spaces in path - no longer works/necessary
 #perl -pi -e 's/my \$align_prog_s= File::Spec->catpath\(\$vol\,\$script_path\,\$align_bin_s\);/my \$align_prog_s= "\\\"".File::Spec->catpath(\$vol,\$script_path,\$align_bin_s).\"\\\"\";/' hisat2

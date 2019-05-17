@@ -86,7 +86,7 @@
     <replace id="circlator_reads_rel" from="${circlator_assembly_reads}" replace="${circlator_base}" replace_with="/data/"/>
     <replace id="circlator_outdir_rel" from="${circlator_outdir}" replace="${circlator_base}" replace_with="/data/"/>
 
-    <execute program="circlator_run" param="run --rm -v ${circlator_base}:/data sangerpathogens/circlator circlator ${circlator_mode} ${circlator_cls} ${circlator_fasta_rel} ${circlator_reads_rel} ${circlator_outdir_rel}" location="${dockerexec}" exec="">
+    <execute program="circlator_run" param="run --rm -v ${circlator_base}:/data sangerpathogens/circlator circlator ${circlator_mode}${circlator_cls} ${circlator_fasta_rel} ${circlator_reads_rel} ${circlator_outdir_rel}" location="${dockerexec}" exec="">
         <output type="COUT" color="green" to="outputstream1" />
         <output type="CERR" color="red" to="outputstream2" />
     </execute>

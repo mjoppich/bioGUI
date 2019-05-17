@@ -1,4 +1,8 @@
 #!/usr/bin/env sh
+
+SCRIPT=$(readlink -f $0)
 CURDIR=`dirname $SCRIPT`
 
-LD_LIBRARY_PATH=$CURDIR:$LD_LIBRARY_PATH ./bioGUI
+echo $CURDIR
+
+LD_LIBRARY_PATH=$CURDIR:$LD_LIBRARY_PATH $CURDIR/bioGUI

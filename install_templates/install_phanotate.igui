@@ -1,0 +1,158 @@
+#! Install PHANOTATE (github)
+
+if [ "$(uname)" == "Darwin" ]; then
+	source ~/.bash_profile
+else
+  echo ""
+fi
+
+echo "Dependencies: r-base"
+if [ ! "$2" = "" ]; then
+
+    if [ "$(uname)" == "Darwin" ]; then
+
+        echo "Installing R and setting PATH for R libraries"
+        brew install gcc@8
+
+    else
+        echo "No dependencies"
+    fi
+
+		
+else
+	echo "No sudo password, not installing dependencies"
+fi
+
+## set all variables
+PROG=PHANOTATE
+PROGNICE=PHANOTATE
+PROGDIR=$1
+
+
+if [ -z "${PROGDIR}" ]; then
+	PROGDIR=~/bioGUI/progs/
+fi
+
+PROGDIRESC=$(echo $PROGDIR | sed 's/ /\\ /g')
+APPBINARYDIR="${PROGDIR}/${PROG}/"
+
+rm -rf "$PROGDIR/$PROG"
+
+## create progdir
+
+git clone --recursive git@github.com:deprekate/PHANOTATE.git $PROG
+
+cd "$PROGDIR/$PROG"
+
+if [ "$(uname)" == "Darwin" ]; then
+	make CC=gcc-8
+else
+	make
+fi
+
+
+if [ $# -gt 2 ]; then
+
+	if [ "$3" = "1" ]; then
+
+		if ! grep -q "$PROGDIRESC/$PROG" ~/.bashrc; then
+			echo "export PATH=\"$PROGDIRESC/$PROG:\$PATH\" " >> ~/.bashrc;
+		fi
+	fi
+
+fi
+
+PY3PATH=`which python3`
+
+APPBINARYESC="${PROGDIRESC}/${PROG}/"
+APPBINARY="${PROGDIRESC}/${PROG}/phanotate.py"
+if [ -z "$(ls -A ${APPBINARYESC})" ] || [ ! -f ${APPBINARY} ]; then
+   (>&2 echo ${APPBINARYESC})
+   (>&2 ls ${APPBINARYESC})
+
+   (>&2 echo " \n \n \n")
+
+   (>&2 echo ${PROGDIRESC})
+   (>&2 ls ${PROGDIRESC})
+
+    (>&2 echo " \n \n \n")
+
+   (>&2 echo ${APPBINARY})
+   (>&2 ls ${APPBINARY})
+   
+   (>&2 echo " \n \n \n")
+
+   (>&2 echo "ERROR: The application directory is empty after installation.")
+   (>&2 echo "ERROR: If you experience problems please re-install the software and create an issue on https://github.com/mjoppich/bioGUI.")
+   (>&2 echo "ERROR: For creating the issue, please upload the log.txt file of your installation attempt.")
+
+    (>&2 echo " \n \n \n")
+
+else
+
+    echo "${PROG} has been installed into ${APPBINARYESC}"
+    echo "Binary location ${APPBINARY}"
+
+fi
+
+if [ $# -eq 5 ]; then
+
+IP=$4
+PORT=$5
+
+NCCMD=""
+
+if [ "$(uname)" == "Darwin" ]; then
+	NCCMD="nc -c $IP $PORT"
+else
+	NCCMD="nc -q 0 $IP $PORT"
+fi
+
+
+$NCCMD <<EOF
+
+<template description="$PROGNICE" title="$PROGNICE">
+ <window title="$PROGNICE">
+  <vgroup>
+
+	<checkbox id="WSLsel" value="true" selectonwindows="true">Run in WSL?</checkbox>
+
+	<group title="Input Files Reference">
+	
+	<filedialog id="phanotate_input" output="false" multiple="false">Input Fasta</filedialog>
+    <filedialog id="phanotate_output" output="true" multiple="false">Output ORFs</filedialog>
+
+    <label>Regular Expression for finding sample data</label>
+	<input id="msempire_sample_regex">*SRR*</input>
+	
+		<action program="run_phanotate">Run $PROGNICE</action>
+	
+	</group>
+				
+  
+   <streambox id="output1">
+    <stream id="outputstream1">COUT</stream>
+    <stream id="outputstream2">CERR</stream>
+   </streambox>
+
+  </vgroup>
+ </window>
+ <execution>
+ 
+    <relocate id="phanotate_infasta_rel" from="\${phanotate_input}" wsl="\${WSLsel}"/>
+
+ 
+  <const id="bindir">${APPBINARYDIR}/</const>
+
+  <execute program="run_phanotate" location="" exec="$PY3PATH" param="\${bindir}/phanotate.py \${phanotate_infasta_rel}" wsl="WSLsel">
+        <output type="FILE_STD" color="green" location="\${phanotate_output}" />
+    <output type="CERR" color="red" to="outputstream2" />
+  </execute>
+
+ </execution>
+</template>
+
+
+EOF
+
+fi

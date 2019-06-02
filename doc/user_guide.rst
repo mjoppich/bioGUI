@@ -31,6 +31,8 @@ Follow the instructions to setup WSL: :ref:`build_wsl_intro`.
 
 **You can put bioGUI for instance into the locations** ``C:\bioGUI\`` **or** ``D:\bioGUI\`` **!**
 
+If you want to access external drives (USB stick, network drive), you first need to *mount* this drive into WSL.
+The WSL **Mount Drive** install module will install a script which can do this for you. Make sure to save the template and use the *Mount Drive (WSL)* template to make the drive available to WSL. You need to enter the drive-letter you want to mount (e.g. F), and your *sudo* password.
 
 Linux
 -----

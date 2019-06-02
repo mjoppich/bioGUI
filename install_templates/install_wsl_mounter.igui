@@ -1,0 +1,171 @@
+#! Install Mount Drive (WSL only)
+
+if [ "$(uname)" == "Darwin" ]; then
+	echo "This will not run on Mac OS"
+    exit;
+else
+  echo ""
+fi
+
+if [ ! "$2" = "" ]; then
+
+    if [ "$(uname)" == "Darwin" ]; then
+        echo "This will not run on Mac OS"
+        exit;
+    else
+
+        echo "No Dependencies"
+
+    fi
+else
+   echo "No sudo password, not installing dependencies"
+fi
+
+## set all variables
+PROG=MNTDRV
+PROGDIR=$1
+
+if [ -z "${PROGDIR}" ]; then
+	PROGDIR=~/bioGUI/progs/
+fi
+
+
+PROGDIRESC=$(echo $PROGDIR | sed 's/ /\\ /g')
+APPBINARYDIR=${PROGDIRESC}/${PROG}/
+
+if [ -d "$PROGDIR/$PROG" ]; then
+    echo "Removing Folder $PROGDIR/$PROG"
+    rm -rf $PROGDIR/$PROG
+fi
+
+## create progdir
+mkdir -p "$PROGDIR/$PROG"
+
+APPBINARYDIR=${PROGDIRESC}/${PROG}/
+
+UMOUNTBIN=`which umount`
+MOUNTBIN=`which mount`
+
+cat <<EOS > $APPBINARYDIR/mntdrv.sh
+#!/usr/bin/env sh
+
+DRVLTR=\$1
+
+DRVLTR=\`echo "\$DRVLTR" | tr '[:upper:]' '[:lower:]'\`
+echo $2 | sudo -S mkdir -p /mnt/\$DRVLTR/
+
+echo $2 | sudo -S $UMOUNTBIN /mnt/\$DRVLTR/
+echo $2 | sudo -S $MOUNTBIN -t drvfs \$DRVLTR: /mnt/\$DRVLTR/ -o rw,noatime,uid=1000,gid=1000,case=off
+
+echo "Mounted windows drive \$DRVLTR:\\ to /mnt/\$DRVLTR"
+
+ls /mnt/\$DRVLTR/
+
+EOS
+
+APPBINARYESC="${PROGDIRESC}/${PROG}/"
+APPBINARY="${PROGDIRESC}/${PROG}/mntdrv.sh"
+if [ -z "$(ls -A ${APPBINARYESC})" ] || [ ! -f ${APPBINARY} ]; then
+   (>&2 echo ${APPBINARYESC})
+   (>&2 ls ${APPBINARYESC})
+
+   (>&2 echo " \n \n \n")
+
+   (>&2 echo ${PROGDIRESC})
+   (>&2 ls ${PROGDIRESC})
+
+    (>&2 echo " \n \n \n")
+
+   (>&2 echo ${APPBINARY})
+   (>&2 ls ${APPBINARY})
+   
+   (>&2 echo " \n \n \n")
+
+   (>&2 echo "ERROR: The application directory is empty after installation.")
+   (>&2 echo "ERROR: If you experience problems please re-install the software and create an issue on https://github.com/mjoppich/bioGUI.")
+   (>&2 echo "ERROR: For creating the issue, please upload the log.txt file of your installation attempt.")
+
+    (>&2 echo " \n \n \n")
+
+else
+
+    echo "${PROG} has been installed into ${APPBINARYESC}"
+    echo "Binary location ${APPBINARY}"
+
+fi
+
+
+if [ $# -eq 5 ]; then
+
+IP=$4
+PORT=$5
+       
+echo "Sending Template to $IP at $PORT"
+
+NCCMD=""
+
+if [ "$(uname)" == "Darwin" ]; then
+	NCCMD="nc -c $IP $PORT"
+else
+	NCCMD="nc -q 0 $IP $PORT"
+fi
+
+
+$NCCMD <<EOF
+
+<template description="Mount Drive (WSL)" title="Mount Drive">
+
+<window width="500" height="1000" title="Mount Drive">
+
+  <vgroup>
+
+
+    <group title="Mount Options">
+    
+                
+        <label>Which Window Drive do you want to make accessible (mount)?</label><input id="mntr_drv"></input>
+        <label>WSL User/sudo Password</label><input id="mntr_pw"  type="password"></input>
+  
+        <action program="assembly" hint="Click Here to mount the drive">Mount</action>  
+    </group>
+
+
+    <group title="General Options">
+       <label>Run in WSL on Windows?</label><checkbox id="WSLsel" value="true" selectonwindows="true">Run in WSL?</checkbox>
+    </group>
+  
+    <streambox linebreaks="TRUE" id="output1">
+      <stream id="outputstream1">OS1</stream>
+      <stream id="outputstream2">OS2</stream>
+    </streambox>
+ 
+
+  </vgroup>
+
+</window>
+
+
+
+<execution>
+    <const id="bindir">${APPBINARYDIR}/</const>
+    
+    
+    <add id="args">
+	<const>${APPBINARYDIR}/mntdrv.sh</const>
+    <value from="\${mntr_drv}"/>
+    <value from="\${mntr_pw}"/>     
+    </add>
+    
+    <execute program="assembly" param="bash \${args}" location="/usr/bin/" exec="env" wsl="WSLsel">
+        <output type="COUT" color="green" to="outputstream1" />
+        <output type="CERR" color="red" to="outputstream2" />
+    </execute>
+  
+
+</execution>
+</template>
+
+
+EOF
+
+fi

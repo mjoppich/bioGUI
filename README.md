@@ -49,6 +49,8 @@ Microsoft Windows 10 (build 17763, Oct. 2018 update) with Windows Subsystem for 
 This page describes [how to setup WSL](http://biogui.readthedocs.io/en/latest/build_wsl.html).
 **Place bioGUI into a location which does not contain spaces in its name, e.g not `C:\Program Files\bioGUI` ! `C:\bioGUI` or `D:\bioGUI\` is fine though!**
 
+If you want to access external drives (USB stick, network drive), you first need to *mount* this drive into WSL.
+The WSL *Mount Drive* install module will install a script which can do this for you. Make sure to save the template and use the *Mount Drive (WSL)* template to make the drive available to WSL. You need to enter the drive-letter you want to mount (e.g. F), and your *sudo* password.
 
 ### Mac OS
 

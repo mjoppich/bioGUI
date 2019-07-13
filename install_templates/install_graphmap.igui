@@ -1,17 +1,16 @@
-#! Install graphmap (github)
+#! Install graphmap (github))
 
-if [ "$(uname)" == "Darwin" ]; then
-	source ~/.bash_profile
-else
-  echo ""
-fi
+
 
 if [ ! "$2" = "" ]; then
 
     if [ "$(uname)" == "Darwin" ]; then
 
         echo "Installing brew gcc"
-        brew install gcc@8
+        brew install gcc
+
+        alias gcc='gcc-8'
+        alias g++='g++-8'
 
     else
 
@@ -133,20 +132,23 @@ $NCCMD <<EOF
     <group title="Alignment Options">
     
     
-        <label>Program Mode (not all options used in all modes)</label>
+        <label>graphmap supports multiple modes:</label>
+        <label>the 'align' mode aligns reads to a reference</label>
+        <label>the 'owler' mode overlaps input sequences</label>
+        <label>Selected Program Mode (not all options used in all modes)</label>
         <combobox id="graphmap_mode" selected="align">
             <comboitem value="align">Alignment-Mode</comboitem>
             <comboitem value="owler">Overlap-Mode</comboitem>
         </combobox>
                 
-        <label>Input Reference</label> <filedialog id="graphmap_align_reference" output="false">Select Input Reference (fa)</filedialog>
-        <label>Input Reads</label> <filedialog id="graphmap_align_reads" output="false">Select Input Reads (fq)</filedialog>
+        <label>Input Reference: the (reference) sequence to align to</label> <filedialog id="graphmap_align_reference" output="false">Select Input Reference (fa)</filedialog>
+        <label>Input Reads: the reads to align against the reference</label> <filedialog id="graphmap_align_reads" output="false">Select Input Reads (fq)</filedialog>
         
-        <label>Input Transcriptome</label> <filedialog id="graphmap_align_gtf" output="false">Select Input Annotation (gtf)</filedialog>
+        <label>Input Transcriptome (optional): gene annotation for transcriptomic align (considering exon structure)</label> <filedialog id="graphmap_align_gtf" output="false">Select Input Annotation (gtf)</filedialog>
         
-        <label>Alignment Output</label> <filedialog id="graphmap_align_output" output="true">Select Output Sam-File</filedialog>
+        <label>Alignment Output: location/filename of output file</label> <filedialog id="graphmap_align_output" output="true">Select Output Sam-File</filedialog>
         
-        <label>Alignment Algorithm</label>
+        <label>Alignment Algorithm to use (default: anchor):</label>
         <combobox id="graphmap_align_mode" selected="anchor">
             <comboitem value="anchor">Anchored alignment with end-to-end extension</comboitem>
             <comboitem value="anchorgotoh">Anchored alignment with Gotoh</comboitem>
@@ -155,7 +157,7 @@ $NCCMD <<EOF
 
         </combobox>
         
-        <label>Additional Options</label><input id="graphmap_options"></input>
+        <label >Additional Options (otional)</label><input id="graphmap_options"></input>
     
     
         <action program="graphmap" hint="click here to run program">Run Graphmap</action>  
@@ -189,19 +191,19 @@ $NCCMD <<EOF
     <relocate id="graphmap_align_gtf_rel" from="\${graphmap_align_gtf}" wsl="\${WSLsel}"/>
     <relocate id="graphmap_align_output_rel" from="\${graphmap_align_output}" wsl="\${WSLsel}"/>
 
-    <add id="args" sep=" ">
+    <add id="args">
         <value from="\${graphmap_mode}"/>
-        <if comp="IS_SET" value1="\${graphmap_align_reference_rel}"  sep=" ">
+        <if comp="IS_SET" value1="\${graphmap_align_reference_rel}">
             <const>-r</const>
             <value from="\${graphmap_align_reference_rel}"/>
         </if>
 
-        <if comp="IS_SET" value1="\${graphmap_align_gtf}" sep=" ">
+        <if comp="IS_SET" value1="\${graphmap_align_gtf}">
             <const>--gtf</const>
             <value from="\${graphmap_align_gtf_rel}"/>
         </if>
 
-        <if comp="IS_SET" value1="\${graphmap_align_reads_rel}" sep=" ">
+        <if comp="IS_SET" value1="\${graphmap_align_reads_rel}">
             <const>-d</const>
             <value from="\${graphmap_align_reads_rel}"/>
         </if>        
@@ -209,7 +211,7 @@ $NCCMD <<EOF
 
         <value from="\${graphmap_options}"/>
         
-        <if comp="IS_SET" value1="\${graphmap_align_output_rel}" sep=" ">
+        <if comp="IS_SET" value1="\${graphmap_align_output_rel}">
             <const>-o</const>
             <value from="\${graphmap_align_output_rel}"/>
         </if>         

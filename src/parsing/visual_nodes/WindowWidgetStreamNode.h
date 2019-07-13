@@ -38,6 +38,7 @@ public:
 
     }
 
+
     virtual CreatedElement getWindowElement( QDomElement* pDOMElement )
     {
 
@@ -46,6 +47,13 @@ public:
         CreatedElement oReturn;
 
         QCheckBox* pCheckbox = new QCheckBox(sValue);
+
+        bool bSelected = true;
+        if (this->getQAttribute(pDOMElement, "active", "").compare("FALSE", Qt::CaseInsensitive) == 0)
+        {
+            bSelected=false;
+        }
+        pCheckbox->setChecked(bSelected);
 
         oReturn.pElement = pCheckbox;
 

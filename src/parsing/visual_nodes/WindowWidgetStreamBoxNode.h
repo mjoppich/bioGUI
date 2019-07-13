@@ -105,7 +105,6 @@ public:
 
             if (QCheckBox* pButton = dynamic_cast<QCheckBox*>(pChildElement))
             {
-                pButton->setChecked(true);
 
                 std::string sID = this->getAttribute(&oChildNode, "id", "");
                 if (sID.length() > 0)

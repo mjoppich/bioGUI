@@ -38,7 +38,7 @@
     <streambox id="output1">
     <stream id="outputstream1">Normal Log</stream>
 	<stream id="outputstream2">Error Log</stream>
-	<stream id="savetemplate">Template</stream>
+	<stream id="savetemplate" active="false">Template</stream>
     </streambox>
 
   </vgroup>

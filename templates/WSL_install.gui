@@ -6,39 +6,45 @@
   <vgroup>
 
   <group>
-	<label>Install Program:</label>
+	<label>Select the Programm to install:</label>
   <filelist id="prog" ext="*.igui"/>
+  <label>You can download more install modules via 'Download Templates' in the lower left area.</label>
   </group>
+
 
   <group title="Install Options">
   <label>Install Program to WSL?</label>
-    <checkbox id="WSLsel" value="true" selectonwindows="true">Use WSL?</checkbox>
-
+    <checkbox id="WSLsel" value="true" selectonwindows="true">Use WSL? (Check on Windows, otherwise not)</checkbox>
+    <label>The following options let you decide where to install the program to. If unsure, use the recommended setting.</label>
+    
     <groupbox id="user_sel_instpath" title="Install Location" exclusive="true">
 
-        <checkbox id="loc_datadir" value="data" selected="true">Install programs in User Data Dir (default)</checkbox>
+        <checkbox id="loc_datadir" value="data" selected="true">Install programs in User Data Dir (default; recommended)</checkbox>
         <checkbox id="loc_spec" value="spec"> <input id="loc_spec_user">/usr/local/</input></checkbox>
 
     </groupbox>
 
-
+    <label>The Linux User/sudo password allows the install templates to install required dependencies.
+    All bioGUI install modules are manually curated to reduce the chance of malicious software.</label>
     <label>Linux User Password / sudo Password</label>
     <input id="sudopw" type="password"></input>
 
-	<checkbox id="addtopath" value="1" value-unselected="0" selected="true">Add program folder to PATH in &#126;/.bashrc? (default: yes)</checkbox>
+  <label>If other programs should be able to find this program, check the box. It is recommended to have it checked.</label>
+	<checkbox id="addtopath" value="1" value-unselected="0" selected="true">Add program folder to PATH in &#126;/.bashrc? (default/recommended: yes)</checkbox>
   </group>
 
+  <label>You will have to enter a name for the template here. bioGUI searches in the template directory below the bioGUI executable.</label>
+  <label>It is recommended to simply enter a name, e.g. "blast_test". bioGUI will place the template into a location it can access.</label>
   <group id="templpath_sel" checkable="true" title="Store template?" selected="true">
        <filedialog id="templpath" output="true" filter="*.gui" location="${APPDIR}/templates/">Save Template to</filedialog>
   </group>
 
-
 	<action id="runprog" hint="Click here to install program into install location">Install Program</action>  
   
     <streambox id="output1">
-    <stream id="outputstream1">Normal Log</stream>
-	<stream id="outputstream2">Error Log</stream>
-	<stream id="savetemplate" active="false">Template</stream>
+      <stream id="outputstream1">Normal Log</stream>
+      <stream id="outputstream2">Error Log</stream>
+      <stream id="savetemplate" active="false">Template</stream>
     </streambox>
 
   </vgroup>

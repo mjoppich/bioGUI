@@ -30,11 +30,14 @@ addons:
     - g++-4.8
     - gcc-4.8
     - cmake
+    - qtbase5-dev
+    - qtdeclarative5-dev
+    - libqt5webkit5-dev
+    - libsqlite3-dev
+    - qt5-default
+    - qttools5-dev-tools
   
 sudo: required
-
-env:
-    - QT_CI_PACKAGES=qt.qt5.5132.gcc_64,qt.qt5.5132.qtwebengine PATH="$TRAVIS_BUILD_DIR/Qt/5.13.2/gcc_64/bin:${PATH}" VERBOSE=1
     
 compiler: gcc
 
@@ -44,9 +47,6 @@ before_install:
  
 
 before_script:
-  - git clone https://github.com/benlau/qtci.git
-  - source qtci/path.env
-  - travis_wait 30 install-qt 5.13.2
   - mkdir build
   - cd build
   - cmake ..

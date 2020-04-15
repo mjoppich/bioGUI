@@ -11,17 +11,17 @@ before_install:
  - sudo apt-get install -y build-essential git libssl-dev liblua5.2-dev libgl1-mesa-dev wget libfontconfig1 libdbus-1-dev libglu1-mesa-dev g++-4.8 gcc-4.8 cmake
  - cd ~
  - pwd
- - wget http://download.qt.io/official_releases/qt/5.11/5.11.1/qt-opensource-linux-x64-5.11.1.run
- - chmod u+x qt-opensource-linux-x64-5.11.1.run
- - sudo ./qt-opensource-linux-x64-5.11.1.run --verbose -platform minimal --script /home/travis/build/mjoppich/bioGUI/silent_qt_install.qs
- - ls /opt/Qt5.11.1/
- - export PATH=/opt/Qt5.11.1/5.11.1/gcc_64/bin/:$PATH
+ - wget -O qt-opensource.run http://download.qt.io/official_releases/qt/5.14/5.14.2/qt-opensource-linux-x64-5.14.2.run
+ - chmod u+x qt-opensource.run
+ - sudo ./qt-opensource.run --verbose -platform minimal --script /home/travis/build/mjoppich/bioGUI/silent_qt_install.qs
+ - ls /opt/Qt5.14.2/
+ - export PATH=/opt/Qt5.14.2/5.14.2/gcc_64/bin/:$PATH
  - cd /home/travis/build/mjoppich/bioGUI
  
 
 before_script:
   - mkdir build
   - cd build
-  - PATH=/opt/Qt5.11.1/5.11.1/gcc_64/bin/:$PATH cmake ..
+  - PATH=/opt/Qt5.14.2/5.14.2/gcc_64/bin/:$PATH cmake ..
 
 script: make

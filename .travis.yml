@@ -1,14 +1,12 @@
 language: cpp
 dist: xenial
 os:
-  - linux
+- linux
 
 services:
-  # PyQt5 tests require a GUI. See https://docs.travis-ci.com/user/gui-and-headless-browsers/#using-services-xvfb.
-  - xvfb
+- xvfb
   
- addons:
-  # Python packages should be installed by "pip" via the "test/requirements-library.txt" specification.
+addons:
   apt:
     packages:
     # lxml dependencies.
@@ -18,8 +16,6 @@ services:
     - libespeak1
     # SciPy dependencies.
     - libatlas-base-dev
-    # Per https://www.riverbankcomputing.com/pipermail/pyqt/2019-February/041363.html,
-    # PyQt5 5.12 needs a library not installed by default.
     - libxkbcommon-x11-0
     - build-essential
     - git

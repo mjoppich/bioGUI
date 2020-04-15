@@ -548,9 +548,9 @@ endif()
         if (UNIX AND NOT APPLE)
             get_filename_component(QT5GUI_DIR ${Qt5_GuiLocation} DIRECTORY)
 
-            add_custom_command( TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${QT5GUI_DIR}/libicudata.so.56 ${PROJECT_BINARY_DIR})
-            add_custom_command( TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${QT5GUI_DIR}/libicui18n.so.56 ${PROJECT_BINARY_DIR})
-            add_custom_command( TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${QT5GUI_DIR}/libicuuc.so.56 ${PROJECT_BINARY_DIR})
+            add_custom_command( TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${QT5GUI_DIR}/libicudata.so ${PROJECT_BINARY_DIR})
+            add_custom_command( TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${QT5GUI_DIR}/libicui18n.so ${PROJECT_BINARY_DIR})
+            add_custom_command( TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${QT5GUI_DIR}/libicuuc.so ${PROJECT_BINARY_DIR})
 
             add_custom_command( TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${QT5GUI_DIR}/libQt5DBus.so.5 ${PROJECT_BINARY_DIR})
             add_custom_command( TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${QT5GUI_DIR}/libQt5XcbQpa.so.5 ${PROJECT_BINARY_DIR})
@@ -558,9 +558,9 @@ endif()
 
 
 			file(GLOB biogui_linux_libs
-					${QT5GUI_DIR}/libicudata.so.56
-					${QT5GUI_DIR}/libicui18n.so.56
-					${QT5GUI_DIR}/libicuuc.so.56
+					${QT5GUI_DIR}/libicudata.so
+					${QT5GUI_DIR}/libicui18n.so
+					${QT5GUI_DIR}/libicuuc.so
                                         ${QT5GUI_DIR}/libQt5DBus.so.5
                                         ${QT5GUI_DIR}/libQt5XcbQpa.so.5
 					)

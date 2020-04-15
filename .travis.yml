@@ -1,14 +1,55 @@
 language: cpp
+dist: xenial
+os:
+  - linux
 
-dist: trusty
+services:
+  # PyQt5 tests require a GUI. See https://docs.travis-ci.com/user/gui-and-headless-browsers/#using-services-xvfb.
+  - xvfb
+  
+ addons:
+  # Python packages should be installed by "pip" via the "test/requirements-library.txt" specification.
+  apt:
+    packages:
+    # lxml dependencies.
+    - libxml2-dev
+    - libxslt1-dev
+    # pyttsx dependencies.
+    - libespeak1
+    # SciPy dependencies.
+    - libatlas-base-dev
+    # Per https://www.riverbankcomputing.com/pipermail/pyqt/2019-February/041363.html,
+    # PyQt5 5.12 needs a library not installed by default.
+    - libxkbcommon-x11-0
+    - build-essential
+    - git
+    - libxkbcommon-x11-dev
+    - libssl-dev
+    - liblua5.2-dev
+    - libgl1-mesa-dev
+    - wget
+    - libfontconfig1
+    - libdbus-1-dev
+    - libglu1-mesa-dev
+    - g++-4.8
+    - gcc-4.8
+    - cmake
+  
 sudo: required
 
+env:
+    - QT_CI_PACKAGES=qt.qt5.5132.gcc_64,qt.qt5.5132.qtwebengine PATH="$TRAVIS_BUILD_DIR/Qt/5.13.2/gcc_64/bin:${PATH}"
+
+script:
+    - git clone https://github.com/benlau/qtci.git
+    - source qtci/path.env
+    - install-qt 5.13.2
+    
+    
 compiler: gcc
 
 before_install:
  - pwd
- - sudo apt-get -qq update
- - sudo apt-get install -y build-essential git libxkbcommon-x11-dev libssl-dev liblua5.2-dev libgl1-mesa-dev wget libfontconfig1 libdbus-1-dev libglu1-mesa-dev g++-4.8 gcc-4.8 cmake
  - cd ~
  - pwd
  - wget -O qt-opensource.run http://download.qt.io/official_releases/qt/5.14/5.14.2/qt-opensource-linux-x64-5.14.2.run

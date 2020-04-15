@@ -34,7 +34,7 @@ addons:
 sudo: required
 
 env:
-    - QT_CI_PACKAGES=qt.qt5.5132.gcc_64,qt.qt5.5132.qtwebengine PATH="$TRAVIS_BUILD_DIR/Qt/5.13.2/gcc_64/bin:${PATH}"    
+    - QT_CI_PACKAGES=qt.qt5.5132.gcc_64,qt.qt5.5132.qtwebengine PATH="$TRAVIS_BUILD_DIR/Qt/5.13.2/gcc_64/bin:${PATH}" VERBOSE=1
     
 compiler: gcc
 

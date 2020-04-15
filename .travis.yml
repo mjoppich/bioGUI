@@ -13,7 +13,7 @@ before_install:
  - pwd
  - wget -O qt-opensource.run http://download.qt.io/official_releases/qt/5.14/5.14.2/qt-opensource-linux-x64-5.14.2.run
  - chmod u+x qt-opensource.run
- - sudo ./qt-opensource.run --verbose -platform minimal --script /home/travis/build/mjoppich/bioGUI/silent_qt_install.qs
+ - sudo ./qt-opensource.run --verbose --platform minimal --script /home/travis/build/mjoppich/bioGUI/silent_qt_install.qs
  - ls /opt/Qt5.14.2/
  - export PATH=/opt/Qt5.14.2/5.14.2/gcc_64/bin/:$PATH
  - cd /home/travis/build/mjoppich/bioGUI

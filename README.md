@@ -9,7 +9,7 @@ With bioGUI developers can easily build a graphical-user-interface (GUI) for the
 Such a GUI then enables many more people to use their software.
 Especially in biology, the domain experts are often computer novices and have difficulties using tools written for them by bioinformaticiens/computer scientists.
 
-You can find the corresponding [preprint at PeerJ](https://peerj.com/preprints/27095/).
+You can find the corresponding [paper published with PeerJ](https://peerj.com/articles/8111/).
 
 ![bioGUI](doc/images/biogui_pc.png?raw=true "bioGUI usage")
 

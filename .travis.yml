@@ -36,6 +36,7 @@ addons:
     - libsqlite3-dev
     - qt5-default
     - qttools5-dev-tools
+    - libqt5xmlpatterns5-dev
   
 sudo: required
     

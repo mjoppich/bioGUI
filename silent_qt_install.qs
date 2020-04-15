@@ -12,6 +12,8 @@ function Controller() {
     page.completeChanged.connect(welcomepageFinished)
 }
 
+
+
 welcomepageFinished = function()
 {
     //completeChange() -function is called also when other pages visible
@@ -21,6 +23,9 @@ welcomepageFinished = function()
     }
 }
 
+Controller.prototype.WelcomePageCallback = function() {
+    gui.clickButton(buttons.NextButton);
+}
 
 Controller.prototype.CredentialsPageCallback = function() {
     gui.clickButton(buttons.NextButton);

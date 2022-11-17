@@ -19,8 +19,109 @@
 
 #include "ExecutionEnvNode.h"
 
+#include <QHostInfo>
+
 #include <src/app/ProcessLauncher.h>
 #include <src/bioGUIapp.h>
+
+QHostAddress ExecutionEnvNode::getIPaddress(QAbstractSocket::NetworkLayerProtocol eProtocol)
+{
+
+
+
+
+    if (false)//(this->getOS().compare("WINDOWS") == 0)
+    {
+        // if on windows, call WSL to get IP address from there!
+        // ip addr show eth0 | grep -oP ''
+
+        ProcessLauncher* pLauncher = new ProcessLauncher("ip", "addr show eth0", true);
+        QString result = pLauncher->startBlocking().trimmed();
+
+        QStringList ipLines = result.split("\n");
+
+        QString searchLine = " inet ";
+        QRegExp rx("\\d+(\\.\\d+){3}");
+
+        if (eProtocol == QAbstractSocket::IPv6Protocol )
+        {
+            QString searchLine = " inet6 ";
+
+            //fe80::215:5dff:fef6:e9be
+            QRegExp rx("([a-f0-9:]+:+)+[a-f0-9]+");
+        }
+
+        rx.setCaseSensitivity(Qt::CaseInsensitive);
+        rx.setPatternSyntax(QRegExp::RegExp);
+
+        QString identifiedAddress=QString::null;
+
+        for (int i =0; i < ipLines.size(); ++i)
+        {
+            QString line = ipLines.at(i);
+
+            if (line.contains(searchLine))
+            {
+                int pos = rx.indexIn(result);
+                QStringList list = rx.capturedTexts();
+
+                identifiedAddress = list.at(0);
+                break;
+            }
+        }
+
+        if (!identifiedAddress.isNull())
+        {
+            QHostInfo HI = QHostInfo::fromName(identifiedAddress);
+            return HI.addresses().at(0);
+        }
+
+    }
+
+
+    QList<QHostAddress> vHostAddresses = QNetworkInterface::allAddresses();
+    QList<QHostAddress> vSelHostAddresses;
+
+    for(int i=0; i < vHostAddresses.count(); ++i)
+    {
+        if(!vHostAddresses[i].isLoopback())
+            if (vHostAddresses[i].protocol() == eProtocol )
+                vSelHostAddresses.append( vHostAddresses[i] );
+
+    }
+
+    QList<QHostAddress> vInternetSelHostAddresses;
+    for (int i = 0; i < vSelHostAddresses.count(); ++i)
+    {
+        // HOST addresses do not start with 172! (these are internal ip addresses!)
+        QHostAddress oCurrentHA = vSelHostAddresses.at(i);
+        QString hostString = oCurrentHA.toString();
+        if (hostString.startsWith("172."))
+        {
+            continue;
+        }
+
+        vInternetSelHostAddresses.append(oCurrentHA);
+    }
+
+    if (vInternetSelHostAddresses.size() == 0)
+    {
+        if (vSelHostAddresses.size() != 0)
+            return vSelHostAddresses.at(0);
+        else
+            if (vHostAddresses.size() != 0)
+                return vHostAddresses.at(0);
+            else
+                return QHostAddress();
+
+    } else {
+
+        return vInternetSelHostAddresses.at(0);
+    }
+
+
+
+}
 
 std::string ExecutionEnvNode::evaluate(std::map<std::string, ExecutionNode *> *pID2Node,
                                        std::map<std::string, std::string> *pInputID2Value,
@@ -70,7 +171,7 @@ std::string ExecutionEnvNode::evaluate(std::map<std::string, ExecutionNode *> *p
 
     if (m_sGet.compare("WIN", Qt::CaseInsensitive) == 0)
     {
-        return (this->getOS().compare("WIN") == 0) ? "True" : "False";
+        return (this->getOS().compare("WINDOWS") == 0) ? "True" : "False";
     }
 
     if (m_sGet.compare("OS", Qt::CaseInsensitive) == 0)
@@ -98,7 +199,8 @@ std::string ExecutionEnvNode::evaluate(std::map<std::string, ExecutionNode *> *p
             
             // we are on WSL
             ProcessLauncher* pLauncher = new ProcessLauncher("echo", "~", bWSL);
-            sQHome = pLauncher->startBlocking().trimmed();
+            QString sReturn = pLauncher->startBlocking();
+            sQHome = sReturn.trimmed();
         }
         
         // exec in WSL "echo ~"

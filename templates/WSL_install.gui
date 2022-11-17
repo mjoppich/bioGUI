@@ -14,7 +14,7 @@
 
   <group title="Install Options">
   <label>Install Program to WSL?</label>
-    <checkbox id="WSLsel" value="true" selectonwindows="true">Use WSL? (Check on Windows, otherwise not)</checkbox>
+
     <label>The following options let you decide where to install the program to. If unsure, use the recommended setting.</label>
     
     <groupbox id="user_sel_instpath" title="Install Location" exclusive="true">
@@ -52,6 +52,8 @@
 </window>
 
 <execution>
+
+<env id="WSLsel" get="WIN"/>
 
 <if id="prog_wsl" comp="is_set" value1="WSLsel" value2="true">
 <relocate from="${prog}" wsl="true"/>

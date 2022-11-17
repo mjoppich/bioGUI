@@ -47,7 +47,7 @@ fi
 mkdir -p "$PROGDIR/$PROG"
 
 #download and unzip
-wget https://sourceforge.net/projects/subread/files/subread-1.6.3/subread-1.6.3-source.tar.gz/download -O subread.tar.gz
+wget https://sourceforge.net/projects/subread/files/subread-2.0.3/subread-2.0.3-source.tar.gz/download -O subread.tar.gz
 
 tar xfz subread.tar.gz -C "$PROGDIR/$PROG/"
 

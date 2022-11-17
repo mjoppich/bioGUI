@@ -124,7 +124,6 @@ bool ProcessLauncher::start()
                            for (int i = 0; i < pProcess->arguments().size(); ++i)
                            {
                                std::string sArgument = pProcess->arguments().at(i).toStdString();
-
                                std::cerr << "Argument " << i << " : " << sArgument << std::endl;
                            }
 

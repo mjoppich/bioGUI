@@ -54,46 +54,7 @@ public:
         return vBase;
     }
 
-    QHostAddress getIPaddress( QAbstractSocket::NetworkLayerProtocol eProtocol )
-    {
-
-        QList<QHostAddress> vHostAddresses = QNetworkInterface::allAddresses();
-        QList<QHostAddress> vSelHostAddresses;
-
-        for(int i=0; i < vHostAddresses.count(); ++i)
-        {
-            if(!vHostAddresses[i].isLoopback())
-            if (vHostAddresses[i].protocol() == eProtocol )
-                vSelHostAddresses.append( vHostAddresses[i] );
-
-        }
-
-        QList<QHostAddress> vInternetSelHostAddresses;
-        for (int i = 0; i < vSelHostAddresses.count(); ++i)
-        {
-
-
-
-        }
-
-        if (vInternetSelHostAddresses.size() == 0)
-        {
-            if (vSelHostAddresses.size() != 0)
-                return vSelHostAddresses.at(0);
-            else
-                if (vHostAddresses.size() != 0)
-                    return vHostAddresses.at(0);
-                else
-                    return QHostAddress();
-
-        } else {
-
-            return vInternetSelHostAddresses.at(0);
-        }
-
-
-
-    }
+    QHostAddress getIPaddress( QAbstractSocket::NetworkLayerProtocol eProtocol );
 
     std::string getOS(std::map< std::string, ExecutionNode*>* pID2Node = NULL,
                       std::map<std::string, std::string>* pInputID2Value = NULL,

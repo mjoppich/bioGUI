@@ -108,7 +108,7 @@ if (WIN32)
         message(STATUS "IN MINGW")
     endif()
 
-    set(Qt5_DIR "D:/Qt/5.12.2/mingw73_64")
+    set(Qt5_DIR "T:/Qt/5.12.12/mingw73_64")
     set(ENV{OPENSSL_ROOT_DIR} "${CMAKE_CURRENT_SOURCE_DIR}/extlib/openssl/")
     set(OPENSSL_ROOT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/extlib/openssl/")
     message(STATUS $ENV{OPENSSL_ROOT_DIR})
@@ -516,6 +516,8 @@ endif()
 
             add_custom_command( TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/extlib/openssl/libeay32.dll ${PROJECT_BINARY_DIR})
             add_custom_command( TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/extlib/openssl/ssleay32.dll ${PROJECT_BINARY_DIR})
+            add_custom_command( TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/extlib/openssl/libcrypto-1_1-x64.dll ${PROJECT_BINARY_DIR})
+            add_custom_command( TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/extlib/openssl/libssl-1_1-x64.dll ${PROJECT_BINARY_DIR})
             add_custom_command( TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/extlib/lua/lua53.dll ${PROJECT_BINARY_DIR})
 			
 
@@ -528,6 +530,8 @@ endif()
                         ${MINGW_BUILD_BIN}/libwinpthread-1.dll
                         ${CMAKE_CURRENT_SOURCE_DIR}/extlib/openssl/libeay32.dll
                         ${CMAKE_CURRENT_SOURCE_DIR}/extlib/openssl/ssleay32.dll
+                        ${CMAKE_CURRENT_SOURCE_DIR}/extlib/openssl/libcrypto-1_1-x64.dll
+                        ${CMAKE_CURRENT_SOURCE_DIR}/extlib/openssl/libssl-1_1-x64.dll
                         ${CMAKE_CURRENT_SOURCE_DIR}/extlib/lua/lua53.dll
                         )
 

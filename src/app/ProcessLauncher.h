@@ -176,7 +176,12 @@ public:
     {
         this->start();
 
-        m_pProcess->waitForFinished( iWaitMSec );
+        bool isFinished = m_pProcess->waitForFinished( iWaitMSec );
+
+        while(!isFinished)
+        {
+            isFinished = m_pProcess->waitForFinished( iWaitMSec );
+        }
 
         QString sOut( m_pProcess->readAllStandardOutput() );
 
